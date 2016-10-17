@@ -19,6 +19,19 @@
     "redux-thunk": "^2.1.0"
   },
   "devDependencies": {
-    "standard": "^8.4.0"
+    "autoprefixer": "^6.5.1",
+    "postcss-easy-import": "^1.0.1",
+    "standard": "^8.4.0",
+    "tachyons": "^4.5.4"
+  },
+  "postcss": {
+    "plugins": {
+      "postcss-easy-import": {},
+      "autoprefixer": {
+        "browsers": [
+          "last 2 versions"
+        ]
+      }
+    }
   }
 }
