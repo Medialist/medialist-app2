@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "twitter-screen-name": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/twitter-screen-name/-/twitter-screen-name-1.0.0.tgz",
+      "from": "twitter-screen-name@1.0.0"
+    }
+  }
+}
