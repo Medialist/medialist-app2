@@ -1,7 +1,7 @@
 import React from 'react'
 import { Router, Route, IndexRoute } from 'react-router'
 import Layout from './layout'
-import Dashboard from './dashboard/dashboard-page'
+import DashboardPage from './dashboard/dashboard-page'
 import NotificationsPage from './users/notifications-page'
 import CampaignsPage from './campaigns/campaigns-page'
 import CampaignActivityPage from './campaigns/campaign-activity-page'
@@ -15,7 +15,7 @@ const Routes = ({ store, history }) => {
   return (
     <Router history={history}>
       <Route path='/' component={Layout}>
-        <IndexRoute component={Dashboard} />
+        <IndexRoute component={DashboardPage} />
         <Route path='notifications' component={NotificationsPage} />
         <Route path='campaigns' component={CampaignsPage} />
         <Route path='campaign'>
