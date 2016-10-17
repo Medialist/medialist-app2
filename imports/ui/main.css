@@ -1,7 +1,6 @@
-/* ---- main.css -------------------------------------------------------------*/
+/* ---- Medialist main.css -------------------------------------------------- */
 
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700');
-@import 'basscss-type-scale';
 @import 'basscss-typography';
 @import 'basscss-layout';
 @import 'basscss-align';
@@ -20,21 +19,99 @@
 @custom-media --breakpoint-lg (min-width: 64em);
 
 :root {
-  --h1: 24px;
-  --h2: 15px;
-  --h3: 14px;
-  --h4: 12px;
-  --h5: 10px;
-  --h6: 8px;
-  --bold-font-weight: bold;
   --space-1: 1rem;
   --space-2: 2rem;
   --space-3: 3rem;
   --space-4: 4rem;
   --border-width: 1px;
   --border-radius: 3px;
+
+  /* --- Medialist Colors ----------------------------------------------------- */
+  --black:  #162435;   /* charcoal-dark */
+  --gray10: #24364C;   /* charcoal */
+  --gray20: #4F5E6F;   /* cadet */
+  --gray40: #99A3B2;   /* cadet-gray */
+  --gray60: #BFC8D7;   /* lavender-gray */
+  --gray80: #E3E8F0;   /* glitter */
+  --gray90: #F4F6FA;   /* white-smoke */
+  --white:  #FFF;
+
+  --blue-dark: #2B60D5;  /* royal-blue */
+  --blue: #437AF4;       /* ultramarine-blue */
+  --blue-light: #4299FF; /* bleu-de-france */
+
+  --status-blue: #28B6D7;
+  --status-red: #E41D1D;
+  --status-orange: #FA862C;
+  --status-green: #35BF77;
 }
 
+.black { color: var(--black) }
+.gray10 { color: var(--gray10) }
+.gray20 { color: var(--gray20) }
+.gray40 { color: var(--gray40) }
+.gray60 { color: var(--gray60) }
+.gray80 { color: var(--gray80) }
+.gray90 { color: var(--gray90) }
+.white { color:var(--white) }
+
+.blue-dark { color: var(--blue-dark) }
+.blue { color: var(--blue) }
+.blue-light { color: var(--blue-light) }
+
+.not-contacted { color: var(--gray40) }
+.contacted { color: #28B6D7; }
+.not-interested { color: #E41D1D; }
+.hot-lead { color: #FA862C; }
+.complete { color: #35BF77; }
+
+.bg-black { background-color: var(--black) }
+.bg-gray10 { background-color: var(--gray10) }
+.bg-gray20 { background-color: var(--gray20) }
+.bg-gray40 { background-color: var(--gray40) }
+.bg-gray60 { background-color: var(--gray60) }
+.bg-gray80 { background-color: var(--gray80) }
+.bg-gray90 { background-color: var(--gray90) }
+.bg-white { background-color:white;}
+.bg-blue-dark { background-color: var(--blue-dark) }
+.bg-blue { background-color: var(--blue) }
+.bg-blue-light { background-color: var(--blue-light) }
+
+.bg-not-contacted { background-color: var(--gray40) }
+.bg-contacted { background-color: #28B6D7; }
+.bg-not-interested { background-color: #E41D1D; }
+.bg-hot-lead { background-color: #FA862C; }
+.bg-complete { background-color: #35BF77; }
+
+/* ---- Atoms --------------------------------------------------------------- */
+.f1 { font-size:25px }
+.f2 { font-size:18px }
+.f3 { font-size:16px }
+.f4 { font-size:15px }
+.f5 { font-size:14px }
+.f6 { font-size:13px }
+.f7 { font-size:12px }
+.f8 { font-size:11px }
+.f9 { font-size: 9px }
+
+.semibold { font-weight: semibold; }
+
+.transition { transition: all 0.2s ease-in-out; }
+
+/* ---- Interactions -------------------------------------------------------- */
+
+.navbar .navbar-link {
+  opacity: 0.3;
+}
+.navbar .navbar-link:hover {
+  opacity: 0.5;
+}
+.navbar .navbar-link.active,
+.navbar .navbar-link.active:hover {
+  opacity: 1;
+}
+
+/* ---- Reset --------------------------------------------------------------- */
 * {
   box-sizing: border-box;
 }
@@ -44,8 +121,8 @@ body {
   font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif;
   line-height: 1.5;
   margin: 0;
-  color: #111;
-  background-color: #fff;
+  color: var(--gray20);
+  background-color: #F4F6FA;
 }
 
 img {
@@ -59,6 +136,7 @@ svg {
 
 a {
   color: inherit;
+  text-decoration: none;
 }
 
 p, dl, ol, ul, pre, blockquote {
@@ -72,96 +150,12 @@ hr {
   border: 0;
   border-bottom-width: 1px;
   border-bottom-style: solid;
-  border-bottom-color: #ccc;
+  border-bottom-color: var(--gray80);
 }
 
 h1 h2, h3, h4, h5, h6 {
+  font-size: 1rem;
   line-height: 1.25;
   margin-top: 1em;
   margin-bottom: .5em;
 }
-
-h1, .h1 {
-  font-size: 24px;
-  line-height: 31px;
-}
-h2, .h2 {
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 19px;
-  color: #2B60D5;
-}
-h3, .h3{
-  font-size: 15px;
-  line-height: 22px;
-  color: #24364C;
-}
-h4, .h4 {
-  font-size: 15px;
-  line-height: 19px;
-  color: #FFF;
-}
-h5, .h5 {
-  font-size: 15px;
-  line-height: 19px;
-  color: #24364C;
-}
-h6, .h6 {
-  font-size: 15px;
-  line-height: 7px;
-  font-weight: 600;
-  color: #4F5E6F;
-}
-
-/* Medialist Colors */
-.royal-blue { color: #2B60D5; }
-.bg-royal-blue { background-color: #2B60D5; }
-.b--royal-blue { border-color: #2B60D5; }
-
-.ultramarine-blue { color: #437AF4; }
-.bg-ultramarine-blue { background-color: #437AF4; }
-.b--ultramarine-blue { border-color: #437AF4; }
-
-.bleu-de-france { color: #4299FF; }
-.bg-bleu-de-france { background-color: #4299FF; }
-.b--bleu-de-france { border-color: #4299FF; }
-
-.charcoal { color: #24364C; }
-.bg-charcoal { background-color: #24364C; }
-.b--charcoal { border-color: #24364C; }
-
-.cadet { color: #4F5E6F; }
-.bg-cadet { background-color: #4F5E6F; }
-.b--cadet { border-color: #4F5E6F; }
-
-.cadet-gray { color: #99A3B2; }
-.bg-cadet-gray { background-color: #99A3B2; }
-.b--cadet-gray { border-color: #99A3B2; }
-
-.lavender-gray { color: #BFC8D7; }
-.bg-lavender-gray { background-color: #BFC8D7; }
-.b--lavender-gray { border-color: #BFC8D7; }
-
-.glitter { color: #E3E8F0; }
-.bg-glitter { background-color: #E3E8F0; }
-.b--glitter { border-color: #E3E8F0; }
-
-.glitter { color: #E3E8F0; }
-.bg-glitter { background-color: #E3E8F0; }
-.b--glitter { border-color: #E3E8F0; }
-
-.white-smoke { color: #F4F6FA; }
-.bg-white-smoke { background-color: #F4F6FA; }
-.b--white-smoke { border-color: #F4F6FA; }
-
-/* Medialist Status Colors */
-.status-color-not-contacted { color: #99A3B2; }
-.status-bg-color-not-contacted { background-color: #99A3B2; }
-.status-color-contacted { color: #28B6D7; }
-.status-bg-color-contacted { background-color: #28B6D7; }
-.status-color-not-interested { color: #E41D1D; }
-.status-bg-color-not-interested { background-color: #E41D1D; }
-.status-color-hot-lead { color: #FA862C; }
-.status-bg-color-hot-lead { background-color: #FA862C; }
-.status-color-complete { color: #35BF77; }
-.status-bg-color-complete { background-color: #35BF77; }
