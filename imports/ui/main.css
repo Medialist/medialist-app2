@@ -1,6 +1,5 @@
 /* ---- main.css -------------------------------------------------------------*/
 
-/* woo */
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700');
 @import 'basscss-type-scale';
 @import 'basscss-typography';
@@ -76,7 +75,7 @@ hr {
   border-bottom-color: #ccc;
 }
 
-h1 h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+h1 h2, h3, h4, h5, h6 {
   line-height: 1.25;
   margin-top: 1em;
   margin-bottom: .5em;
