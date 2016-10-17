@@ -1,2 +1,2 @@
 import React from 'react'
-export default () => <div className="tc mh2"><h1>Dashboard</h1></div>
+export default () => (<div className="center"><h1>Dashboard</h1></div>)

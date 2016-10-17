@@ -1,55 +1,113 @@
-@import 'tachyons';
+/* ---- main.css -------------------------------------------------------------*/
+
+/* woo */
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700');
+@import 'basscss-type-scale';
+@import 'basscss-typography';
+@import 'basscss-layout';
+@import 'basscss-align';
+@import 'basscss-margin';
+@import 'basscss-padding';
+@import 'basscss-grid';
+@import 'basscss-flexbox';
+@import 'basscss-position';
+@import 'basscss-border';
+@import 'basscss-hide';
+@import 'basscss-responsive-margin';
+@import 'basscss-responsive-padding';
 
-.sans-serif {
-  font-family: 'Source Sans Pro', sans-serif;
-  font-weight: 400;
-  line-height: 19px;
+@custom-media --breakpoint-sm (min-width: 40em);
+@custom-media --breakpoint-md (min-width: 52em);
+@custom-media --breakpoint-lg (min-width: 64em);
+
+:root {
+  --h1: 24px;
+  --h2: 15px;
+  --h3: 14px;
+  --h4: 12px;
+  --h5: 10px;
+  --h6: 8px;
+  --bold-font-weight: bold;
+  --space-1: 1rem;
+  --space-2: 2rem;
+  --space-3: 3rem;
+  --space-4: 4rem;
+  --border-width: 1px;
+  --border-radius: 3px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
   font-size: 15px;
+  font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif;
+  line-height: 1.5;
+  margin: 0;
+  color: #111;
+  background-color: #fff;
 }
 
-.system-sans-serif {
-  font-family: -apple-system, BlinkMacSystemFont,
-               'avenir next', avenir,
-               helvetica, 'helvetica neue',
-               ubuntu,
-               roboto, noto,
-               'segoe ui', arial,
-               sans-serif;
+img {
+  max-width: 100%;
+  height: auto;
 }
 
-h1 {
-  font-family: 'Source Sans Pro', sans-serif;
+svg {
+  max-height: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+p, dl, ol, ul, pre, blockquote {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+hr {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+  border: 0;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #ccc;
+}
+
+h1 h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+  line-height: 1.25;
+  margin-top: 1em;
+  margin-bottom: .5em;
+}
+
+h1, .h1 {
   font-size: 24px;
   line-height: 31px;
 }
-h2 {
-  font-family: 'Source Sans Pro', sans-serif;
-  font-weight: 700;
+h2, .h2 {
   font-size: 16px;
-  color: #2B60D5;
+  font-weight: 700;
   line-height: 19px;
+  color: #2B60D5;
 }
-h3 {
-  font-family: 'Source Sans Pro', sans-serif;
+h3, .h3{
   font-size: 15px;
-  color: #24364C;
   line-height: 22px;
+  color: #24364C;
 }
-h4 {
-  font-family: 'Source Sans Pro', sans-serif;
+h4, .h4 {
   font-size: 15px;
   line-height: 19px;
   color: #FFF;
 }
-h5 {
-  font-family: 'Source Sans Pro', sans-serif;
+h5, .h5 {
   font-size: 15px;
   line-height: 19px;
   color: #24364C;
 }
-h6 {
-  font-family: 'Source Sans Pro', sans-serif;
+h6, .h6 {
   font-size: 15px;
   line-height: 7px;
   font-weight: 600;
