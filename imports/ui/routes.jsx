@@ -1,17 +1,15 @@
 import React from 'react'
 import { Router, Route, IndexRoute } from 'react-router'
-import {
-  Layout,
-  Dashboard,
-  NotificationsPage,
-  CampaignsPage,
-  CampaignActivityPage,
-  CampaignContactsPage,
-  ContactsPage,
-  ContactsImportPage,
-  ContactPage,
-  NotFoundPage
-} from './pages'
+import Layout from './layout'
+import Dashboard from './dashboard/dashboard-page'
+import NotificationsPage from './users/notifications-page'
+import CampaignsPage from './campaigns/campaigns-page'
+import CampaignActivityPage from './campaigns/campaign-activity-page'
+import CampaignContactsPage from './campaigns/campaign-contacts-page'
+import ContactsPage from './contacts/contacts-page'
+import ContactsImportPage from './contacts/contacts-import-page'
+import ContactPage from './contacts/contact-page'
+import NotFoundPage from './errors/not-found-page'
 
 const Routes = ({ store, history }) => {
   return (
