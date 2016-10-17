@@ -1,0 +1,167 @@
+/* ---- main.css -------------------------------------------------------------*/
+
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700');
+@import 'basscss-type-scale';
+@import 'basscss-typography';
+@import 'basscss-layout';
+@import 'basscss-align';
+@import 'basscss-margin';
+@import 'basscss-padding';
+@import 'basscss-grid';
+@import 'basscss-flexbox';
+@import 'basscss-position';
+@import 'basscss-border';
+@import 'basscss-hide';
+@import 'basscss-responsive-margin';
+@import 'basscss-responsive-padding';
+
+@custom-media --breakpoint-sm (min-width: 40em);
+@custom-media --breakpoint-md (min-width: 52em);
+@custom-media --breakpoint-lg (min-width: 64em);
+
+:root {
+  --h1: 24px;
+  --h2: 15px;
+  --h3: 14px;
+  --h4: 12px;
+  --h5: 10px;
+  --h6: 8px;
+  --bold-font-weight: bold;
+  --space-1: 1rem;
+  --space-2: 2rem;
+  --space-3: 3rem;
+  --space-4: 4rem;
+  --border-width: 1px;
+  --border-radius: 3px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-size: 15px;
+  font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif;
+  line-height: 1.5;
+  margin: 0;
+  color: #111;
+  background-color: #fff;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+svg {
+  max-height: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+p, dl, ol, ul, pre, blockquote {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+hr {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+  border: 0;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #ccc;
+}
+
+h1 h2, h3, h4, h5, h6 {
+  line-height: 1.25;
+  margin-top: 1em;
+  margin-bottom: .5em;
+}
+
+h1, .h1 {
+  font-size: 24px;
+  line-height: 31px;
+}
+h2, .h2 {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 19px;
+  color: #2B60D5;
+}
+h3, .h3{
+  font-size: 15px;
+  line-height: 22px;
+  color: #24364C;
+}
+h4, .h4 {
+  font-size: 15px;
+  line-height: 19px;
+  color: #FFF;
+}
+h5, .h5 {
+  font-size: 15px;
+  line-height: 19px;
+  color: #24364C;
+}
+h6, .h6 {
+  font-size: 15px;
+  line-height: 7px;
+  font-weight: 600;
+  color: #4F5E6F;
+}
+
+/* Medialist Colors */
+.royal-blue { color: #2B60D5; }
+.bg-royal-blue { background-color: #2B60D5; }
+.b--royal-blue { border-color: #2B60D5; }
+
+.ultramarine-blue { color: #437AF4; }
+.bg-ultramarine-blue { background-color: #437AF4; }
+.b--ultramarine-blue { border-color: #437AF4; }
+
+.bleu-de-france { color: #4299FF; }
+.bg-bleu-de-france { background-color: #4299FF; }
+.b--bleu-de-france { border-color: #4299FF; }
+
+.charcoal { color: #24364C; }
+.bg-charcoal { background-color: #24364C; }
+.b--charcoal { border-color: #24364C; }
+
+.cadet { color: #4F5E6F; }
+.bg-cadet { background-color: #4F5E6F; }
+.b--cadet { border-color: #4F5E6F; }
+
+.cadet-gray { color: #99A3B2; }
+.bg-cadet-gray { background-color: #99A3B2; }
+.b--cadet-gray { border-color: #99A3B2; }
+
+.lavender-gray { color: #BFC8D7; }
+.bg-lavender-gray { background-color: #BFC8D7; }
+.b--lavender-gray { border-color: #BFC8D7; }
+
+.glitter { color: #E3E8F0; }
+.bg-glitter { background-color: #E3E8F0; }
+.b--glitter { border-color: #E3E8F0; }
+
+.glitter { color: #E3E8F0; }
+.bg-glitter { background-color: #E3E8F0; }
+.b--glitter { border-color: #E3E8F0; }
+
+.white-smoke { color: #F4F6FA; }
+.bg-white-smoke { background-color: #F4F6FA; }
+.b--white-smoke { border-color: #F4F6FA; }
+
+/* Medialist Status Colors */
+.status-color-not-contacted { color: #99A3B2; }
+.status-bg-color-not-contacted { background-color: #99A3B2; }
+.status-color-contacted { color: #28B6D7; }
+.status-bg-color-contacted { background-color: #28B6D7; }
+.status-color-not-interested { color: #E41D1D; }
+.status-bg-color-not-interested { background-color: #E41D1D; }
+.status-color-hot-lead { color: #FA862C; }
+.status-bg-color-hot-lead { background-color: #FA862C; }
+.status-color-complete { color: #35BF77; }
+.status-bg-color-complete { background-color: #35BF77; }
