@@ -1,22 +1,21 @@
 import React from 'react'
 import { Router, Route, IndexRoute } from 'react-router'
-import {
-  Layout,
-  Dashboard,
-  NotificationsPage,
-  CampaignsPage,
-  CampaignActivityPage,
-  CampaignContactsPage,
-  ContactsPage,
-  ContactsImportPage,
-  ContactPage
-} from './pages'
+import Layout from './layout'
+import DashboardPage from './dashboard/dashboard-page'
+import NotificationsPage from './users/notifications-page'
+import CampaignsPage from './campaigns/campaigns-page'
+import CampaignActivityPage from './campaigns/campaign-activity-page'
+import CampaignContactsPage from './campaigns/campaign-contacts-page'
+import ContactsPage from './contacts/contacts-page'
+import ContactsImportPage from './contacts/contacts-import-page'
+import ContactPage from './contacts/contact-page'
+import NotFoundPage from './errors/not-found-page'
 
 const Routes = ({ store, history }) => {
   return (
     <Router history={history}>
       <Route path='/' component={Layout}>
-        <IndexRoute component={Dashboard} />
+        <IndexRoute component={DashboardPage} />
         <Route path='notifications' component={NotificationsPage} />
         <Route path='campaigns' component={CampaignsPage} />
         <Route path='campaign'>
@@ -30,6 +29,7 @@ const Routes = ({ store, history }) => {
           <Route path='import' component={ContactsImportPage} />
         </Route>
         <Route path='contact/:slug' component={ContactPage} />
+        <Route path='*' component={NotFoundPage} />
       </Route>
     </Router>
   )

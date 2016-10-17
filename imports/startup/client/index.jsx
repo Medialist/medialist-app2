@@ -8,7 +8,7 @@ import thunkMiddleware from 'redux-thunk'
 import { Meteor } from 'meteor/meteor'
 import reducers from '../../ui/redux/reducers'
 import Routes from '../../ui/routes'
-import Head from '../../ui/components/head'
+import Head from '../../ui/head'
 
 const store = createStore(
   reducers,

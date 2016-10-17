@@ -8,7 +8,7 @@ With `node` `npm` & `meteor` installed
 
 ```sh
 npm install
-npm start
+npm run watch
 ```
 
 ## Styling
