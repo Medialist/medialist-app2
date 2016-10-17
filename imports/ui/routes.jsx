@@ -9,7 +9,8 @@ import {
   CampaignContactsPage,
   ContactsPage,
   ContactsImportPage,
-  ContactPage
+  ContactPage,
+  NotFoundPage
 } from './pages'
 
 const Routes = ({ store, history }) => {
@@ -30,6 +31,7 @@ const Routes = ({ store, history }) => {
           <Route path='import' component={ContactsImportPage} />
         </Route>
         <Route path='contact/:slug' component={ContactPage} />
+        <Route path='*' component={NotFoundPage} />
       </Route>
     </Router>
   )

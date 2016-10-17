@@ -7,6 +7,7 @@ import CampaignContactsPage from './campaign-contacts-page'
 import ContactsPage from './contacts-page'
 import ContactsImportPage from './contacts-import-page'
 import ContactPage from './contact-page'
+import NotFoundPage from './not-found-page'
 
 export {
   Layout,
@@ -17,5 +18,6 @@ export {
   CampaignContactsPage,
   ContactsPage,
   ContactsImportPage,
-  ContactPage
+  ContactPage,
+  NotFoundPage
 }
