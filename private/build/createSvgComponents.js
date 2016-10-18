@@ -73,7 +73,7 @@ function createIndex (icons, next) {
     if (i !== icons.length - 1) exp += ',\n'
     if (i === icons.length - 1) exp += '\n}\n'
     return exp
-  }, 'exports = {\n')].join('')
+  }, 'export {\n')].join('')
 
   fs.writeFile(writePath, index, next)
 }
