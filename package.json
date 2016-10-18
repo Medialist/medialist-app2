@@ -42,8 +42,9 @@
   },
   "standard": {
     "ignore": [
-      "server/**",
-      "lib/**"
+      "lib/**",
+      "packages/**",
+      "server/**"
     ]
   }
 }
