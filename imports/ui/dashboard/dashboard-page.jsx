@@ -36,11 +36,11 @@ const DashboardPage = React.createClass({
 
     return (
       <div className='flex max-width-lg mx-auto'>
-        <div style={{width: 250}}>
+        <div className='flex-none' style={{width: 250}}>
           <RecentCampaignsList campaigns={recentCampaigns} />
           <RecentContactsList contacts={recentContacts} />
         </div>
-        <div className='flex-auto pl4'>
+        <div className='flex-auto ml4 p2'>
           <ItemFilter filter={this.state.activityFilter} filters={ACTIVITY_FILTERS} onChange={this.onFilterChange} />
           <ActivityListContainer filter={this.state.activityFilter} />
         </div>
