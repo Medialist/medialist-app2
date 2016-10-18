@@ -13,7 +13,23 @@ npm run watch
 
 ## Styling
 
-[Basscss] plus custom atoms with [postcss] to build it. See `client/main.css`
+Some [Basscss] plus custom atoms with [postcss] to build it. See `client/main.css`
+
+### font sizing
+
+We've got loads of font sizes, and they don't follow a typescale, so `f1` through `f9` is used to denote font size.
+
+```css
+.f1 { font-size:25px }
+.f2 { font-size:18px }
+.f3 { font-size:16px }
+.f4 { font-size:15px }
+.f5 { font-size:14px }
+.f6 { font-size:13px }
+.f7 { font-size:12px }
+.f8 { font-size:11px }
+.f9 { font-size: 9px }
+```
 
 ### Spacing
 
@@ -69,6 +85,9 @@ you will get:
 }
 ```
 
+
+[Basscss]: http://www.basscss.com/
+[postcss]: http://postcss.org/
 [postcss-custom-media]: https://github.com/postcss/postcss-custom-media
 [basscss-responsive-padding]: https://github.com/basscss/addons/tree/master/modules/responsive-padding
 [basscss-responsive-margin]: https://github.com/basscss/addons/tree/master/modules/responsive-margin
