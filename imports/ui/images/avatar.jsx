@@ -11,12 +11,14 @@ const Avatar = React.createClass({
 
   render () {
     const { avatar, name } = this.props
-    const className = classNames(this.props.className, 'inline-block circle bg-black white f-md normal align-middle center')
+    const className = classNames(this.props.className, 'inline-block circle overflow-hidden bg-black white f-md normal align-middle center')
     const style = Object.assign({ width: 40, height: 40, lineHeight: '40px' }, this.props.style || {})
 
     if (avatar) {
       return (
-        <div className={className}><img style={style} src={avatar} alt={name} /></div>
+        <div className={className} style={style}>
+          <img style={{width: '100%', height: '100%'}} src={avatar} alt={name} />
+        </div>
       )
     }
 
