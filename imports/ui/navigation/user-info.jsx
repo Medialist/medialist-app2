@@ -40,7 +40,7 @@ const UserInfo = React.createClass({
             <Arrow direction='down' />
           </div>
         </div>
-        <DropdownMenu right className='shadow-1' style={{ width: 223 }} open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
+        <DropdownMenu right style={{ width: 223 }} open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
           <div className='px4 py3'>
             <CircleAvatar />
             <div className='inline-block align-middle pl2'>
@@ -48,7 +48,7 @@ const UserInfo = React.createClass({
               <div className='f-xs normal gray20'>{`Organisation name`}</div>
             </div>
           </div>
-          <nav className='block border-top border-gray80'>
+          <nav className='block border-top border-gray80 py1'>
             <Link to='/settings' className='block px3 py2 f-md normal gray20 hover-bg-blue' activeClassName='active' onClick={this.onLinkClick}>
               ⚙
               <span className='ml2'>Settings</span>

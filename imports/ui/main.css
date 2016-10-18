@@ -24,7 +24,7 @@
   --space-3: 15px;
   --space-4: 20px;
   --border-width: 1px;
-  --border-radius: 3px;
+  --border-radius: 2px;
 
   /* --- Medialist Colors ----------------------------------------------------- */
   --black:  #162435;   /* charcoal-dark */
@@ -123,6 +123,27 @@
 .hover-bg-blue:hover {
   color: var(--white);
   background-color: var(--blue);
+}
+
+/* ---- Rebass overrides ---------------------------------------------------- */
+
+.Menu {
+  border: 0 none !important;
+  box-shadow: 0px 1px 10px 0px rgba(0,0,0,0.20);
+}
+/* triangle pointy thing */
+.Menu::before {
+  content:'';
+  display: inline-block;
+  position: absolute;
+  top: -7px;
+  right: 11px;
+  width: 0;
+  height: 0;
+  border: 8px solid transparent;
+  border-bottom-color:var(--white);
+  border-top: 0 none;
+  border-radius: 2px;
 }
 
 /* ---- Reset --------------------------------------------------------------- */
