@@ -13,6 +13,7 @@ Meteor.publish('posts', function (opts) {
   if (opts.medialist) query.medialists = opts.medialist
   if (opts.contact) query['contacts.slug'] = opts.contact
   if (opts.message) query.message = { $exists: true }
+  if (opts.types) query.type = { $in: opts.types }
 
   var options = {
     sort: { createdAt: -1 },
