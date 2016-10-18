@@ -3,25 +3,23 @@ const path = require('path')
 const exec = require('child_process').exec
 const replaceStream = require('replacestream')
 const async = require('async')
-const dir = path.join(__dirname, '..', 'private', 'svgs', 'icons')
+const dir = path.join(__dirname, '..', 'svgs', 'icons')
 
-export default createSvgComponents () {
-  async.waterfall([
-    slugify,
-    readSvgDir,
-    replaceText,
-    createComponents,
-    createIndex
-  ], function (err) {
-    if (err) throw err
-  })
-}
+async.waterfall([
+  slugify,
+  readSvgDir,
+  replaceText,
+  createComponents,
+  createIndex
+], function (err) {
+  if (err) throw err
+})
 
 function slugify (next) {
-  exec('for f in *; do mv "$f" "$f.tmp"; mv "$f.tmp" "`echo $f | tr "[:upper:]" "[:lower:]" | tr " " "-"`"; done', {cwd: dir}, next)
+  exec('cd @ && for f in *; do mv "$f" "$f.tmp"; mv "$f.tmp" "`echo $f | tr "[:upper:]" "[:lower:]" | tr " " "-"`"; done'.replace('@', dir), {}, next)
 }
 
-function readSvgDir (std, stderr, next) {
+function readSvgDir (stdout, stderr, next) {
   fs.readdir(dir, function (err, icons) {
     if (err && err.code !== 'ENOENT') throw err
     next(null, icons)
@@ -31,7 +29,7 @@ function readSvgDir (std, stderr, next) {
 function replaceText (icons, next) {
   async.each(icons, function (icon, finish) {
     const readPath = path.join(dir, icon)
-    const writePath = path.join(__dirname, '..', 'imports', 'ui', 'components', 'icons', icon)
+    const writePath = path.join(__dirname, '..', '..', 'imports', 'ui', 'components', 'icons', icon)
 
     const output = fs.createWriteStream(writePath)
     output.on('finish', finish)
@@ -45,8 +43,8 @@ function replaceText (icons, next) {
 
 function createComponents (icons, next) {
   async.each(icons, function (icon, finish) {
-    const readPath = path.join(__dirname, '..', 'imports', 'ui', 'components', 'icons', icon)
-    const writePath = path.join(__dirname, '..', 'imports', 'ui', 'components', 'icons', icon.replace('.svg', '.jsx'))
+    const readPath = path.join(__dirname, '..', '..', 'imports', 'ui', 'components', 'icons', icon)
+    const writePath = path.join(__dirname, '..', '..', 'imports', 'ui', 'components', 'icons', icon.replace('.svg', '.jsx'))
 
     fs.readFile(readPath, (err, svg) => {
       if (err) throw err
@@ -63,7 +61,7 @@ function wrap (icon, svg) {
 }
 
 function createIndex (icons, next) {
-  const writePath = path.join(__dirname, '..', 'imports', 'ui', 'components', 'icons.js')
+  const writePath = path.join(__dirname, '..', '..', 'imports', 'ui', 'components', 'icons.js')
 
   const index = [icons.reduce((imp, icon) => {
     imp += `import ${svgFilenameToReactComponentName(icon)} from './icons/${icon.replace('.svg', '.jsx')}'\n`

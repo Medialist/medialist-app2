@@ -8,6 +8,7 @@
     "lint:fix": "standard --fix",
     "build": "run-s build:*",
     "build:css": "postcss --config ./postcss.config.js --output ./client/bundle.css ./imports/ui/main.css",
+    "build:svg": "node ./private/build/createSvgComponents",
     "watch": "run-p watch:*",
     "watch:css": "nodemon --quiet --watch ./imports/ui --ext css --exec npm run build:css",
     "watch:server": "meteor run --settings settings.json"

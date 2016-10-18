@@ -1,5 +1,3 @@
-import createSvgComponents from './lib/createSvgComponents'
-
 App.medialistUpdated = function (medialistSlug, userId) {
   var user = Meteor.users.findOne(userId)
   if (!user) throw new Meteor.Error('unknown-user', 'Medialist cannot be updated by an unknown user')
@@ -10,7 +8,4 @@ App.medialistUpdated = function (medialistSlug, userId) {
   }})
 }
 
-Meteor.startup(() => {
-  ContactsTask.periodicallyUpdate()
-  createSvgComponents()
-})
+Meteor.startup(() => ContactsTask.periodicallyUpdate())
