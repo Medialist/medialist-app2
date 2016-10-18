@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
+import Arrow from 'rebass/dist/Arrow'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
-import Button from 'rebass/dist/Button'
 
 const UserInfo = React.createClass({
   propTypes: {
@@ -30,7 +30,15 @@ const UserInfo = React.createClass({
 
     return (
       <Dropdown>
-        <Button backgroundColor='transparent' color='black' onClick={this.onNameClick}>{user.profile.name}</Button>
+        <div className='inline-block hover-opacity-trigger' backgroundColor='transparent pointer' color='white' onClick={this.onNameClick}>
+          <div className='inline-block'>
+            <div className='f-xs semibold white'>{user.profile.name}</div>
+            <div className='f-xxs semibold white opacity-40 hover-opacity-50'>{`Organisation name`}</div>
+          </div>
+          <div className='inline-block' style={{ verticalAlign: '5px', padding: '0 0 0 10px' }}>
+            <Arrow direction='down' />
+          </div>
+        </div>
         <DropdownMenu open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
           <div>
             {user.profile.name}

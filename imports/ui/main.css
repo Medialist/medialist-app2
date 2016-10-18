@@ -84,30 +84,37 @@
 .bg-complete { background-color: #35BF77; }
 
 /* ---- Atoms --------------------------------------------------------------- */
-.f1 { font-size:25px }
-.f2 { font-size:18px }
-.f3 { font-size:16px }
-.f4 { font-size:15px }
-.f5 { font-size:14px }
-.f6 { font-size:13px }
-.f7 { font-size:12px }
-.f8 { font-size:11px }
-.f9 { font-size: 9px }
+.f-xxl { font-size:25px }
+.f-xl { font-size:18px }
+.f-lg { font-size:16px }
+.f-md { font-size:15px }
+.f-sm { font-size:14px }
+.f-xs { font-size:13px }
+.f-xxs { font-size:12px }
+.f-xxxs { font-size:11px }
+.f-xxxxs { font-size: 9px }
 
 .semibold { font-weight: semibold; }
 
 .transition { transition: all 0.2s ease-in-out; }
 
+.opacity-50 { opacity:0.5 }
+.opacity-40 { opacity:0.4 }
+.opacity-30 { opacity:0.3 }
+
 /* ---- Interactions -------------------------------------------------------- */
 
-.navbar .navbar-link {
-  opacity: 0.3;
+.hover-opacity-50,
+.hover-opacity-100 {
+  transition: opacity 0.2s ease-in-out;
 }
-.navbar .navbar-link:hover {
+.hover-opacity-50:hover,
+.hover-opacity-trigger:hover .hover-opacity-50 {
   opacity: 0.5;
 }
-.navbar .navbar-link.active,
-.navbar .navbar-link.active:hover {
+.active-opacity-100.active,
+.hover-opacity-100:hover,
+.hover-opacity-trigger:hover .hover-opacity-100 {
   opacity: 1;
 }
 
@@ -119,7 +126,7 @@
 body {
   font-size: 15px;
   font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif;
-  line-height: 1.5;
+  line-height: 1.2;
   margin: 0;
   color: var(--gray20);
   background-color: #F4F6FA;

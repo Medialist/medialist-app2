@@ -3,7 +3,7 @@ import { Link, IndexLink } from 'react-router'
 import NotificationsBell from './notifications-bell'
 import UserInfo from './user-info'
 
-const linkStyle = { height: 62, padding: '20px 25px', color: 'white', display: 'inline-block' }
+const linkStyle = { padding: '20px 25px', color: 'white', display: 'inline-block' }
 
 const NavBar = React.createClass({
   propTypes: {
@@ -12,12 +12,12 @@ const NavBar = React.createClass({
   },
   render () {
     return (
-      <div className='navbar bg-gray10 clearfix'>
+      <div className='navbar bg-gray10 clearfix' style={{height:58}}>
         <nav className='inline-block left'>
-          <IndexLink to='/' style={linkStyle} className='navbar-link white transition xs-hide'>ML</IndexLink>
-          <IndexLink to='/' style={linkStyle} className='navbar-link white transition' activeClassName='active bg-black'>Activity</IndexLink>
-          <Link to='/campaigns' style={linkStyle} className='navbar-link white transition' activeClassName='active bg-black'>Campaigns</Link>
-          <Link to='/contacts' style={linkStyle} className='navbar-link white transition' activeClassName='active bg-black'>Contacts</Link>
+          <IndexLink to='/' style={linkStyle} className='white f5 semibold xs-hide'>ML</IndexLink>
+          <IndexLink to='/' style={linkStyle} className='white f5 semibold opacity-30 hover-opacity-50 active-opacity-100' activeClassName='active bg-black'>Activity</IndexLink>
+          <Link to='/campaigns' style={linkStyle} className='white f5 semibold opacity-30 hover-opacity-50 active-opacity-100' activeClassName='active bg-black'>Campaigns</Link>
+          <Link to='/contacts' style={linkStyle} className='white f5 semibold opacity-30 hover-opacity-50 active-opacity-100' activeClassName='active bg-black'>Contacts</Link>
         </nav>
         <div className='inline-block right xs-hide' style={{padding: '14px 25px 14px 0'}}>
           <UserInfo user={this.props.user} />
