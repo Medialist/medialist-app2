@@ -14,7 +14,6 @@
     "watch:server": "meteor run --settings settings.json"
   },
   "dependencies": {
-    "async": "^2.1.2",
     "meteor-node-stubs": "~0.2.0",
     "npm-run-all": "^3.1.1",
     "react": "^15.3.2",
@@ -26,15 +25,16 @@
     "react-router-redux": "^4.0.6",
     "rebass": "^0.3.3",
     "redux": "^3.6.0",
-    "redux-thunk": "^2.1.0",
-    "replacestream": "^4.0.2"
+    "redux-thunk": "^2.1.0"
   },
   "devDependencies": {
+    "async": "^2.1.2",
     "autoprefixer": "^6.5.1",
     "basscss": "^8.0.2",
     "basscss-responsive-margin": "^1.1.0",
     "basscss-responsive-padding": "^1.1.0",
     "nodemon": "^1.11.0",
+    "replacestream": "^4.0.2",
     "postcss-calc": "^5.3.1",
     "postcss-cli": "^2.6.0",
     "postcss-custom-media": "^5.0.1",
