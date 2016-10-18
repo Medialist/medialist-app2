@@ -15,7 +15,7 @@ const ActivityList = React.createClass({
     if (!items.length) return <p>No items</p>
 
     return (
-      <ul>
+      <ul className='list-reset'>
         {items.map((item) => (
           <li key={item._id}>
             <CircleAvatar avatar={item.createdBy.avatar} name={item.createdBy.name} />
