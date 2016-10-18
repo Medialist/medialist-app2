@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import { Link } from 'react-router'
+import { Link, IndexLink } from 'react-router'
 import NotificationsBell from './notifications-bell'
 import UserInfo from './user-info'
 
@@ -14,8 +14,8 @@ const NavBar = React.createClass({
     return (
       <div className='navbar bg-gray10 clearfix'>
         <nav className='inline-block left'>
-          <Link to='/' style={linkStyle} className='navbar-link white transition xs-hide'>ML</Link>
-          <Link to='/' style={linkStyle} className='navbar-link white transition' activeClassName='active bg-black'>Activity</Link>
+          <IndexLink to='/' style={linkStyle} className='navbar-link white transition xs-hide'>ML</IndexLink>
+          <IndexLink to='/' style={linkStyle} className='navbar-link white transition' activeClassName='active bg-black'>Activity</IndexLink>
           <Link to='/campaigns' style={linkStyle} className='navbar-link white transition' activeClassName='active bg-black'>Campaigns</Link>
           <Link to='/contacts' style={linkStyle} className='navbar-link white transition' activeClassName='active bg-black'>Contacts</Link>
         </nav>
