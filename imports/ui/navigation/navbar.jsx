@@ -19,7 +19,7 @@ const NavBar = React.createClass({
           <Link to='/campaigns' style={linkStyle} className='white f5 semibold opacity-30 hover-opacity-50 active-opacity-100' activeClassName='active bg-black'>Campaigns</Link>
           <Link to='/contacts' style={linkStyle} className='white f5 semibold opacity-30 hover-opacity-50 active-opacity-100' activeClassName='active bg-black'>Contacts</Link>
         </nav>
-        <div className='inline-block right xs-hide' style={{padding: '14px 25px 14px 0'}}>
+        <div className='inline-block right xs-hide'>
           <UserInfo user={this.props.user} />
         </div>
         <div className='inline-block right' style={{padding: '14px 0'}}>
