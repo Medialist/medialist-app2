@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import Arrow from 'rebass/dist/Arrow'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
-import CircleAvatar from './circle-avatar.jsx'
+import { CircleAvatar } from '../images/avatar.jsx'
 
 const UserInfo = React.createClass({
   propTypes: {
@@ -42,7 +42,7 @@ const UserInfo = React.createClass({
         </div>
         <DropdownMenu right style={{ width: 223 }} open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
           <div className='px4 py3'>
-            <CircleAvatar />
+            <CircleAvatar name={user.profile.name} />
             <div className='inline-block align-middle pl2'>
               <div className='f-md semibold gray10'>{user.profile.name}</div>
               <div className='f-xs normal gray20'>{`Organisation name`}</div>

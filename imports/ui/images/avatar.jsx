@@ -5,20 +5,18 @@ const Avatar = React.createClass({
   propTypes: {
     avatar: PropTypes.string,
     name: PropTypes.string,
-    className: PropTypes.string
-  },
-
-  getDefaultProps () {
-    return { className: 'avatar' }
+    className: PropTypes.string,
+    style: PropTypes.object
   },
 
   render () {
     const { avatar, name } = this.props
-    const className = classNames(this.props.className, 'avatar')
+    const className = classNames(this.props.className, 'inline-block circle bg-black white f-md normal align-middle center')
+    const style = Object.assign({ width: 40, height: 40, lineHeight: '40px' }, this.props.style || {})
 
     if (avatar) {
       return (
-        <div className={className}><img src={avatar} alt={name} /></div>
+        <div className={className}><img style={style} src={avatar} alt={name} /></div>
       )
     }
 
@@ -31,11 +29,11 @@ const Avatar = React.createClass({
       }
 
       return (
-        <div className={`${className} initials`}>{initials}</div>
+        <div style={style} className={`${className} initials`}>{initials}</div>
       )
     }
 
-    return <div className={className} />
+    return <div style={style} className={className} />
   }
 })
 
@@ -47,6 +45,6 @@ export const CircleAvatar = (props) => {
 }
 
 export const SquareAvatar = (props) => {
-  props.className = classNames(props.className, 'square')
+  props.className = classNames(props.className, 'rounded')
   return <Avatar {...props} />
 }
