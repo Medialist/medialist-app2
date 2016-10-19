@@ -2,8 +2,11 @@ const fs = require('fs')
 const path = require('path')
 const async = require('async')
 const svgSourceDir = path.join(__dirname, '..', 'svgs', 'icons')
+const targetDir = path.join(__dirname, '..', '..', 'imports', 'ui', 'images', 'icons')
+const mkdirp = require('mkdirp')
 
 async.waterfall([
+  makeTargetDir,
   readSvgDir,
   createIndex,
   extractSvgs,
@@ -12,8 +15,12 @@ async.waterfall([
   if (err) throw err
 })
 
+function makeTargetDir (next) {
+  mkdirp(targetDir, () => next())
+}
+
 function readSvgDir (next) {
-  fs.readdir(svgSourceDir, next)
+  fs.readdir(svgSourceDir, (err, icons) => next(err, icons))
 }
 
 function extractSvgs (icons, next) {
@@ -26,7 +33,7 @@ function extractSvgs (icons, next) {
 
 function createComponents (svgs, next) {
   async.map(svgs, function (svg, finish) {
-    const writePath = path.join(__dirname, '..', '..', 'imports', 'ui', 'images', 'icons', svg.fileName)
+    const writePath = path.join(targetDir, svg.fileName)
     const fileContent = wrap(svg)
     fs.writeFile(writePath, fileContent, finish)
   }, next)
@@ -52,7 +59,7 @@ function toCamalCase (slug) {
 }
 
 function createIndex (icons, next) {
-  const writePath = path.join(__dirname, '..', '..', 'imports', 'ui', 'images', 'icons', 'index.js')
+  const writePath = path.join(targetDir, 'index.js')
   const index = [createListOfImports(icons), createListOfExports(icons)].join('')
   fs.writeFile(writePath, index, (err) => next(err, icons))
 }

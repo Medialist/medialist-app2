@@ -33,14 +33,15 @@
     "basscss": "^8.0.2",
     "basscss-responsive-margin": "^1.1.0",
     "basscss-responsive-padding": "^1.1.0",
+    "mkdirp": "^0.5.1",
     "nodemon": "^1.11.0",
-    "replacestream": "^4.0.2",
     "postcss-calc": "^5.3.1",
     "postcss-cli": "^2.6.0",
     "postcss-custom-media": "^5.0.1",
     "postcss-custom-properties": "^5.0.1",
     "postcss-easy-import": "^1.0.1",
     "postcss-functions": "^2.1.1",
+    "replacestream": "^4.0.2",
     "standard": "^8.4.0"
   },
   "standard": {
