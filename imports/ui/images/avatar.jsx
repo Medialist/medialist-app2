@@ -11,7 +11,7 @@ const Avatar = React.createClass({
 
   render () {
     const { avatar, name } = this.props
-    const className = classNames(this.props.className, 'inline-block circle overflow-hidden bg-black white f-md normal align-middle center')
+    const className = classNames(this.props.className, 'inline-block overflow-hidden bg-black white f-md normal align-middle center')
     const style = Object.assign({ width: 40, height: 40, lineHeight: '40px' }, this.props.style || {})
 
     if (avatar) {
