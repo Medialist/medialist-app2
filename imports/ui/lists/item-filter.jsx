@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
-import Button from 'rebass/dist/Button'
 import classnames from 'classnames'
 
 // A general filtering component for lists
