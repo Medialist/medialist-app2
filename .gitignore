@@ -3,5 +3,4 @@ npm-debug*
 .DS_Store
 client/bundle.css
 settings.json
-imports/ui/components/icons/*
-imports/ui/components/icons.js
+imports/ui/images/icons/*

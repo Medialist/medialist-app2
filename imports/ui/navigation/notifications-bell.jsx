@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
 import Button from 'rebass/dist/Button'
-import { NotificationBell } from '../components/icons'
+import { NotificationBell } from '../images/icons'
 
 const NotificationsBell = React.createClass({
   propTypes: {
