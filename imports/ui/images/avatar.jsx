@@ -31,7 +31,7 @@ const Avatar = React.createClass({
       }
 
       return (
-        <div style={style} className={`${className} initials`}>{initials}</div>
+        <div style={style} className={classNames(className, 'initials')}>{initials}</div>
       )
     }
 
@@ -42,11 +42,11 @@ const Avatar = React.createClass({
 export default Avatar
 
 export const CircleAvatar = (props) => {
-  props.className = classNames(props.className, 'circle')
-  return <Avatar {...props} />
+  const className = classNames(props.className, 'circle')
+  return <Avatar {...props} className={className} />
 }
 
 export const SquareAvatar = (props) => {
-  props.className = classNames(props.className, 'rounded')
-  return <Avatar {...props} />
+  const className = classNames(props.className, 'rounded')
+  return <Avatar {...props} className={className} />
 }
