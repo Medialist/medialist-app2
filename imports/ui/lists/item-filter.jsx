@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
 import Button from 'rebass/dist/Button'
+import classnames from 'classnames'
 
 // A general filtering component for lists
 const ItemFilter = React.createClass({
@@ -35,18 +36,24 @@ const ItemFilter = React.createClass({
     const { filter: CurrentFilter, filters } = this.props
     return (
       <Dropdown>
-        <Button backgroundColor='transparent' color='black' onClick={this.onButtonClick}><CurrentFilter /></Button>
+        <div className='flex pointer fm-sm semibold gray20' onClick={this.onButtonClick}>
+          <div className='flex-none p3'>
+            <CurrentFilter />
+          </div>
+          <hr className='flex-auto' style={{height: 1, margin: '25px 0 0 0'}} />
+        </div>
         <DropdownMenu open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
-          <ul>
+          <nav>
             {filters.map((Filter, i) => {
-              const className = Filter === CurrentFilter ? 'active' : ''
+              const isActive = Filter === CurrentFilter
+              const className = classnames('pointer px3 py2 f-md normal gray20 hover-bg-blue', {active: isActive})
               return (
-                <li onClick={() => this.onFilterClick(Filter, i)} className={className} key={i}>
+                <div onClick={() => this.onFilterClick(Filter, i)} className={className} key={i}>
                   <Filter />
-                </li>
+                </div>
               )
             })}
-          </ul>
+          </nav>
         </DropdownMenu>
       </Dropdown>
     )
