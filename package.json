@@ -38,6 +38,7 @@
     "basscss-responsive-margin": "^1.1.0",
     "basscss-responsive-padding": "^1.1.0",
     "enzyme": "^2.5.1",
+    "faker": "^3.1.0",
     "nodemon": "^1.11.0",
     "postcss-calc": "^5.3.1",
     "postcss-cli": "^2.6.0",
