@@ -5,19 +5,23 @@ import CampaignsTable from './campaigns-table'
 
 const CampaignsPage = React.createClass({
   getInitialState () {
-    return { sort: { updatedAt: -1 } }
+    return { sort: { updatedAt: -1 }, selections: [] }
   },
 
   onSortChange (sort) {
     this.setState({ sort })
   },
 
+  onSelectionsChange (selections) {
+    this.setState({ selections })
+  },
+
   render () {
-    const { onSortChange } = this
+    const { onSortChange, onSelectionsChange } = this
     const { sort } = this.state
 
     return (
-      <CampaignsTableContainer sort={sort} onSortChange={onSortChange} />
+      <CampaignsTableContainer sort={sort} onSortChange={onSortChange} onSelectionsChange={onSelectionsChange} />
     )
   }
 })
