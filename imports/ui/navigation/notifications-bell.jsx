@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
 import Button from 'rebass/dist/Button'
+import { NotificationBell } from '../components/icons'
 
 const NotificationsBell = React.createClass({
   propTypes: {
@@ -32,7 +33,7 @@ const NotificationsBell = React.createClass({
   render () {
     return (
       <Dropdown>
-        <Button backgroundColor='transparent' onClick={this.onBellClick}>🔔</Button>
+        <Button backgroundColor='transparent' onClick={this.onBellClick}><NotificationBell /></Button>
         <DropdownMenu open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
           <div>
             <div>2 unread notifications</div>

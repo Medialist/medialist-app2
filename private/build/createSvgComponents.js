@@ -39,9 +39,10 @@ function createComponents (svgs, next) {
 
 function wrap (svg) {
   const ComponentName = toCamalCase(svg.fileName)
+  const iconName = svg.fileName.replace('.jsx', '')
   return `import React from 'react'
 function setSvg () { return {__html: '${svg.def}'} }
-function ${ComponentName} () { return (<span className="svg-icon" dangerouslySetInnerHTML={setSvg()}></span>) }
+function ${ComponentName} () { return (<span className="svg-icon svg-icon-${iconName}" dangerouslySetInnerHTML={setSvg()}></span>) }
 export default ${ComponentName}\n`
 }
 
