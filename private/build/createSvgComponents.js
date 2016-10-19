@@ -6,82 +6,73 @@ const async = require('async')
 const dir = path.join(__dirname, '..', 'svgs', 'icons')
 
 async.waterfall([
-  slugify,
   readSvgDir,
-  replaceText,
-  createComponents,
-  createIndex
+  createIndex,
+  extractSvgs,
+  createComponents
 ], function (err) {
   if (err) throw err
 })
 
-function slugify (next) {
-  exec('cd @ && for f in *; do mv "$f" "$f.tmp"; mv "$f.tmp" "`echo $f | tr "[:upper:]" "[:lower:]" | tr " " "-"`"; done'.replace('@', dir), {}, next)
-}
-
-function readSvgDir (stdout, stderr, next) {
+function readSvgDir (next) {
   fs.readdir(dir, function (err, icons) {
     if (err && err.code !== 'ENOENT') throw err
     next(null, icons)
   })
 }
 
-function replaceText (icons, next) {
-  async.each(icons, function (icon, finish) {
+function extractSvgs (icons, next) {
+  async.map(icons, function (icon, finish) {
     const readPath = path.join(dir, icon)
-    const writePath = path.join(__dirname, '..', '..', 'imports', 'ui', 'components', 'icons', icon)
-
-    const output = fs.createWriteStream(writePath)
-    output.on('finish', finish)
-
-    fs.createReadStream(readPath)
-      .pipe(replaceStream('fill-rule', 'fillRule'))
-      .pipe(replaceStream('"', "'"))
-      .pipe(output)
-  }, (err) => next(err, icons))
+    const fileName = icon.replace('.svg', '.jsx')
+    fs.readFile(readPath, (err, def) => finish(err, {fileName, def}))
+  }, next)
 }
 
-function createComponents (icons, next) {
-  async.each(icons, function (icon, finish) {
-    const readPath = path.join(__dirname, '..', '..', 'imports', 'ui', 'components', 'icons', icon)
-    const writePath = path.join(__dirname, '..', '..', 'imports', 'ui', 'components', 'icons', icon.replace('.svg', '.jsx'))
-
-    fs.readFile(readPath, (err, svg) => {
-      if (err) throw err
-      const component = wrap(icon, svg)
-      fs.unlink(readPath)
-      fs.writeFile(writePath, component, finish)
-    })
-  }, (err) => next(err, icons))
+function createComponents (svgs, next) {
+  async.map(svgs, function (svg, finish) {
+    const writePath = path.join(__dirname, '..', '..', 'imports', 'ui', 'components', 'icons', svg.fileName)
+    const fileContent = wrap(svg)
+    fs.writeFile(writePath, fileContent, finish)
+  }, next)
 }
 
-function wrap (icon, svg) {
-  const ComponentName = svgFilenameToReactComponentName(icon)
-  return `import React from 'react'\nfunction ${ComponentName} () {\nreturn (${svg})\n}\nexport default ${ComponentName}\n`
+function wrap (svg) {
+  const ComponentName = toCamalCase(svg.fileName)
+  return `import React from 'react'
+function setSvg () { return {__html: '${svg.def}'} }
+function ${ComponentName} () { return (<span className="svg-icon" dangerouslySetInnerHTML={setSvg()}></span>) }
+export default ${ComponentName}\n`
 }
 
-function createIndex (icons, next) {
-  const writePath = path.join(__dirname, '..', '..', 'imports', 'ui', 'components', 'icons.js')
-
-  const index = [icons.reduce((imp, icon) => {
-    imp += `import ${svgFilenameToReactComponentName(icon)} from './icons/${icon.replace('.svg', '.jsx')}'\n`
-    return imp
-  }, ''),
-  icons.reduce((exp, icon, i) => {
-    exp += '  '
-    exp += svgFilenameToReactComponentName(icon)
-    if (i !== icons.length - 1) exp += ',\n'
-    if (i === icons.length - 1) exp += '\n}\n'
-    return exp
-  }, 'export {\n')].join('')
-
-  fs.writeFile(writePath, index, next)
-}
-
-function svgFilenameToReactComponentName (slug) {
+function toCamalCase (slug) {
   return slug
     .split('-')
     .map((iconName) => iconName.charAt(0).toUpperCase() + iconName.slice(1))
     .join('')
     .replace('.svg', '')
+    .replace('.jsx', '')
+}
+
+function createIndex (icons, next) {
+  const writePath = path.join(__dirname, '..', '..', 'imports', 'ui', 'components', 'icons.js')
+  const index = [ createListOfImports(icons), createListOfExports(icons)].join('')
+  fs.writeFile(writePath, index, (err) => next(err, icons))
+}
+
+function createListOfImports (icons) {
+  return icons.reduce((imp, icon) => {
+    imp += `import ${toCamalCase(icon)} from './icons/${icon.replace('.svg', '.jsx')}'\n`
+    return imp
+  }, '')
+}
+
+function createListOfExports (icons) {
+  return icons.reduce((exp, icon, i) => {
+    exp += '  '
+    exp += toCamalCase(icon)
+    if (i !== icons.length - 1) exp += ',\n'
+    if (i === icons.length - 1) exp += '\n}\n'
+    return exp
+  }, 'export {\n')
 }
