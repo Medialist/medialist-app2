@@ -1,7 +1,5 @@
 const fs = require('fs')
 const path = require('path')
-const exec = require('child_process').exec
-const replaceStream = require('replacestream')
 const async = require('async')
 const dir = path.join(__dirname, '..', 'svgs', 'icons')
 
@@ -57,7 +55,7 @@ function toCamalCase (slug) {
 
 function createIndex (icons, next) {
   const writePath = path.join(__dirname, '..', '..', 'imports', 'ui', 'components', 'icons.js')
-  const index = [ createListOfImports(icons), createListOfExports(icons)].join('')
+  const index = [createListOfImports(icons), createListOfExports(icons)].join('')
   fs.writeFile(writePath, index, (err) => next(err, icons))
 }
 
