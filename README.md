@@ -15,7 +15,14 @@ npm run watch
 
 Some [Basscss] plus custom atoms with [postcss] to build it. See `client/main.css`
 
-### font sizing
+### Colours
+
+![Charcoal](https://swatches-lkzftbccpg.now.sh/?color=%2324364C)
+![Royal blue](https://swatches-lkzftbccpg.now.sh/?color=%232B60D5)
+![Ultramarine blue](https://swatches-lkzftbccpg.now.sh/?color=%23437AF4)
+![Bleu de France](https://swatches-lkzftbccpg.now.sh/?color=%234299FF)
+
+### Font sizes
 
 We've got loads of font sizes, and they don't follow a typescale, so `f-xxl` through `f-xxxxs` is used to denote font size. Most of the site is `f-md`, `f-sm` and `f-lg`, while the more extreme sizes occur infrequently so this feel like the most natural way to model it.
 
