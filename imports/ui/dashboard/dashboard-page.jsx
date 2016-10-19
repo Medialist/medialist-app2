@@ -40,7 +40,7 @@ const DashboardPage = React.createClass({
           <RecentCampaignsList campaigns={recentCampaigns} />
           <RecentContactsList contacts={recentContacts} />
         </div>
-        <div className='flex-auto ml4 p2'>
+        <div className='flex-auto ml4 px2'>
           <ItemFilter filter={this.state.activityFilter} filters={ACTIVITY_FILTERS} onChange={this.onFilterChange} />
           <ActivityListContainer filter={this.state.activityFilter} />
         </div>
