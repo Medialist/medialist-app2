@@ -1,8 +1,9 @@
 import React, { PropTypes } from 'react'
 import SortableHeader from '../tables/sortable-header'
-import classnames from 'classnames'
+import SelectableRow from '../tables/selectable-row'
 import FromNow from '../time/from-now'
 import YouOrName from '../users/you-or-name'
+import { SquareAvatar } from '../images/avatar'
 
 const CampaignsTable = React.createClass({
   propTypes: {
@@ -93,20 +94,19 @@ const CampaignsTable = React.createClass({
         </thead>
         <tbody>
           {campaigns.map((campaign) => {
-            const { _id, name, client, purpose, updatedAt, updatedBy } = campaign
-            const active = !!selectionsById[_id]
+            const { _id, name, avatar, client, purpose, updatedAt, updatedBy } = campaign
             return (
-              <tr className={classnames({ active })} key={_id}>
+              <SelectableRow data={campaign} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id}>
                 <td>
-                  <input type='checkbox' checked={active} onChange={() => this.onSelectChange(campaign)} />
+                  <SquareAvatar avatar={avatar} name={name} />
+                  {name}
                 </td>
-                <td>{name}</td>
                 <td>{client.name}</td>
                 <td>{purpose}</td>
                 <td>
                   <FromNow date={updatedAt} /> by <YouOrName user={updatedBy} />
                 </td>
-              </tr>
+              </SelectableRow>
             )
           })}
         </tbody>
