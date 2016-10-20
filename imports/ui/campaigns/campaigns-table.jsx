@@ -46,13 +46,12 @@ const CampaignsTable = React.createClass({
   },
 
   render () {
-    const { sort, onSortChange, campaigns } = this.props
+    const { sort, onSortChange, campaigns, selections } = this.props
 
     if (!campaigns.length) {
       return <p className='p4 mb2 f-xl semibold center'>No campaigns yet</p>
     }
 
-    const { selections } = this.props
     const selectionsById = selections.reduce((memo, selection) => {
       memo[selection._id] = selection
       return memo
