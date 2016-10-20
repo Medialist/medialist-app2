@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import { SortableIcon, SortedAscIcon, SortedDescIcon } from '../images/icons'
 import classnames from 'classnames/dedupe'
 
 const SortableHeader = React.createClass({
@@ -31,7 +32,7 @@ const SortableHeader = React.createClass({
 
     return (
       <th className={this.getClassName()} onClick={this.onClick}>
-        {children}
+        <span className='mr1'>{children}</span>
         <SortIcon direction={sortDirection} />
       </th>
     )
@@ -39,9 +40,9 @@ const SortableHeader = React.createClass({
 })
 
 const SortIcon = ({ direction }) => {
-  if (!direction) return <span>↕</span>
-  if (direction > 0) return <span>⬆</span>
-  if (direction < 0) return <span>⬇</span>
+  if (!direction) return <SortableIcon />
+  if (direction > 0) return <SortedAscIcon />
+  if (direction < 0) return <SortedDescIcon />
 }
 
 export default SortableHeader
