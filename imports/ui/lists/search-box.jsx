@@ -16,7 +16,7 @@ const SearchBox = React.createClass({
 
   onChange (e) {
     this.setState({ term: e.target.value })
-    this.props.onTermChange(this.state.term)
+    this.props.onTermChange(e.target.value)
   },
 
   render () {
