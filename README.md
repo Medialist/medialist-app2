@@ -1,4 +1,4 @@
-# MEDIALIST
+# MEDIALIST [![CircleCI](https://circleci.com/gh/Medialist/medialist-app2.svg?style=svg&circle-token=5cb724706595e5ba9e317dab3184ebfe221ba2ac)](https://circleci.com/gh/Medialist/medialist-app2)
 
 Make your PR team smarter and faster with media lists that capture intelligence, cut admin hours and keep campaigns in sync.
 
@@ -17,18 +17,18 @@ Some [Basscss] plus custom atoms with [postcss] to build it. See `client/main.cs
 
 ### font sizing
 
-We've got loads of font sizes, and they don't follow a typescale, so `f1` through `f9` is used to denote font size.
+We've got loads of font sizes, and they don't follow a typescale, so `f-xxl` through `f-xxxxs` is used to denote font size. Most of the site is `f-md`, `f-sm` and `f-lg`, while the more extreme sizes occur infrequently so this feel like the most natural way to model it.
 
 ```css
-.f1 { font-size:25px }
-.f2 { font-size:18px }
-.f3 { font-size:16px }
-.f4 { font-size:15px }
-.f5 { font-size:14px }
-.f6 { font-size:13px }
-.f7 { font-size:12px }
-.f8 { font-size:11px }
-.f9 { font-size: 9px }
+.f-xxl { font-size:25px }
+.f-xl { font-size:18px }
+.f-lg { font-size:16px }
+.f-md { font-size:15px }
+.f-sm { font-size:14px }
+.f-xs { font-size:13px }
+.f-xxs { font-size:12px }
+.f-xxxs { font-size:11px }
+.f-xxxxs { font-size: 9px }
 ```
 
 ### Spacing

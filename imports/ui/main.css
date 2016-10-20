@@ -19,12 +19,12 @@
 @custom-media --breakpoint-lg (min-width: 64em);
 
 :root {
-  --space-1: 1rem;
-  --space-2: 2rem;
-  --space-3: 3rem;
-  --space-4: 4rem;
+  --space-1: 5px;
+  --space-2: 10px;
+  --space-3: 15px;
+  --space-4: 20px;
   --border-width: 1px;
-  --border-radius: 3px;
+  --border-radius: 2px;
 
   /* --- Medialist Colors ----------------------------------------------------- */
   --black:  #162435;   /* charcoal-dark */
@@ -63,7 +63,7 @@
 .contacted { color: #28B6D7; }
 .not-interested { color: #E41D1D; }
 .hot-lead { color: #FA862C; }
-.complete { color: #35BF77; }
+.completed { color: #35BF77; }
 
 .bg-black { background-color: var(--black) }
 .bg-gray10 { background-color: var(--gray10) }
@@ -72,43 +72,100 @@
 .bg-gray60 { background-color: var(--gray60) }
 .bg-gray80 { background-color: var(--gray80) }
 .bg-gray90 { background-color: var(--gray90) }
-.bg-white { background-color:white;}
+.bg-white { background-color: var(--white) }
 .bg-blue-dark { background-color: var(--blue-dark) }
 .bg-blue { background-color: var(--blue) }
 .bg-blue-light { background-color: var(--blue-light) }
 
 .bg-not-contacted { background-color: var(--gray40) }
-.bg-contacted { background-color: #28B6D7; }
-.bg-not-interested { background-color: #E41D1D; }
-.bg-hot-lead { background-color: #FA862C; }
-.bg-complete { background-color: #35BF77; }
+.bg-contacted { background-color: var(--status-blue) }
+.bg-not-interested { background-color: var(--status-red) }
+.bg-hot-lead { background-color: var(--status-orange) }
+.bg-completed { background-color: var(--status-green) }
+
+.border-gray10 { border-color:var(--gray10) }
+.border-gray80 { border-color:var(--gray80) }
 
 /* ---- Atoms --------------------------------------------------------------- */
-.f1 { font-size:25px }
-.f2 { font-size:18px }
-.f3 { font-size:16px }
-.f4 { font-size:15px }
-.f5 { font-size:14px }
-.f6 { font-size:13px }
-.f7 { font-size:12px }
-.f8 { font-size:11px }
-.f9 { font-size: 9px }
+.f-xxl { font-size:25px }
+.f-xl { font-size:18px }
+.f-lg { font-size:16px }
+.f-md { font-size:15px }
+.f-sm { font-size:14px }
+.f-xs { font-size:13px }
+.f-xxs { font-size:12px }
+.f-xxxs { font-size:11px }
+.f-xxxxs { font-size: 9px }
 
-.semibold { font-weight: semibold; }
+.semibold { font-weight: 600 }
+.normal { font-weight: 400 }
 
-.transition { transition: all 0.2s ease-in-out; }
+.uppercase { text-transform: uppercase }
+
+.opacity-50 { opacity:0.5 }
+.opacity-40 { opacity:0.4 }
+.opacity-30 { opacity:0.3 }
+
+.shadow-1 { box-shadow: 0px 1px 10px 0px rgba(0,0,0,0.20); }
+.shadow-2 { box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.10); }
+
+.max-width-lg { max-width: 1076px; }
+
+.pointer { cursor: pointer; }
+
+.laser {
+  position: relative;
+}
+.laser::before {
+  content:'';
+  display: block;
+  position: absolute;
+  top: .5em;
+  height: 1px;
+  width: 100%;
+  background-color: var(--gray10);
+  opacity: 0.1;
+}
 
 /* ---- Interactions -------------------------------------------------------- */
 
-.navbar .navbar-link {
-  opacity: 0.3;
+.hover-opacity-50,
+.hover-opacity-100 {
+  transition: opacity 0.2s ease-in-out;
 }
-.navbar .navbar-link:hover {
+.hover-opacity-50:hover,
+.hover-opacity-trigger:hover .hover-opacity-50 {
   opacity: 0.5;
 }
-.navbar .navbar-link.active,
-.navbar .navbar-link.active:hover {
+.active-opacity-100.active,
+.hover-opacity-100:hover,
+.hover-opacity-trigger:hover .hover-opacity-100 {
   opacity: 1;
+}
+.hover-bg-blue:hover {
+  color: var(--white);
+  background-color: var(--blue);
+}
+
+/* ---- Rebass overrides ---------------------------------------------------- */
+
+.Menu {
+  border: 0 none !important;
+  box-shadow: 0px 1px 10px 0px rgba(0,0,0,0.20);
+}
+/* triangle pointy thing */
+.Menu::before {
+  content:'';
+  display: inline-block;
+  position: absolute;
+  top: -8px;
+  right: 11px;
+  width: 0;
+  height: 0;
+  border: 8px solid transparent;
+  border-bottom-color:var(--white);
+  border-top: 0 none;
+  border-radius: 2px;
 }
 
 /* ---- Reset --------------------------------------------------------------- */
@@ -119,7 +176,7 @@
 body {
   font-size: 15px;
   font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif;
-  line-height: 1.5;
+  line-height: 1.2;
   margin: 0;
   color: var(--gray20);
   background-color: #F4F6FA;
@@ -145,8 +202,8 @@ p, dl, ol, ul, pre, blockquote {
 }
 
 hr {
-  margin-top: 1.5em;
-  margin-bottom: 1.5em;
+  margin-top: var(--space-1);
+  margin-bottom: var(--space-1);
   border: 0;
   border-bottom-width: 1px;
   border-bottom-style: solid;

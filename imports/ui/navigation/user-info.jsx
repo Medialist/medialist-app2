@@ -1,8 +1,9 @@
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
+import Arrow from 'rebass/dist/Arrow'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
-import Button from 'rebass/dist/Button'
+import { CircleAvatar } from '../images/avatar.jsx'
 
 const UserInfo = React.createClass({
   propTypes: {
@@ -29,21 +30,34 @@ const UserInfo = React.createClass({
     const { user } = this.props
 
     return (
-      <Dropdown>
-        <Button backgroundColor='transparent' color='black' onClick={this.onNameClick}>{user.profile.name}</Button>
-        <DropdownMenu open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
-          <div>
-            {user.profile.name}
-            <hr />
+      <Dropdown style={{padding: '14px 15px 14px 25px', marginRight: 16}}>
+        <div className='inline-block hover-opacity-trigger pointer' onClick={this.onNameClick}>
+          <div className='inline-block'>
+            <div className='f-xs semibold white'>{user.profile.name}</div>
+            <div className='f-xxs semibold white opacity-40 hover-opacity-50'>{`Organisation name`}</div>
           </div>
-          <ul>
-            <li>
-              <Link to='/settings' activeClassName='active' onClick={this.onLinkClick}>Settings</Link>
-            </li>
-            <li>
-              <Link to='/logout' activeClassName='active' onClick={this.onLinkClick}>Logout</Link>
-            </li>
-          </ul>
+          <div className='inline-block' style={{ verticalAlign: '5px', padding: '0 0 0 10px' }}>
+            <Arrow direction='down' />
+          </div>
+        </div>
+        <DropdownMenu right style={{ width: 223 }} open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
+          <div className='px4 py3'>
+            <CircleAvatar name={user.profile.name} />
+            <div className='inline-block align-middle pl2'>
+              <div className='f-md semibold gray10'>{user.profile.name}</div>
+              <div className='f-xs normal gray20'>{`Organisation name`}</div>
+            </div>
+          </div>
+          <nav className='block border-top border-gray80 py1'>
+            <Link to='/settings' className='block px3 py2 f-md normal gray20 hover-bg-blue' activeClassName='active' onClick={this.onLinkClick}>
+              ⚙
+              <span className='ml2'>Settings</span>
+            </Link>
+            <Link to='/logout' className='block px3 py2 f-md normal gray20 hover-bg-blue' activeClassName='active' onClick={this.onLinkClick}>
+              🚪
+              <span className='ml2'>Logout</span>
+            </Link>
+          </nav>
         </DropdownMenu>
       </Dropdown>
     )
