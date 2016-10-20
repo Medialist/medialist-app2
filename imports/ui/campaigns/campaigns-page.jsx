@@ -27,7 +27,7 @@ const CampaignsPage = React.createClass({
 
     return (
       <div className='bg-white shadow-2 m4'>
-        <div className='p4 flex items-baseline'>
+        <div className='p4 flex items-center'>
           <div className='flex-auto'>
             <SearchBox onTermChange={this.onTermChange} placeholder='Search campaigns...' />
           </div>
