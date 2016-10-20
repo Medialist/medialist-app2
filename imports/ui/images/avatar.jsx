@@ -9,15 +9,24 @@ const Avatar = React.createClass({
     style: PropTypes.object
   },
 
+  getInitialState () {
+    return { imageLoadError: false }
+  },
+
+  onError () {
+    this.setState({ imageLoadError: true })
+  },
+
   render () {
+    const { imageLoadError } = this.state
     const { avatar, name } = this.props
     const className = classNames(this.props.className, 'inline-block overflow-hidden bg-black white f-md normal align-middle center')
     const style = Object.assign({ width: 40, height: 40, lineHeight: '40px' }, this.props.style || {})
 
-    if (avatar) {
+    if (avatar && !imageLoadError) {
       return (
         <div className={className} style={style}>
-          <img style={{width: '100%', height: '100%'}} src={avatar} alt={name} />
+          <img style={{width: '100%', height: '100%'}} src={avatar} alt={name} onError={this.onError} />
         </div>
       )
     }
