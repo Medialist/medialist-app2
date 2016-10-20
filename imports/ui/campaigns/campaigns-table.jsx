@@ -107,7 +107,8 @@ const CampaignsTable = React.createClass({
                 <td className='left-align'>{client.name}</td>
                 <td className='left-align'>{purpose}</td>
                 <td className='left-align'>
-                  <FromNow date={updatedAt} /> by <YouOrName user={updatedBy} />
+                  <span className='semibold'><FromNow date={updatedAt} /></span>
+                  <span> by <YouOrName user={updatedBy} /></span>
                 </td>
               </SelectableRow>
             )

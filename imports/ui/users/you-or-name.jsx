@@ -7,5 +7,5 @@ export default ({ currentUser, user }) => {
   } else {
     name = user.name
   }
-  return <span className='semibold'>{name || 'Unknown'}</span>
+  return <span>{name || 'Unknown'}</span>
 }

@@ -12,7 +12,7 @@ const NavBar = React.createClass({
   },
   render () {
     return (
-      <div className='navbar bg-gray10 clearfix' style={{height: 58, marginBottom: 25}}>
+      <div className='navbar bg-gray10 clearfix' style={{height: 58}}>
         <nav className='inline-block left'>
           <IndexLink to='/' style={linkStyle} className='white f5 semibold xs-hide'>ML</IndexLink>
           <IndexLink to='/' style={linkStyle} className='white f5 semibold opacity-30 hover-opacity-50 active-opacity-100' activeClassName='active bg-black'>Activity</IndexLink>
