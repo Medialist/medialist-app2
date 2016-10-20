@@ -2,10 +2,11 @@ import React from 'react'
 import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
 import CampaignsTable from './campaigns-table'
+import SearchBox from '../lists/search-box'
 
 const CampaignsPage = React.createClass({
   getInitialState () {
-    return { sort: { updatedAt: -1 }, selections: [] }
+    return { sort: { updatedAt: -1 }, selections: [], term: '' }
   },
 
   onSortChange (sort) {
@@ -16,20 +17,54 @@ const CampaignsPage = React.createClass({
     this.setState({ selections })
   },
 
+  onTermChange (term) {
+    this.setState({ term })
+  },
+
   render () {
     const { onSortChange, onSelectionsChange } = this
-    const { sort } = this.state
+    const { sort, term } = this.state
 
     return (
-      <CampaignsTableContainer sort={sort} onSortChange={onSortChange} onSelectionsChange={onSelectionsChange} />
+      <div>
+        <div>
+          <SearchBox onTermChange={this.onTermChange} placeholder='Search campaigns...' />
+          <CampaignsTotalContainer />
+        </div>
+        <CampaignsTableContainer
+          sort={sort}
+          term={term}
+          onSortChange={onSortChange}
+          onSelectionsChange={onSelectionsChange} />
+      </div>
     )
   }
 })
 
+const CampaignsTotal = ({ total }) => (
+  <div>{total} campaign{total === 1 ? '' : 's'} total</div>
+)
+
 const CampaignsTableContainer = createContainer((props) => {
   Meteor.subscribe('medialists')
-  const campaigns = window.Medialists.find({}, { sort: props.sort }).fetch()
+
+  const query = {}
+
+  if (props.term) {
+    const filterRegExp = new RegExp(props.term, 'gi')
+    query.$or = [
+      { name: filterRegExp },
+      { purpose: filterRegExp },
+      { 'client.name': filterRegExp }
+    ]
+  }
+
+  const campaigns = window.Medialists.find(query, { sort: props.sort }).fetch()
   return { ...props, campaigns }
 }, CampaignsTable)
+
+const CampaignsTotalContainer = createContainer((props) => {
+  return { ...props, total: window.Medialists.find({}).count() }
+}, CampaignsTotal)
 
 export default CampaignsPage
