@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
 import CampaignsTable from './campaigns-table'
 import SearchBox from '../lists/search-box'
+import CampaignsActionsToast from './campaigns-actions-toast'
 
 const CampaignsPage = React.createClass({
   getInitialState () {
@@ -21,25 +22,40 @@ const CampaignsPage = React.createClass({
     this.setState({ term })
   },
 
+  onDeselectAllClick () {
+    this.setState({ selections: [] })
+  },
+
   render () {
     const { onSortChange, onSelectionsChange } = this
-    const { sort, term } = this.state
+    const { sort, term, selections } = this.state
 
     return (
-      <div className='bg-white shadow-2 m4'>
-        <div className='p4 flex items-center'>
-          <div className='flex-auto'>
-            <SearchBox onTermChange={this.onTermChange} placeholder='Search campaigns...' />
+      <div>
+        <div className='bg-white shadow-2 m4'>
+          <div className='p4 flex items-center'>
+            <div className='flex-auto'>
+              <SearchBox onTermChange={this.onTermChange} placeholder='Search campaigns...' />
+            </div>
+            <div className='flex-none pl4 f-xs'>
+              <CampaignsTotalContainer />
+            </div>
           </div>
-          <div className='flex-none pl4 f-xs'>
-            <CampaignsTotalContainer />
-          </div>
+          <CampaignsTableContainer
+            sort={sort}
+            term={term}
+            selections={selections}
+            onSortChange={onSortChange}
+            onSelectionsChange={onSelectionsChange} />
         </div>
-        <CampaignsTableContainer
-          sort={sort}
-          term={term}
-          onSortChange={onSortChange}
-          onSelectionsChange={onSelectionsChange} />
+        <CampaignsActionsToast
+          campaigns={selections}
+          onViewClick={() => console.log('TODO: view selection')}
+          onSectorClick={() => console.log('TODO: add/edit sectors')}
+          onFavouriteClick={() => console.log('TODO: toggle favourite')}
+          onTagClick={() => console.log('TODO: add/edit tags')}
+          onDeleteClick={() => console.log('TODO: delete campaign(s)')}
+          onDeselectAllClick={this.onDeselectAllClick} />
       </div>
     )
   }

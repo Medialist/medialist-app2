@@ -13,36 +13,33 @@ const CampaignsTable = React.createClass({
     onSortChange: PropTypes.func,
     // Data rows to render in the table
     campaigns: PropTypes.array,
+    // Selected campaigns in the table
+    selections: PropTypes.array,
     // Callback when selection(s) change
     onSelectionsChange: PropTypes.func
-  },
-
-  getInitialState () {
-    return { selections: [] }
   },
 
   onSelectAllChange () {
     let selections
 
-    if (this.state.selections.length === this.props.campaigns.length) {
+    if (this.props.selections.length === this.props.campaigns.length) {
       selections = []
     } else {
       selections = this.props.campaigns.slice()
     }
 
-    this.setState({ selections })
     this.props.onSelectionsChange(selections)
   },
 
   onSelectChange (campaign) {
-    const { selections } = this.state
+    let { selections } = this.props
     const index = selections.findIndex((c) => c._id === campaign._id)
 
     if (index === -1) {
-      this.setState({ selections: selections.concat([campaign]) })
+      selections = selections.concat([campaign])
     } else {
       selections.splice(index, 1)
-      this.setState({ selections })
+      selections = Array.from(selections)
     }
 
     this.props.onSelectionsChange(selections)
@@ -55,7 +52,7 @@ const CampaignsTable = React.createClass({
       return <p className='p4 mb2 f-xl semibold center'>No campaigns yet</p>
     }
 
-    const { selections } = this.state
+    const { selections } = this.props
     const selectionsById = selections.reduce((memo, selection) => {
       memo[selection._id] = selection
       return memo
