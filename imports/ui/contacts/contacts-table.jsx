@@ -4,6 +4,7 @@ import SelectableRow from '../tables/selectable-row'
 import FromNow from '../time/from-now'
 import YouOrName from '../users/you-or-name'
 import { CircleAvatar } from '../images/avatar'
+import isSameItems from '../lists/is-same-items'
 
 const ContactsTable = React.createClass({
   propTypes: {
@@ -22,7 +23,7 @@ const ContactsTable = React.createClass({
   onSelectAllChange () {
     let selections
 
-    if (this.props.selections.length === this.props.contacts.length) {
+    if (isSameItems(this.props.selections, this.props.contacts)) {
       selections = []
     } else {
       selections = this.props.contacts.slice()
@@ -64,26 +65,30 @@ const ContactsTable = React.createClass({
             <th className='center' style={{width: 55}}>
               <input
                 type='checkbox'
-                checked={selections.length === contacts.length}
+                checked={isSameItems(selections, contacts)}
                 onChange={this.onSelectAllChange} />
             </th>
             <SortableHeader
-              key='name'
               className='left-align'
               sortDirection={sort['name']}
               onSortChange={(d) => onSortChange({ name: d })}>
               Name
             </SortableHeader>
             <SortableHeader
-              key='client.name'
               className='left-align'
-              sortDirection={sort['client.name']}
-              onSortChange={(d) => onSortChange({ 'client.name': d })}>
-              Client
+              sortDirection={sort['jobTitles']}
+              onSortChange={(d) => onSortChange({ 'jobTitles': d })}>
+              Title
             </SortableHeader>
-            <th className='left-align' key='purpose'>Key Message</th>
             <SortableHeader
-              key='updatedAt'
+              className='left-align'
+              sortDirection={sort['primaryOutlets']}
+              onSortChange={(d) => onSortChange({ 'primaryOutlets': d })}>
+              Media Outlet
+            </SortableHeader>
+            <th className='left-align'>Email</th>
+            <th className='left-align'>Phone</th>
+            <SortableHeader
               className='left-align'
               sortDirection={sort['updatedAt']}
               onSortChange={(d) => onSortChange({ updatedAt: d })}>
@@ -97,10 +102,10 @@ const ContactsTable = React.createClass({
               _id,
               name,
               avatar,
-              jobTitle,
-              mediaOutlets,
-              email,
-              phone,
+              jobTitles,
+              primaryOutlets,
+              emails,
+              phones,
               updatedAt,
               updatedBy
             } = contact
@@ -111,8 +116,14 @@ const ContactsTable = React.createClass({
                   <CircleAvatar avatar={avatar} name={name} />
                   <span className='ml3 semibold'>{name}</span>
                 </td>
-                <td className='left-align'>{jobTitle}</td>
-                <td className='left-align'>{purpose}</td>
+                <td className='left-align'>{jobTitles}</td>
+                <td className='left-align'>{primaryOutlets}</td>
+                <td className='left-align'>
+                  <DisplayEmail emails={emails} />
+                </td>
+                <td className='left-align'>
+                  <DisplayPhone phones={phones} />
+                </td>
                 <td className='left-align'>
                   <FromNow date={updatedAt} /> by <YouOrName user={updatedBy} />
                 </td>
@@ -124,5 +135,15 @@ const ContactsTable = React.createClass({
     )
   }
 })
+
+const DisplayEmail = ({ emails }) => {
+  if (!emails || !emails.length) return null
+  return <a href={`mailto:${emails[0].value}`}>{emails[0].value}</a>
+}
+
+const DisplayPhone = ({ phones }) => {
+  if (!phones || !phones.length) return null
+  return <a href={`tel:${phones[0].value}`}>{phones[0].value}</a>
+}
 
 export default ContactsTable

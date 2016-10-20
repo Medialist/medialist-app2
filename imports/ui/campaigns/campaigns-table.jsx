@@ -4,6 +4,7 @@ import SelectableRow from '../tables/selectable-row'
 import FromNow from '../time/from-now'
 import YouOrName from '../users/you-or-name'
 import { SquareAvatar } from '../images/avatar'
+import isSameItems from '../lists/is-same-items'
 
 const CampaignsTable = React.createClass({
   propTypes: {
@@ -22,7 +23,7 @@ const CampaignsTable = React.createClass({
   onSelectAllChange () {
     let selections
 
-    if (this.props.selections.length === this.props.campaigns.length) {
+    if (isSameItems(this.props.selections, this.props.campaigns)) {
       selections = []
     } else {
       selections = this.props.campaigns.slice()
@@ -64,26 +65,23 @@ const CampaignsTable = React.createClass({
             <th className='center' style={{width: 55}}>
               <input
                 type='checkbox'
-                checked={selections.length === campaigns.length}
+                checked={isSameItems(selections, campaigns)}
                 onChange={this.onSelectAllChange} />
             </th>
             <SortableHeader
-              key='name'
               className='left-align'
               sortDirection={sort['name']}
               onSortChange={(d) => onSortChange({ name: d })}>
               Name
             </SortableHeader>
             <SortableHeader
-              key='client.name'
               className='left-align'
               sortDirection={sort['client.name']}
               onSortChange={(d) => onSortChange({ 'client.name': d })}>
               Client
             </SortableHeader>
-            <th className='left-align' key='purpose'>Key Message</th>
+            <th className='left-align'>Key Message</th>
             <SortableHeader
-              key='updatedAt'
               className='left-align'
               sortDirection={sort['updatedAt']}
               onSortChange={(d) => onSortChange({ updatedAt: d })}>

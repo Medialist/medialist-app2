@@ -33,7 +33,7 @@ const ContactsPage = React.createClass({
     return (
       <div>
         <div className='bg-white shadow-2 m4'>
-          <div className='p4 flex items-baseline'>
+          <div className='p4 flex items-center'>
             <div className='flex-auto'>
               <SearchBox onTermChange={this.onTermChange} placeholder='Search contacts...' />
             </div>
@@ -50,7 +50,7 @@ const ContactsPage = React.createClass({
         </div>
         <ContactsActionsToast
           contacts={selections}
-          onViewClick={() => console.log('TODO: view selection')}
+          onCampaignClick={() => console.log('TODO: add contacts to campaign')}
           onSectorClick={() => console.log('TODO: add/edit sectors')}
           onFavouriteClick={() => console.log('TODO: toggle favourite')}
           onTagClick={() => console.log('TODO: add/edit tags')}
