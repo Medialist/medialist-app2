@@ -62,10 +62,10 @@ const CampaignsTable = React.createClass({
     }, {})
 
     return (
-      <table>
+      <table className='table'>
         <thead>
-          <tr>
-            <th>
+          <tr className='bg-gray90'>
+            <th className='center' style={{width: 55}}>
               <input
                 type='checkbox'
                 checked={selections.length === campaigns.length}
@@ -73,19 +73,22 @@ const CampaignsTable = React.createClass({
             </th>
             <SortableHeader
               key='name'
+              className='left-align'
               sortDirection={sort['name']}
               onSortChange={(d) => onSortChange({ name: d })}>
               Name
             </SortableHeader>
             <SortableHeader
               key='client.name'
+              className='left-align'
               sortDirection={sort['client.name']}
               onSortChange={(d) => onSortChange({ 'client.name': d })}>
               Client
             </SortableHeader>
-            <th key='purpose'>Key Message</th>
+            <th className='left-align' key='purpose'>Key Message</th>
             <SortableHeader
               key='updatedAt'
+              className='left-align'
               sortDirection={sort['updatedAt']}
               onSortChange={(d) => onSortChange({ updatedAt: d })}>
               Updated
@@ -97,13 +100,13 @@ const CampaignsTable = React.createClass({
             const { _id, name, avatar, client, purpose, updatedAt, updatedBy } = campaign
             return (
               <SelectableRow data={campaign} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id}>
-                <td>
+                <td className='left-align'>
                   <SquareAvatar avatar={avatar} name={name} />
-                  {name}
+                  <span className='ml3 semibold'>{name}</span>
                 </td>
-                <td>{client.name}</td>
-                <td>{purpose}</td>
-                <td>
+                <td className='left-align'>{client.name}</td>
+                <td className='left-align'>{purpose}</td>
+                <td className='left-align'>
                   <FromNow date={updatedAt} /> by <YouOrName user={updatedBy} />
                 </td>
               </SelectableRow>

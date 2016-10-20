@@ -26,10 +26,14 @@ const CampaignsPage = React.createClass({
     const { sort, term } = this.state
 
     return (
-      <div>
-        <div>
-          <SearchBox onTermChange={this.onTermChange} placeholder='Search campaigns...' />
-          <CampaignsTotalContainer />
+      <div className='bg-white shadow-2 m4'>
+        <div className='p4 flex items-baseline'>
+          <div className='flex-auto'>
+            <SearchBox onTermChange={this.onTermChange} placeholder='Search campaigns...' />
+          </div>
+          <div className='flex-none pl4 f-xs'>
+            <CampaignsTotalContainer />
+          </div>
         </div>
         <CampaignsTableContainer
           sort={sort}

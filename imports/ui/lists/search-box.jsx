@@ -21,13 +21,12 @@ const SearchBox = React.createClass({
 
   render () {
     return (
-      <div>
-        <input
-          type='search'
-          onChange={this.onChange}
-          value={this.state.term}
-          placeholder={this.props.placeholder} />
-      </div>
+      <input
+        type='search'
+        className='input mb0'
+        onChange={this.onChange}
+        value={this.state.term}
+        placeholder={this.props.placeholder} />
     )
   }
 })
