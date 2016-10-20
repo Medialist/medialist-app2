@@ -69,7 +69,7 @@ const CampaignsTable = React.createClass({
         <table className='table'>
           <thead>
             <tr className='bg-gray90'>
-              <th className='center' style={{width:55}}>
+              <th className='center' style={{width: 55}}>
                 <input
                   type='checkbox'
                   checked={selections.length === campaigns.length}
