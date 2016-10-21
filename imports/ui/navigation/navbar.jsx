@@ -4,7 +4,7 @@ import NotificationsBell from './notifications-bell'
 import UserInfo from './user-info'
 import { Logo, MenuActivityIcon, MenuCampaignIcon, MenuContactIcon } from '../images/icons'
 
-const linkStyle = { padding: '20px 25px 19px', display: 'inline-block', verticalAlign: 'top' }
+const linkStyle = { padding: '19px 25px 18px', display: 'inline-block', verticalAlign: 'top' }
 
 const NavBar = React.createClass({
   propTypes: {
