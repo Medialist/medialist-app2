@@ -35,7 +35,7 @@ const DashboardPage = React.createClass({
     const { recentCampaigns, recentContacts } = this.props
 
     return (
-      <div className='flex max-width-lg mx-auto'>
+      <div className='flex max-width-lg mx-auto my4'>
         <div className='flex-none mr4 xs-hide sm-hide' style={{width: 250}}>
           <RecentCampaignsList campaigns={recentCampaigns} />
           <RecentContactsList contacts={recentContacts} />

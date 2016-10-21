@@ -3,11 +3,12 @@ import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
 import CampaignsTable from './campaigns-table'
 import SearchBox from '../lists/search-box'
+import SectorSelector from './sector-selector.jsx'
 import CampaignsActionsToast from './campaigns-actions-toast'
 
 const CampaignsPage = React.createClass({
   getInitialState () {
-    return { sort: { updatedAt: -1 }, selections: [], term: '' }
+    return { sort: { updatedAt: -1 }, selections: [], term: '', selectedSector: null }
   },
 
   onSortChange (sort) {
@@ -22,16 +23,21 @@ const CampaignsPage = React.createClass({
     this.setState({ term })
   },
 
+  onSectorChange (selectedSector) {
+    this.setState({ selectedSector })
+  },
+
   onDeselectAllClick () {
     this.setState({ selections: [] })
   },
 
   render () {
-    const { onSortChange, onSelectionsChange } = this
-    const { sort, term, selections } = this.state
+    const { onSortChange, onSelectionsChange, onSectorChange } = this
+    const { sort, term, selections, selectedSector } = this.state
 
     return (
       <div>
+        <SectorSelectorContainer selected={selectedSector} onSectorChange={onSectorChange} />
         <div className='bg-white shadow-2 m4'>
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
@@ -47,15 +53,15 @@ const CampaignsPage = React.createClass({
             selections={selections}
             onSortChange={onSortChange}
             onSelectionsChange={onSelectionsChange} />
+          <CampaignsActionsToast
+            campaigns={selections}
+            onViewClick={() => console.log('TODO: view selection')}
+            onSectorClick={() => console.log('TODO: add/edit sectors')}
+            onFavouriteClick={() => console.log('TODO: toggle favourite')}
+            onTagClick={() => console.log('TODO: add/edit tags')}
+            onDeleteClick={() => console.log('TODO: delete campaign(s)')}
+            onDeselectAllClick={this.onDeselectAllClick} />
         </div>
-        <CampaignsActionsToast
-          campaigns={selections}
-          onViewClick={() => console.log('TODO: view selection')}
-          onSectorClick={() => console.log('TODO: add/edit sectors')}
-          onFavouriteClick={() => console.log('TODO: toggle favourite')}
-          onTagClick={() => console.log('TODO: add/edit tags')}
-          onDeleteClick={() => console.log('TODO: delete campaign(s)')}
-          onDeselectAllClick={this.onDeselectAllClick} />
       </div>
     )
   }
@@ -86,5 +92,21 @@ const CampaignsTableContainer = createContainer((props) => {
 const CampaignsTotalContainer = createContainer((props) => {
   return { ...props, total: window.Medialists.find({}).count() }
 }, CampaignsTotal)
+
+const SectorSelectorContainer = createContainer((props) => {
+  // TODO: wire in sectors
+  const items = [
+    { _id: 0, name: 'All', count: 10 },
+    { _id: 1, name: 'My campaigns', count: 5 },
+    { _id: 2, name: 'Corporate', count: 97 },
+    { _id: 3, name: 'Energy', count: 18 },
+    { _id: 4, name: 'Consumer', count: 120 },
+    { _id: 5, name: 'Healthcare', count: 55 },
+    { _id: 6, name: 'Public Affairs', count: 37 },
+    { _id: 7, name: 'Technology', count: 201 }
+
+  ]
+  return { ...props, items, selected: props.selected || items[0] }
+}, SectorSelector)
 
 export default CampaignsPage
