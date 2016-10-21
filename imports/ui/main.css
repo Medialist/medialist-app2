@@ -40,6 +40,9 @@
   --blue: #437AF4;       /* ultramarine-blue */
   --blue-light: #4299FF; /* bleu-de-france */
 
+  --orange: #FA862C;
+  --orange-light: #FFFAEC;
+
   --status-blue: #28B6D7;
   --status-red: #E41D1D;
   --status-orange: #FA862C;
@@ -54,6 +57,7 @@
 .gray80 { color: var(--gray80) }
 .gray90 { color: var(--gray90) }
 .white { color:var(--white) }
+.orange { color:var(--orange) }
 
 .blue-dark { color: var(--blue-dark) }
 .blue { color: var(--blue) }
@@ -76,6 +80,8 @@
 .bg-blue-dark { background-color: var(--blue-dark) }
 .bg-blue { background-color: var(--blue) }
 .bg-blue-light { background-color: var(--blue-light) }
+.bg-orange { background-color: var(--orange) }
+.bg-orange-light { background-color: var(--orange-light) }
 
 .bg-not-contacted { background-color: var(--gray40) }
 .bg-contacted { background-color: var(--status-blue) }

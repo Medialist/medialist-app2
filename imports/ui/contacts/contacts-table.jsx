@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import { Link } from 'react-router'
 import SortableHeader from '../tables/sortable-header'
 import SelectableRow from '../tables/selectable-row'
 import FromNow from '../time/from-now'
@@ -102,6 +103,7 @@ const ContactsTable = React.createClass({
               _id,
               name,
               avatar,
+              slug,
               jobTitles,
               primaryOutlets,
               emails,
@@ -113,8 +115,10 @@ const ContactsTable = React.createClass({
             return (
               <SelectableRow data={contact} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id}>
                 <td className='left-align'>
-                  <CircleAvatar avatar={avatar} name={name} />
-                  <span className='ml3 semibold'>{name}</span>
+                  <Link to={`/contact/${slug}`}>
+                    <CircleAvatar avatar={avatar} name={name} />
+                    <span className='ml3 semibold'>{name}</span>
+                  </Link>
                 </td>
                 <td className='left-align'>{jobTitles}</td>
                 <td className='left-align'>{primaryOutlets}</td>
