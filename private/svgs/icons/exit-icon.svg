@@ -1,0 +1,16 @@
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+      <path d="M4.73776722,11.8360095 C4.33030964,12.2027213 4,12.0536886 4,11.5024554 L4,4.49754465 C4,3.94661595 4.32806396,3.79525757 4.73776722,4.1639905 L8.26223278,7.3360095 C8.66969036,7.70272133 8.67193604,8.29525757 8.26223278,8.6639905 L4.73776722,11.8360095 Z" id="path-1"></path>
+      <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="-2" y="-2" width="9" height="13">
+          <rect x="2" y="1.5" width="9" height="13" fill="white"></rect>
+          <use xlink:href="#path-1" fill="black"></use>
+      </mask>
+  </defs>
+  <rect fill="#FFFFFF" opacity="0" x="0" y="0" width="16" height="16"></rect>
+  <rect fill="#BFC8D7" x="5" y="2" width="9" height="12" rx="1"></rect>
+  <g>
+      <use fill="#BFC8D7" fill-rule="evenodd" xlink:href="#path-1"></use>
+      <use stroke="#FFFFFF" mask="url(#mask-2)" stroke-width="4" xlink:href="#path-1"></use>
+  </g>
+  <rect fill="#BFC8D7" x="1" y="6" width="4" height="4"></rect>
+</svg>
