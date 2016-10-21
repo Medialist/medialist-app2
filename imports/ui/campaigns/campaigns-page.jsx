@@ -4,6 +4,7 @@ import { createContainer } from 'meteor/react-meteor-data'
 import CampaignsTable from './campaigns-table'
 import SearchBox from '../lists/search-box'
 import SectorSelector from './sector-selector.jsx'
+import CampaignsActionsToast from './campaigns-actions-toast'
 
 const CampaignsPage = React.createClass({
   getInitialState () {
@@ -26,9 +27,13 @@ const CampaignsPage = React.createClass({
     this.setState({ selectedSector })
   },
 
+  onDeselectAllClick () {
+    this.setState({ selections: [] })
+  },
+
   render () {
     const { onSortChange, onSelectionsChange, onSectorChange } = this
-    const { sort, term, selectedSector } = this.state
+    const { sort, term, selections, selectedSector } = this.state
 
     return (
       <div>
@@ -45,8 +50,17 @@ const CampaignsPage = React.createClass({
           <CampaignsTableContainer
             sort={sort}
             term={term}
+            selections={selections}
             onSortChange={onSortChange}
             onSelectionsChange={onSelectionsChange} />
+          <CampaignsActionsToast
+            campaigns={selections}
+            onViewClick={() => console.log('TODO: view selection')}
+            onSectorClick={() => console.log('TODO: add/edit sectors')}
+            onFavouriteClick={() => console.log('TODO: toggle favourite')}
+            onTagClick={() => console.log('TODO: add/edit tags')}
+            onDeleteClick={() => console.log('TODO: delete campaign(s)')}
+            onDeselectAllClick={this.onDeselectAllClick} />
         </div>
       </div>
     )

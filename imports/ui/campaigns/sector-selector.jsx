@@ -12,7 +12,6 @@ const SectorSelector = React.createClass({
   },
 
   onClick (item) {
-    console.log('onClick', item)
     this.props.onSectorChange(item)
   },
 

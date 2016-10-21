@@ -4,6 +4,7 @@ import SelectableRow from '../tables/selectable-row'
 import FromNow from '../time/from-now'
 import YouOrName from '../users/you-or-name'
 import { SquareAvatar } from '../images/avatar'
+import isSameItems from '../lists/is-same-items'
 
 const CampaignsTable = React.createClass({
   propTypes: {
@@ -13,49 +14,45 @@ const CampaignsTable = React.createClass({
     onSortChange: PropTypes.func,
     // Data rows to render in the table
     campaigns: PropTypes.array,
+    // Selected campaigns in the table
+    selections: PropTypes.array,
     // Callback when selection(s) change
     onSelectionsChange: PropTypes.func
-  },
-
-  getInitialState () {
-    return { selections: [] }
   },
 
   onSelectAllChange () {
     let selections
 
-    if (this.state.selections.length === this.props.campaigns.length) {
+    if (isSameItems(this.props.selections, this.props.campaigns)) {
       selections = []
     } else {
       selections = this.props.campaigns.slice()
     }
 
-    this.setState({ selections })
     this.props.onSelectionsChange(selections)
   },
 
   onSelectChange (campaign) {
-    const { selections } = this.state
+    let { selections } = this.props
     const index = selections.findIndex((c) => c._id === campaign._id)
 
     if (index === -1) {
-      this.setState({ selections: selections.concat([campaign]) })
+      selections = selections.concat([campaign])
     } else {
       selections.splice(index, 1)
-      this.setState({ selections })
+      selections = Array.from(selections)
     }
 
     this.props.onSelectionsChange(selections)
   },
 
   render () {
-    const { sort, onSortChange, campaigns } = this.props
+    const { sort, onSortChange, campaigns, selections } = this.props
 
     if (!campaigns.length) {
       return <p className='p4 mb2 f-xl semibold center'>No campaigns yet</p>
     }
 
-    const { selections } = this.state
     const selectionsById = selections.reduce((memo, selection) => {
       memo[selection._id] = selection
       return memo
@@ -68,26 +65,23 @@ const CampaignsTable = React.createClass({
             <th className='center' style={{width: 55}}>
               <input
                 type='checkbox'
-                checked={selections.length === campaigns.length}
+                checked={isSameItems(selections, campaigns)}
                 onChange={this.onSelectAllChange} />
             </th>
             <SortableHeader
-              key='name'
               className='left-align'
               sortDirection={sort['name']}
               onSortChange={(d) => onSortChange({ name: d })}>
               Name
             </SortableHeader>
             <SortableHeader
-              key='client.name'
               className='left-align'
               sortDirection={sort['client.name']}
               onSortChange={(d) => onSortChange({ 'client.name': d })}>
               Client
             </SortableHeader>
-            <th className='left-align' key='purpose'>Key Message</th>
+            <th className='left-align'>Key Message</th>
             <SortableHeader
-              key='updatedAt'
               className='left-align'
               sortDirection={sort['updatedAt']}
               onSortChange={(d) => onSortChange({ updatedAt: d })}>
