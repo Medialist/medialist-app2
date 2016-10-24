@@ -39,6 +39,7 @@
   --blue-dark: #2B60D5;  /* royal-blue */
   --blue: #437AF4;       /* ultramarine-blue */
   --blue-light: #4299FF; /* bleu-de-france */
+  --blue-lighter: #eaf1ff; /* notification-blue */
 
   --status-blue: #28B6D7;
   --status-red: #E41D1D;
@@ -58,6 +59,7 @@
 .blue-dark { color: var(--blue-dark) }
 .blue { color: var(--blue) }
 .blue-light { color: var(--blue-light) }
+.blue-lighter { color: var(--blue-lighter) }
 
 .not-contacted { color: var(--gray40) }
 .contacted { color: #28B6D7; }
@@ -76,6 +78,7 @@
 .bg-blue-dark { background-color: var(--blue-dark) }
 .bg-blue { background-color: var(--blue) }
 .bg-blue-light { background-color: var(--blue-light) }
+.bg-blue-lighter { background-color: var(--blue-lighter) }
 
 .bg-not-contacted { background-color: var(--gray40) }
 .bg-contacted { background-color: var(--status-blue) }
@@ -123,6 +126,10 @@
 .svg-icon svg {
   fill: currentColor;
   vertical-align: middle;
+}
+
+.stroke-gray20 {
+  stroke: var(--gray20);
 }
 
 .table {
@@ -176,6 +183,10 @@
   border-radius: 2px;
   box-sizing: border-box;
 }
+.no-select {
+  user-select: none;
+  cursor: pointer;
+}
 .textarea {
   font-family: inherit;
   font-size: inherit;
@@ -205,6 +216,9 @@
 .hover-bg-blue:hover {
   color: var(--white);
   background-color: var(--blue);
+}
+.hover-bg-gray90:hover {
+  background-color: var(--gray90);
 }
 
 /* ---- Rebass overrides ---------------------------------------------------- */
