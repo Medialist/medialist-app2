@@ -28,7 +28,7 @@ const ContactInfo = React.createClass({
         <div className='mb1'>
           <CircleAvatar className='ml2' size={70} avatar={avatar} name={name} />
           <div className='ml3 inline-block align-middle'>
-            <span className='semibold block f-xl'>{name}</span>
+            <span className='semibold block f-xl mb1'>{name}</span>
             <span className='block f-sm'>{jobTitles}</span>
             <span className='block f-sm'>{primaryOutlets}</span>
           </div>

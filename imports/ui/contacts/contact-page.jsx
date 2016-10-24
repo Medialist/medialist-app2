@@ -5,6 +5,7 @@ import ContactTopbar from './contact-topbar'
 import ContactInfo from './contact-info'
 import ContactNeedToKnowList from './contact-need-to-know-list'
 import PostBox from './post-box'
+import ActivityFeed from '../dashboard/activity-feed'
 
 const ContactPage = React.createClass({
   propTypes: {
@@ -30,6 +31,7 @@ const ContactPage = React.createClass({
           </div>
           <div className='flex-auto px2' >
             <PostBox contact={contact} />
+            <ActivityFeed contact={contact} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
             <ContactNeedToKnowList items={needToKnows} />
