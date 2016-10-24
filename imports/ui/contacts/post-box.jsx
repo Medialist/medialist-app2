@@ -3,8 +3,8 @@ import { FeedFeedbackIcon, FeedCoverageIcon, FeedNeedToKnowIcon } from '../image
 
 const FeedbackInput = React.createClass({
   propTypes: {
-    contact: PropTypes.object.required,
-    focused: PropTypes.bool.required
+    contact: PropTypes.object.isRequired,
+    focused: PropTypes.bool.isRequired
   },
   render () {
     const {focused, contact} = this.props
@@ -12,20 +12,20 @@ const FeedbackInput = React.createClass({
     const rows = focused ? '3' : '1'
     const name = contact && contact.name && contact.name.split(' ')[0]
     return (<div>
-        <textarea rows={rows} className='textarea mb1' style={{border: '0 none'}} placeholder={`Any updates on ${name}\'s work?`}></textarea>
-        <div className={className}>
-          <button className='btn bg-gray80 right'>Post</button>
-          <button className='btn bg-transparent border-gray80'>Select a Campaign</button>
-          <button className='btn bg-transparent border-gray80 mx2'>Select status</button>
-        </div>
-      </div>)
+      <textarea rows={rows} className='textarea mb1' style={{border: '0 none'}} placeholder={`Any updates on ${name}\'s work?`} />
+      <div className={className}>
+        <button className='btn bg-gray80 right'>Post</button>
+        <button className='btn bg-transparent border-gray80'>Select a Campaign</button>
+        <button className='btn bg-transparent border-gray80 mx2'>Select status</button>
+      </div>
+    </div>)
   }
 })
 
 const CoverarageInput = React.createClass({
   propTypes: {
-    contact: PropTypes.object.required,
-    focused: PropTypes.bool.required
+    contact: PropTypes.object.isRequired,
+    focused: PropTypes.bool.isRequired
   },
   render () {
     const {focused, contact} = this.props
@@ -33,19 +33,19 @@ const CoverarageInput = React.createClass({
     const rows = focused ? '3' : '1'
     const name = contact && contact.name && contact.name.split(' ')[0]
     return (<div>
-        <textarea rows={rows} className='textarea mb1' style={{border: '0 none'}} placeholder={`Did ${name} post any coverage?`}></textarea>
-        <div className={className}>
-          <button className='btn bg-gray80 right'>Post</button>
-          <button className='btn bg-transparent border-gray80'>Select a Campaign</button>
-        </div>
-      </div>)
+      <textarea rows={rows} className='textarea mb1' style={{border: '0 none'}} placeholder={`Did ${name} post any coverage?`} />
+      <div className={className}>
+        <button className='btn bg-gray80 right'>Post</button>
+        <button className='btn bg-transparent border-gray80'>Select a Campaign</button>
+      </div>
+    </div>)
   }
 })
 
 const NeedToKnowInput = React.createClass({
   propTypes: {
-    contact: PropTypes.object.required,
-    focused: PropTypes.bool.required
+    contact: PropTypes.object.isRequired,
+    focused: PropTypes.bool.isRequired
   },
   render () {
     const {focused, contact} = this.props
@@ -53,19 +53,19 @@ const NeedToKnowInput = React.createClass({
     const rows = focused ? '3' : '1'
     const name = contact && contact.name && contact.name.split(' ')[0]
     return (<div>
-        <textarea rows={rows} className='textarea mb1' style={{border: '0 none'}} placeholder={`Share something important to know about ${name}`}></textarea>
-        <div className={className}>
-          <button className='btn bg-gray80 right'>Post</button>
-          <button className='btn bg-transparent border-gray80 bold'>B</button>
-          <button className='btn bg-transparent border-gray80 italic mx2'>i</button>
-        </div>
-      </div>)
+      <textarea rows={rows} className='textarea mb1' style={{border: '0 none'}} placeholder={`Share something important to know about ${name}`} />
+      <div className={className}>
+        <button className='btn bg-gray80 right'>Post</button>
+        <button className='btn bg-transparent border-gray80 bold'>B</button>
+        <button className='btn bg-transparent border-gray80 italic mx2'>i</button>
+      </div>
+    </div>)
   }
 })
 
 const PostBox = React.createClass({
   propTypes: {
-    contact: PropTypes.object.required
+    contact: PropTypes.object.isRequired
   },
 
   getInitialState () {
