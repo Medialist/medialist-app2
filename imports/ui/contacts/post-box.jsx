@@ -90,7 +90,7 @@ const PostBox = React.createClass({
 
     return (
       <div onFocus={() => this.setState({focused: true})}>
-        <nav className='block' style={{padding: '2px 1px 0', height: 51, overflowY: 'hidden'}}>
+        <nav className='block' style={{padding: '2px 1px 0', height: 50, overflowY: 'hidden'}}>
           <div className={this.getTabClassName('Feedback')} onClick={() => this.setState({ selected: 'Feedback' })} >
             <FeedFeedbackIcon /> Feedback
           </div>
@@ -102,7 +102,7 @@ const PostBox = React.createClass({
           </div>
         </nav>
         <div style={{padding: '0 1px'}}>
-          <div className='bg-white shadow-2 p2 pb0'>
+          <div className='bg-white shadow-2 p3 pb0'>
             {this.getInputForTab(selected, contact, focused)}
           </div>
         </div>
