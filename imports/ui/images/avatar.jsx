@@ -55,7 +55,6 @@ const Avatar = React.createClass({
 export default Avatar
 
 export const CircleAvatar = (props) => {
-  console.log('CircleAvatar', props.style)
   const className = classNames(props.className, 'circle')
   return <Avatar {...props} className={className} />
 }

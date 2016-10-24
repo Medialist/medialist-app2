@@ -4,9 +4,10 @@ import { createContainer } from 'meteor/react-meteor-data'
 import ContactTopbar from './contact-topbar'
 import ContactInfo from './contact-info'
 import ContactNeedToKnowList from './contact-need-to-know-list'
+import PostBox from './post-box'
 
 const ContactPage = React.createClass({
-  propTyeps: {
+  propTypes: {
     contact: PropTypes.object
   },
 
@@ -27,8 +28,10 @@ const ContactPage = React.createClass({
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
             <ContactInfo contact={contact} onEditClick={this.onEditClick} />
           </div>
-          <div className='flex-auto px2' />
-          <div className='flex-none xs-hide sm-hide' style={{width: 250}}>
+          <div className='flex-auto px2' >
+            <PostBox contact={contact} />
+          </div>
+          <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
             <ContactNeedToKnowList items={needToKnows} />
           </div>
         </div>

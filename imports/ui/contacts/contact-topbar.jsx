@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react'
 import { browserHistory } from 'react-router'
 
 const ContactTopbar = React.createClass({
-  propTyeps: {
+  propTypes: {
     contact: PropTypes.object
   },
 
