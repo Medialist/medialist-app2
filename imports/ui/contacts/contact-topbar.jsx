@@ -16,16 +16,14 @@ const ContactTopbar = React.createClass({
     if (!contact) return null
 
     return (
-      <nav className='block bg-white mb4 p4'>
-        <div className='flex px1'>
-          <div className='flex-auto'>
-            <a href='#' onClick={this.onBackClick}>◀ Back</a>
-          </div>
-          <div className='flex-auto right-align'>
-            <button type='button' onClick={() => console.log('TODO: Add to campaign')}>
-              Add <FirstName contact={contact} /> to Campaign
-            </button>
-          </div>
+      <nav className='block bg-white mb4 flex items-center'>
+        <div className='flex-auto'>
+          <a className='inline-block p4' href='#' onClick={this.onBackClick}>◀ Back</a>
+        </div>
+        <div className='flex-none border-left border-gray80 px4 py3'>
+          <button type='button' className='btn white bg-blue mx2' onClick={() => console.log('TODO: Add to campaign')}>
+            Add <FirstName contact={contact} /> to Campaign
+          </button>
         </div>
       </nav>
     )

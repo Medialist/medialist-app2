@@ -31,7 +31,7 @@ const NavBar = React.createClass({
         <div className='inline-block right xs-hide'>
           <UserInfo user={this.props.user} />
         </div>
-        <div className='inline-block right' style={{padding: '14px 0'}}>
+        <div className='inline-block right' style={{padding: '10px 0'}}>
           <NotificationsBell notifications={this.props.notifications} />
         </div>
       </div>
