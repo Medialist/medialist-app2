@@ -19,12 +19,26 @@
 @custom-media --breakpoint-lg (min-width: 64em);
 
 :root {
+  --font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif;
+  --line-height: 1.2;
+  --body-font-size: 15px;
+
   --space-1: 5px;
   --space-2: 10px;
   --space-3: 15px;
   --space-4: 20px;
+
   --border-width: 1px;
   --border-radius: 2px;
+  --bold-font-weight: 600;
+  --button-font-family: inherit;
+  --button-font-size: inherit;
+  --button-font-weight: var(--bold-font-weight);
+  --button-line-height: 1.125rem;
+  --button-padding-y: .5rem;
+  --button-padding-x: 1rem;
+  --darken-2: rgba(0, 0, 0, .125);
+  --darken-3: rgba(0, 0, 0, .25);
 
   /* --- Medialist Colors ----------------------------------------------------- */
   --black:  #162435;   /* charcoal-dark */
@@ -35,12 +49,13 @@
   --gray80: #E3E8F0;   /* glitter */
   --gray90: #F4F6FA;   /* white-smoke */
   --white:  #FFF;
-
   --blue-dark: #2B60D5;  /* royal-blue */
   --blue: #437AF4;       /* ultramarine-blue */
   --blue-light: #4299FF; /* bleu-de-france */
   --blue-lighter: #eaf1ff; /* notification-blue */
 
+  --orange: #FA862C;
+  --orange-light: #FFFAEC;
   --status-blue: #28B6D7;
   --status-red: #E41D1D;
   --status-orange: #FA862C;
@@ -89,7 +104,57 @@
 .border-gray10 { border-color:var(--gray10) }
 .border-gray80 { border-color:var(--gray80) }
 
+/* ---- Reset --------------------------------------------------------------- */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-size: var(--body-font-size);
+  font-family: var(--font-family);
+  line-height:  var(--line-height);
+  margin: 0;
+  color: var(--gray20);
+  background-color: var(--gray90);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+svg {
+  max-height: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+p, dl, ol, ul, pre, blockquote {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+hr {
+  margin-top: var(--space-1);
+  margin-bottom: var(--space-1);
+  border: 0;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: var(--gray80);
+}
+
+h1 h2, h3, h4, h5, h6 {
+  font-size: 1rem;
+  line-height: 1.25;
+  margin-top: 1em;
+  margin-bottom: .5em;
+}
+
 /* ---- Atoms --------------------------------------------------------------- */
+
 .f-xxl { font-size:25px }
 .f-xl { font-size:18px }
 .f-lg { font-size:16px }
@@ -114,7 +179,7 @@
 .shadow-inset-blue { box-shadow: inset 0 -3px 0 0 var(--blue) }
 
 .width-100 { width:100% }
-.max-width-lg { max-width: 1076px; }
+.max-width-lg { max-width: 1150px; }
 
 .pointer { cursor: pointer; }
 
@@ -122,6 +187,47 @@
   padding-top: 2px;
   padding-bottom: 2px;
 }
+
+.black { color: var(--black) !important }
+.gray10 { color: var(--gray10) !important }
+.gray20 { color: var(--gray20) !important }
+.gray40 { color: var(--gray40) !important }
+.gray60 { color: var(--gray60) !important }
+.gray80 { color: var(--gray80) !important }
+.gray90 { color: var(--gray90) !important }
+.white { color:var(--white) !important }
+.orange { color:var(--orange) !important }
+.blue-dark { color: var(--blue-dark) !important }
+.blue { color: var(--blue) !important }
+.blue-light { color: var(--blue-light) !important }
+.not-contacted { color: var(--gray40) !important }
+.contacted { color: #28B6D7 !important }
+.not-interested { color: #E41D1D !important }
+.hot-lead { color: #FA862C !important }
+.completed { color: #35BF77 !important }
+
+.bg-transparent { background-color: transparent !important}
+.bg-black { background-color: var(--black) !important }
+.bg-gray10 { background-color: var(--gray10) !important }
+.bg-gray20 { background-color: var(--gray20) !important }
+.bg-gray40 { background-color: var(--gray40) !important }
+.bg-gray60 { background-color: var(--gray60) !important }
+.bg-gray80 { background-color: var(--gray80) !important }
+.bg-gray90 { background-color: var(--gray90) !important }
+.bg-white { background-color: var(--white) !important }
+.bg-blue-dark { background-color: var(--blue-dark) !important }
+.bg-blue { background-color: var(--blue) !important }
+.bg-blue-light { background-color: var(--blue-light) !important }
+.bg-orange { background-color: var(--orange) !important }
+.bg-orange-light { background-color: var(--orange-light) !important }
+.bg-not-contacted { background-color: var(--gray40) !important }
+.bg-contacted { background-color: var(--status-blue) !important }
+.bg-not-interested { background-color: var(--status-red) !important }
+.bg-hot-lead { background-color: var(--status-orange) !important }
+.bg-completed { background-color: var(--status-green) !important }
+
+.border-gray10 { border-color:var(--gray10) !important }
+.border-gray80 { border-color:var(--gray80) !important }
 
 .svg-icon svg {
   fill: currentColor;
@@ -169,7 +275,7 @@
   height: 2.5rem;
   padding: .5rem;
   border: 1px solid var(--gray80);
-  border-radius: 2px;
+  border-radius: var(--border-radius);
   box-sizing: border-box;
 }
 .select {
@@ -180,7 +286,7 @@
   height: 2.5rem;
   padding: .5rem;
   border: 1px solid var(--gray80);
-  border-radius: 2px;
+  border-radius: var(--border-radius);
   box-sizing: border-box;
 }
 .no-select {
@@ -194,8 +300,44 @@
   width: 100%;
   padding: .5rem;
   border: 1px solid var(--gray80);
-  border-radius: 2px;
+  border-radius: var(--border-radius);
   box-sizing: border-box;
+}
+.textarea:focus {
+  outline: none;
+}
+
+/* https://github.com/basscss/addons/blob/03bc39f822e11fe4de96dce652aa5eda2ccf05a0/modules/btn/index.css */
+.btn {
+  font-family: var(--button-font-family);
+  font-size: var(--button-font-size);
+  font-weight: var(--button-font-weight);
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-block;
+  line-height: var(--button-line-height);
+  padding: var(--button-padding-y) var(--button-padding-x);
+  height: auto;
+  border: var(--border-width) solid transparent;
+  border-radius: var(--border-radius);
+  vertical-align: middle;
+  -webkit-appearance: none;
+  color: inherit;
+}
+
+.btn:hover {
+  text-decoration: none;
+}
+
+.btn:focus {
+  outline: none;
+  border-color: var(--darken-2);
+  box-shadow: inset 0 0 0 1px var(--darken-3);
+}
+
+::-moz-focus-inner {
+  border: 0;
+  padding: 0;
 }
 
 /* ---- Interactions -------------------------------------------------------- */
@@ -220,6 +362,9 @@
 .hover-bg-gray90:hover {
   background-color: var(--gray90);
 }
+.hover-blue:hover {
+  color: var(--blue);
+}
 
 /* ---- Rebass overrides ---------------------------------------------------- */
 
@@ -240,53 +385,4 @@
   border-bottom-color:var(--white);
   border-top: 0 none;
   border-radius: 2px;
-}
-
-/* ---- Reset --------------------------------------------------------------- */
-* {
-  box-sizing: border-box;
-}
-
-body {
-  font-size: 15px;
-  font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif;
-  line-height: 1.2;
-  margin: 0;
-  color: var(--gray20);
-  background-color: #F4F6FA;
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-svg {
-  max-height: 100%;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-p, dl, ol, ul, pre, blockquote {
-  margin-top: 1em;
-  margin-bottom: 1em;
-}
-
-hr {
-  margin-top: var(--space-1);
-  margin-bottom: var(--space-1);
-  border: 0;
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-  border-bottom-color: var(--gray80);
-}
-
-h1 h2, h3, h4, h5, h6 {
-  font-size: 1rem;
-  line-height: 1.25;
-  margin-top: 1em;
-  margin-bottom: .5em;
 }

@@ -1,6 +1,8 @@
 import React, { PropTypes } from 'react'
 import classNames from 'classnames/dedupe'
 
+const defaultSize = 40
+
 const Avatar = React.createClass({
   propTypes: {
     avatar: PropTypes.string,
@@ -20,8 +22,10 @@ const Avatar = React.createClass({
   render () {
     const { imageLoadError } = this.state
     const { avatar, name } = this.props
-    const className = classNames(this.props.className, 'inline-block overflow-hidden bg-black white f-md normal align-middle center')
-    const style = Object.assign({ width: 40, height: 40, lineHeight: '40px' }, this.props.style || {})
+    const className = classNames(this.props.className, 'inline-block overflow-hidden bg-black white normal align-middle center')
+    const size = Number(this.props.size || defaultSize) // px
+    const fontSize = ((size / defaultSize) * 100) + '%' // a size of 40px gives a fontSize of 100% which matches the body fontSize.
+    const style = Object.assign({ width: size, height: size, lineHeight: size + 'px', fontSize }, this.props.style || {})
 
     if (avatar && !imageLoadError) {
       return (
