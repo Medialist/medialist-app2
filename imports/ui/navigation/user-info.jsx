@@ -4,6 +4,7 @@ import Arrow from 'rebass/dist/Arrow'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
 import { CircleAvatar } from '../images/avatar.jsx'
+import { SettingsIcon, ExitIcon } from '../images/icons'
 
 const UserInfo = React.createClass({
   propTypes: {
@@ -50,11 +51,11 @@ const UserInfo = React.createClass({
           </div>
           <nav className='block border-top border-gray80 py1'>
             <Link to='/settings' className='block px3 py2 f-md normal gray20 hover-bg-blue' activeClassName='active' onClick={this.onLinkClick}>
-              ⚙
+              <SettingsIcon />
               <span className='ml2'>Settings</span>
             </Link>
             <Link to='/logout' className='block px3 py2 f-md normal gray20 hover-bg-blue' activeClassName='active' onClick={this.onLinkClick}>
-              🚪
+              <ExitIcon />
               <span className='ml2'>Logout</span>
             </Link>
           </nav>
