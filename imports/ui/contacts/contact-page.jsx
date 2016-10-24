@@ -23,8 +23,8 @@ const ContactPage = React.createClass({
     return (
       <div>
         <ContactTopbar contact={contact} onAddClick={this.onAddClick} />
-        <div className='flex max-width-lg mx-auto my4'>
-          <div className='flex-none mr4 xs-hide sm-hide' style={{width: 250}}>
+        <div className='flex m4 pt4 pl4'>
+          <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
             <ContactInfo contact={contact} onEditClick={this.onEditClick} />
           </div>
           <div className='flex-auto px2' />

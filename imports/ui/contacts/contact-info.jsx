@@ -26,14 +26,14 @@ const ContactInfo = React.createClass({
     return (
       <div>
         <div className='mb1'>
-          <CircleAvatar avatar={avatar} name={name} />
+          <CircleAvatar className='ml2' size={70} avatar={avatar} name={name} />
           <div className='ml3 inline-block align-middle'>
             <span className='semibold block f-xl'>{name}</span>
             <span className='block f-sm'>{jobTitles}</span>
             <span className='block f-sm'>{primaryOutlets}</span>
           </div>
         </div>
-        <div className='clearfix p3 border-gray80 border-bottom'>
+        <div className='clearfix p3 pt4 mt4 border-gray80 border-bottom'>
           <a href='#' className='f-xs blue right' onClick={this.props.onEditClick}>Edit Contact</a>
           <h1 className='m0 f-md normal gray20 left'>Info</h1>
         </div>
