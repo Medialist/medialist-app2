@@ -9,7 +9,7 @@ const DashboardPage = React.createClass({
     recentCampaigns: PropTypes.array,
     recentContacts: PropTypes.array
   },
-  
+
   render () {
     const { recentCampaigns, recentContacts } = this.props
     return (
