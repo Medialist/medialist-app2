@@ -2,15 +2,20 @@ import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
 import ContactTopbar from './contact-topbar'
+import ContactInfo from './contact-info'
 import ContactNeedToKnowList from './contact-need-to-know-list'
 
-const ContactsPage = React.createClass({
+const ContactPage = React.createClass({
   propTyeps: {
     contact: PropTypes.object
   },
 
   onAddClick () {
     console.log('TODO: Add contact to campaign')
+  },
+
+  onEditClick () {
+    console.log('TODO: Show edit contact modal')
   },
 
   render () {
@@ -20,11 +25,9 @@ const ContactsPage = React.createClass({
         <ContactTopbar contact={contact} onAddClick={this.onAddClick} />
         <div className='flex max-width-lg mx-auto my4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 250}}>
-            LEFT
+            <ContactInfo contact={contact} onEditClick={this.onEditClick} />
           </div>
-          <div className='flex-auto px2'>
-            MIDDLE
-          </div>
+          <div className='flex-auto px2' />
           <div className='flex-none xs-hide sm-hide' style={{width: 250}}>
             <ContactNeedToKnowList items={needToKnows} />
           </div>
@@ -38,7 +41,7 @@ export default createContainer((props) => {
   const { slug } = props.params
   Meteor.subscribe('contact', slug)
   return { ...props, contact: window.Contacts.findOne({ slug }) }
-}, ContactsPage)
+}, ContactPage)
 
 const needToKnows = [
   {

@@ -212,6 +212,9 @@
   color: var(--white);
   background-color: var(--blue);
 }
+.hover-blue:hover {
+  color: var(--blue);
+}
 
 /* ---- Rebass overrides ---------------------------------------------------- */
 
