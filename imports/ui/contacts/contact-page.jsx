@@ -21,6 +21,17 @@ const ContactPage = React.createClass({
     console.log('TODO: Show edit contact modal')
   },
 
+  onFeedback ({message, campaign, status}) {
+    const post = {
+      contactSlug: this.props.contact.slug,
+      medialistSlug: campaign.slug,
+      message,
+      status
+    }
+    console.log('onFeedBack', post)
+    Meteor.call('posts/create', post)
+  },
+
   render () {
     const { contact, campaigns } = this.props
     return (
@@ -31,7 +42,7 @@ const ContactPage = React.createClass({
             <ContactInfo contact={contact} onEditClick={this.onEditClick} />
           </div>
           <div className='flex-auto px2' >
-            <PostBox contact={contact} campaigns={campaigns} />
+            <PostBox contact={contact} campaigns={campaigns} onFeedback={this.onFeedback} />
             <ActivityFeed contact={contact} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>

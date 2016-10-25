@@ -39,7 +39,9 @@ Meteor.methods({
       status: opts.status,
       type: 'feedback'
     }
-    if (opts.message) post.message = App.cleanFeedback(opts.message)
+    // TODO: Do we need this? There is a missing sanitizeHtml dep from cleanFeedback, that needs review.
+    // if (opts.message) post.message = App.cleanFeedback(opts.message)
+    if (opts.message) post.message = opts.message
     check(post, Schemas.Posts)
 
     var medialistUpdate = {}
