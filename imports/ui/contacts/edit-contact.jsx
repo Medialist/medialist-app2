@@ -14,7 +14,7 @@ const EditContact = React.createClass({
     const { avatar, name, jobTitles, primaryOutlets } = contact
     return (
       <div>
-        <div className='fixed top-0 right-0 left-0 bottom-0' style={{background: 'rgba(35, 54, 75, 0.8)'}} />
+        <div className='fixed top-0 right-0 left-0 bottom-0' style={{background: 'rgba(35, 54, 75, 0.8)'}} onClick={toggle} />
         <div className='absolute top-0 right-0 left-0 bg-white fit mx-auto my4' style={{width: 675, height: '95vh'}}>
           <div className='inline-block right pointer f-xxl mx2 gray60 hover-blue' onClick={toggle}>&times;</div>
           <div className='p4 center'>
@@ -35,10 +35,16 @@ const EditContact = React.createClass({
               <input className='input mt3 mx4' type='text' value='' placeholder='Email' />
             </div>
             <div className='mx-auto' style={{width: 300}}>
+              <span className='inline-block blue f-xs underline mt3 ml4'>Add secondary email</span>
+            </div>
+            <div className='mx-auto' style={{width: 300}}>
               <input className='input mt3 mx4' type='text' value='' placeholder='Landline' />
             </div>
             <div className='mx-auto' style={{width: 300}}>
               <input className='input mt3 mx4' type='text' value='' placeholder='Mobile' />
+            </div>
+            <div className='mx-auto' style={{width: 300}}>
+              <span className='inline-block blue f-xs underline mt3 ml4'>Add new phone number</span>
             </div>
           </div>
           <div className='bg-gray90 border-top border-gray80 py4'>
@@ -51,6 +57,9 @@ const EditContact = React.createClass({
             </div>
             <div className='mx-auto' style={{width: 300}}>
               <input className='input mt3 mx4' type='text' value='' placeholder='Facebook' />
+            </div>
+            <div className='mx-auto' style={{width: 300}}>
+              <span className='inline-block blue f-xs underline mt3 ml4'>Add new social or website</span>
             </div>
           </div>
           <div className='bg-gray90 border-top border-gray80 py4'>
