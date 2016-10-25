@@ -50,7 +50,7 @@ const CampaignSelector = React.createClass({
     return (
       <div className='inline-block'>
         <Dropdown>
-          <button className='btn bg-transparent border-gray80 mx2' onClick={this.openDropdown}>
+          <button className='btn bg-transparent border-gray80 mx2' onClick={this.openDropdown} disabled={!campaigns.length}>
             { campaign ? <CampaignButton campaign={campaign} /> : 'Select a Campaign' }
           </button>
           <DropdownMenu right style={{ width: 223 }} open={this.state.open} onDismiss={this.closeDropdown}>
