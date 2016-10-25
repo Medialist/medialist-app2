@@ -14,12 +14,18 @@ const ContactPage = React.createClass({
     contact: PropTypes.object
   },
 
-  onAddClick () {
-    console.log('TODO: Add contact to campaign')
+  getInitialState () {
+    return { editContactOpen: false }
   },
 
-  onEditClick () {
-    console.log('TODO: Show edit contact modal')
+  toggleEditContact () {
+    const editContactOpen = !this.state.editContactOpen
+    console.log('toggleEditContact', editContactOpen)
+    this.setState({ editContactOpen })
+  },
+
+  onAddClick () {
+    console.log('TODO: Add contact to campaign')
   },
 
   onFeedback ({message, campaign, status}) {
@@ -35,12 +41,13 @@ const ContactPage = React.createClass({
 
   render () {
     const { contact, campaigns } = this.props
+    const { editContactOpen } = this.state
     return (
       <div>
         <ContactTopbar contact={contact} onAddClick={this.onAddClick} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
-            <ContactInfo contact={contact} onEditClick={this.onEditClick} />
+            <ContactInfo contact={contact} onEditClick={this.toggleEditContact} />
           </div>
           <div className='flex-auto px2' >
             <PostBox contact={contact} campaigns={campaigns} onFeedback={this.onFeedback} />
@@ -50,7 +57,7 @@ const ContactPage = React.createClass({
             <ContactNeedToKnowList items={needToKnows} />
           </div>
         </div>
-        <EditContact open={true} contact={contact}/>
+        <EditContact toggle={() => this.toggleEditContact()} open={editContactOpen} contact={contact}/>
       </div>
     )
   }
