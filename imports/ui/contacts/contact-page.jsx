@@ -6,6 +6,7 @@ import ContactInfo from './contact-info'
 import ContactNeedToKnowList from './contact-need-to-know-list'
 import PostBox from './post-box'
 import ActivityFeed from '../dashboard/activity-feed'
+import EditContact from './edit-contact'
 
 const ContactPage = React.createClass({
   propTypes: {
@@ -49,6 +50,7 @@ const ContactPage = React.createClass({
             <ContactNeedToKnowList items={needToKnows} />
           </div>
         </div>
+        <EditContact open={true} contact={contact}/>
       </div>
     )
   }
