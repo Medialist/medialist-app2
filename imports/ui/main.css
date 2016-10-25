@@ -238,7 +238,13 @@ h1 h2, h3, h4, h5, h6 {
   padding: .5rem;
   border: 1px solid var(--gray80);
   border-radius: var(--border-radius);
-  box-sizing: border-box;
+}
+.input-inline {
+  font-family: inherit;
+  height: 2.5rem;
+  padding: .5rem;
+  border: 0 none;
+  border-bottom: 1px dashed var(--blue);
 }
 .select {
   font-family: inherit;
