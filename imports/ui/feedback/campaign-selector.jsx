@@ -17,7 +17,7 @@ const Campaign = (props) => {
 }
 
 const CampaignButton = (props) => {
-  const { name, avatar, client } = props.campaign
+  const { name, avatar } = props.campaign
   return (
     <div style={{margin: '-1px 0 -1px -4px'}} className='align-left'>
       <SquareAvatar size={20} avatar={avatar} name={name} />

@@ -48,7 +48,7 @@ export default createContainer((props) => {
   Meteor.subscribe('contact', slug)
   Meteor.subscribe('medialists')
   const contact = window.Contacts.findOne({ slug })
-  const campaigns = contact ? window.Medialists.find({ slug: { $in: contact.medialists }}).fetch() : []
+  const campaigns = contact ? window.Medialists.find({ slug: { $in: contact.medialists } }).fetch() : []
   return { ...props, contact, campaigns }
 }, ContactPage)
 
