@@ -52,6 +52,8 @@
   --blue-dark: #2B60D5;  /* royal-blue */
   --blue: #437AF4;       /* ultramarine-blue */
   --blue-light: #4299FF; /* bleu-de-france */
+  --blue-lighter: #eaf1ff; /* notification-blue */
+
   --orange: #FA862C;
   --orange-light: #FFFAEC;
   --status-blue: #28B6D7;
@@ -157,6 +159,8 @@ h1 h2, h3, h4, h5, h6 {
 .blue-dark { color: var(--blue-dark) !important }
 .blue { color: var(--blue) !important }
 .blue-light { color: var(--blue-light) !important }
+.blue-lighter { color: var(--blue-lighter) !important }
+.not-contacted { color: var(--gray40) !important }
 .to-contact { color: var(--gray40) !important }
 .contacted { color: #28B6D7 !important }
 .not-interested { color: #E41D1D !important }
@@ -175,6 +179,7 @@ h1 h2, h3, h4, h5, h6 {
 .bg-blue-dark { background-color: var(--blue-dark) !important }
 .bg-blue { background-color: var(--blue) !important }
 .bg-blue-light { background-color: var(--blue-light) !important }
+.bg-blue-lighter { background-color: var(--blue-lighter) !important }
 .bg-orange { background-color: var(--orange) !important }
 .bg-orange-light { background-color: var(--orange-light) !important }
 .bg-to-contact { background-color: var(--gray40) !important }
@@ -189,6 +194,10 @@ h1 h2, h3, h4, h5, h6 {
 .svg-icon svg {
   fill: currentColor;
   vertical-align: middle;
+}
+
+.stroke-gray20 {
+  stroke: var(--gray20);
 }
 
 .table {
@@ -241,6 +250,10 @@ h1 h2, h3, h4, h5, h6 {
   border: 1px solid var(--gray80);
   border-radius: var(--border-radius);
   box-sizing: border-box;
+}
+.no-select {
+  user-select: none;
+  cursor: pointer;
 }
 .textarea {
   font-family: inherit;
@@ -308,10 +321,12 @@ h1 h2, h3, h4, h5, h6 {
   color: var(--white);
   background-color: var(--blue);
 }
+.hover-bg-gray90:hover {
+  background-color: var(--gray90);
+}
 .hover-blue:hover {
   color: var(--blue);
 }
-
 
 /* ---- Rebass overrides ---------------------------------------------------- */
 
