@@ -127,6 +127,7 @@ h1 h2, h3, h4, h5, h6 {
 .normal { font-weight: 400 }
 
 .uppercase { text-transform: uppercase }
+.letter-spacing-1 { letter-spacing: 1px }
 
 .opacity-50 { opacity:0.5 }
 .opacity-40 { opacity:0.4 }
@@ -160,6 +161,7 @@ h1 h2, h3, h4, h5, h6 {
 .blue-light { color: var(--blue-light) !important }
 .blue-lighter { color: var(--blue-lighter) !important }
 .not-contacted { color: var(--gray40) !important }
+.to-contact { color: var(--gray40) !important }
 .contacted { color: #28B6D7 !important }
 .not-interested { color: #E41D1D !important }
 .hot-lead { color: #FA862C !important }
@@ -180,7 +182,7 @@ h1 h2, h3, h4, h5, h6 {
 .bg-blue-lighter { background-color: var(--blue-lighter) !important }
 .bg-orange { background-color: var(--orange) !important }
 .bg-orange-light { background-color: var(--orange-light) !important }
-.bg-not-contacted { background-color: var(--gray40) !important }
+.bg-to-contact { background-color: var(--gray40) !important }
 .bg-contacted { background-color: var(--status-blue) !important }
 .bg-not-interested { background-color: var(--status-red) !important }
 .bg-hot-lead { background-color: var(--status-orange) !important }

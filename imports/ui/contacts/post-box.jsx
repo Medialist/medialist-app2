@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import StatusSelector from '../feedback/status-selector'
 import { FeedFeedbackIcon, FeedCoverageIcon, FeedNeedToKnowIcon } from '../images/icons'
 
 const FeedbackInput = React.createClass({
@@ -6,19 +7,39 @@ const FeedbackInput = React.createClass({
     contact: PropTypes.object.isRequired,
     focused: PropTypes.bool.isRequired
   },
+  getInitialState () {
+    return {message: '', status: null}
+  },
+  onMessageChange (evt) {
+    this.setState({message: evt.target.value})
+  },
+  onStatusChange (status) {
+    this.setState({status: status})
+  },
+  onSubmit (evt) {
+    console.log('submit', this.state.message)
+  },
   render () {
     const {focused, contact} = this.props
+    const {message} = this.state
     const className = focused ? '' : 'display-none'
     const rows = focused ? '3' : '1'
     const name = contact && contact.name && contact.name.split(' ')[0]
-    return (<div>
-      <textarea rows={rows} className='textarea mb1' style={{border: '0 none'}} placeholder={`Any updates on ${name}\'s work?`} />
-      <div className={className}>
-        <button className='btn bg-gray80 right'>Post</button>
-        <button className='btn bg-transparent border-gray80'>Select a Campaign</button>
-        <button className='btn bg-transparent border-gray80 mx2'>Select status</button>
-      </div>
-    </div>)
+    return (
+      <div>
+        <textarea
+          rows={rows}
+          className='textarea mb1'
+          style={{border: '0 none'}}
+          placeholder={`Any updates on ${name}\'s work?`}
+          onChange={this.onMessageChange}
+          value={message} />
+        <div className={className}>
+          <button onClick={this.onSubmit} className='btn bg-gray80 right'>Post</button>
+          <button className='btn bg-transparent border-gray80'>Select a Campaign</button>
+          <StatusSelector onChange={this.onStatusChange} />
+        </div>
+      </div>)
   }
 })
 
@@ -52,14 +73,15 @@ const NeedToKnowInput = React.createClass({
     const className = focused ? '' : 'display-none'
     const rows = focused ? '3' : '1'
     const name = contact && contact.name && contact.name.split(' ')[0]
-    return (<div>
-      <textarea rows={rows} className='textarea mb1' style={{border: '0 none'}} placeholder={`Share something important to know about ${name}`} />
-      <div className={className}>
-        <button className='btn bg-gray80 right'>Post</button>
-        <button className='btn bg-transparent border-gray80 bold'>B</button>
-        <button className='btn bg-transparent border-gray80 italic mx2'>i</button>
-      </div>
-    </div>)
+    return (
+      <div>
+        <textarea rows={rows} className='textarea mb1' style={{border: '0 none'}} placeholder={`Share something important to know about ${name}`} />
+        <div className={className}>
+          <button className='btn bg-gray80 right'>Post</button>
+          <button className='btn bg-transparent border-gray80 bold'>B</button>
+          <button className='btn bg-transparent border-gray80 italic mx2'>i</button>
+        </div>
+      </div>)
   }
 })
 
@@ -89,7 +111,7 @@ const PostBox = React.createClass({
     const { selected, focused } = this.state
 
     return (
-      <div onFocus={() => this.setState({focused: true})}>
+      <div className='mb2' onFocus={() => this.setState({focused: true})}>
         <nav className='block' style={{padding: '2px 1px 0', height: 50, overflowY: 'hidden'}}>
           <div className={this.getTabClassName('Feedback')} onClick={() => this.setState({ selected: 'Feedback' })} >
             <FeedFeedbackIcon /> Feedback
