@@ -31,7 +31,7 @@ const UserInfo = React.createClass({
     const { user } = this.props
 
     return (
-      <Dropdown style={{padding: '14px 15px 14px 25px', marginRight: 16}}>
+      <Dropdown style={{padding: '14px 15px 13px 25px', marginRight: 16}}>
         <div className='inline-block hover-opacity-trigger pointer' onClick={this.onNameClick}>
           <div className='inline-block'>
             <div className='f-xs semibold white'>{user.profile.name}</div>

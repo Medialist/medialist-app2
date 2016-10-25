@@ -32,7 +32,6 @@ const ActivityFeed = React.createClass({
   render () {
     const { campaign, contact } = this.props
     const { activityFilter } = this.state
-    console.log('ActivityFeed', contact)
     return (
       <div>
         <ItemFilter filter={activityFilter} filters={ACTIVITY_FILTERS} onChange={this.onFilterChange} />
