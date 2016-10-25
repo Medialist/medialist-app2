@@ -297,6 +297,11 @@ h1 h2, h3, h4, h5, h6 {
   box-shadow: inset 0 0 0 1px var(--darken-3);
 }
 
+.btn[disabled] {
+  opacity: 0.3;
+  cursor: default;
+}
+
 ::-moz-focus-inner {
   border: 0;
   padding: 0;

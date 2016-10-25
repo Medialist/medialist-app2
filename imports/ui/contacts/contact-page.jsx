@@ -9,6 +9,7 @@ import ActivityFeed from '../dashboard/activity-feed'
 
 const ContactPage = React.createClass({
   propTypes: {
+    campaigns: PropTypes.array,
     contact: PropTypes.object
   },
 
@@ -21,7 +22,7 @@ const ContactPage = React.createClass({
   },
 
   render () {
-    const { contact } = this.props
+    const { contact, campaigns } = this.props
     return (
       <div>
         <ContactTopbar contact={contact} onAddClick={this.onAddClick} />
@@ -30,7 +31,7 @@ const ContactPage = React.createClass({
             <ContactInfo contact={contact} onEditClick={this.onEditClick} />
           </div>
           <div className='flex-auto px2' >
-            <PostBox contact={contact} />
+            <PostBox contact={contact} campaigns={campaigns} />
             <ActivityFeed contact={contact} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
@@ -45,7 +46,10 @@ const ContactPage = React.createClass({
 export default createContainer((props) => {
   const { slug } = props.params
   Meteor.subscribe('contact', slug)
-  return { ...props, contact: window.Contacts.findOne({ slug }) }
+  Meteor.subscribe('medialists')
+  const contact = window.Contacts.findOne({ slug })
+  const campaigns = contact ? window.Medialists.find({ slug: { $in: contact.medialists } }).fetch() : []
+  return { ...props, contact, campaigns }
 }, ContactPage)
 
 const needToKnows = [

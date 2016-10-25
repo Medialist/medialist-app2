@@ -1,26 +1,31 @@
 import React, { PropTypes } from 'react'
 import StatusSelector from '../feedback/status-selector'
+import CampaignSelector from '../feedback/campaign-selector'
 import { FeedFeedbackIcon, FeedCoverageIcon, FeedNeedToKnowIcon } from '../images/icons'
 
 const FeedbackInput = React.createClass({
   propTypes: {
-    contact: PropTypes.object.isRequired,
+    contact: PropTypes.object,
+    campaigns: PropTypes.array.isRequired,
     focused: PropTypes.bool.isRequired
   },
   getInitialState () {
-    return {message: '', status: null}
+    return {message: '', status: null, campaign: null}
   },
   onMessageChange (evt) {
     this.setState({message: evt.target.value})
+  },
+  onCampaignChange (campaign) {
+    this.setState({campaign: campaign})
   },
   onStatusChange (status) {
     this.setState({status: status})
   },
   onSubmit (evt) {
-    console.log('submit', this.state.message)
+    console.log('submit', this.state)
   },
   render () {
-    const {focused, contact} = this.props
+    const {focused, contact, campaigns} = this.props
     const {message} = this.state
     const className = focused ? '' : 'display-none'
     const rows = focused ? '3' : '1'
@@ -36,7 +41,7 @@ const FeedbackInput = React.createClass({
           value={message} />
         <div className={className}>
           <button onClick={this.onSubmit} className='btn bg-gray80 right'>Post</button>
-          <button className='btn bg-transparent border-gray80'>Select a Campaign</button>
+          <CampaignSelector onChange={this.onCampaignChange} campaigns={campaigns} />
           <StatusSelector onChange={this.onStatusChange} />
         </div>
       </div>)
@@ -45,7 +50,7 @@ const FeedbackInput = React.createClass({
 
 const CoverarageInput = React.createClass({
   propTypes: {
-    contact: PropTypes.object.isRequired,
+    contact: PropTypes.object,
     focused: PropTypes.bool.isRequired
   },
   render () {
@@ -65,7 +70,7 @@ const CoverarageInput = React.createClass({
 
 const NeedToKnowInput = React.createClass({
   propTypes: {
-    contact: PropTypes.object.isRequired,
+    contact: PropTypes.object,
     focused: PropTypes.bool.isRequired
   },
   render () {
@@ -87,7 +92,8 @@ const NeedToKnowInput = React.createClass({
 
 const PostBox = React.createClass({
   propTypes: {
-    contact: PropTypes.object.isRequired
+    campaigns: PropTypes.array.isRequired,
+    contact: PropTypes.object
   },
 
   getInitialState () {
@@ -99,15 +105,15 @@ const PostBox = React.createClass({
     return base + (this.state.selected === tab ? 'bg-white shadow-2' : 'gray60')
   },
 
-  getInputForTab (tab, contact, focused) {
-    if (tab === 'Feedback') return <FeedbackInput contact={contact} focused={focused} />
-    if (tab === 'Coverage') return <CoverarageInput contact={contact} focused={focused} />
+  getInputForTab (tab, focused, contact, campaigns) {
+    if (tab === 'Feedback') return <FeedbackInput contact={contact} focused={focused} campaigns={campaigns} />
+    if (tab === 'Coverage') return <CoverarageInput contact={contact} focused={focused} campaigns={campaigns} />
     if (tab === 'Need to Know') return <NeedToKnowInput contact={contact} focused={focused} />
     return null
   },
 
   render () {
-    const { contact } = this.props
+    const { contact, campaigns } = this.props
     const { selected, focused } = this.state
 
     return (
@@ -125,7 +131,7 @@ const PostBox = React.createClass({
         </nav>
         <div style={{padding: '0 1px'}}>
           <div className='bg-white shadow-2 p3 pb0'>
-            {this.getInputForTab(selected, contact, focused)}
+            {this.getInputForTab(selected, focused, contact, campaigns)}
           </div>
         </div>
       </div>
