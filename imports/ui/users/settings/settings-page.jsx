@@ -1,9 +1,13 @@
 import { Meteor } from 'meteor/meteor'
-import React from 'react'
+import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import { createContainer } from 'meteor/react-meteor-data'
-import { SettingsIcon, MenuItemSelectedIcon } from '../images/icons'
-import { CircleAvatar } from '../images/avatar'
+import { SettingsIcon, MenuItemSelectedIcon } from '../../images/icons'
+import { CircleAvatar } from '../../images/avatar'
+import SettingsProfile from './profile'
+import SettingsPassword from './password'
+import SettingsTeam from './team'
+import SettingsSector from './sectors'
 
 const menuItems = [
   {label: 'Profile', slug: 'profile'},
@@ -12,23 +16,26 @@ const menuItems = [
   {label: 'Sectors', slug: 'sector'}
 ]
 
-const settingsPanel = {
-  profile: <h1>Profile panel</h1>,
-  password: <h1>Password panel</h1>,
-  team: <h1>Team panel</h1>,
-  sector: <h1>Sector panel</h1>
-}
-
 const SettingsPage = React.createClass({
+  propTypes: {
+    user: PropTypes.object.isRequired,
+    params: PropTypes.object
+  },
   getInitialState () {
     return {
-      selectedMenuItem: this.props.params.selected || 'profile'
+      selectedMenuItem: this.props.params.selected
     }
   },
   componentWillReceiveProps (props) {
     this.setState({selectedMenuItem: props.params.selected})
   },
   render () {
+    const settingsPanel = {
+      profile: <SettingsProfile user={this.props.user} />,
+      password: <SettingsPassword />,
+      team: <SettingsTeam />,
+      sector: <SettingsSector />
+    }
     return (
       <div className='flex max-width-lg mx-auto my4 pt4'>
         <div className='flex-none mr4 xs-hide sm-hide' style={{width: 250}}>
@@ -40,7 +47,7 @@ const SettingsPage = React.createClass({
           </article>
         </div>
         <div className='flex-auto px2 bg-white'>
-          {settingsPanel[this.state.selectedMenuItem]}
+          {settingsPanel[this.state.selectedMenuItem || 'profile']}
         </div>
       </div>
     )
@@ -48,7 +55,8 @@ const SettingsPage = React.createClass({
 })
 
 export default createContainer(() => {
-  return { user: Meteor.user() }
+  Meteor.subscribe('userData')
+  return { user: window.Meteor.users.find().fetch()[0] }
 }, SettingsPage)
 
 function userInfo (user) {
@@ -64,8 +72,9 @@ function userInfo (user) {
 }
 
 function sideNav (selected) {
+  selected = selected || 'profile'
   return (
-    <nav className='bg-white border-top border-left border-right border-gray80'>
+    <nav className='mt2 bg-white border-top border-left border-right border-gray80'>
       {menuItems.map((navItem) => {
         const activeClass = navItem.slug === selected ? 'active-side-nav-menu-item' : ''
         const activeIcon = navItem.slug === selected ? <span className='right pr1'><MenuItemSelectedIcon /></span> : ''

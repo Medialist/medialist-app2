@@ -9,7 +9,7 @@ import CampaignContactsPage from './campaigns/campaign-contacts-page'
 import ContactsPage from './contacts/contacts-page'
 import ContactsImportPage from './contacts/contacts-import-page'
 import ContactPage from './contacts/contact-page'
-import SettingsPage from './users/settings-page'
+import SettingsPage from './users/settings/settings-page'
 import NotFoundPage from './errors/not-found-page'
 
 const Routes = ({ store, history }) => {
