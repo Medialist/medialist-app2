@@ -7,7 +7,7 @@ const mkdirp = require('mkdirp')
 
 async.waterfall([
   makeTargetDir,
-  readSvgDir,
+  findSvgs,
   createIndex,
   extractSvgs,
   createComponents
@@ -19,8 +19,10 @@ function makeTargetDir (next) {
   mkdirp(targetDir, () => next())
 }
 
-function readSvgDir (next) {
-  fs.readdir(svgSourceDir, (err, icons) => next(err, icons))
+function findSvgs (next) {
+  fs.readdir(svgSourceDir, (err, icons) => {
+    next(err, icons.filter((i) => path.extname(i) === '.svg'))
+  })
 }
 
 function extractSvgs (icons, next) {
@@ -46,7 +48,7 @@ function wrap (svg) {
 import React from 'react'
 export default function ${ComponentName} (props) {
   const className = \`svg-icon svg-icon-${iconName} \${props.className ? props.className :''}\`
-  return (<span className={className} dangerouslySetInnerHTML={{ __html: \`
+  return (<span {...props} className={className} dangerouslySetInnerHTML={{ __html: \`
 ${svg.def}
   \` }}></span>)
 }
