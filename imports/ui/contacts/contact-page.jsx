@@ -57,7 +57,7 @@ const ContactPage = React.createClass({
             <ContactNeedToKnowList items={needToKnows} />
           </div>
         </div>
-        <EditContact toggle={() => this.toggleEditContact()} open={editContactOpen} contact={contact}/>
+        <EditContact toggle={() => this.toggleEditContact()} open={editContactOpen} contact={contact} />
       </div>
     )
   }

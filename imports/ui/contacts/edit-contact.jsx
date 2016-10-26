@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react'
 import Helmet from 'react-helmet'
 import { CircleAvatar } from '../images/avatar'
-import { EmailIcon, PhoneIcon, MobileIcon, AddressIcon } from '../images/icons'
+import { EmailIcon, PhoneIcon, AddressIcon } from '../images/icons'
 
 const EditContact = React.createClass({
   propTypes: {
@@ -12,7 +12,7 @@ const EditContact = React.createClass({
   },
   render () {
     const { open, contact, toggle } = this.props
-    if (!contact || !open ) return null
+    if (!contact || !open) return null
     const { avatar, name, jobTitles, primaryOutlets } = contact
     const scrollableHeight = window.innerHeight - 396
     const inputWidth = 270
@@ -24,7 +24,7 @@ const EditContact = React.createClass({
     const htmlStyle = open ? 'height:100%; overflow:hidden' : ''
     return (
       <div>
-        <Helmet htmlAttributes= {{ style: htmlStyle }} />
+        <Helmet htmlAttributes={{ style: htmlStyle }} />
         <div className='fixed top-0 right-0 left-0 bottom-0' style={{background: 'rgba(35, 54, 75, 0.8)'}} onClick={toggle} />
         <div className='absolute top-0 right-0 left-0 bg-white fit mx-auto' style={{width: 675}}>
           <div className='inline-block right pointer f-xxl mx2 gray60 hover-blue' onClick={toggle}>&times;</div>
@@ -42,10 +42,10 @@ const EditContact = React.createClass({
           </div>
           <div style={{height: scrollableHeight, overflowY: 'scroll'}}>
             <div className='bg-gray90 border-top border-gray80'>
-              <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft:70}}>Details</label>
+              <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft: 70}}>Details</label>
               <div className='mx-auto py2' style={{width: inputWidth + iconWidth}}>
                 <div className='pt3'>
-                  <EmailIcon style={iconStyle} className='inline-block'/>
+                  <EmailIcon style={iconStyle} className='inline-block' />
                   <div className='inline-block'>
                     <input style={inputStyle} className='input' type='text' value='' placeholder='Email' />
                   </div>
@@ -54,7 +54,7 @@ const EditContact = React.createClass({
                   <span className='inline-block blue f-xs underline'>Add new email</span>
                 </div>
                 <div className='pt3'>
-                  <PhoneIcon style={iconStyle} className='inline-block'/>
+                  <PhoneIcon style={iconStyle} className='inline-block' />
                   <div className='inline-block'>
                     <input style={inputStyle} className='input' type='text' value='' placeholder='Phone number' />
                   </div>
@@ -65,10 +65,10 @@ const EditContact = React.createClass({
               </div>
             </div>
             <div className='bg-gray90 border-top border-gray80'>
-              <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft:70}}>Social</label>
+              <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft: 70}}>Social</label>
               <div className='mx-auto py2' style={{width: inputWidth + iconWidth}}>
                 <div className='pt3'>
-                  <EmailIcon style={iconStyle} className='inline-block'/>
+                  <EmailIcon style={iconStyle} className='inline-block' />
                   <div className='inline-block'>
                     <input style={inputStyle} className='input' type='text' value='' placeholder='Enter social or website url' />
                   </div>
@@ -79,28 +79,28 @@ const EditContact = React.createClass({
               </div>
             </div>
             <div className='bg-gray90 border-top border-gray80 pb6'>
-              <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft:70}}>Address</label>
+              <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft: 70}}>Address</label>
               <div className='mx-auto py2' style={{width: inputWidth + iconWidth}}>
                 <div className='pt3'>
-                  <AddressIcon style={iconStyle} className='inline-block'/>
+                  <AddressIcon style={iconStyle} className='inline-block' />
                   <div className='inline-block'>
                     <input style={inputStyle} className='input' type='text' value='' placeholder='Street' />
                   </div>
                 </div>
                 <div className='pt3'>
-                  <AddressIcon style={iconStyle} className='inline-block invisible'/>
+                  <AddressIcon style={iconStyle} className='inline-block invisible' />
                   <div className='inline-block'>
                     <input style={inputStyle} className='input' type='text' value='' placeholder='City' />
                   </div>
                 </div>
                 <div className='pt3'>
-                  <AddressIcon style={iconStyle} className='inline-block invisible'/>
+                  <AddressIcon style={iconStyle} className='inline-block invisible' />
                   <div className='inline-block'>
                     <input style={inputStyle} className='input' type='text' value='' placeholder='Postcode' />
                   </div>
                 </div>
                 <div className='pt3'>
-                  <AddressIcon style={iconStyle} className='inline-block invisible'/>
+                  <AddressIcon style={iconStyle} className='inline-block invisible' />
                   <div className='inline-block'>
                     <input style={inputStyle} className='input' type='text' value='' placeholder='Country' />
                   </div>
