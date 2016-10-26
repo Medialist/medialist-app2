@@ -307,6 +307,22 @@ h1 h2, h3, h4, h5, h6 {
   padding: 0;
 }
 
+.badge {
+  /* BYO font-size, bg-color */
+  display: inline-block;
+  color: var(--white);
+  padding: 2px var(--space-1);
+  border-radius: var(--border-radius);
+}
+
+.pill {
+  /* BYO font-size, bg-color */
+  display: inline-block;
+  color: var(--white);
+  padding: var(--space-1) 2px;
+  border-radius: 1em;
+}
+
 /* ---- Interactions -------------------------------------------------------- */
 
 .hover-opacity-50,
