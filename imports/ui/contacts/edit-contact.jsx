@@ -31,13 +31,13 @@ const EditContact = React.createClass({
           <div className='py6 center'>
             <CircleAvatar size={110} avatar={avatar} name={name} />
             <div>
-              <input className='input-inline inline-block mt4 f-xxl semibold border-bottom-dashed-blue' type='text' value={name} />
+              <input className='center input-inline mt4 f-xxl semibold' type='text' value={name} size={name.length + 2} />
             </div>
             <div>
-              <input className='input-inline inline-block mt1 f-lg border-bottom-dashed-blue' type='text' value={jobTitles} />
+              <input className='center input-inline mt1 f-lg gray10' type='text' value={jobTitles} size={jobTitles.length + 2} />
             </div>
             <div>
-              <input className='input-inline inline-block mt1 f-lg border-bottom-dashed-blue' type='text' value={primaryOutlets} />
+              <input className='center input-inline mt1 f-lg gray10' type='text' value={primaryOutlets} size={primaryOutlets.length + 2} />
             </div>
           </div>
           <div style={{height: scrollableHeight, overflowY: 'scroll'}}>

@@ -214,7 +214,6 @@ input {
 
 .border-gray10 { border-color:var(--gray10) !important }
 .border-gray80 { border-color:var(--gray80) !important }
-.border-bottom-dashed-blue { border-bottom: 1px dashed var(--blue) !important }
 
 .svg-icon svg {
   fill: currentColor;
@@ -266,8 +265,14 @@ input {
 }
 .input-inline {
   font-family: inherit;
-  height: 2.5rem;
-  padding: .5rem;
+  display: inline-block;
+  height: 1.8em;
+  padding: .4rem;
+  border-bottom: var(--gray60) 1px dashed;
+}
+.input-inline:focus {
+  border-bottom-color: var(--blue);
+  outline: none;
 }
 .select {
   font-family: inherit;
