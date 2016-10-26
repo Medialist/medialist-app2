@@ -14,7 +14,7 @@ const EditContact = React.createClass({
     const { open, contact, toggle } = this.props
     if (!contact || !open) return null
     const { avatar, name, jobTitles, primaryOutlets } = contact
-    const scrollableHeight = window.innerHeight - 396
+    const scrollableHeight = window.innerHeight - 380
     const inputWidth = 270
     const iconWidth = 30
     const inputStyle = { width: inputWidth }
@@ -46,7 +46,7 @@ const EditContact = React.createClass({
               <div className='mx-auto py2' style={{width: inputWidth + iconWidth}}>
                 <div className='pt3'>
                   <EmailIcon style={iconStyle} className='inline-block' />
-                  <div className='inline-block'>
+                  <div className='inline-block align-middle'>
                     <input style={inputStyle} className='input' type='text' value='' placeholder='Email' />
                   </div>
                 </div>
@@ -55,7 +55,7 @@ const EditContact = React.createClass({
                 </div>
                 <div className='pt3'>
                   <PhoneIcon style={iconStyle} className='inline-block' />
-                  <div className='inline-block'>
+                  <div className='inline-block align-middle'>
                     <input style={inputStyle} className='input' type='text' value='' placeholder='Phone number' />
                   </div>
                 </div>
@@ -69,7 +69,7 @@ const EditContact = React.createClass({
               <div className='mx-auto py2' style={{width: inputWidth + iconWidth}}>
                 <div className='pt3'>
                   <EmailIcon style={iconStyle} className='inline-block' />
-                  <div className='inline-block'>
+                  <div className='inline-block align-middle'>
                     <input style={inputStyle} className='input' type='text' value='' placeholder='Enter social or website url' />
                   </div>
                 </div>
@@ -83,25 +83,25 @@ const EditContact = React.createClass({
               <div className='mx-auto py2' style={{width: inputWidth + iconWidth}}>
                 <div className='pt3'>
                   <AddressIcon style={iconStyle} className='inline-block' />
-                  <div className='inline-block'>
+                  <div className='inline-block align-middle'>
                     <input style={inputStyle} className='input' type='text' value='' placeholder='Street' />
                   </div>
                 </div>
                 <div className='pt3'>
                   <AddressIcon style={iconStyle} className='inline-block invisible' />
-                  <div className='inline-block'>
+                  <div className='inline-block align-middle'>
                     <input style={inputStyle} className='input' type='text' value='' placeholder='City' />
                   </div>
                 </div>
                 <div className='pt3'>
                   <AddressIcon style={iconStyle} className='inline-block invisible' />
-                  <div className='inline-block'>
+                  <div className='inline-block align-middle'>
                     <input style={inputStyle} className='input' type='text' value='' placeholder='Postcode' />
                   </div>
                 </div>
                 <div className='pt3'>
                   <AddressIcon style={iconStyle} className='inline-block invisible' />
-                  <div className='inline-block'>
+                  <div className='inline-block align-middle'>
                     <input style={inputStyle} className='input' type='text' value='' placeholder='Country' />
                   </div>
                 </div>
