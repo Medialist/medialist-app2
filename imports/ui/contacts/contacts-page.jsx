@@ -4,10 +4,20 @@ import { createContainer } from 'meteor/react-meteor-data'
 import ContactsTable from './contacts-table'
 import SearchBox from '../lists/search-box'
 import ContactsActionsToast from './contacts-actions-toast'
+import SectorSelector from '../campaigns/sector-selector.jsx'
 
 const ContactsPage = React.createClass({
   getInitialState () {
-    return { sort: { updatedAt: -1 }, selections: [], term: '' }
+    return {
+      sort: { updatedAt: -1 },
+      selections: [],
+      term: '',
+      selectedSector: null
+    }
+  },
+
+  onSectorChange (selectedSector) {
+    this.setState({ selectedSector })
   },
 
   onSortChange (sort) {
@@ -27,11 +37,12 @@ const ContactsPage = React.createClass({
   },
 
   render () {
-    const { onSortChange, onSelectionsChange } = this
+    const { onSortChange, onSelectionsChange, onSectorChange } = this
     const { sort, term, selections } = this.state
 
     return (
       <div>
+        <SectorSelectorContainer selected={this.state.selectedSector} onSectorChange={onSectorChange} />
         <div className='bg-white shadow-2 m4'>
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
@@ -61,6 +72,10 @@ const ContactsPage = React.createClass({
   }
 })
 
+const SectorSelectorContainer = createContainer((props) => {
+  return { ...props, items, selected: props.selected || items[0] }
+}, SectorSelector)
+
 const ContactsTotal = ({ total }) => (
   <div>{total} contact{total === 1 ? '' : 's'} total</div>
 )
@@ -88,3 +103,15 @@ const ContactsTableContainer = createContainer((props) => {
 }, ContactsTable)
 
 export default ContactsPage
+
+// Fake data
+const items = [
+  { _id: 0, name: 'All', count: 10 },
+  { _id: 1, name: 'My campaigns', count: 5 },
+  { _id: 2, name: 'Corporate', count: 97 },
+  { _id: 3, name: 'Energy', count: 18 },
+  { _id: 4, name: 'Consumer', count: 120 },
+  { _id: 5, name: 'Healthcare', count: 55 },
+  { _id: 6, name: 'Public Affairs', count: 37 },
+  { _id: 7, name: 'Technology', count: 201 }
+]
