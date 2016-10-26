@@ -2,13 +2,7 @@ import React, { PropTypes } from 'react'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
 
-const items = [
-  'To contact',
-  'Contacted',
-  'Hot lead',
-  'Completed',
-  'Not interested'
-]
+const items = Object.values(window.Contacts.status)
 
 const Status = (props) => {
   const ref = props.name.toLowerCase().replace(' ', '-')
