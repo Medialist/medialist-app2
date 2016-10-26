@@ -30,7 +30,9 @@ const Routes = ({ store, history }) => {
           <Route path='import' component={ContactsImportPage} />
         </Route>
         <Route path='contact/:slug' component={ContactPage} />
-        <Route path='settings' component={SettingsPage} />
+        <Route path='settings' component={SettingsPage}>
+          <Route path=':selected' component={SettingsPage} />
+        </Route>
         <Route path='*' component={NotFoundPage} />
       </Route>
     </Router>
