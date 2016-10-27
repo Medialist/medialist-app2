@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import { createContainer } from 'meteor/react-meteor-data'
-import { SettingsIcon, MenuItemSelectedIcon } from '../../images/icons'
+import { SettingsIcon, ChevronRight } from '../../images/icons'
 import { CircleAvatar } from '../../images/avatar'
 import SettingsProfile from './profile'
 import SettingsPassword from './password'
@@ -76,10 +76,10 @@ function sideNav (selected) {
   return (
     <nav className='mt2 bg-white border-top border-left border-right border-gray80'>
       {menuItems.map((navItem) => {
-        const activeClass = navItem.slug === selected ? 'active-side-nav-menu-item' : ''
-        const activeIcon = navItem.slug === selected ? <span className='right pr1'><MenuItemSelectedIcon /></span> : ''
+        const activeClass = navItem.slug === selected ? 'active' : ''
+        const activeIcon = navItem.slug === selected ? <span className='right pr1'><ChevronRight /></span> : ''
         return (<Link to={`/settings/${navItem.slug}`} key={navItem.slug}>
-          <div className={`py4 px2 border-bottom border-gray80 ${activeClass}`}>{navItem.label}{activeIcon}</div>
+          <div className={`py4 pl3 pr2 border-bottom border-gray80 active-border-left-blue active-blue ${activeClass}`}>{navItem.label}{activeIcon}</div>
         </Link>)
       })}
     </nav>

@@ -382,10 +382,11 @@ input {
 .hover-blue:hover {
   color: var(--blue);
 }
-.active-side-nav-menu-item {
-  color: var(--blue) !important;
-  border-left: solid 5px var(--blue) !important;
-  margin-left: -5px;
+.active-blue.active {
+  color: var(--blue);
+}
+.active-border-left-blue.active {
+  box-shadow: inset 5px 0 0 0 var(--blue) !important;
 }
 /* ---- Rebass overrides ---------------------------------------------------- */
 
