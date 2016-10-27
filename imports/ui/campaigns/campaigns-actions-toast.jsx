@@ -4,7 +4,8 @@ import {
   FavouritesIcon,
   SectorIcon,
   TagIcon,
-  DeleteIcon
+  DeleteIcon,
+  ViewIcon
 } from '../images/icons'
 
 const CampaignsActionsToast = React.createClass({
@@ -33,29 +34,20 @@ const CampaignsActionsToast = React.createClass({
 
     return (
       <Fixed right bottom left>
-        <div className='bg-white shadow-1 p4 flex'>
+        <div className='bg-white shadow-1 p4 flex items-center'>
           <div className='flex-none'>
-            {campaigns.length} campaign{campaigns.length === 1 ? '' : 's'} selected
+            <span className='badge f-sm bg-blue mr2'>{campaigns.length}</span>
+            <span className='gray20'>campaign{campaigns.length === 1 ? '' : 's'} selected</span>
           </div>
           <div className='flex-auto center'>
-            <a href='#' onClick={() => onViewClick(campaigns)}>
-              👀
-            </a>
-            <a href='#' onClick={() => onSectorClick(campaigns)}>
-              <SectorIcon />
-            </a>
-            <a href='#' onClick={() => onFavouriteClick(campaigns)}>
-              <FavouritesIcon />
-            </a>
-            <a href='#' onClick={() => onTagClick(campaigns)}>
-              <TagIcon />
-            </a>
-            <a href='#' onClick={() => onDeleteClick(campaigns)}>
-              <DeleteIcon />
-            </a>
+            <ViewIcon className='p3 pointer' onClick={() => onViewClick(campaigns)} />
+            <SectorIcon className='p3 pointer' onClick={() => onSectorClick(campaigns)} />
+            <FavouritesIcon className='p3 pointer' onClick={() => onFavouriteClick(campaigns)} />
+            <TagIcon className='p3 pointer' onClick={() => onTagClick(campaigns)} />
+            <DeleteIcon className='p3 pointer' onClick={() => onDeleteClick(campaigns)} />
           </div>
           <div className='flex-none'>
-            <button type='button' onClick={() => onDeselectAllClick(campaigns)}>Deselect all</button>
+            <button className='btn bg-transparent grey40' onClick={() => onDeselectAllClick(campaigns)}>Deselect all</button>
           </div>
         </div>
       </Fixed>
