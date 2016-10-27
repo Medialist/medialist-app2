@@ -31,13 +31,24 @@ const CampaignsPage = React.createClass({
     this.setState({ selections: [] })
   },
 
+  newCampaign () {
+    console.log('TODO: Open new campaign modal')
+  },
+
   render () {
     const { onSortChange, onSelectionsChange, onSectorChange } = this
     const { sort, term, selections, selectedSector } = this.state
 
     return (
       <div>
-        <SectorSelectorContainer selected={selectedSector} onSectorChange={onSectorChange} />
+        <div className='flex items-center justify-end bg-white width-100'>
+          <div className='flex-auto border-right border-gray80'>
+            <SectorSelectorContainer selected={selectedSector} onSectorChange={onSectorChange} />
+          </div>
+          <div className='flex-none bg-white center px4'>
+            <button className='btn bg-completed white mx4' onClick={this.newCampaign}>New Campaign</button>
+          </div>
+        </div>
         <div className='bg-white shadow-2 m4'>
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
