@@ -139,6 +139,7 @@ h1 h2, h3, h4, h5, h6 {
 
 .width-100 { width:100% }
 .max-width-lg { max-width: 1150px; }
+.max-width-sm { max-width: 320px; }
 
 .pointer { cursor: pointer; }
 
@@ -307,6 +308,9 @@ h1 h2, h3, h4, h5, h6 {
   padding: 0;
 }
 
+button {
+  outline: none;
+}
 /* ---- Interactions -------------------------------------------------------- */
 
 .hover-opacity-50,
