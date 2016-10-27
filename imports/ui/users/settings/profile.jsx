@@ -26,7 +26,7 @@ export default React.createClass({
     return (
       <article>
         <div className='flex justify-center py2'>
-          <CircleAvatar avatar={this.state.avatar} size={200} className='mt4 mb2'/>
+          <CircleAvatar avatar={this.state.avatar} size={200} className='mt4 mb2' />
         </div>
         <div className='block py2 center'>
           <div className='semibold gray10 f-xl py2'>{user.profile.name}</div>

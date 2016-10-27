@@ -78,9 +78,9 @@ function sideNav (selected) {
       {menuItems.map((navItem) => {
         const activeClass = navItem.slug === selected ? 'active-side-nav-menu-item' : ''
         const activeIcon = navItem.slug === selected ? <span className='right pr1'><MenuItemSelectedIcon /></span> : ''
-        return <Link to={`/settings/${navItem.slug}`} key={navItem.slug}>
+        return (<Link to={`/settings/${navItem.slug}`} key={navItem.slug}>
           <div className={`py4 px2 border-bottom border-gray80 ${activeClass}`}>{navItem.label}{activeIcon}</div>
-        </Link>
+        </Link>)
       })}
     </nav>
   )
