@@ -8,10 +8,10 @@ const EditContact = React.createClass({
     contact: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onSubmit: PropTypes.func.isRequired,
-    toggle: PropTypes.func.isRequired
+    onDismiss: PropTypes.func.isRequired
   },
   render () {
-    const { open, contact, toggle } = this.props
+    const { open, contact, onDismiss } = this.props
     if (!contact || !open) return null
     const { avatar, name, jobTitles, primaryOutlets } = contact
     const scrollableHeight = window.innerHeight - 380
@@ -25,9 +25,9 @@ const EditContact = React.createClass({
     return (
       <div>
         <Helmet htmlAttributes={{ style: htmlStyle }} />
-        <div className='fixed top-0 right-0 left-0 bottom-0' style={{background: 'rgba(35, 54, 75, 0.8)'}} onClick={toggle} />
+        <div className='fixed top-0 right-0 left-0 bottom-0' style={{background: 'rgba(35, 54, 75, 0.8)'}} onClick={onDismiss} />
         <div className='absolute top-0 right-0 left-0 bg-white fit mx-auto' style={{width: 675}}>
-          <div className='inline-block right pointer f-xxl mx2 gray60 hover-blue' onClick={toggle}>&times;</div>
+          <div className='inline-block right pointer f-xxl mx2 gray60 hover-blue' onClick={onDismiss}>&times;</div>
           <div className='py6 center'>
             <CircleAvatar size={110} avatar={avatar} name={name} />
             <div>
@@ -110,7 +110,7 @@ const EditContact = React.createClass({
           </div>
           <div className='p4 bg-white'>
             <button className='btn bg-completed white right'>Save Changes</button>
-            <button className='btn bg-transparent gray40 right mr2' onClick={toggle}>Cancel</button>
+            <button className='btn bg-transparent gray40 right mr2' onClick={onDismiss}>Cancel</button>
             <button className='btn bg-transparent not-interested'>Delete Contact</button>
           </div>
         </div>
