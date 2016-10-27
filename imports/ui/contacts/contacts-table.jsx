@@ -72,6 +72,7 @@ const ContactsTable = React.createClass({
             <SortableHeader
               className='left-align'
               sortDirection={sort['name']}
+              style={{width: '20%'}}
               onSortChange={(d) => onSortChange({ name: d })}>
               Name
             </SortableHeader>
@@ -84,14 +85,16 @@ const ContactsTable = React.createClass({
             <SortableHeader
               className='left-align'
               sortDirection={sort['primaryOutlets']}
+              style={{width: '20%'}}
               onSortChange={(d) => onSortChange({ 'primaryOutlets': d })}>
               Media Outlet
             </SortableHeader>
-            <th className='left-align'>Email</th>
-            <th className='left-align'>Phone</th>
+            <th className='left-align' style={{width: '15%'}}>Email</th>
+            <th className='left-align' style={{width: '15%'}}>Phone</th>
             <SortableHeader
               className='left-align'
               sortDirection={sort['updatedAt']}
+              style={{width: '22%'}}
               onSortChange={(d) => onSortChange({ updatedAt: d })}>
               Updated
             </SortableHeader>

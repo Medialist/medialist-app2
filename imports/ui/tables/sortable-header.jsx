@@ -6,7 +6,8 @@ const SortableHeader = React.createClass({
   propTypes: {
     sortDirection: PropTypes.number,
     onSortChange: PropTypes.func.isRequired,
-    className: PropTypes.string
+    className: PropTypes.string,
+    style: PropTypes.object
   },
 
   getDefaultProps () {
@@ -29,9 +30,9 @@ const SortableHeader = React.createClass({
 
   render () {
     const { children, sortDirection } = this.props
-
+    const style = Object.assign({}, this.props.style, {whiteSpace: 'nowrap', overflowX: 'hidden'})
     return (
-      <th className={this.getClassName()} onClick={this.onClick}>
+      <th className={this.getClassName()} onClick={this.onClick} style={style}>
         <span className='mr1'>{children}</span>
         <SortIcon direction={sortDirection} />
       </th>
