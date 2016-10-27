@@ -34,29 +34,20 @@ const ContactsActionsToast = React.createClass({
 
     return (
       <Fixed right bottom left>
-        <div className='bg-white shadow-1 p4 flex'>
+        <div className='bg-white shadow-1 p4 flex items-center'>
           <div className='flex-none'>
-            {contacts.length} contact{contacts.length === 1 ? '' : 's'} selected
+            <span className='badge f-sm bg-blue mr2'>{contacts.length}</span>
+            <span className='gray20'>contact{contacts.length === 1 ? '' : 's'} selected</span>
           </div>
           <div className='flex-auto center'>
-            <a href='#' onClick={() => onCampaignClick(contacts)}>
-              <FeedCampaignIcon />
-            </a>
-            <a href='#' onClick={() => onSectorClick(contacts)}>
-              <SectorIcon />
-            </a>
-            <a href='#' onClick={() => onFavouriteClick(contacts)}>
-              <FavouritesIcon />
-            </a>
-            <a href='#' onClick={() => onTagClick(contacts)}>
-              <TagIcon />
-            </a>
-            <a href='#' onClick={() => onDeleteClick(contacts)}>
-              <DeleteIcon />
-            </a>
+            <FeedCampaignIcon className='p3 pointer' onClick={() => onCampaignClick(contacts)} />
+            <SectorIcon className='p3 pointer' onClick={() => onSectorClick(contacts)} />
+            <FavouritesIcon className='p3 pointer' onClick={() => onFavouriteClick(contacts)} />
+            <TagIcon className='p3 pointer' onClick={() => onTagClick(contacts)} />
+            <DeleteIcon className='p3 pointer' onClick={() => onDeleteClick(contacts)} />
           </div>
           <div className='flex-none'>
-            <button type='button' onClick={() => onDeselectAllClick(contacts)}>Deselect all</button>
+            <button className='btn bg-transparent grey40' onClick={() => onDeselectAllClick(contacts)}>Deselect all</button>
           </div>
         </div>
       </Fixed>
