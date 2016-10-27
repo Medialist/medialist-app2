@@ -341,6 +341,22 @@ input {
   padding: 0;
 }
 
+.badge {
+  /* BYO font-size, bg-color */
+  display: inline-block;
+  color: var(--white);
+  padding: 2px var(--space-1);
+  border-radius: var(--border-radius);
+}
+
+.pill {
+  /* BYO font-size, bg-color */
+  display: inline-block;
+  color: var(--white);
+  padding: var(--space-1) 2px;
+  border-radius: 1em;
+}
+
 /* ---- Interactions -------------------------------------------------------- */
 
 .hover-opacity-50,
