@@ -5,10 +5,22 @@ import CampaignsTable from './campaigns-table'
 import SearchBox from '../lists/search-box'
 import SectorSelector from './sector-selector.jsx'
 import CampaignsActionsToast from './campaigns-actions-toast'
+import NewCampaign from './campaigns-create-new'
 
 const CampaignsPage = React.createClass({
   getInitialState () {
-    return { sort: { updatedAt: -1 }, selections: [], term: '', selectedSector: null }
+    return {
+      sort: { updatedAt: -1 },
+      selections: [],
+      term: '',
+      selectedSector: null,
+      createNewCampaignOpen: false
+    }
+  },
+
+  toggleNewCampaign () {
+    const createNewCampaignOpen = !this.state.createNewCampaignOpen
+    this.setState({ createNewCampaignOpen })
   },
 
   onSortChange (sort) {
@@ -31,13 +43,13 @@ const CampaignsPage = React.createClass({
     this.setState({ selections: [] })
   },
 
-  newCampaign () {
-    console.log('TODO: Open new campaign modal')
+  onSubmit () {
+    console.log('TODO: Create a new campaign')
   },
 
   render () {
     const { onSortChange, onSelectionsChange, onSectorChange } = this
-    const { sort, term, selections, selectedSector } = this.state
+    const { sort, term, selections, selectedSector, createNewCampaignOpen } = this.state
 
     return (
       <div>
@@ -46,9 +58,10 @@ const CampaignsPage = React.createClass({
             <SectorSelectorContainer selected={selectedSector} onSectorChange={onSectorChange} />
           </div>
           <div className='flex-none bg-white center px4'>
-            <button className='btn bg-completed white mx4' onClick={this.newCampaign}>New Campaign</button>
+            <button className='btn bg-completed white mx4' onClick={this.toggleNewCampaign}>New Campaign</button>
           </div>
         </div>
+        <NewCampaign onDismiss={this.toggleNewCampaign} onSubmit={this.onSubmit} open={createNewCampaignOpen} />
         <div className='bg-white shadow-2 m4'>
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
