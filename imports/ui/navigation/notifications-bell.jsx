@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
 import Button from 'rebass/dist/Button'
-import { NotificationBell } from '../images/icons'
+import { NotificationBell, MenuItemSelectedIcon } from '../images/icons'
 import { Notifications } from '../users/notification'
 
 const NotificationsBell = React.createClass({
@@ -32,18 +32,39 @@ const NotificationsBell = React.createClass({
   },
 
   render () {
+    const style = { width: '480px' }
     return (
       <Dropdown>
         <Button backgroundColor='transparent' onClick={this.onBellClick}><NotificationBell /></Button>
         <DropdownMenu open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss} right>
-          <div className='max-width-sm'>
+          <div style={style}>
+            {NotificationSummary(notifications, this.onMarkAllReadClick)}
             {Notifications({notifications})}
+            <Link to='/notifications' onClick={this.onDropdownDismiss}>
+              <div className='center blue p3 border-top border-gray80'>
+                See All<span className='pl3'><MenuItemSelectedIcon /></span>
+              </div>
+            </Link>
           </div>
         </DropdownMenu>
       </Dropdown>
     )
   }
 })
+
+const NotificationSummary = (notifications, onClick) => {
+  const unread = notifications.filter((n) => !!n.read)
+  return (
+    <div className='flex items-center my3 pa3'>
+      <div className='flex-none'>
+        <span className='ml2 px2 py1 bg-not-interested circle inline-block white'>{unread.length}</span>
+        <span className='px1'>Unread notifications</span>
+      </div>
+      <hr className='flex-auto' style={{opacity: 0}} />
+      <span className='mr2 flex-none blue no-select pointer' onClick={onClick}>Mark all as read</span>
+    </div>
+  )
+}
 
 export default NotificationsBell
 
