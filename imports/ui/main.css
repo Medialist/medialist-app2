@@ -408,3 +408,8 @@ button {
   border-top: 0 none;
   border-radius: 2px;
 }
+
+.DropdownMenu {
+  top: 3.1rem !important;
+  right: .27rem !important;
+}
