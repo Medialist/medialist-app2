@@ -15,7 +15,7 @@ export default React.createClass({
     return (
       <div>
         <Helmet htmlAttributes={{ style: htmlStyle }} />
-        <div className='fixed top-0 right-0 left-0 bottom-0' style={{background: 'rgba(35, 54, 75, 0.8)'}} onClick={onDismiss}></div>
+        <div className='fixed top-0 right-0 left-0 bottom-0' style={{background: 'rgba(35, 54, 75, 0.8)'}} onClick={onDismiss} />
         <div className='absolute top-0 right-0 left-0 bg-white fit mx-auto mt6' style={{width: 675}}>
           <div className='inline-block right pointer f-xxl mx2 gray60 hover-blue' onClick={onDismiss}>&times;</div>
           <div className='p4'>
