@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
 import Button from 'rebass/dist/Button'
-import { NotificationBell, MenuItemSelectedIcon } from '../images/icons'
+import { NotificationBell, ChevronRight } from '../images/icons'
 import { Notifications } from '../users/notification'
 
 const NotificationsBell = React.createClass({
@@ -42,7 +42,7 @@ const NotificationsBell = React.createClass({
             {Notifications({notifications})}
             <Link to='/notifications' onClick={this.onDropdownDismiss}>
               <div className='center blue p3 border-top border-gray80'>
-                See All<span className='pl3'><MenuItemSelectedIcon /></span>
+                See All<span className='pl3'><ChevronRight /></span>
               </div>
             </Link>
           </div>
