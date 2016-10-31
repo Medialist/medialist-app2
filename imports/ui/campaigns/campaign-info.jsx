@@ -69,7 +69,7 @@ const CampaignInfo = React.createClass({
           <div className='px2 py3'>
             <Tag name='amazon' count='43' onClick={() => console.log('tag clicked')} />
             <Tag name='e-commerce' count='8' onClick={() => console.log('tag clicked')} />
-            <Tag name='retail' count='14'onClick={() => console.log('tag clicked')} />
+            <Tag name='retail' count='14' onClick={() => console.log('tag clicked')} />
           </div>
         </section>
       </div>
