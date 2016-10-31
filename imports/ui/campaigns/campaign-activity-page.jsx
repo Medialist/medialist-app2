@@ -10,7 +10,8 @@ import ActivityFeed from '../dashboard/activity-feed'
 
 const CampaignActivityPage = React.createClass({
   propTypes: {
-    campaign: PropTypes.array
+    campaign: PropTypes.object,
+    contacts: PropTypes.array
   },
 
   getInitialState () {
@@ -38,8 +39,10 @@ const CampaignActivityPage = React.createClass({
   },
 
   render () {
-    const { campaign } = this.props
+    const { campaign, contacts } = this.props
     const { editModalOpen } = this.state
+    if (!campaign) return null
+    console.log('contacts', contacts)
     return (
       <div>
         <CampaignTopbar campaign={campaign} onAddClick={this.onAddClick} />
@@ -52,6 +55,7 @@ const CampaignActivityPage = React.createClass({
             <ActivityFeed campaign={campaign} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
+            <CampaignContactList contacts={contacts} campaign={campaign} />
           </div>
         </div>
       </div>
@@ -62,6 +66,9 @@ const CampaignActivityPage = React.createClass({
 export default createContainer((props) => {
   const { slug } = props.params
   Meteor.subscribe('campaign', slug)
+  Meteor.subscribe('contacts-by-campaign', slug)
   const campaign = window.Medialists.findOne({ slug })
-  return { ...props, campaign }
+  // TODO: need to be able to sort contacts by reacently updated with respect to the campaign.
+  const contacts = window.Contacts.find({medialists: slug}, {limit: 7, sort: {updatedAt: -1}},).fetch()
+  return { ...props, campaign, contacts }
 }, CampaignActivityPage)
