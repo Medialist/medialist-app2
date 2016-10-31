@@ -33,3 +33,14 @@ Meteor.publish('contact', function (slug) {
   check(slug, String)
   return Contacts.find({ slug }, { fields: { importedData: 0 } })
 })
+
+Meteor.publish('contacts-by-campaign', function (campaignSlug, limit) {
+  if (!this.userId) return this.ready()
+  check(campaignSlug, String)
+  const opts = { sort: { updatedAt: -1 }, fields: { importedData: 0 } }
+  if (limit) {
+    check(limit, Number)
+    opts.limit = limit
+  }
+  return Contacts.find({ medialists: campaignSlug }, opts)
+})
