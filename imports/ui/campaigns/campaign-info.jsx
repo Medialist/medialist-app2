@@ -16,10 +16,6 @@ const CampaignInfo = React.createClass({
     onEditClick: PropTypes.func
   },
 
-  getInitialState () {
-    return { showMore: false }
-  },
-
   onShowMoreToggleClick (e) {
     e.preventDefault()
     this.setState({ showMore: !this.state.showMore })
@@ -40,8 +36,6 @@ const CampaignInfo = React.createClass({
   render () {
     if (!this.props.campaign) return null
     const { name, avatar, purpose } = this.props.campaign
-    const { showMore } = this.state
-
     return (
       <div>
         <div className='mb1'>

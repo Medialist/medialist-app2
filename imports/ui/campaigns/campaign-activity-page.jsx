@@ -40,9 +40,7 @@ const CampaignActivityPage = React.createClass({
 
   render () {
     const { campaign, contacts } = this.props
-    const { editModalOpen } = this.state
     if (!campaign) return null
-    console.log('contacts', contacts)
     return (
       <div>
         <CampaignTopbar campaign={campaign} onAddClick={this.onAddClick} />
@@ -69,6 +67,6 @@ export default createContainer((props) => {
   Meteor.subscribe('contacts-by-campaign', slug)
   const campaign = window.Medialists.findOne({ slug })
   // TODO: need to be able to sort contacts by reacently updated with respect to the campaign.
-  const contacts = window.Contacts.find({medialists: slug}, {limit: 7, sort: {updatedAt: -1}},).fetch()
+  const contacts = window.Contacts.find({medialists: slug}, {limit: 7, sort: {updatedAt: -1}}).fetch()
   return { ...props, campaign, contacts }
 }, CampaignActivityPage)
