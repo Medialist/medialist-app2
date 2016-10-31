@@ -10,10 +10,42 @@ const EditContact = React.createClass({
     onSubmit: PropTypes.func.isRequired,
     onDismiss: PropTypes.func.isRequired
   },
+
+  getInitialState () {
+    return this.props.contacts || {
+      avatar: '',
+      name: '',
+      jobTitles: '',
+      primaryOutlets: '',
+      emails: [],
+      phones: [],
+      socials: []
+    }
+  },
+
+  onProfileChange (evt) {
+    const {name, value} = evt.target
+    console.log('onProfileChange', name, value)
+    this.setState({[name]: value})
+  },
+
+  onEmailChange (evt) {
+
+  },
+
+  onSocialChange (evt) {
+
+  },
+
+  onPhoneChange (evt) {
+
+  },
+
   render () {
-    const { open, contact, onDismiss } = this.props
-    if (!contact || !open) return null
-    const { avatar, name, jobTitles, primaryOutlets } = contact
+    const { open, onDismiss } = this.props
+    if (!open) return null
+    const { avatar, name, jobTitles, primaryOutlets } = this.state
+    const { onProfileChange } = this
     const scrollableHeight = window.innerHeight - 380
     const inputWidth = 270
     const iconWidth = 30
@@ -31,13 +63,13 @@ const EditContact = React.createClass({
           <div className='py6 center'>
             <CircleAvatar size={110} avatar={avatar} name={name} />
             <div>
-              <input className='center input-inline mt4 f-xxl semibold' type='text' value={name} size={name.length + 2} />
+              <input className='center input-inline mt4 f-xxl semibold' type='text' name='name' value={name} size={name.length + 2} onChange={onProfileChange} />
             </div>
             <div>
-              <input className='center input-inline mt1 f-lg gray10' type='text' value={jobTitles} size={jobTitles.length + 2} />
+              <input className='center input-inline mt1 f-lg gray10' type='text' name='jobTitles' value={jobTitles} size={jobTitles.length + 2} onChange={onProfileChange} />
             </div>
             <div>
-              <input className='center input-inline mt1 f-lg gray10' type='text' value={primaryOutlets} size={primaryOutlets.length + 2} />
+              <input className='center input-inline mt1 f-lg gray10' type='text' name='primaryOutlets' value={primaryOutlets} size={primaryOutlets.length + 2} onChange={onProfileChange} />
             </div>
           </div>
           <div style={{height: scrollableHeight, overflowY: 'scroll'}}>
