@@ -60,7 +60,7 @@ const CampaignInfo = React.createClass({
         </section>
         <section>
           <InfoHeader name='Sectors' onClick={this.props.onAddSectors} />
-          <div className='px2 py3'>
+          <div className='py3'>
             <span className='pointer p2 blue f-sm'>Corporate</span>
           </div>
         </section>

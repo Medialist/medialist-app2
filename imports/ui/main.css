@@ -362,7 +362,7 @@ input {
   display: inline-block;
   color: var(--white);
   padding: 2px var(--space-1);
-  border-radius: 1em;
+  border-radius: 2em;
   min-width: 2em;
   text-align: center;
 }
