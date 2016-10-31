@@ -11,7 +11,8 @@ import ActivityFeed from '../dashboard/activity-feed'
 const CampaignActivityPage = React.createClass({
   propTypes: {
     campaign: PropTypes.object,
-    contacts: PropTypes.array
+    contacts: PropTypes.array,
+    contactsCount: PropTypes.number
   },
 
   getInitialState () {
@@ -39,7 +40,7 @@ const CampaignActivityPage = React.createClass({
   },
 
   render () {
-    const { campaign, contacts } = this.props
+    const { campaign, contacts, contactsCount } = this.props
     if (!campaign) return null
     return (
       <div>
@@ -49,11 +50,11 @@ const CampaignActivityPage = React.createClass({
             <CampaignInfo campaign={campaign} onEditClick={this.toggleEditModal} />
           </div>
           <div className='flex-auto px2' >
-            <PostBox campaigns={[campaign]}onFeedback={this.onFeedback} />
+            <PostBox campaigns={[campaign]} onFeedback={this.onFeedback} />
             <ActivityFeed campaign={campaign} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
-            <CampaignContactList contacts={contacts} campaign={campaign} />
+            <CampaignContactList contacts={contacts} contactsCount={contactsCount} campaign={campaign} />
           </div>
         </div>
       </div>
@@ -66,7 +67,8 @@ export default createContainer((props) => {
   Meteor.subscribe('campaign', slug)
   Meteor.subscribe('contacts-by-campaign', slug)
   const campaign = window.Medialists.findOne({ slug })
-  // TODO: need to be able to sort contacts by reacently updated with respect to the campaign.
+  // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
   const contacts = window.Contacts.find({medialists: slug}, {limit: 7, sort: {updatedAt: -1}}).fetch()
-  return { ...props, campaign, contacts }
+  const contactsCount = window.Contacts.find({medialists: slug}).count()
+  return { ...props, campaign, contacts, contactsCount }
 }, CampaignActivityPage)
