@@ -1,8 +1,9 @@
 import React, { PropTypes } from 'react'
+import values from 'lodash.values'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
 
-const items = Object.values(window.Contacts.status)
+const items = values(window.Contacts.status)
 
 const Status = (props) => {
   const ref = props.name.toLowerCase().replace(' ', '-')

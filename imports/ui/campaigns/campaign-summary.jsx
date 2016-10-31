@@ -1,10 +1,10 @@
 import React from 'react'
+import values from 'lodash.values'
 import { SquareAvatar } from '../images/avatar'
 
 export default (props) => {
   const { contacts, name, avatar } = props.campaign
-  const statuses = Object.values(contacts || [])
-
+  const statuses = values(contacts || [])
   // { 'Completed': 10, 'Hot Lead': 3, etc}
   const counts = statuses.reduce((counts, s) => {
     if (!counts[s]) counts[s] = 0
@@ -15,8 +15,8 @@ export default (props) => {
   return (
     <div className='pt4 pb2 pr2 pl6 clearfix'>
       <div className='inline-block right'>
-        {Object.values(window.Contacts.status).map((status, i) => (
-          <div className={`inline-block px3 border-left ${i > 0 ? 'border-gray80' : 'border-transparent'}`}>
+        {values(window.Contacts.status).map((status, i) => (
+          <div key={status} className={`inline-block px3 border-left ${i > 0 ? 'border-gray80' : 'border-transparent'}`}>
             <div className='gray20 normal center pb1' style={{fontSize: 20}}>{counts[status] || 0}</div>
             <div className='gray40 semibold f-xxs caps center'>{status}</div>
           </div>

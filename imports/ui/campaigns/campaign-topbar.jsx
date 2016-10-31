@@ -8,9 +8,12 @@ const CampaignTopbar = React.createClass({
     onBackClick: PropTypes.func
   },
 
-  onBackClick (e) {
+  getDefaultProps () {
+    return { backLinkText: 'Back' }
+  },
+
+  onBackClick () {
     if (this.props.onBackClick) return this.props.onBackClick()
-    e.preventDefault()
     browserHistory.go(-1)
   },
 
@@ -20,7 +23,7 @@ const CampaignTopbar = React.createClass({
     return (
       <nav className='block bg-white mb4 flex items-center'>
         <div className='flex-auto'>
-          <span className='pointer inline-block p4' onClick={this.onBackClick}>{`◀ ${backLinkText || 'Back'}`}</span>
+          <span className='pointer inline-block p4' onClick={this.onBackClick}>{`◀ ${backLinkText}`}</span>
         </div>
         <div className='flex-none border-left border-gray80 px4 py3'>
           <button type='button' className='btn white bg-blue mx2' onClick={() => console.log('TODO: Add to campaign')}>
