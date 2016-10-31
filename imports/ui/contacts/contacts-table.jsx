@@ -6,6 +6,7 @@ import FromNow from '../time/from-now'
 import YouOrName from '../users/you-or-name'
 import { CircleAvatar } from '../images/avatar'
 import isSameItems from '../lists/is-same-items'
+import StatusSelector from '../feedback/status-selector'
 
 const ContactsTable = React.createClass({
   propTypes: {
@@ -18,7 +19,11 @@ const ContactsTable = React.createClass({
     // Selected contacts in the table
     selections: PropTypes.array,
     // Callback when selection(s) change
-    onSelectionsChange: PropTypes.func
+    onSelectionsChange: PropTypes.func,
+    // Optional campaign for calculating a contacts status
+    campaign: PropTypes.object,
+    // Callback when contact status is changed
+    onStatusChange: PropTypes.func
   },
 
   onSelectAllChange () {
@@ -48,7 +53,7 @@ const ContactsTable = React.createClass({
   },
 
   render () {
-    const { sort, onSortChange, contacts, selections } = this.props
+    const { sort, onSortChange, contacts, selections, campaign, onStatusChange } = this.props
 
     if (!contacts.length) {
       return <p className='p4 mb2 f-xl semibold center'>No contacts yet</p>
@@ -94,10 +99,13 @@ const ContactsTable = React.createClass({
             <SortableHeader
               className='left-align'
               sortDirection={sort['updatedAt']}
-              style={{width: '22%'}}
+              style={{width: '11%'}}
               onSortChange={(d) => onSortChange({ updatedAt: d })}>
               Updated
             </SortableHeader>
+            {campaign && (
+              <th className='left-align' style={{width: '15%'}}>Status</th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -114,7 +122,7 @@ const ContactsTable = React.createClass({
               updatedAt,
               updatedBy
             } = contact
-
+            const status = campaign && campaign.contacts[slug]
             return (
               <SelectableRow data={contact} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id}>
                 <td className='left-align'>
@@ -132,8 +140,14 @@ const ContactsTable = React.createClass({
                   <DisplayPhone phones={phones} />
                 </td>
                 <td className='left-align'>
-                  <FromNow date={updatedAt} /> by <YouOrName user={updatedBy} />
+                  <FromNow className='semibold f-sm' date={updatedAt} />
+                  <div className='normal f-sm'>by <YouOrName user={updatedBy} /></div>
                 </td>
+                {campaign && (
+                  <td className='left-align'>
+                    <StatusSelector status={status} onChange={(status) => onStatusChange({status, contact})} />
+                  </td>
+                )}
               </SelectableRow>
             )
           })}

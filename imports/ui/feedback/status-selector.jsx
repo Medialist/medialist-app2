@@ -6,21 +6,22 @@ const items = Object.values(window.Contacts.status)
 
 const Status = (props) => {
   const ref = props.name.toLowerCase().replace(' ', '-')
-  const className = `inline-block circle bg-${ref}`
+  const className = `inline-block align-middle circle bg-${ref}`
   return (
     <div>
       <span className={className} style={{width: 12, height: 12}} />
-      <span className='ml2'>{props.name}</span>
+      <span className='ml2 uppercase f-xxs semibold gray20 letter-spacing-1'>{props.name}</span>
     </div>
   )
 }
 
 const StatusSelector = React.createClass({
   propTypes: {
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
+    status: PropTypes.object
   },
   getInitialState () {
-    return {open: false, status: null}
+    return {open: false}
   },
   openDropdown () {
     this.setState({open: true})
@@ -29,21 +30,27 @@ const StatusSelector = React.createClass({
     this.setState({open: false})
   },
   onLinkClick (status) {
-    this.setState({open: false, status: status})
+    this.setState({open: false})
     this.props.onChange(status)
   },
   render () {
-    const { status } = this.state
+    const { status } = this.props
     return (
       <div className='inline-block'>
         <Dropdown>
-          <button className='btn bg-transparent border-gray80 mx2' onClick={this.openDropdown}>
-            { status ? <Status name={status} /> : 'Select status' }
+          { status ? (
+            <button className='btn bg-transparent' onClick={this.openDropdown}>
+              <Status name={status} />
+            </button>
+        ) : (
+          <button className='btn bg-transparent border-gray80' onClick={this.openDropdown}>
+            Select status
           </button>
+        )}
           <DropdownMenu right style={{ width: 223 }} open={this.state.open} onDismiss={this.closeDropdown}>
             <nav className='py3'>
               {items.map((item) => (
-                <div key={item} className='px3 py2 pointer uppercase f-xxs semibold gray20 letter-spacing-1 hover-bg-gray90' onClick={() => this.onLinkClick(item)}>
+                <div key={item} className='px3 py2 pointer hover-bg-gray90' onClick={() => this.onLinkClick(item)}>
                   <Status name={item} />
                 </div>
               ))}
