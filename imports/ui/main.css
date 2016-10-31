@@ -212,6 +212,7 @@ input {
 .bg-hot-lead { background-color: var(--status-orange) !important }
 .bg-completed { background-color: var(--status-green) !important }
 
+.border-transparent { border-color: transparent !important }
 .border-gray10 { border-color:var(--gray10) !important }
 .border-gray20 { border-color:var(--gray20) !important }
 .border-gray80 { border-color:var(--gray80) !important }

@@ -24,17 +24,17 @@ const CampaignContactList = React.createClass({
     const { contacts, campaign, contactsCount } = this.props
     if (!contacts || !campaign) return null
     return (
-      <aside className='bg-white mb4 p4 shadow-2'>
+      <aside className='bg-white mb4 shadow-2'>
         <header className='border-gray80 border-bottom'>
-          <h1 className='m0 pb4'>
+          <Link className='block pt5 pb4 px4' to={`/campaign/${campaign.slug}/contacts`}>
             <span className='pill f-xs bg-blue'>{contactsCount}</span>
             <span className='f-md semibold gray20 ml2'>Contacts</span>
-          </h1>
+          </Link>
         </header>
-        <div className='pb3'>
+        <div className='pb3 px4'>
           {contacts.map((contact) => <CampaignContact {...contact} />)}
         </div>
-        <footer className='center border-gray80 border-top pt3'>
+        <footer className='center border-gray80 border-top p4'>
           <Link to={`/campaign/${campaign.slug}/contacts`} className='block blue'>Show all</Link>
         </footer>
       </aside>
