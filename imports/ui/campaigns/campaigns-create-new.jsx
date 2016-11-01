@@ -1,13 +1,15 @@
 import React, { PropTypes } from 'react'
 import Helmet from 'react-helmet'
+import { createContainer } from 'meteor/react-meteor-data'
 import { CameraIcon, BioIcon, WebsiteIcon } from '../images/icons'
 import Medialists from '../../../lib/collections-global/schemas/schemas'
 
-export default React.createClass({
+const CampaignModal = React.createClass({
   propTypes: {
     open: PropTypes.bool.isRequired,
     onSubmit: PropTypes.func.isRequired,
-    onDismiss: PropTypes.func.isRequired
+    onDismiss: PropTypes.func.isRequired,
+    clients: PropTypes.array.isRequired
   },
   getInitialState () {
     return {
@@ -20,13 +22,18 @@ export default React.createClass({
     }
   },
   onChange (evt) {
+    if (evt.target.id === 'client') return this.autoComplete(evt)
     const formData = Object.assign(this.state.formData, { [evt.target.id]: evt.target.value }, {})
     this.setState({ formData })
+  },
+  autoComplete (evt)
+    console.log(this.state.clients)
   },
   onSubmit () {
     console.log(this.state.formData, Medialists)
   },
   render () {
+    console.log(this.props)
     const { open, onDismiss } = this.props
     const htmlStyle = open ? 'height:100%; overflow:hidden' : ''
 
@@ -53,7 +60,7 @@ export default React.createClass({
                 <input className='center gray60 input-inline mt4 f-xxl semibold' type='text' id='name' placeholder='Campaign Name' size={name.length > 0 ? name.length + 2 : 15} value={name} />
               </div>
               <div>
-                <input className='center gray60 input-inline mt1 f-lg gray10' type='text' placeholder='Client' />
+                <input className='center gray60 input-inline mt1 f-lg gray10' type='text' id='client' placeholder='Client' />
               </div>
             </div>
             <div className='bg-gray90 border-top border-gray80'>
@@ -83,3 +90,9 @@ export default React.createClass({
     )
   }
 })
+
+export default NewCampaignModal = createContainer(() => {
+  Meteor.subscribe('clients')
+  const clients = Clients.find().fetch()
+  return { clients }
+}, CampaignModal)

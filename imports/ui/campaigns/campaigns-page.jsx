@@ -5,7 +5,7 @@ import CampaignsTable from './campaigns-table'
 import SearchBox from '../lists/search-box'
 import SectorSelector from './sector-selector.jsx'
 import CampaignsActionsToast from './campaigns-actions-toast'
-import NewCampaign from './campaigns-create-new'
+import NewCampaignModal from './campaigns-create-new'
 
 const CampaignsPage = React.createClass({
   getInitialState () {
@@ -61,7 +61,7 @@ const CampaignsPage = React.createClass({
             <button className='btn bg-completed white mx4' onClick={this.toggleNewCampaign}>New Campaign</button>
           </div>
         </div>
-        <NewCampaign onDismiss={this.toggleNewCampaign} onSubmit={this.onSubmit} open={createNewCampaignOpen} />
+        <NewCampaignModal onDismiss={this.toggleNewCampaign} onSubmit={this.onSubmit} open={createNewCampaignOpen} />
         <div className='bg-white shadow-2 m4'>
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
