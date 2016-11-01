@@ -2,6 +2,13 @@ import React, { PropTypes } from 'react'
 import Helmet from 'react-helmet'
 import { CameraIcon, BioIcon, WebsiteIcon } from '../images/icons'
 
+const emptyFormData = {
+  name: '',
+  purpose: '',
+  clientName: '',
+  website: ''
+}
+
 export default React.createClass({
   propTypes: {
     open: PropTypes.bool.isRequired,
@@ -10,14 +17,7 @@ export default React.createClass({
     clients: PropTypes.array.isRequired
   },
   getInitialState () {
-    return {
-      formData: {
-        name: '',
-        purpose: '',
-        clientName: '',
-        website: ''
-      }
-    }
+    return { formData: emptyFormData }
   },
   onChange (evt) {
     const formData = Object.assign(this.state.formData, { [evt.target.name]: evt.target.value }, {})
@@ -29,6 +29,7 @@ export default React.createClass({
   onSubmit (evt) {
     evt.preventDefault()
     this.props.onDismiss()
+    this.setState({ formData: emptyFormData })
 
     const payload = {
       name: this.state.formData.name,
@@ -89,8 +90,8 @@ export default React.createClass({
               </div>
             </div>
             <div className='p4 right'>
-              <button className='btn bg-completed white right' onClick={this.onSubmit}>Create Campaign</button>
-              <button className='btn bg-transparent gray40 right mr2' onClick={onDismiss}>Cancel</button>
+              <button className='btn bg-completed white right' type='submit' onClick={this.onSubmit}>Create Campaign</button>
+              <button className='btn bg-transparent gray40 right mr2' type='reset' onClick={onDismiss}>Cancel</button>
             </div>
           </form>
         </div>
