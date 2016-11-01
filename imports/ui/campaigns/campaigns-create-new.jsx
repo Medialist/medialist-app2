@@ -1,12 +1,8 @@
 import React, { PropTypes } from 'react'
-import { Meteor } from 'meteor/meteor'
 import Helmet from 'react-helmet'
-import { createContainer } from 'meteor/react-meteor-data'
 import { CameraIcon, BioIcon, WebsiteIcon } from '../images/icons'
-import MedialistsSchema from '../../../lib/collections-global/schemas/schemas'
-import Clients from '../../../lib/collections-global/clients'
 
-const CampaignModal = React.createClass({
+export default React.createClass({
   propTypes: {
     open: PropTypes.bool.isRequired,
     onSubmit: PropTypes.func.isRequired,
@@ -31,11 +27,11 @@ const CampaignModal = React.createClass({
   autoComplete (evt) {
     console.log(this.state.clients)
   },
-  onSubmit () {
-    console.log(this.state.formData, MedialistsSchema)
+  onSubmit (evt) {
+    evt.preventDefault()
+    this.props.onSubmit(this.state.formData)
   },
   render () {
-    console.log(this.props)
     const { open, onDismiss } = this.props
     const htmlStyle = open ? 'height:100%; overflow:hidden' : ''
 
@@ -92,9 +88,3 @@ const CampaignModal = React.createClass({
     )
   }
 })
-
-export default createContainer(() => {
-  Meteor.subscribe('clients')
-  const clients = Clients.find().fetch()
-  return { clients }
-}, CampaignModal)

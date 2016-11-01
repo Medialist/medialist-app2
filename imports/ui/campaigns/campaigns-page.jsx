@@ -43,8 +43,8 @@ const CampaignsPage = React.createClass({
     this.setState({ selections: [] })
   },
 
-  onSubmit () {
-    console.log('TODO: Create a new campaign')
+  onSubmit (formData) {
+    console.log('TODO: Create a new campaign with', formData)
   },
 
   render () {
@@ -61,7 +61,7 @@ const CampaignsPage = React.createClass({
             <button className='btn bg-completed white mx4' onClick={this.toggleNewCampaign}>New Campaign</button>
           </div>
         </div>
-        <NewCampaignModal onDismiss={this.toggleNewCampaign} onSubmit={this.onSubmit} open={createNewCampaignOpen} />
+        <NewCampaignModalContainer onDismiss={this.toggleNewCampaign} onSubmit={this.onSubmit} open={createNewCampaignOpen} />
         <div className='bg-white shadow-2 m4'>
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
@@ -116,6 +116,11 @@ const CampaignsTableContainer = createContainer((props) => {
 const CampaignsTotalContainer = createContainer((props) => {
   return { ...props, total: window.Medialists.find({}).count() }
 }, CampaignsTotal)
+
+const NewCampaignModalContainer = createContainer((props) => {
+  Meteor.subscribe('clients')
+  return { ...props, clients: window.Clients.find().fetch() }
+}, NewCampaignModal)
 
 const SectorSelectorContainer = createContainer((props) => {
   // TODO: wire in sectors
