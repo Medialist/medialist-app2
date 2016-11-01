@@ -1,51 +1,138 @@
 import React, { PropTypes } from 'react'
 import Helmet from 'react-helmet'
+import cloneDeep from 'lodash.clonedeep'
 import { CircleAvatar } from '../images/avatar'
 import { EmailIcon, PhoneIcon, AddressIcon } from '../images/icons'
 
-const EditContact = React.createClass({
+const EditContactContainer = React.createClass({
   propTypes: {
-    contact: PropTypes.object,
     open: PropTypes.bool.isRequired,
+    contact: PropTypes.object,
     onSubmit: PropTypes.func.isRequired,
     onDismiss: PropTypes.func.isRequired
   },
 
   getInitialState () {
-    return this.props.contacts || {
+    return cloneDeep(this.props.contact) || {
       avatar: '',
       name: '',
       jobTitles: '',
-      primaryOutlets: '',
+      outlets: '',
       emails: [],
       phones: [],
       socials: []
     }
   },
 
-  onProfileChange (evt) {
-    const {name, value} = evt.target
-    console.log('onProfileChange', name, value)
-    this.setState({[name]: value})
+  onChange (change) {
+    this.setState(change)
+    console.log('onChange', change)
   },
 
-  onEmailChange (evt) {
-
+  onSubmit () {
+    this.props.onSubmit(this.state)
+    // nuke the state
+    this.setState(this.getInitialState())
   },
 
-  onSocialChange (evt) {
-
-  },
-
-  onPhoneChange (evt) {
-
+  onDismiss () {
+    this.props.onDismiss()
+    // nuke the state
+    console.log('onDismiss', this)
+    this.setState(this.getInitialState())
   },
 
   render () {
-    const { open, onDismiss } = this.props
+    const { open } = this.props
+    const contact = this.state
+    return <EditContact onSubmit={this.onSubmit} onDismiss={this.onDismiss} onChange={this.onChange} contact={contact} open={open} />
+  }
+})
+
+const EditContact = React.createClass({
+  propTypes: {
+    open: PropTypes.bool.isRequired,
+    contact: PropTypes.object.isRequired,
+    onChange: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired,
+    onDismiss: PropTypes.func.isRequired
+  },
+
+  onProfileChange (evt) {
+    const {name, value} = evt.target
+    this.props.onChange({[name]: value})
+  },
+
+  onEmailChange (evt) {
+    const {name, value} = evt.target
+    const emails = Object.assign([], this.props.contact.emails)
+    emails[name].value = value
+    this.props.onChange({emails})
+  },
+
+  onAddEmail () {
+    const emails = Object.assign([], this.props.contact.emails)
+    emails.push({label: 'Email', value: ''})
+    this.props.onChange({emails})
+  },
+
+  onPhoneChange (evt) {
+    const {name, value} = evt.target
+    const phones = Object.assign([], this.props.contact.phones)
+    phones[name].value = value
+    this.props.onChange({phones})
+  },
+
+  onAddPhone (evt) {
+    const phones = Object.assign([], this.props.contact.phones)
+    phones.push({label: 'Phone', value: ''})
+    this.props.onChange({phones})
+  },
+
+  onSocialChange (evt) {
+    const {name, value} = evt.target
+    const socials = Object.assign([], this.props.contact.socials)
+    socials[name].value = value
+    this.props.onChange({socials})
+  },
+
+  onAddSocial (evt) {
+    const socials = Object.assign([], this.props.contact.socials)
+    socials.push({label: 'Social', value: ''})
+    this.props.onChange({socials})
+  },
+
+  onAddressChange (evt) {
+    console.log('TODO: onAddressChange')
+  },
+
+  onDelete (evt) {
+    console.log('TODO: onDelete')
+  },
+
+  onSubmit (evt) {
+    evt.preventDefault()
+    this.props.onSubmit()
+  },
+
+  inputSize (value) {
+    if (!value || value.length < 11) return 12
+    return value.length + 2
+  },
+
+  atLeastOne (arr, label) {
+    if (!arr || !arr.length) return { label: label, value: '' }
+    return arr
+  },
+
+  render () {
+    const { open, onDismiss, contact } = this.props
     if (!open) return null
-    const { avatar, name, jobTitles, primaryOutlets } = this.state
-    const { onProfileChange } = this
+    const emails = this.atLeastOne(contact.emails, 'Email')
+    const phones = this.atLeastOne(contact.phones, 'Phone')
+    const socials = this.atLeastOne(contact.socials, 'Social')
+    // TODO: migrate address format. Currently is a string.
+    const { onProfileChange, onEmailChange, onAddEmail, onPhoneChange, onAddPhone, onSocialChange, onAddSocial, onAddressChange, onSubmit, onDelete, inputSize } = this
     const scrollableHeight = window.innerHeight - 380
     const inputWidth = 270
     const iconWidth = 30
@@ -61,52 +148,99 @@ const EditContact = React.createClass({
         <div className='absolute top-0 right-0 left-0 bg-white fit mx-auto' style={{width: 675}}>
           <div className='inline-block right pointer f-xxl mx2 gray60 hover-blue' onClick={onDismiss}>&times;</div>
           <div className='py6 center'>
-            <CircleAvatar size={110} avatar={avatar} name={name} />
+            <CircleAvatar size={110} avatar={contact.avatar} name={contact.name} />
             <div>
-              <input className='center input-inline mt4 f-xxl semibold' type='text' name='name' value={name} size={name.length + 2} onChange={onProfileChange} />
+              <input
+                className='center input-inline mt4 f-xxl semibold'
+                placeholder='Contact Name'
+                type='text'
+                name='name'
+                value={contact.name}
+                size={inputSize(contact.name)}
+                onChange={onProfileChange} />
             </div>
             <div>
-              <input className='center input-inline mt1 f-lg gray10' type='text' name='jobTitles' value={jobTitles} size={jobTitles.length + 2} onChange={onProfileChange} />
+              <input
+                className='center input-inline mt1 f-lg gray10'
+                placeholder='Title'
+                type='text'
+                name='jobTitles'
+                value={contact.jobTitles}
+                size={inputSize(contact.jobTitles)}
+                onChange={onProfileChange} />
             </div>
             <div>
-              <input className='center input-inline mt1 f-lg gray10' type='text' name='primaryOutlets' value={primaryOutlets} size={primaryOutlets.length + 2} onChange={onProfileChange} />
+              <input
+                className='center input-inline mt1 f-lg gray10'
+                placeholder='Outlets'
+                type='text'
+                name='primaryOutlets'
+                value={contact.primaryOutlets}
+                size={inputSize(contact.primaryOutlets)}
+                onChange={onProfileChange} />
             </div>
           </div>
           <div style={{height: scrollableHeight, overflowY: 'scroll'}}>
             <div className='bg-gray90 border-top border-gray80'>
               <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft: 70}}>Details</label>
               <div className='mx-auto py2' style={{width: inputWidth + iconWidth}}>
-                <div className='pt3'>
-                  <EmailIcon style={iconStyle} className='inline-block' />
-                  <div className='inline-block align-middle'>
-                    <input style={inputStyle} className='input' type='text' value='' placeholder='Email' />
+                {emails.map((email, index) => (
+                  <div key={index} className='pt3'>
+                    <EmailIcon style={iconStyle} className='inline-block' />
+                    <div className='inline-block align-middle'>
+                      <input
+                        style={inputStyle}
+                        className='input'
+                        type='text'
+                        value={email.value}
+                        name={index}
+                        onChange={onEmailChange}
+                        placeholder='Email' />
+                    </div>
                   </div>
-                </div>
+                ))}
                 <div className='py2' style={linkStyle}>
-                  <span className='inline-block blue f-xs underline'>Add new email</span>
+                  <span className='pointer inline-block blue f-xs underline' onClick={onAddEmail}>Add new email</span>
                 </div>
-                <div className='pt3'>
-                  <PhoneIcon style={iconStyle} className='inline-block' />
-                  <div className='inline-block align-middle'>
-                    <input style={inputStyle} className='input' type='text' value='' placeholder='Phone number' />
+                {phones.map((phone, index) => (
+                  <div key={index} className='pt3'>
+                    <PhoneIcon style={iconStyle} className='inline-block' />
+                    <div className='inline-block align-middle'>
+                      <input
+                        style={inputStyle}
+                        className='input'
+                        type='text'
+                        value={phone.value}
+                        onChange={onPhoneChange}
+                        placeholder='Phone number' />
+                    </div>
                   </div>
-                </div>
+                ))}
                 <div className='py2' style={linkStyle}>
-                  <span className='inline-block blue f-xs underline'>Add new phone number</span>
+                  <span className='pointer inline-block blue f-xs underline' onClick={onAddPhone}>Add new phone number</span>
                 </div>
               </div>
             </div>
             <div className='bg-gray90 border-top border-gray80'>
               <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft: 70}}>Social</label>
               <div className='mx-auto py2' style={{width: inputWidth + iconWidth}}>
-                <div className='pt3'>
-                  <EmailIcon style={iconStyle} className='inline-block' />
-                  <div className='inline-block align-middle'>
-                    <input style={inputStyle} className='input' type='text' value='' placeholder='Enter social or website url' />
+                {socials.map((social, index) => (
+                  <div key={index} className='pt3'>
+                    <EmailIcon style={iconStyle} className='inline-block' />
+                    <div className='inline-block align-middle'>
+                      <input
+                        style={inputStyle}
+                        className='input'
+                        type='text'
+                        name={index}
+                        value={social.value}
+                        onChange={onSocialChange}
+                        placeholder='Enter social or website url' />
+                    </div>
                   </div>
-                </div>
+                ))}
                 <div className='py2' style={linkStyle}>
-                  <span className='inline-block blue f-xs underline'>Add new social or website</span>
+                  <span className='pointer inline-block blue f-xs underline' onClick={onAddSocial}>Add new social or website</span>
                 </div>
               </div>
             </div>
@@ -116,34 +250,58 @@ const EditContact = React.createClass({
                 <div className='pt3'>
                   <AddressIcon style={iconStyle} className='inline-block' />
                   <div className='inline-block align-middle'>
-                    <input style={inputStyle} className='input' type='text' value='' placeholder='Street' />
+                    <input
+                      style={inputStyle}
+                      className='input'
+                      type='text'
+                      name='street'
+                      onChange={onAddressChange}
+                      placeholder='Street' />
                   </div>
                 </div>
                 <div className='pt3'>
                   <AddressIcon style={iconStyle} className='inline-block invisible' />
                   <div className='inline-block align-middle'>
-                    <input style={inputStyle} className='input' type='text' value='' placeholder='City' />
+                    <input
+                      style={inputStyle}
+                      className='input'
+                      type='text'
+                      name='city'
+                      onChange={onAddressChange}
+                      placeholder='City' />
                   </div>
                 </div>
                 <div className='pt3'>
                   <AddressIcon style={iconStyle} className='inline-block invisible' />
                   <div className='inline-block align-middle'>
-                    <input style={inputStyle} className='input' type='text' value='' placeholder='Postcode' />
+                    <input
+                      style={inputStyle}
+                      className='input'
+                      type='text'
+                      name='postcode'
+                      onChange={onAddressChange}
+                      placeholder='Postcode' />
                   </div>
                 </div>
                 <div className='pt3'>
                   <AddressIcon style={iconStyle} className='inline-block invisible' />
                   <div className='inline-block align-middle'>
-                    <input style={inputStyle} className='input' type='text' value='' placeholder='Country' />
+                    <input
+                      style={inputStyle}
+                      className='input'
+                      type='text'
+                      name='country'
+                      onChange={onAddressChange}
+                      placeholder='Country' />
                   </div>
                 </div>
               </div>
             </div>
           </div>
           <div className='p4 bg-white'>
-            <button className='btn bg-completed white right'>Save Changes</button>
+            <button className='btn bg-completed white right' onClick={onSubmit}>Save Changes</button>
             <button className='btn bg-transparent gray40 right mr2' onClick={onDismiss}>Cancel</button>
-            <button className='btn bg-transparent not-interested'>Delete Contact</button>
+            <button className='btn bg-transparent not-interested' onClick={onDelete}>Delete Contact</button>
           </div>
         </div>
       </div>
@@ -151,4 +309,4 @@ const EditContact = React.createClass({
   }
 })
 
-export default EditContact
+export default EditContactContainer
