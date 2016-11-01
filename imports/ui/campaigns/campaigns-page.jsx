@@ -5,7 +5,7 @@ import CampaignsTable from './campaigns-table'
 import SearchBox from '../lists/search-box'
 import SectorSelector from './sector-selector.jsx'
 import CampaignsActionsToast from './campaigns-actions-toast'
-import NewCampaignModal from './campaigns-create-new'
+import EditCampaign from './edit-campaign'
 
 const CampaignsPage = React.createClass({
   getInitialState () {
@@ -14,13 +14,13 @@ const CampaignsPage = React.createClass({
       selections: [],
       term: '',
       selectedSector: null,
-      createNewCampaignOpen: false
+      editCampaignOpen: false
     }
   },
 
-  toggleNewCampaign () {
-    const createNewCampaignOpen = !this.state.createNewCampaignOpen
-    this.setState({ createNewCampaignOpen })
+  toggleEditCampaign () {
+    const editCampaignOpen = !this.state.editCampaignOpen
+    this.setState({ editCampaignOpen })
   },
 
   onSortChange (sort) {
@@ -49,7 +49,7 @@ const CampaignsPage = React.createClass({
 
   render () {
     const { onSortChange, onSelectionsChange, onSectorChange } = this
-    const { sort, term, selections, selectedSector, createNewCampaignOpen } = this.state
+    const { sort, term, selections, selectedSector, editCampaignOpen } = this.state
 
     return (
       <div>
@@ -58,10 +58,10 @@ const CampaignsPage = React.createClass({
             <SectorSelectorContainer selected={selectedSector} onSectorChange={onSectorChange} />
           </div>
           <div className='flex-none bg-white center px4'>
-            <button className='btn bg-completed white mx4' onClick={this.toggleNewCampaign}>New Campaign</button>
+            <button className='btn bg-completed white mx4' onClick={this.toggleEditCampaign}>New Campaign</button>
           </div>
         </div>
-        <NewCampaignModalContainer onDismiss={this.toggleNewCampaign} onSubmit={this.onSubmit} open={createNewCampaignOpen} />
+        <EditCampaignContainer onDismiss={this.toggleEditCampaign} onSubmit={this.onSubmit} open={editCampaignOpen} />
         <div className='bg-white shadow-2 m4'>
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
@@ -117,10 +117,10 @@ const CampaignsTotalContainer = createContainer((props) => {
   return { ...props, total: window.Medialists.find({}).count() }
 }, CampaignsTotal)
 
-const NewCampaignModalContainer = createContainer((props) => {
+const EditCampaignContainer = createContainer((props) => {
   Meteor.subscribe('clients')
   return { ...props, clients: window.Clients.find().fetch() }
-}, NewCampaignModal)
+}, EditCampaign)
 
 const SectorSelectorContainer = createContainer((props) => {
   // TODO: wire in sectors
