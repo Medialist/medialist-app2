@@ -22,7 +22,7 @@ const Avatar = React.createClass({
   render () {
     const { imageLoadError } = this.state
     const { avatar, name } = this.props
-    const className = classNames(this.props.className, 'inline-block overflow-hidden bg-black white normal align-middle center')
+    const className = classNames(this.props.className, 'inline-block overflow-hidden white normal align-middle center')
     const size = Number(this.props.size || defaultSize) // px
     const fontSize = ((size / defaultSize) * 100) + '%' // a size of 40px gives a fontSize of 100% which matches the body fontSize.
     const style = Object.assign({ width: size, height: size, lineHeight: size + 'px', fontSize }, this.props.style || {})
@@ -30,7 +30,7 @@ const Avatar = React.createClass({
     if (avatar && !imageLoadError) {
       return (
         <div className={className} style={style}>
-          <img style={{width: '100%', height: '100%'}} src={avatar} alt={name} onError={this.onError} />
+          <img style={{width: '100%', height: '100%'}} src={avatar} alt={name} title={name} onError={this.onError} />
         </div>
       )
     }
@@ -44,7 +44,7 @@ const Avatar = React.createClass({
       }
 
       return (
-        <div style={style} className={classNames(className, 'initials')}>{initials}</div>
+        <div style={style} className={classNames(className, 'initials')} title={name}>{initials}</div>
       )
     }
 
@@ -55,11 +55,11 @@ const Avatar = React.createClass({
 export default Avatar
 
 export const CircleAvatar = (props) => {
-  const className = classNames(props.className, 'circle')
+  const className = classNames(props.className, 'circle bg-gray60')
   return <Avatar {...props} className={className} />
 }
 
 export const SquareAvatar = (props) => {
-  const className = classNames(props.className, 'rounded')
+  const className = classNames(props.className, 'rounded bg-black')
   return <Avatar {...props} className={className} />
 }
