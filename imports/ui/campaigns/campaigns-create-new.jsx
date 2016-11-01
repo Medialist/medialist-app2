@@ -20,7 +20,6 @@ export default React.createClass({
     }
   },
   onChange (evt) {
-    if (evt.target.id === 'client') return this.autoComplete(evt)
     const formData = Object.assign(this.state.formData, { [evt.target.id]: evt.target.value }, {})
     this.setState({ formData })
   },
@@ -29,7 +28,17 @@ export default React.createClass({
   },
   onSubmit (evt) {
     evt.preventDefault()
-    this.props.onSubmit(this.state.formData)
+    this.props.onDismiss()
+
+    const payload = {
+      name: this.state.formData.name,
+      purpose: this.state.formData.purpose,
+      client: {
+        name: this.state.formData.clientName
+      }
+    }
+
+    this.props.onSubmit(payload)
   },
   render () {
     const { open, onDismiss } = this.props
@@ -37,11 +46,12 @@ export default React.createClass({
 
     if (!open) return null
 
-    const { name } = this.state.formData
     const inputWidth = 270
     const iconWidth = 30
     const inputStyle = { width: inputWidth, resize: 'none' }
     const iconStyle = { width: iconWidth }
+
+    const formData = this.state.formData
 
     return (
       <div>
@@ -55,10 +65,10 @@ export default React.createClass({
                 <CameraIcon />
               </div>
               <div>
-                <input className='center gray60 input-inline mt4 f-xxl semibold' type='text' id='name' placeholder='Campaign Name' size={name.length > 0 ? name.length + 2 : 15} value={name} />
+                <input className='center gray60 input-inline mt4 f-xxl semibold' type='text' id='name' placeholder='Campaign Name' size={formData.name.length > 0 ? formData.name.length + 2 : 15} />
               </div>
               <div>
-                <input className='center gray60 input-inline mt1 f-lg gray10' type='text' id='client' placeholder='Client' />
+                <input className='center gray60 input-inline mt1 f-lg gray10' type='text' id='clientName' placeholder='Client' size={formData.clientName.length > 0 ? formData.clientName.length + 2 : 8} />
               </div>
             </div>
             <div className='bg-gray90 border-top border-gray80'>
@@ -67,13 +77,13 @@ export default React.createClass({
                 <div className='pt3'>
                   <BioIcon style={iconStyle} className='inline-block align-top' />
                   <div className='inline-block align-middle'>
-                    <textarea style={inputStyle} className='textarea' type='text' rows='5' placeholder='Key Message' />
+                    <textarea style={inputStyle} className='textarea' type='text' rows='5' id='purpose' placeholder='Key Message' />
                   </div>
                 </div>
                 <div className='pt3'>
                   <WebsiteIcon style={iconStyle} className='inline-block align-top' />
                   <div className='inline-block align-middle'>
-                    <input style={inputStyle} className='input' type='text' placeholder='Website' />
+                    <input style={inputStyle} className='input' type='text' id='website' placeholder='Website' />
                   </div>
                 </div>
               </div>
