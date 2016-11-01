@@ -20,7 +20,7 @@ export default React.createClass({
     }
   },
   onChange (evt) {
-    const formData = Object.assign(this.state.formData, { [evt.target.id]: evt.target.value }, {})
+    const formData = Object.assign(this.state.formData, { [evt.target.name]: evt.target.value }, {})
     this.setState({ formData })
   },
   autoComplete (evt) {
@@ -65,10 +65,10 @@ export default React.createClass({
                 <CameraIcon />
               </div>
               <div>
-                <input className='center gray60 input-inline mt4 f-xxl semibold' type='text' id='name' placeholder='Campaign Name' size={formData.name.length > 0 ? formData.name.length + 2 : 15} />
+                <input className='center gray60 input-inline mt4 f-xxl semibold' type='text' name='name' placeholder='Campaign Name' size={formData.name.length > 0 ? formData.name.length + 2 : 15} />
               </div>
               <div>
-                <input className='center gray60 input-inline mt1 f-lg gray10' type='text' id='clientName' placeholder='Client' size={formData.clientName.length > 0 ? formData.clientName.length + 2 : 8} />
+                <input className='center gray60 input-inline mt1 f-lg gray10' type='text' name='clientName' placeholder='Client' size={formData.clientName.length > 0 ? formData.clientName.length + 2 : 8} />
               </div>
             </div>
             <div className='bg-gray90 border-top border-gray80'>
@@ -77,13 +77,13 @@ export default React.createClass({
                 <div className='pt3'>
                   <BioIcon style={iconStyle} className='inline-block align-top' />
                   <div className='inline-block align-middle'>
-                    <textarea style={inputStyle} className='textarea' type='text' rows='5' id='purpose' placeholder='Key Message' />
+                    <textarea style={inputStyle} className='textarea' type='text' rows='5' name='purpose' placeholder='Key Message' />
                   </div>
                 </div>
                 <div className='pt3'>
                   <WebsiteIcon style={iconStyle} className='inline-block align-top' />
                   <div className='inline-block align-middle'>
-                    <input style={inputStyle} className='input' type='text' id='website' placeholder='Website' />
+                    <input style={inputStyle} className='input' type='text' name='website' placeholder='Website' />
                   </div>
                 </div>
               </div>
