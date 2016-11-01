@@ -18,7 +18,7 @@ const CampaignTopbar = React.createClass({
   },
 
   render () {
-    const { campaign, backLinkText, onAddClick } = this.props
+    const { backLinkText, onAddClick } = this.props
     return (
       <nav className='block bg-white mb4 flex items-center'>
         <div className='flex-auto'>

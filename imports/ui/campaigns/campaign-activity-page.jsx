@@ -47,7 +47,7 @@ const CampaignActivityPage = React.createClass({
   },
 
   render () {
-    const { campaign, contacts, contactsCount, loading } = this.props
+    const { campaign, contacts, contactsCount } = this.props
     if (!campaign) return null
     return (
       <div>
@@ -72,7 +72,7 @@ const CampaignActivityPage = React.createClass({
 export default createContainer((props) => {
   const { slug } = props.params
   const subs = [
-    Meteor.subscribe('medialist', slug),
+    Meteor.subscribe('medialist', slug)
   ]
   const loading = subs.some((s) => !s.ready())
   const campaign = window.Medialists.findOne({ slug })
