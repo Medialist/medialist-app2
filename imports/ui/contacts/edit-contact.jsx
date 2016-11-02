@@ -63,20 +63,20 @@ const EditContact = React.createClass({
 
   onEmailChange (evt) {
     const {name, value} = evt.target
-    const emails = Object.assign([], this.props.contact.emails)
+    const emails = cloneDeep(this.props.contact.emails)
     emails[name].value = value
     this.props.onChange({emails})
   },
 
   onAddEmail () {
-    const emails = Object.assign([], this.props.contact.emails)
+    const emails = Array.from(this.props.contact.emails)
     emails.push({label: 'Email', value: ''})
     this.props.onChange({emails})
   },
 
   onPhoneChange (evt) {
     const {name, value} = evt.target
-    const phones = Array.from(this.props.contact.phones)
+    const phones = cloneDeep(this.props.contact.phones)
     phones[name].value = value
     this.props.onChange({phones})
   },
