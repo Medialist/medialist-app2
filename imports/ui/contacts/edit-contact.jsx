@@ -26,7 +26,6 @@ const EditContactContainer = React.createClass({
 
   onChange (change) {
     this.setState(change)
-    console.log('onChange', change)
   },
 
   onSubmit () {
@@ -38,7 +37,6 @@ const EditContactContainer = React.createClass({
   onDismiss () {
     this.props.onDismiss()
     // nuke the state
-    console.log('onDismiss', this)
     this.setState(this.getInitialState())
   },
 
@@ -78,26 +76,26 @@ const EditContact = React.createClass({
 
   onPhoneChange (evt) {
     const {name, value} = evt.target
-    const phones = Object.assign([], this.props.contact.phones)
+    const phones = Array.from(this.props.contact.phones)
     phones[name].value = value
     this.props.onChange({phones})
   },
 
   onAddPhone (evt) {
-    const phones = Object.assign([], this.props.contact.phones)
+    const phones = Array.from(this.props.contact.phones)
     phones.push({label: 'Phone', value: ''})
     this.props.onChange({phones})
   },
 
   onSocialChange (evt) {
     const {name, value} = evt.target
-    const socials = Object.assign([], this.props.contact.socials)
+    const socials = Array.from(this.props.contact.socials)
     socials[name].value = value
     this.props.onChange({socials})
   },
 
   onAddSocial (evt) {
-    const socials = Object.assign([], this.props.contact.socials)
+    const socials = Array.from(this.props.contact.socials)
     socials.push({label: 'Social', value: ''})
     this.props.onChange({socials})
   },
@@ -121,7 +119,7 @@ const EditContact = React.createClass({
   },
 
   atLeastOne (arr, label) {
-    if (!arr || !arr.length) return { label: label, value: '' }
+    if (!arr || !arr.length) return [{ label: label, value: '' }]
     return arr
   },
 
