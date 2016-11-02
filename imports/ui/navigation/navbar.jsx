@@ -12,6 +12,7 @@ const NavBar = React.createClass({
     notifications: PropTypes.array
   },
   render () {
+    const { user, notifications } = this.props
     return (
       <div className='navbar bg-gray10 clearfix' style={{height: 58}}>
         <nav className='inline-block left'>
@@ -32,7 +33,7 @@ const NavBar = React.createClass({
           <UserInfo user={this.props.user} />
         </div>
         <div className='inline-block right' style={{padding: '9px 0'}}>
-          <NotificationsBell notifications={this.props.notifications} />
+          <NotificationsBell notifications={notifications} />
         </div>
       </div>
     )
