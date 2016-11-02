@@ -36,12 +36,11 @@ const Avatar = React.createClass({
     }
 
     if (name) {
-      const split = name.split(' ')
-      let initials = split[0][0].toUpperCase()
-
-      if (split.length > 1) {
-        initials += split[split.length - 1][0].toUpperCase()
-      }
+      const initials = name
+        .split(' ')
+        .filter((n) => !!n)
+        .map((n) => n[0].toUpperCase())
+        .join('')
 
       return (
         <div style={style} className={classNames(className, 'initials')} title={name}>{initials}</div>

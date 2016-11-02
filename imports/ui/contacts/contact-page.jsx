@@ -24,6 +24,10 @@ const ContactPage = React.createClass({
     this.setState({ editContactOpen })
   },
 
+  onEditContact (state) {
+    console.log('onEditContact', state)
+  },
+
   onAddClick () {
     console.log('TODO: Add contact to campaign')
   },
@@ -42,6 +46,7 @@ const ContactPage = React.createClass({
   render () {
     const { contact, campaigns } = this.props
     const { editContactOpen } = this.state
+    if (!contact) return null
     return (
       <div>
         <ContactTopbar contact={contact} onAddClick={this.onAddClick} />
@@ -57,7 +62,7 @@ const ContactPage = React.createClass({
             <ContactNeedToKnowList items={needToKnows} />
           </div>
         </div>
-        <EditContact onDismiss={this.toggleEditContact} open={editContactOpen} contact={contact} />
+        <EditContact onSubmit={this.onEditContact} onDismiss={this.toggleEditContact} open={editContactOpen} contact={contact} />
       </div>
     )
   }
