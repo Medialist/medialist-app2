@@ -53,11 +53,12 @@ const EditCampaign = React.createClass({
   },
   onReset () {
     this.props.onDismiss()
-    this.setState({ formData: emptyFormData }, console.log('reset', this.state))
+    this.setState({ formData: emptyFormData })
   },
   render () {
-    const { open, onDismiss, campaign, onSubmit, onChange, onReset } = this.props
-    if (!open) return null
+    if (!this.props.open) return null
+    const { onChange, onSubmit, onReset } = this
+    const { open, onDismiss, campaign } = this.props
     const { name, purpose, clientName, website } = campaign
     const htmlStyle = open ? 'height:100%; overflow:hidden' : ''
     const inputWidth = 270
