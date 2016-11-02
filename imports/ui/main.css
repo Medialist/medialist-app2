@@ -392,7 +392,12 @@ input {
 .hover-blue:hover {
   color: var(--blue);
 }
-
+.active-blue.active {
+  color: var(--blue);
+}
+.active-border-left-blue.active {
+  box-shadow: inset 5px 0 0 0 var(--blue) !important;
+}
 /* ---- Rebass overrides ---------------------------------------------------- */
 
 .Menu {

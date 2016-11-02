@@ -9,6 +9,7 @@ import CampaignContactsPage from './campaigns/campaign-contacts-page'
 import ContactsPage from './contacts/contacts-page'
 import ContactsImportPage from './contacts/contacts-import-page'
 import ContactPage from './contacts/contact-page'
+import SettingsPage from './users/settings/settings-page'
 import NotFoundPage from './errors/not-found-page'
 
 const Routes = ({ store, history }) => {
@@ -29,6 +30,9 @@ const Routes = ({ store, history }) => {
           <Route path='import' component={ContactsImportPage} />
         </Route>
         <Route path='contact/:slug' component={ContactPage} />
+        <Route path='settings' component={SettingsPage}>
+          <Route path=':selected' component={SettingsPage} />
+        </Route>
         <Route path='*' component={NotFoundPage} />
       </Route>
     </Router>
