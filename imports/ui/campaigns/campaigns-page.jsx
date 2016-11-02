@@ -43,10 +43,6 @@ const CampaignsPage = React.createClass({
     this.setState({ selections: [] })
   },
 
-  onSubmit (formData) {
-    console.log('TODO: Create a new campaign with', formData)
-  },
-
   render () {
     const { onSortChange, onSelectionsChange, onSectorChange } = this
     const { sort, term, selections, selectedSector, editCampaignOpen } = this.state
@@ -61,7 +57,7 @@ const CampaignsPage = React.createClass({
             <button className='btn bg-completed white mx4' onClick={this.toggleEditCampaign}>New Campaign</button>
           </div>
         </div>
-        <EditCampaignContainer onDismiss={this.toggleEditCampaign} onSubmit={this.onSubmit} open={editCampaignOpen} />
+        <EditCampaignContainer onDismiss={this.toggleEditCampaign} open={editCampaignOpen} />
         <div className='bg-white shadow-2 m4'>
           <div className='p4 flex items-center'>
             <div className='flex-auto'>

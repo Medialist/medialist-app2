@@ -12,7 +12,6 @@ const emptyFormData = {
 const EditCampaignContainer = React.createClass({
   propTypes: {
     open: PropTypes.bool.isRequired,
-    onSubmit: PropTypes.func.isRequired,
     onDismiss: PropTypes.func.isRequired,
     clients: PropTypes.array.isRequired
   },
@@ -24,13 +23,18 @@ const EditCampaignContainer = React.createClass({
   onChange (name, value) {
     const newState = Object.assign({}, this.state.campaign, {[name]: value})
     this.setState({ campaign: newState })
-    console.log('got an update on state', this.state)
   },
-  onSubmit () {
-    console.log('Payload', this.state.campaign)
+  onSubmit (evt) {
+    evt.preventDefault()
+    console.log('Payload for Meteor.call(medialists/create)', this.state.campaign)
+    this.onReset()
+  },
+  onReset () {
+    this.props.onDismiss()
+    this.setState({ campaign: emptyFormData })
   },
   render () {
-    const props = Object.assign({}, this.state, this.props)
+    const props = Object.assign({ onChange, onReset, onSubmit } = this, this.state, this.props)
     return <EditCampaign {...props} />
   }
 })
@@ -39,6 +43,7 @@ const EditCampaign = React.createClass({
   propTypes: {
     open: PropTypes.bool.isRequired,
     onSubmit: PropTypes.func.isRequired,
+    onReset: PropTypes.func.isRequired,
     onDismiss: PropTypes.func.isRequired,
     clients: PropTypes.array.isRequired,
     campaign: PropTypes.object.isRequired
@@ -47,18 +52,10 @@ const EditCampaign = React.createClass({
     const { name, value } = evt.target
     this.props.onChange(name, value)
   },
-  onSubmit (evt) {
-    evt.preventDefault()
-    this.props.onSubmit()
-  },
-  onReset () {
-    this.props.onDismiss()
-    this.setState({ formData: emptyFormData })
-  },
   render () {
     if (!this.props.open) return null
-    const { onChange, onSubmit, onReset } = this
-    const { open, onDismiss, campaign } = this.props
+    const { onChange } = this
+    const { open, onDismiss, campaign, onReset, onSubmit } = this.props
     const { name, purpose, clientName, website } = campaign
     const htmlStyle = open ? 'height:100%; overflow:hidden' : ''
     const inputWidth = 270
@@ -84,7 +81,7 @@ const EditCampaign = React.createClass({
                   name='name'
                   value={name}
                   placeholder='Campaign Name'
-                  size={name.length + 2} />
+                  size={name.length === 0 ? 15 : name.length + 2} />
               </div>
               <div>
                 <input
@@ -93,7 +90,7 @@ const EditCampaign = React.createClass({
                   name='clientName'
                   value={clientName}
                   placeholder='Client'
-                  size={name.length + 2} />
+                  size={clientName.length === 0 ? 8 : clientName.length + 2} />
               </div>
             </div>
             <div className='bg-gray90 border-top border-gray80'>
