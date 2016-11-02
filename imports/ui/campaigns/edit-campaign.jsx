@@ -34,7 +34,8 @@ const EditCampaignContainer = React.createClass({
     this.setState({ campaign: emptyFormData })
   },
   render () {
-    const props = Object.assign({ onChange, onReset, onSubmit } = this, this.state, this.props)
+    const { onChange, onReset, onSubmit } = this
+    const props = Object.assign({ onChange, onReset, onSubmit }, this.state, this.props)
     return <EditCampaign {...props} />
   }
 })
