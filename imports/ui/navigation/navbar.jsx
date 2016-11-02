@@ -12,7 +12,7 @@ const NavBar = React.createClass({
     notifications: PropTypes.array
   },
   render () {
-    const { user, notifications } = this.props
+    const { notifications } = this.props
     return (
       <div className='navbar bg-gray10 clearfix' style={{height: 58}}>
         <nav className='inline-block left'>
