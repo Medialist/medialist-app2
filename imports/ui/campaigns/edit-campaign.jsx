@@ -26,7 +26,15 @@ const EditCampaignContainer = React.createClass({
   },
   onSubmit (evt) {
     evt.preventDefault()
-    console.log('Payload for Meteor.call(medialists/create)', this.state.campaign)
+    const { name, purpose, clientName } = this.state.campaign
+    const payload = {
+      name,
+      purpose,
+      client: {
+        name: clientName
+      }
+    }
+    console.log('Payload for Meteor.call(medialists/create)', payload)
     this.onReset()
   },
   onReset () {
@@ -35,7 +43,7 @@ const EditCampaignContainer = React.createClass({
   },
   render () {
     const { onChange, onReset, onSubmit } = this
-    const props = Object.assign({ onChange, onReset, onSubmit }, this.state, this.props)
+    const props = Object.assign({}, this.state, this.props, { onChange, onReset, onSubmit })
     return <EditCampaign {...props} />
   }
 })
