@@ -13,16 +13,19 @@ const EditCampaign = React.createClass({
   propTypes: {
     open: PropTypes.bool.isRequired,
     onDismiss: PropTypes.func.isRequired,
-    clients: PropTypes.array.isRequired,
-    campaign: PropTypes.object.isRequired
+    clients: PropTypes.array.isRequired
   },
   getInitialState () {
     return { campaign: emptyFormData }
   },
+  updateField (field, value) {
+    const newValues = Object.assign({}, this.state.campaign, {[field]: value})
+    this.setState({ campaign: newValues })
+  },
   onChange (evt) {
     const { name, value } = evt.target
-    const newState = Object.assign({}, this.state.campaign, {[name]: value})
-    this.setState({ campaign: newState })
+    const { updateField } = this
+    updateField(name, value)
   },
   onSubmit (evt) {
     evt.preventDefault()
@@ -34,12 +37,15 @@ const EditCampaign = React.createClass({
         name: clientName
       }
     }
-    console.log('Payload for Meteor.call(medialists/create)', payload)
+    console.log(payload)
+    this.props.onDismiss()
+  },
+  onReset () {
     this.props.onDismiss()
   },
   render () {
     if (!this.props.open) return null
-    const { onChange, onReset, onSubmit } = this
+    const { onChange, onSubmit, onReset } = this
     const { name, purpose, clientName, website } = this.state.campaign
     const inputWidth = 270
     const iconWidth = 30
