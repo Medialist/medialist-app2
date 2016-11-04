@@ -117,6 +117,10 @@ input {
   border:0 none;
 }
 
+button {
+  outline: none;
+}
+
 /* ---- Atoms --------------------------------------------------------------- */
 
 .p5  { padding:        var(--space-5) }
@@ -340,10 +344,6 @@ input {
 ::-moz-focus-inner {
   border: 0;
   padding: 0;
-}
-
-button {
-  outline: none;
 }
 
 .badge {
