@@ -62,7 +62,7 @@ const ContactPage = React.createClass({
             <ContactNeedToKnowList items={needToKnows} />
           </div>
         </div>
-        <EditContact onSubmit={this.onEditContact} onDismiss={this.toggleEditContact} open={editContactOpen} contact={contact} />
+        <EditContact open={editContactOpen} onSubmit={this.onEditContact} onDismiss={this.toggleEditContact} contact={contact} />}
       </div>
     )
   }
