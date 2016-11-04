@@ -117,6 +117,10 @@ input {
   border:0 none;
 }
 
+button {
+  outline: none;
+}
+
 /* ---- Atoms --------------------------------------------------------------- */
 
 .p5  { padding:        var(--space-5) }
@@ -161,6 +165,7 @@ input {
 
 .width-100 { width:100% }
 .max-width-lg { max-width: 1150px; }
+.max-width-sm { max-width: 320px; }
 
 .pointer { cursor: pointer; }
 
@@ -417,4 +422,9 @@ input {
   border-bottom-color:var(--white);
   border-top: 0 none;
   border-radius: 2px;
+}
+
+.DropdownMenu {
+  top: 3.1rem !important;
+  right: .27rem !important;
 }
