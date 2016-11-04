@@ -32,7 +32,7 @@ export const Notification = React.createClass({
 export const Notifications = (props) => {
   const { notifications, className } = props
   return (
-    <div className={className}>
+    <div className={className || ''}>
       {notifications.map((notification, key) => {
         return <Notification notification={notification} key={key} />
       })}
