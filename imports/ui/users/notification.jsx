@@ -7,12 +7,6 @@ import {
   FeedNeedToKnowIcon
 } from '../images/icons'
 
-const icons = {
-  FeedCampaignIcon: <FeedCampaignIcon />,
-  FeedCoverageIcon: <FeedCoverageIcon />,
-  FeedNeedToKnowIcon: <FeedNeedToKnowIcon />
-}
-
 export const Notification = React.createClass({
   propTypes: {
     notification: PropTypes.object
@@ -35,31 +29,35 @@ export const Notification = React.createClass({
   }
 })
 
-export const Notifications = React.createClass({
-  propTypes: { notifications: PropTypes.array.isRequired },
-  render () {
-    return <div>{this.props.notifications.map((note, i) => <Notification notification={note} key={i} />)}</div>
-  }
-})
+export const Notifications = (props) => {
+  return props.notifications.map(function (note, i) {
+    return <Notification notification={note} key={i} />
+  })
+}
 
-export const NotificationSummary = React.createClass({
-  propTypes: {
-    notifications: PropTypes.array.isRequired,
-    onClick: PropTypes.func.isRequired
-  },
-  render () {
-    const { notifications, onClick } = this.props
-    const unread = notifications.filter((n) => !!n.read)
-
-    return (
-      <div className='flex items-center my3 pa3'>
-        <div className='flex-none'>
-          <span className='ml2 px2 py1 bg-not-interested circle inline-block white'>{unread.length}</span>
-          <span className='px1'>Unread notifications</span>
-        </div>
-        <hr className='flex-auto' style={{opacity: 0}} />
-        <span className='mr2 flex-none blue no-select pointer' onClick={onClick}>Mark all as read</span>
+export const NotificationsSummary = (props) => {
+  const { notifications, onMarkAllReadClick } = props
+  const unread = notifications.filter((n) => !!n.read)
+  return (
+    <div className='flex items-center my3 pa3'>
+      <div className='flex-none'>
+        <span className='ml2 px2 py1 bg-not-interested circle inline-block white'>{unread.length}</span>
+        <span className='px1'>Unread notifications</span>
       </div>
-    )
-  }
-})
+      <hr className='flex-auto' style={{opacity: 0}} />
+      <span className='mr2 flex-none blue no-select pointer' onClick={onMarkAllReadClick}>Mark all as read</span>
+    </div>
+  )
+}
+
+NotificationsSummary.propTypes = {
+  notifications: PropTypes.array.isRequired,
+  onMarkAllReadClick: PropTypes.func.isRequired
+}
+
+// mock icons before connecting component to data source
+const icons = {
+  FeedCampaignIcon: <FeedCampaignIcon />,
+  FeedCoverageIcon: <FeedCoverageIcon />,
+  FeedNeedToKnowIcon: <FeedNeedToKnowIcon />
+}

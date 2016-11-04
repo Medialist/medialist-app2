@@ -1,12 +1,12 @@
 import React from 'react'
-import { Notifications, NotificationSummary } from './notification'
+import { Notifications, NotificationsSummary } from './notification'
+
+const onMarkAllReadClick = () => console.log('TODO: Mark all read')
 
 export default () => (
   <div className='block max-width-lg mx-auto my4 pt3'>
-    <NotificationSummary notifications={notifications} />
-    <div className='shadow-2 mt4'>
-      <Notifications notifications={notifications} />
-    </div>
+    {NotificationsSummary({notifications, onMarkAllReadClick})}
+    <div className='shadow-2 mt4'>{Notifications({notifications})}</div>
   </div>
 )
 
