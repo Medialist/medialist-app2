@@ -33,7 +33,7 @@ const FeedbackInput = React.createClass({
   },
   render () {
     const {focused, contact, campaigns} = this.props
-    const {message, posting} = this.state
+    const {message, status, posting} = this.state
     const className = focused ? '' : 'display-none'
     const rows = focused ? '3' : '1'
     const name = contact && contact.name && contact.name.split(' ')[0]
@@ -50,7 +50,9 @@ const FeedbackInput = React.createClass({
         <div className={className}>
           <button onClick={() => this.onSubmit()} className='btn bg-gray80 right' disabled={posting || !this.isValid()}>Post</button>
           <CampaignSelector onChange={this.onCampaignChange} campaigns={campaigns} />
-          <StatusSelector onChange={this.onStatusChange} />
+          <div className='inline-block mx2'>
+            <StatusSelector status={status} onChange={this.onStatusChange} />
+          </div>
         </div>
       </div>
     )

@@ -214,7 +214,9 @@ input {
 .bg-hot-lead { background-color: var(--status-orange) !important }
 .bg-completed { background-color: var(--status-green) !important }
 
+.border-transparent { border-color: transparent !important }
 .border-gray10 { border-color:var(--gray10) !important }
+.border-gray20 { border-color:var(--gray20) !important }
 .border-gray80 { border-color:var(--gray80) !important }
 
 .svg-icon svg {
@@ -264,6 +266,10 @@ input {
   padding: .5rem;
   border: 1px solid var(--gray80);
   border-radius: var(--border-radius);
+}
+.input:focus {
+  outline: none;
+  border-color: var(--blue);
 }
 .input-inline {
   font-family: inherit;
@@ -349,14 +355,18 @@ input {
   color: var(--white);
   padding: 2px var(--space-1);
   border-radius: var(--border-radius);
+  min-width: 2em;
+  text-align: center;
 }
 
 .pill {
   /* BYO font-size, bg-color */
   display: inline-block;
   color: var(--white);
-  padding: var(--space-1) 2px;
-  border-radius: 1em;
+  padding: 2px var(--space-1);
+  border-radius: 2em;
+  min-width: 2em;
+  text-align: center;
 }
 
 /* ---- Interactions -------------------------------------------------------- */
@@ -384,7 +394,12 @@ input {
 .hover-blue:hover {
   color: var(--blue);
 }
-
+.active-blue.active {
+  color: var(--blue);
+}
+.active-border-left-blue.active {
+  box-shadow: inset 5px 0 0 0 var(--blue) !important;
+}
 /* ---- Rebass overrides ---------------------------------------------------- */
 
 .Menu {

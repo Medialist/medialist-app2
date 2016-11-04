@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import { Link } from 'react-router'
 import SortableHeader from '../tables/sortable-header'
 import SelectableRow from '../tables/selectable-row'
 import FromNow from '../time/from-now'
@@ -91,12 +92,14 @@ const CampaignsTable = React.createClass({
         </thead>
         <tbody>
           {campaigns.map((campaign) => {
-            const { _id, name, avatar, client, purpose, updatedAt, updatedBy } = campaign
+            const { _id, slug, name, avatar, client, purpose, updatedAt, updatedBy } = campaign
             return (
               <SelectableRow data={campaign} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id}>
                 <td className='left-align'>
-                  <SquareAvatar avatar={avatar} name={name} />
-                  <span className='ml3 semibold'>{name}</span>
+                  <Link to={`/campaign/${slug}`}>
+                    <SquareAvatar avatar={avatar} name={name} />
+                    <span className='ml3 semibold'>{name}</span>
+                  </Link>
                 </td>
                 <td className='left-align'>{client.name}</td>
                 <td className='left-align'>{purpose}</td>
