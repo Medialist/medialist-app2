@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
-import Helmet from 'react-helmet'
 import { CameraIcon, BioIcon, WebsiteIcon } from '../images/icons'
+import Modal from '../navigation/modal'
 
 const emptyFormData = {
   name: '',
@@ -9,18 +9,18 @@ const emptyFormData = {
   website: ''
 }
 
-const EditCampaignContainer = React.createClass({
+const EditCampaign = React.createClass({
   propTypes: {
     open: PropTypes.bool.isRequired,
     onDismiss: PropTypes.func.isRequired,
-    clients: PropTypes.array.isRequired
+    clients: PropTypes.array.isRequired,
+    campaign: PropTypes.object.isRequired
   },
   getInitialState () {
-    return {
-      campaign: emptyFormData
-    }
+    return { campaign: emptyFormData }
   },
-  onChange (name, value) {
+  onChange (evt) {
+    const { name, value } = evt.target
     const newState = Object.assign({}, this.state.campaign, {[name]: value})
     this.setState({ campaign: newState })
   },
@@ -35,112 +35,79 @@ const EditCampaignContainer = React.createClass({
       }
     }
     console.log('Payload for Meteor.call(medialists/create)', payload)
-    this.onReset()
-  },
-  onReset () {
     this.props.onDismiss()
-    this.setState({ campaign: emptyFormData })
-  },
-  render () {
-    const { onChange, onReset, onSubmit } = this
-    const props = Object.assign({}, this.state, this.props, { onChange, onReset, onSubmit })
-    return <EditCampaign {...props} />
-  }
-})
-
-const EditCampaign = React.createClass({
-  propTypes: {
-    open: PropTypes.bool.isRequired,
-    onSubmit: PropTypes.func.isRequired,
-    onReset: PropTypes.func.isRequired,
-    onDismiss: PropTypes.func.isRequired,
-    clients: PropTypes.array.isRequired,
-    campaign: PropTypes.object.isRequired
-  },
-  onChange (evt) {
-    const { name, value } = evt.target
-    this.props.onChange(name, value)
   },
   render () {
     if (!this.props.open) return null
-    const { onChange } = this
-    const { open, onDismiss, campaign, onReset, onSubmit } = this.props
-    const { name, purpose, clientName, website } = campaign
-    const htmlStyle = open ? 'height:100%; overflow:hidden' : ''
+    const { onChange, onReset, onSubmit } = this
+    const { name, purpose, clientName, website } = this.state.campaign
     const inputWidth = 270
     const iconWidth = 30
     const inputStyle = { width: inputWidth, resize: 'none' }
     const iconStyle = { width: iconWidth }
 
     return (
-      <div>
-        <Helmet htmlAttributes={{ style: htmlStyle }} />
-        <div className='fixed top-0 right-0 left-0 bottom-0' style={{background: 'rgba(35, 54, 75, 0.8)'}} onClick={onDismiss} />
-        <div className='absolute top-0 right-0 left-0 bg-white fit mx-auto mt6' style={{width: 675}}>
-          <div className='inline-block right pointer f-xxl mx2 gray60 hover-blue' onClick={onDismiss}>&times;</div>
-          <form onChange={onChange} onSubmit={onSubmit} onReset={onReset}>
-            <div className='p4 center'>
-              <div className='bg-gray40 center rounded mx-auto' style={{height: '123px', width: '123px', lineHeight: '123px'}}>
-                <CameraIcon />
-              </div>
-              <div>
-                <input
-                  className='center gray60 input-inline mt4 f-xxl semibold'
-                  type='text'
-                  name='name'
-                  value={name}
-                  placeholder='Campaign Name'
-                  size={name.length === 0 ? 15 : name.length + 2} />
-              </div>
-              <div>
-                <input
-                  className='center gray60 input-inline mt1 f-lg gray10'
-                  type='text'
-                  name='clientName'
-                  value={clientName}
-                  placeholder='Client'
-                  size={clientName.length === 0 ? 8 : clientName.length + 2} />
-              </div>
-            </div>
-            <div className='bg-gray90 border-top border-gray80'>
-              <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft: 70}}>Details</label>
-              <div className='mx-auto py2' style={{width: inputWidth + iconWidth}}>
-                <div className='pt3'>
-                  <BioIcon style={iconStyle} className='inline-block align-top' />
-                  <div className='inline-block align-middle'>
-                    <textarea
-                      style={inputStyle}
-                      className='textarea'
-                      type='text'
-                      rows='5'
-                      name='purpose'
-                      value={purpose}
-                      placeholder='Key Message' />
-                  </div>
-                </div>
-                <div className='pt3'>
-                  <WebsiteIcon style={iconStyle} className='inline-block align-top' />
-                  <div className='inline-block align-middle'>
-                    <input
-                      style={inputStyle}
-                      className='input'
-                      type='text'
-                      name='website'
-                      value={website}
-                      placeholder='Website' />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className='p4 right'>
-              <button className='btn bg-completed white right' type='submit'>Create Campaign</button>
-              <button className='btn bg-transparent gray40 right mr2' type='reset'>Cancel</button>
-            </div>
-          </form>
+      <form onChange={onChange} onSubmit={onSubmit} onReset={onReset}>
+        <div className='p4 center'>
+          <div className='bg-gray40 center rounded mx-auto' style={{height: '123px', width: '123px', lineHeight: '123px'}}>
+            <CameraIcon />
+          </div>
+          <div>
+            <input
+              className='center gray60 input-inline mt4 f-xxl semibold'
+              type='text'
+              name='name'
+              value={name}
+              placeholder='Campaign Name'
+              size={name.length === 0 ? 15 : name.length + 2} />
+          </div>
+          <div>
+            <input
+              className='center gray60 input-inline mt1 f-lg gray10'
+              type='text'
+              name='clientName'
+              value={clientName}
+              placeholder='Client'
+              size={clientName.length === 0 ? 8 : clientName.length + 2} />
+          </div>
         </div>
-      </div>
+        <div className='bg-gray90 border-top border-gray80'>
+          <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft: 70}}>Details</label>
+          <div className='mx-auto py2' style={{width: inputWidth + iconWidth}}>
+            <div className='pt3'>
+              <BioIcon style={iconStyle} className='inline-block align-top' />
+              <div className='inline-block align-middle'>
+                <textarea
+                  style={inputStyle}
+                  className='textarea'
+                  type='text'
+                  rows='5'
+                  name='purpose'
+                  value={purpose}
+                  placeholder='Key Message' />
+              </div>
+            </div>
+            <div className='pt3'>
+              <WebsiteIcon style={iconStyle} className='inline-block align-top' />
+              <div className='inline-block align-middle'>
+                <input
+                  style={inputStyle}
+                  className='input'
+                  type='text'
+                  name='website'
+                  value={website}
+                  placeholder='Website' />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className='p4 right'>
+          <button className='btn bg-completed white right' type='submit'>Create Campaign</button>
+          <button className='btn bg-transparent gray40 right mr2' type='reset'>Cancel</button>
+        </div>
+      </form>
     )
   }
 })
 
-export default EditCampaignContainer
+export default Modal(EditCampaign)
