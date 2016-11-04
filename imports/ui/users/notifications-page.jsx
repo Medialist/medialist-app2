@@ -5,8 +5,8 @@ const onMarkAllReadClick = () => console.log('TODO: Mark all read')
 
 export default () => (
   <div className='block max-width-lg mx-auto my4 pt3'>
-    {NotificationsSummary({notifications, onMarkAllReadClick})}
-    <div className='shadow-2 mt4'>{Notifications({notifications})}</div>
+    <NotificationsSummary notifications={notifications} onMarkAllReadClick={onMarkAllReadClick} />
+    <Notifications notifications={notifications} className='shadow-2 mt4' />
   </div>
 )
 

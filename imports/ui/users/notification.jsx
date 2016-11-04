@@ -30,9 +30,19 @@ export const Notification = React.createClass({
 })
 
 export const Notifications = (props) => {
-  return props.notifications.map(function (note, i) {
-    return <Notification notification={note} key={i} />
-  })
+  const { notifications, className } = props
+  return (
+    <div className={className}>
+      {notifications.map((notification, key) => {
+        return <Notification notification={notification} key={key} />
+      })}
+    </div>
+  )
+}
+
+Notifications.PropTypes = {
+  notifications: PropTypes.array.isRequired,
+  className: PropTypes.string
 }
 
 export const NotificationsSummary = (props) => {
@@ -55,7 +65,7 @@ NotificationsSummary.propTypes = {
   onMarkAllReadClick: PropTypes.func.isRequired
 }
 
-// mock icons before connecting component to data source
+// mock icons in lieu of a data source
 const icons = {
   FeedCampaignIcon: <FeedCampaignIcon />,
   FeedCoverageIcon: <FeedCoverageIcon />,
