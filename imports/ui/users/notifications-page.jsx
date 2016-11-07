@@ -1,17 +1,12 @@
 import React from 'react'
-import { Notifications } from './notification'
+import { Notifications, NotificationsSummary } from './notification'
+
+const onMarkAllReadClick = () => console.log('TODO: Mark all read')
 
 export default () => (
   <div className='block max-width-lg mx-auto my4 pt3'>
-    <div className='flex items-center my3 pa3'>
-      <div className='flex-none'>
-        <span className='ml2 px2 py1 bg-not-interested circle inline-block white'>3</span>
-        <span className='px1'>Unread notifications</span>
-      </div>
-      <hr className='flex-auto mx2' style={{height: 1}} />
-      <span className='mr2 flex-none'>Mark all as read</span>
-    </div>
-    <div className='shadow-2 mt4'>{Notifications({notifications})}</div>
+    <NotificationsSummary notifications={notifications} onMarkAllReadClick={onMarkAllReadClick} />
+    <Notifications notifications={notifications} className='shadow-2 mt4' />
   </div>
 )
 
