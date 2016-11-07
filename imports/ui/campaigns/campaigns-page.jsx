@@ -5,10 +5,22 @@ import CampaignsTable from './campaigns-table'
 import SearchBox from '../lists/search-box'
 import SectorSelector from './sector-selector.jsx'
 import CampaignsActionsToast from './campaigns-actions-toast'
+import EditCampaign from './edit-campaign'
 
 const CampaignsPage = React.createClass({
   getInitialState () {
-    return { sort: { updatedAt: -1 }, selections: [], term: '', selectedSector: null }
+    return {
+      sort: { updatedAt: -1 },
+      selections: [],
+      term: '',
+      selectedSector: null,
+      editCampaignOpen: false
+    }
+  },
+
+  toggleEditCampaign () {
+    const editCampaignOpen = !this.state.editCampaignOpen
+    this.setState({ editCampaignOpen })
   },
 
   onSortChange (sort) {
@@ -33,11 +45,19 @@ const CampaignsPage = React.createClass({
 
   render () {
     const { onSortChange, onSelectionsChange, onSectorChange } = this
-    const { sort, term, selections, selectedSector } = this.state
+    const { sort, term, selections, selectedSector, editCampaignOpen } = this.state
 
     return (
       <div>
-        <SectorSelectorContainer selected={selectedSector} onSectorChange={onSectorChange} />
+        <div className='flex items-center justify-end bg-white width-100'>
+          <div className='flex-auto border-right border-gray80'>
+            <SectorSelectorContainer selected={selectedSector} onSectorChange={onSectorChange} />
+          </div>
+          <div className='flex-none bg-white center px4'>
+            <button className='btn bg-completed white mx4' onClick={this.toggleEditCampaign}>New Campaign</button>
+          </div>
+        </div>
+        <EditCampaignContainer onDismiss={this.toggleEditCampaign} open={editCampaignOpen} />
         <div className='bg-white shadow-2 m4'>
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
@@ -92,6 +112,11 @@ const CampaignsTableContainer = createContainer((props) => {
 const CampaignsTotalContainer = createContainer((props) => {
   return { ...props, total: window.Medialists.find({}).count() }
 }, CampaignsTotal)
+
+const EditCampaignContainer = createContainer((props) => {
+  Meteor.subscribe('clients')
+  return { ...props, clients: window.Clients.find().fetch() }
+}, EditCampaign)
 
 const SectorSelectorContainer = createContainer((props) => {
   // TODO: wire in sectors

@@ -35,7 +35,7 @@ const SectorSelector = React.createClass({
 
   render () {
     return (
-      <nav className='block bg-white mb4 px4'>
+      <nav className='block bg-white px4'>
         <div className='nowrap truncate'>
           {this.props.items.map((i) => this.isSelected(i) ? this.renderSelectedItem(i) : this.renderItem(i))}
         </div>
