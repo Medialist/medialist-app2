@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
 import { CameraIcon, BioIcon, WebsiteIcon } from '../images/icons'
 import Modal from '../navigation/modal'
+import Autocomplete from './autocomplete'
 
 const emptyFormData = {
   name: '',
@@ -45,7 +46,8 @@ const EditCampaign = React.createClass({
   },
   render () {
     if (!this.props.open) return null
-    const { onChange, onSubmit, onReset } = this
+    const { onChange, onSubmit, onReset, updateField } = this
+    const { clients } = this.props
     const { name, purpose, clientName, website } = this.state.campaign
     const inputWidth = 270
     const iconWidth = 30
@@ -67,15 +69,12 @@ const EditCampaign = React.createClass({
               placeholder='Campaign Name'
               size={name.length === 0 ? 15 : name.length + 2} />
           </div>
-          <div>
-            <input
-              className='center gray60 input-inline mt1 f-lg gray10'
-              type='text'
-              name='clientName'
-              value={clientName}
-              placeholder='Client'
-              size={clientName.length === 0 ? 8 : clientName.length + 2} />
-          </div>
+          <Autocomplete
+            clients={clients}
+            className='center gray60 input-inline mt1 f-lg gray10'
+            name='clientName'
+            value={clientName}
+            updateField={updateField} />
         </div>
         <div className='bg-gray90 border-top border-gray80'>
           <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft: 70}}>Details</label>
