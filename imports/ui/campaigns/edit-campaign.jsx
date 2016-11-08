@@ -6,14 +6,16 @@ const EditCampaign = React.createClass({
   propTypes: {
     open: PropTypes.bool.isRequired,
     onDismiss: PropTypes.func.isRequired,
-    clients: PropTypes.array.isRequired
+    clients: PropTypes.array.isRequired,
+    campaign: PropTypes.object
   },
   getInitialState () {
+    const { campaign } = this.props
     return {
       campaign: {
-        name: '',
-        purpose: '',
-        clientName: '',
+        name: campaign.name || '',
+        purpose: campaign.purpose || '',
+        clientName: campaign.client.name || '',
         website: ''
       }
     }

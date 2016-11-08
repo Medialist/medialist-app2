@@ -20,7 +20,7 @@ const CampaignTopbar = React.createClass({
   render () {
     const { backLinkText, onAddClick } = this.props
     return (
-      <nav className='block bg-white mb4 flex items-center'>
+      <nav className='block bg-white mb4 flex items-center width-100'>
         <div className='flex-auto'>
           <span className='pointer inline-block p4' onClick={this.onBackClick}>{`◀ ${backLinkText}`}</span>
         </div>

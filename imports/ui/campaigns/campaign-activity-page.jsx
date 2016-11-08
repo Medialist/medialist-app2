@@ -7,7 +7,7 @@ import CampaignInfo from './campaign-info'
 import CampaignContactList from './campaign-contact-list'
 import PostBox from '../contacts/post-box'
 import ActivityFeed from '../dashboard/activity-feed'
-// import EditCampaign from './edit-campaign'
+import EditCampaign from './edit-campaign'
 
 const CampaignActivityPage = React.createClass({
   propTypes: {
@@ -19,7 +19,7 @@ const CampaignActivityPage = React.createClass({
   },
 
   getInitialState () {
-    return { editModalOpen: true }
+    return { editModalOpen: false }
   },
 
   toggleEditModal () {
@@ -47,7 +47,9 @@ const CampaignActivityPage = React.createClass({
   },
 
   render () {
-    const { campaign, contacts, contactsCount } = this.props
+    const { toggleEditModal } = this
+    const { campaign, contacts, contactsCount, clients } = this.props
+    const { editModalOpen } = this.state
     if (!campaign) return null
     return (
       <div>
@@ -55,6 +57,7 @@ const CampaignActivityPage = React.createClass({
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
             <CampaignInfo campaign={campaign} onEditClick={this.toggleEditModal} />
+            <EditCampaign campaign={campaign} open={editModalOpen} onDismiss={toggleEditModal} clients={clients} />
           </div>
           <div className='flex-auto px2' >
             <PostBox campaigns={[campaign]} onFeedback={this.onFeedback} />
@@ -72,12 +75,14 @@ const CampaignActivityPage = React.createClass({
 export default createContainer((props) => {
   const { slug } = props.params
   const subs = [
-    Meteor.subscribe('medialist', slug)
+    Meteor.subscribe('medialist', slug),
+    Meteor.subscribe('clients')
   ]
   const loading = subs.some((s) => !s.ready())
   const campaign = window.Medialists.findOne({ slug })
   // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
   const contacts = window.Contacts.find({medialists: slug}, {limit: 7, sort: {updatedAt: -1}}).fetch()
   const contactsCount = window.Contacts.find({medialists: slug}).count()
-  return { ...props, campaign, contacts, contactsCount, loading }
+  const clients = window.Contacts.find({}, {limit: 25}).fetch()
+  return { ...props, campaign, contacts, contactsCount, loading, clients }
 }, withRouter(CampaignActivityPage))
