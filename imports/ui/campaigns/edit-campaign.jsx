@@ -3,13 +3,6 @@ import { CameraIcon, BioIcon, WebsiteIcon } from '../images/icons'
 import Modal from '../navigation/modal'
 import Autocomplete from './autocomplete'
 
-const emptyFormData = {
-  name: '',
-  purpose: '',
-  clientName: '',
-  website: ''
-}
-
 const EditCampaign = React.createClass({
   propTypes: {
     open: PropTypes.bool.isRequired,
@@ -17,7 +10,14 @@ const EditCampaign = React.createClass({
     clients: PropTypes.array.isRequired
   },
   getInitialState () {
-    return { campaign: emptyFormData }
+    return {
+      campaign: {
+        name: '',
+        purpose: '',
+        clientName: '',
+        website: ''
+      }
+    }
   },
   updateField (field, value) {
     const newValues = Object.assign({}, this.state.campaign, {[field]: value})
