@@ -12,12 +12,18 @@ export default React.createClass({
     return {suggestions: []}
   },
   componentWillReceiveProps (props) {
-    const { getSuggestions } = this
-    const { name, value, updateField } = props
+    const { setFieldValue } = this
+    const { value } = props
     if (!value) return
+    setFieldValue(value)
+  },
+  setFieldValue (value) {
+    const { getSuggestions } = this
+    const { name, updateField } = this.props
     const suggestions = getSuggestions(value)
     this.setState({suggestions})
     if (suggestions.length === 0) updateField(name, value.substring(0, value.length - 1))
+    if (value.toLowerCase() === suggestions[0].name.toLowerCase()) this.setState({suggestions: []})
   },
   getSuggestions (value) {
     return this.props.clients.filter((client) => {
@@ -25,8 +31,9 @@ export default React.createClass({
     })
   },
   selectValue (value) {
-    const { name, updateField } = this.props
-    updateField(name, value.name)
+    const { updateField } = this.props
+    updateField('clientName', value.name)
+    setTimeout(() => updateField('clientId', value._id), 0)
   },
   resetField (value) {
     value = value || ''

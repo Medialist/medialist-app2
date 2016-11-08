@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
 import { CameraIcon, BioIcon, WebsiteIcon } from '../images/icons'
+import { Meteor } from 'meteor/meteor'
 import Modal from '../navigation/modal'
 import Autocomplete from './autocomplete'
 
@@ -15,6 +16,7 @@ const EditCampaign = React.createClass({
         name: '',
         purpose: '',
         clientName: '',
+        clientId: '',
         website: ''
       }
     }
@@ -30,15 +32,17 @@ const EditCampaign = React.createClass({
   },
   onSubmit (evt) {
     evt.preventDefault()
-    const { name, purpose, clientName } = this.state.campaign
+    const { name, purpose, clientName, clientId } = this.state.campaign
     const payload = {
       name,
       purpose,
       client: {
+        _id: clientId,
         name: clientName
       }
     }
-    console.log(payload)
+    if (!payload.client.name || !payload.client._id || !payload.name) return
+    Meteor.call('medialists/create', payload)
     this.props.onDismiss()
   },
   onReset () {
