@@ -29,62 +29,24 @@ const AddContact = React.createClass({
   isActive (slug) {
     return this.props.selectedContacts.indexOf(slug) < 0 ? '' : 'active'
   },
-  selectListFragment (contact) {
-    const {
-      slug,
-      avatar,
-      name,
-      jobTitles,
-      primaryOutlets,
-      medialists
-    } = contact
+  selectContacts (contact) {
     const isActive = this.isActive
     const onSelect = this.props.onSelect
-
-    return (
-      <div className={`flex items-center pointer border-top border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger active-bg-green-light ${isActive(slug)}`} key={slug} onClick={onSelect.bind(null, slug)}>
-        <CircleAvatar avatar={avatar} />
-        <div className='inline-block pl4' style={{width: '24rem'}}>
-          <span className='f-xl gray40 py1'>{name}</span><br />
-          <span className='gray60 py1'>{jobTitles}</span><br />
-          <span className='gray60 py1'>{primaryOutlets.substring(0, 30)}...</span>
-        </div>
-        <div className='flex-none px4'>{medialists.length} campaigns</div>
-        <div className={`flex-none px4 ${isActive(slug) ? '' : 'opacity-0'} hover-opacity-100`}>
-          {isActive(slug) ? <SelectedIcon /> : <AddIcon />}
-        </div>
-      </div>
-    )
+    const properties = Object.assign({}, contact, {isActive}, {onSelect})
+    return selectFragment(properties)
   },
-  campaignContactFragment (contact) {
-    const {
-      slug,
-      avatar,
-      name,
-      jobTitles,
-      primaryOutlets
-    } = contact
+  campaignContacts (contact) {
+    const { slug } = contact
     const status = this.props.campaign.contacts[slug]
-    const { onStatusChange } = this.props
-    return (
-      <div className={`flex items-center pointer border-top border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger active-bg-green-light`} key={slug}>
-        <CircleAvatar avatar={avatar} />
-        <div className='inline-block pl4' style={{width: '24rem'}}>
-          <span className='f-xl gray40 py1'>{name}</span><br />
-          <span className='gray60 py1'>{jobTitles}</span><br />
-          <span className='gray60 py1'>{primaryOutlets.substring(0, 30)}...</span>
-        </div>
-        <div className='flex-none px4'>
-          <StatusSelector status={status} onChange={(status) => onStatusChange({status, contact})} />
-        </div>
-      </div>
-    )
+    const onStatusChange = this.props.onStatusChange
+    const properties = Object.assign({}, contact, {status}, {onStatusChange})
+    return contactFragment(properties)
   },
   render () {
     const {
       toggleTab,
-      selectListFragment,
-      campaignContactFragment
+      selectContacts,
+      campaignContacts
     } = this
     const { tabLeft } = this.state
     const {
@@ -110,7 +72,7 @@ const AddContact = React.createClass({
           <input className='flex-auto f-lg pa2 mx2' placeholder='Find a contact...' />
         </div>
         <div style={{height: scrollableHeight, overflowY: 'scroll'}}>
-          {tabLeft ? (contactsAll.map(selectListFragment)) : (contacts.map(campaignContactFragment))}
+          {tabLeft ? (contactsAll.map(selectContacts)) : (contacts.map(campaignContacts))}
         </div>
         <form className='p4 right' onReset={onReset} onSubmit={onSubmit}>
           <button className='btn bg-completed white right px3' type='submit'>Save Changes</button>
@@ -181,3 +143,56 @@ const AddContactContainer = React.createClass({
 })
 
 export default Modal(AddContactContainer)
+
+function selectFragment (properties) {
+  const {
+    isActive,
+    slug,
+    onSelect,
+    avatar,
+    name,
+    jobTitles,
+    primaryOutlets,
+    medialists
+  } = properties
+
+  return (<div className={`flex items-center pointer border-top border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger active-bg-green-light ${isActive(slug)}`} key={slug} onClick={onSelect.bind(null, slug)}>
+    <CircleAvatar avatar={avatar} />
+    <div className='inline-block pl4' style={{width: '24rem'}}>
+      <span className='f-xl gray40 py1'>{name}</span><br />
+      <span className='gray60 py1'>{jobTitles}</span><br />
+      <span className='gray60 py1'>{primaryOutlets.substring(0, 30)}...</span>
+    </div>
+    <div className='flex-none px4'>{medialists.length} campaigns</div>
+    <div className={`flex-none px4 ${isActive(slug) ? '' : 'opacity-0'} hover-opacity-100`}>
+      {isActive(slug) ? <SelectedIcon /> : <AddIcon />}
+    </div>
+  </div>)
+}
+
+function contactFragment (properties) {
+  const {
+    slug,
+    avatar,
+    name,
+    jobTitles,
+    primaryOutlets,
+    status,
+    onStatusChange,
+    contact
+  } = properties
+
+  return (
+    <div className={`flex items-center pointer border-top border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger active-bg-green-light`} key={slug}>
+      <CircleAvatar avatar={avatar} />
+      <div className='inline-block pl4' style={{width: '24rem'}}>
+        <span className='f-xl gray40 py1'>{name}</span><br />
+        <span className='gray60 py1'>{jobTitles}</span><br />
+        <span className='gray60 py1'>{primaryOutlets.substring(0, 30)}...</span>
+      </div>
+      <div className='flex-none px4'>
+        <StatusSelector status={status} onChange={(status) => onStatusChange({status, contact})} />
+      </div>
+    </div>
+  )
+}
