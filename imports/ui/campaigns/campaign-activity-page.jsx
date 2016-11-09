@@ -28,10 +28,6 @@ const CampaignActivityPage = React.createClass({
     this.setState({ editModalOpen })
   },
 
-  onAddClick () {
-    console.log('TODO: Add contact to campaign')
-  },
-
   onBackClick () {
     this.props.router.push(`/campaigns`)
   },
@@ -52,7 +48,7 @@ const CampaignActivityPage = React.createClass({
 
     return (
       <div>
-        <CampaignTopbar onAddClick={this.onAddClick} onBackClick={this.onBackClick} contactsAll={contactsAll} campaign={campaign} contacts={contacts} />
+        <CampaignTopbar onBackClick={this.onBackClick} contactsAll={contactsAll} campaign={campaign} contacts={contacts} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
             <CampaignInfo campaign={campaign} onEditClick={this.toggleEditModal} />
@@ -81,6 +77,6 @@ export default createContainer((props) => {
   // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
   const contacts = window.Contacts.find({medialists: slug}, {limit: 7, sort: {updatedAt: -1}}).fetch()
   const contactsCount = window.Contacts.find({medialists: slug}).count()
-  const contactsAll = window.Contacts.find({medialists: {$nin: [slug]}}, {limit: 20}).fetch()
+  const contactsAll = window.Contacts.find({medialists: {$nin: [slug]}}, {limit: 20, sort: {name: 1}}).fetch()
   return { ...props, campaign, contacts, contactsCount, contactsAll, loading }
 }, withRouter(CampaignActivityPage))

@@ -14,8 +14,10 @@ const AddContact = React.createClass({
     onRemove: PropTypes.func.isRequired,
     onStatusChange: PropTypes.func.isRequired,
     onSelect: PropTypes.func.isRequired,
+    onSearch: PropTypes.func.isRequired,
     deselectAll: PropTypes.func.isRequired,
     contactsAll: PropTypes.object.isRequired,
+    filteredContacts: PropTypes.array,
     selectedContacts: PropTypes.array.isRequired,
     contacts: PropTypes.array.isRequired,
     campaign: PropTypes.object.isRequired
@@ -50,8 +52,9 @@ const AddContact = React.createClass({
     const {
       onReset,
       onSubmit,
-      contactsAll,
-      contacts
+      filteredContacts,
+      contacts,
+      onSearch
     } = this.props
 
     const scrollableHeight = window.innerHeight - 380
@@ -63,14 +66,14 @@ const AddContact = React.createClass({
           <span className={`inline-block pointer f-xl pt6 pb4 ml3 gray60 active-blue active-border-bottom-blue ${tabLeft ? '' : 'active'}`} onClick={toggleTab}>Campaign's Contacts</span>
         </div>
         <div className='center border-top border-bottom border-gray80 bg-gray90 py2 gray60 caps f-xxs shadow-inset'>
-          {contactsAll.length} contacts total
+          {filteredContacts.length} contacts total
         </div>
         <div className='py3 pl3 flex'>
           <SearchBlueIcon className='flex-none' />
-          <input className='flex-auto f-lg pa2 mx2' placeholder='Find a contact...' />
+          <input className='flex-auto f-lg pa2 mx2' placeholder={tabLeft ? 'Find a contact...' : 'Search campaign\'s contacts...'} onChange={onSearch} style={{outline: 'none'}} />
         </div>
         <div style={{height: scrollableHeight, overflowY: 'scroll'}}>
-          {tabLeft ? (contactsAll.map(selectContacts)) : (contacts.map(campaignContacts))}
+          {tabLeft ? (filteredContacts.map(selectContacts)) : (contacts.map(campaignContacts))}
         </div>
         <form className='p4 right' onReset={onReset} onSubmit={onSubmit}>
           <button className='btn bg-completed white right px3' type='submit'>Save Changes</button>
@@ -90,7 +93,10 @@ const AddContactContainer = React.createClass({
     contacts: PropTypes.object.isRequired
   },
   getInitialState () {
-    return { selectedContacts: [] }
+    return {
+      selectedContacts: [],
+      filteredContacts: this.props && this.props.contactsAll || []
+    }
   },
   onStatusChange ({ status, contact }) {
     const post = {
@@ -110,7 +116,6 @@ const AddContactContainer = React.createClass({
     const slugs = this.state.selectedContacts
     const campaign = this.props.campaign.slug
     if (slugs.length > 0) Meteor.call('contacts/addToMedialist', slugs, campaign)
-    this.updateContactsAll(slugs)
     this.onReset()
   },
   onRemove (contact) {
@@ -120,32 +125,17 @@ const AddContactContainer = React.createClass({
     this.props.onDismiss()
     this.deselectAll()
   },
-  updateContactsAll (slugs) {
-    const { contactsAll } = this.props
-    const removedSlugs = contactsAll.filter((c) => slugs.indexOf(c.slug) < 0)
-    this.props.contactsAll = removedSlugs
+  onSearch (evt) {
+    const term = evt.target.value
+    const query = {name: {$regex: `^${term}`, $options: 'i'}}
+    const filteredContacts = window.Contacts.find(query, {limit: 20, sort: {name: 1}}).fetch()
+    this.setState({filteredContacts})
   },
   deselectAll () {
     this.setState({selectedContacts: []})
   },
   render () {
-    const { onReset, onSelect, onSubmit, onStatusChange, deselectAll, onRemove } = this
-    const { selectedContacts } = this.state
-    const { onDismiss, open, contactsAll, contacts, campaign } = this.props
-    const props = Object.assign({}, {
-      onReset,
-      onStatusChange,
-      deselectAll,
-      onSelect,
-      onSubmit,
-      onRemove,
-      selectedContacts,
-      contacts,
-      contactsAll,
-      campaign,
-      onDismiss,
-      open
-    })
+    const props = Object.assign({}, this, this.state, this.props)
     return <AddContact {...props} />
   }
 })
@@ -188,6 +178,7 @@ function contactFragment (properties) {
     onRemove,
     contact
   } = properties
+
   const {
     slug,
     avatar,
@@ -195,6 +186,7 @@ function contactFragment (properties) {
     jobTitles,
     primaryOutlets
   } = properties.contact
+
   const status = campaign.contacts[slug]
 
   return (
