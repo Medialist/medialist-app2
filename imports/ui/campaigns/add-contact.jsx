@@ -32,14 +32,14 @@ const AddContact = React.createClass({
   selectContacts (contact) {
     const isActive = this.isActive
     const onSelect = this.props.onSelect
-    const properties = Object.assign({}, contact, {isActive}, {onSelect})
+    const properties = Object.assign({}, {contact}, {isActive}, {onSelect})
     return selectFragment(properties)
   },
   campaignContacts (contact) {
     const { slug } = contact
     const status = this.props.campaign.contacts[slug]
     const onStatusChange = this.props.onStatusChange
-    const properties = Object.assign({}, contact, {status}, {onStatusChange})
+    const properties = Object.assign({}, {contact}, {status}, {onStatusChange})
     return contactFragment(properties)
   },
   render () {
@@ -147,14 +147,17 @@ export default Modal(AddContactContainer)
 function selectFragment (properties) {
   const {
     isActive,
+    onSelect
+  } = properties
+
+  const {
     slug,
-    onSelect,
     avatar,
     name,
     jobTitles,
     primaryOutlets,
     medialists
-  } = properties
+  } = properties.contact
 
   return (<div className={`flex items-center pointer border-top border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger active-bg-green-light ${isActive(slug)}`} key={slug} onClick={onSelect.bind(null, slug)}>
     <CircleAvatar avatar={avatar} />
@@ -172,15 +175,17 @@ function selectFragment (properties) {
 
 function contactFragment (properties) {
   const {
-    slug,
-    avatar,
-    name,
-    jobTitles,
-    primaryOutlets,
     status,
     onStatusChange,
     contact
   } = properties
+  const {
+    slug,
+    avatar,
+    name,
+    jobTitles,
+    primaryOutlets
+  } = properties.contact
 
   return (
     <div className={`flex items-center pointer border-top border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger active-bg-green-light`} key={slug}>
