@@ -15,7 +15,8 @@ const CampaignActivityPage = React.createClass({
     loading: React.PropTypes.bool,
     campaign: PropTypes.object,
     contacts: PropTypes.array,
-    contactsCount: PropTypes.number
+    contactsCount: PropTypes.number,
+    contactsAll: PropTypes.array
   },
 
   getInitialState () {
@@ -42,16 +43,16 @@ const CampaignActivityPage = React.createClass({
       message,
       status
     }
-    console.log('onFeedBack', post)
     Meteor.call('posts/create', post)
   },
 
   render () {
-    const { campaign, contacts, contactsCount } = this.props
+    const { campaign, contacts, contactsCount, contactsAll } = this.props
     if (!campaign) return null
+
     return (
       <div>
-        <CampaignTopbar onAddClick={this.onAddClick} onBackClick={this.onBackClick} />
+        <CampaignTopbar onAddClick={this.onAddClick} onBackClick={this.onBackClick} contactsAll={contactsAll} campaign={campaign} contacts={contacts} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
             <CampaignInfo campaign={campaign} onEditClick={this.toggleEditModal} />
@@ -72,12 +73,14 @@ const CampaignActivityPage = React.createClass({
 export default createContainer((props) => {
   const { slug } = props.params
   const subs = [
-    Meteor.subscribe('medialist', slug)
+    Meteor.subscribe('medialist', slug),
+    Meteor.subscribe('contacts')
   ]
   const loading = subs.some((s) => !s.ready())
   const campaign = window.Medialists.findOne({ slug })
   // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
   const contacts = window.Contacts.find({medialists: slug}, {limit: 7, sort: {updatedAt: -1}}).fetch()
   const contactsCount = window.Contacts.find({medialists: slug}).count()
-  return { ...props, campaign, contacts, contactsCount, loading }
+  const contactsAll = window.Contacts.find({medialists: {$ne: slug}}, {limit: 20}).fetch()
+  return { ...props, campaign, contacts, contactsCount, contactsAll, loading }
 }, withRouter(CampaignActivityPage))
