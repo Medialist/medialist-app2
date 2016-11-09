@@ -19,7 +19,7 @@ const Status = (props) => {
 const StatusSelector = React.createClass({
   propTypes: {
     onChange: PropTypes.func.isRequired,
-    status: PropTypes.object
+    status: PropTypes.string
   },
   getInitialState () {
     return {open: false}

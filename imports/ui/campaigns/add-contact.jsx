@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
 import Modal from '../navigation/modal'
-import { SearchBlueIcon, AddIcon, SelectedIcon } from '../images/icons'
+import { SearchBlueIcon, AddIcon, SelectedIcon, RemoveIcon } from '../images/icons'
 import { CircleAvatar } from '../images/avatar'
 import StatusSelector from '../feedback/status-selector'
 
@@ -11,6 +11,7 @@ const AddContact = React.createClass({
     onDismiss: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
     onReset: PropTypes.func.isRequired,
+    onRemove: PropTypes.func.isRequired,
     onStatusChange: PropTypes.func.isRequired,
     onSelect: PropTypes.func.isRequired,
     deselectAll: PropTypes.func.isRequired,
@@ -36,10 +37,7 @@ const AddContact = React.createClass({
     return selectFragment(properties)
   },
   campaignContacts (contact) {
-    const { slug } = contact
-    const status = this.props.campaign.contacts[slug]
-    const onStatusChange = this.props.onStatusChange
-    const properties = Object.assign({}, {contact}, {status}, {onStatusChange})
+    const properties = Object.assign({}, {contact}, this.props)
     return contactFragment(properties)
   },
   render () {
@@ -112,17 +110,26 @@ const AddContactContainer = React.createClass({
     const slugs = this.state.selectedContacts
     const campaign = this.props.campaign.slug
     if (slugs.length > 0) Meteor.call('contacts/addToMedialist', slugs, campaign)
+    this.updateContactsAll(slugs)
     this.onReset()
+  },
+  onRemove (contact) {
+    Meteor.call('contacts/removeFromMedialist', contact.slug, this.props.campaign.slug)
   },
   onReset () {
     this.props.onDismiss()
     this.deselectAll()
   },
+  updateContactsAll (slugs) {
+    const { contactsAll } = this.props
+    const removedSlugs = contactsAll.filter((c) => slugs.indexOf(c.slug) < 0)
+    this.props.contactsAll = removedSlugs
+  },
   deselectAll () {
     this.setState({selectedContacts: []})
   },
   render () {
-    const { onReset, onSelect, onSubmit, onStatusChange, deselectAll } = this
+    const { onReset, onSelect, onSubmit, onStatusChange, deselectAll, onRemove } = this
     const { selectedContacts } = this.state
     const { onDismiss, open, contactsAll, contacts, campaign } = this.props
     const props = Object.assign({}, {
@@ -131,6 +138,7 @@ const AddContactContainer = React.createClass({
       deselectAll,
       onSelect,
       onSubmit,
+      onRemove,
       selectedContacts,
       contacts,
       contactsAll,
@@ -175,8 +183,9 @@ function selectFragment (properties) {
 
 function contactFragment (properties) {
   const {
-    status,
+    campaign,
     onStatusChange,
+    onRemove,
     contact
   } = properties
   const {
@@ -186,6 +195,7 @@ function contactFragment (properties) {
     jobTitles,
     primaryOutlets
   } = properties.contact
+  const status = campaign.contacts[slug]
 
   return (
     <div className={`flex items-center pointer border-top border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger active-bg-green-light`} key={slug}>
@@ -197,6 +207,9 @@ function contactFragment (properties) {
       </div>
       <div className='flex-none px4'>
         <StatusSelector status={status} onChange={(status) => onStatusChange({status, contact})} />
+      </div>
+      <div className='flex-auto mr2'>
+        <RemoveIcon className='right pr4' onClick={(evt) => onRemove(contact)} />
       </div>
     </div>
   )
