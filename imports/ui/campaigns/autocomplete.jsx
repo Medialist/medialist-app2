@@ -9,7 +9,9 @@ export default React.createClass({
     value: PropTypes.string.isRequired
   },
   getInitialState () {
-    return {suggestions: []}
+    return {
+      open: false
+    }
   },
   componentWillReceiveProps (props) {
     const { setFieldValue } = this
@@ -24,11 +26,6 @@ export default React.createClass({
     this.setState({suggestions})
     if (suggestions.length === 0) updateField(name, value.substring(0, value.length - 1))
     if (value.toLowerCase() === suggestions[0].name.toLowerCase()) this.setState({suggestions: []})
-  },
-  getSuggestions (value) {
-    return this.props.clients.filter((client) => {
-      return client.name.toLowerCase().slice(0, value.length) === value.toLowerCase()
-    })
   },
   selectValue (value) {
     const { updateField } = this.props
@@ -59,10 +56,6 @@ export default React.createClass({
       name,
       value
     } = this.props
-    const style = {
-      borderBottom: '1px dashed',
-      width: '33%'
-    }
 
     return (
       <div className='relative'>
@@ -75,14 +68,13 @@ export default React.createClass({
           onFocus={onFocus}
           onBlur={onBlur} />
         {suggestions.length !== 0 &&
-          <ul className='absolute list-reset center width-100'>
+          <ul className='list-reset absolute mx-auto bg-white shadow-2 border border-gray80' style={{width: '33%', transform: 'translate(100%)'}}>
             {suggestions.map((client, i) => {
               return <li
-                className='pointer bg-white center border-bottom border-gray80 py2 px4 my1 mx-auto shadow-2'
+                className='py2 px4 my1 pointer left-align gray90 f-sm'
                 key={client._id}
                 onClick={selectValue.bind(null, client)}
-                tabIndex={i}
-                style={style}>{client.name}</li>
+                tabIndex={i}>{client.name}</li>
             })}
           </ul>
         }

@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react'
 import { CameraIcon, BioIcon, WebsiteIcon } from '../images/icons'
 import { Meteor } from 'meteor/meteor'
 import Modal from '../navigation/modal'
-import Autocomplete from './autocomplete'
+import ClientAutocomplete from './client-autocomplete'
 
 const EditCampaign = React.createClass({
   propTypes: {
@@ -75,12 +75,12 @@ const EditCampaign = React.createClass({
               placeholder='Campaign Name'
               size={name.length === 0 ? 15 : name.length + 2} />
           </div>
-          <Autocomplete
+          <ClientAutocomplete
             clients={clients}
             className='center input-inline mt1 f-lg gray10'
             name='clientName'
             value={clientName}
-            updateField={updateField} />
+            onChange={updateField} />
         </div>
         <div className='bg-gray90 border-top border-gray80'>
           <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft: 70}}>Details</label>
