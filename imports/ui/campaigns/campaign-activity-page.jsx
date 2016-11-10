@@ -83,6 +83,6 @@ export default createContainer((props) => {
   // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
   const contacts = window.Contacts.find({medialists: slug}, {limit: 7, sort: {updatedAt: -1}}).fetch()
   const contactsCount = window.Contacts.find({medialists: slug}).count()
-  const clients = window.Contacts.find({}, {limit: 25}).fetch()
+  const clients = []
   return { ...props, campaign, contacts, contactsCount, loading, clients }
 }, withRouter(CampaignActivityPage))
