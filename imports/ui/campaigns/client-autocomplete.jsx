@@ -4,14 +4,15 @@ import Autocomplete from '../lists/autocomplete'
 export default React.createClass({
   propTypes: {
     clients: PropTypes.array.isRequired,
-    value: PropTypes.string.isRequired
+    clientName: PropTypes.string.isRequired,
+    onSelect: PropTypes.func.isRequired
   },
   getInitialState () {
-    const value = this.props.value || ''
+    const clientName = this.props.clientName || ''
     const { getSuggestions } = this
     return {
-      value,
-      suggestions: getSuggestions(value)
+      clientName,
+      suggestions: getSuggestions(clientName)
     }
   },
   getSuggestions (value) {
@@ -19,10 +20,20 @@ export default React.createClass({
       return client.name.toLowerCase().slice(0, value.length) === value.toLowerCase()
     })
   },
+  onChange (value) {
+    this.setState({clientName: value})
+  },
+  onSelect (suggestion) {
+    const res = this.props.clients.filter((client) => suggestion === client.name)
+    const client = res[0]
+    if (!client) return
+    this.props.onSelect(client)
+  },
   render () {
-    const { suggestions, value } = this.state
+    const { onSelect } = this
+    const { suggestions, clientName } = this.state
     return (
-      <Autocomplete {...this.props} suggestions={suggestions} value={value} />
+      <Autocomplete {...this.props} suggestions={suggestions} value={clientName} onSelect={onSelect} />
     )
   }
 })

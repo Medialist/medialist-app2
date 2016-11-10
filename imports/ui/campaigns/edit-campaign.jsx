@@ -79,8 +79,8 @@ const EditCampaign = React.createClass({
             clients={clients}
             className='center input-inline mt1 f-lg gray10'
             name='clientName'
-            value={clientName}
-            onChange={updateField} />
+            clientName={clientName}
+            onSelect={updateField} />
         </div>
         <div className='bg-gray90 border-top border-gray80'>
           <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft: 70}}>Details</label>
