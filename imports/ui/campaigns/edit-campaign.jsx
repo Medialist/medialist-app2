@@ -60,7 +60,7 @@ const EditCampaign = React.createClass({
     const iconStyle = { width: iconWidth }
 
     return (
-      <form onChange={onChange} onSubmit={onSubmit} onReset={onReset}>
+      <form onSubmit={onSubmit} onReset={onReset}>
         <div className='p4 center'>
           <div className='bg-gray40 center rounded mx-auto' style={{height: '123px', width: '123px', lineHeight: '123px'}}>
             <CameraIcon />
@@ -72,7 +72,9 @@ const EditCampaign = React.createClass({
               name='name'
               value={name}
               placeholder='Campaign Name'
-              size={name.length === 0 ? 15 : name.length + 2} />
+              size={name.length === 0 ? 15 : name.length + 2}
+              onChange={onChange}
+               />
           </div>
           <ClientAutocomplete
             clients={clients}
@@ -94,7 +96,8 @@ const EditCampaign = React.createClass({
                   rows='5'
                   name='purpose'
                   value={purpose}
-                  placeholder='Key Message' />
+                  placeholder='Key Message'
+                  onChange={onChange} />
               </div>
             </div>
             <div className='pt3'>
@@ -106,7 +109,8 @@ const EditCampaign = React.createClass({
                   type='text'
                   name='website'
                   value={website}
-                  placeholder='Website' />
+                  placeholder='Website'
+                  onChange={onChange} />
               </div>
             </div>
           </div>

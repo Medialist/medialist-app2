@@ -35,7 +35,7 @@ export default React.createClass({
     const { onChange, onDismiss, onClick } = this
     const { open } = this.state
     return (
-      <Dropdown>
+      <Dropdown style={{display: 'inline-block'}}>
         <input
           className={className}
           name={name}
@@ -43,10 +43,10 @@ export default React.createClass({
           placeholder={placeholder}
           autoComplete='off'
           onChange={onChange} />
-        <DropdownMenu open={open} onDismiss={onDismiss}>
+        <DropdownMenu right open={open} onDismiss={onDismiss} style={{maxWidth: 300}}>
           <ol className='list-reset'>{suggestions.map((s) => {
             return (
-              <li key={s} className='block px3 py2 pointer f-sm normal gray20 hover-bg-blue' onClick={() => onClick(s)}>
+              <li key={s} className='block px3 py2 pointer left-align f-sm normal gray20 hover-bg-blue' onClick={() => onClick(s)}>
                 {s}
               </li>
               )
