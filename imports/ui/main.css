@@ -171,6 +171,7 @@ button {
 
 .width-100 { width:100% }
 .max-width-lg { max-width: 1150px; }
+.max-width-md { max-width: 832px; }
 .max-width-sm { max-width: 320px; }
 
 .pointer { cursor: pointer; }
