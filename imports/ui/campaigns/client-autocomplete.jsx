@@ -15,25 +15,33 @@ export default React.createClass({
       suggestions: getSuggestions(clientName)
     }
   },
+  componentWillReceiveProps (props) {
+    this.setState({
+      clientName: props.clientName
+    })
+  },
   getSuggestions (value) {
     return this.props.clients.filter((client) => {
       return client.name.toLowerCase().slice(0, value.length) === value.toLowerCase()
-    })
+    }).map((c) => c.name)
   },
   onChange (value) {
-    this.setState({clientName: value})
+    this.setState({
+      clientName: value,
+      suggestions: this.getSuggestions(value)
+    })
   },
   onSelect (suggestion) {
     const res = this.props.clients.filter((client) => suggestion === client.name)
     const client = res[0]
     if (!client) return
-    this.props.onSelect(client)
+    this.props.onSelect('client', client)
   },
   render () {
-    const { onSelect } = this
+    const { onChange, onSelect } = this
     const { suggestions, clientName } = this.state
     return (
-      <Autocomplete {...this.props} suggestions={suggestions} value={clientName} onSelect={onSelect} />
+      <Autocomplete {...this.props} suggestions={suggestions} value={clientName} onSelect={onSelect} onChange={onChange} />
     )
   }
 })

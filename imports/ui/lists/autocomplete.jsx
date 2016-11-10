@@ -20,16 +20,19 @@ export default React.createClass({
   onDismiss () {
     this.setState({open: false})
   },
+  onClick (suggestion) {
+    this.props.onSelect(suggestion)
+    this.onDismiss()
+  },
   render () {
     const {
       className,
       name,
       value,
       placeholder,
-      suggestions,
-      onSelect
+      suggestions
     } = this.props
-    const { onChange, onDismiss } = this
+    const { onChange, onDismiss, onClick } = this
     const { open } = this.state
     return (
       <Dropdown>
@@ -43,7 +46,7 @@ export default React.createClass({
         <DropdownMenu open={open} onDismiss={onDismiss}>
           <ol className='list-reset'>{suggestions.map((s) => {
             return (
-              <li key={s} className='block px3 py2 pointer f-sm normal gray20 hover-bg-blue' onClick={() => onSelect(s)}>
+              <li key={s} className='block px3 py2 pointer f-sm normal gray20 hover-bg-blue' onClick={() => onClick(s)}>
                 {s}
               </li>
               )

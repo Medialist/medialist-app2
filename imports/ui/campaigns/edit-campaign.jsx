@@ -17,8 +17,7 @@ const EditCampaign = React.createClass({
       campaign: {
         name: campaign && campaign.name || '',
         purpose: campaign && campaign.purpose || '',
-        clientName: campaign && campaign.client.name || '',
-        clientId: campaign && campaign.client._id || '',
+        client: campaign && campaign.client || {name: ''},
         website: ''
       }
     }
@@ -54,7 +53,7 @@ const EditCampaign = React.createClass({
     if (!this.props.open) return null
     const { onChange, onSubmit, onReset, updateField } = this
     const { clients } = this.props
-    const { name, purpose, clientName, website } = this.state.campaign
+    const { name, purpose, client, website } = this.state.campaign
     const inputWidth = 270
     const iconWidth = 30
     const inputStyle = { width: inputWidth, resize: 'none' }
@@ -79,7 +78,7 @@ const EditCampaign = React.createClass({
             clients={clients}
             className='center input-inline mt1 f-lg gray10'
             name='clientName'
-            clientName={clientName}
+            clientName={client.name}
             onSelect={updateField} />
         </div>
         <div className='bg-gray90 border-top border-gray80'>
