@@ -36,7 +36,7 @@ const ItemFilter = React.createClass({
     return (
       <Dropdown>
         <div className='flex pointer fm-sm semibold gray20' onClick={this.onButtonClick}>
-          <div className='flex-none p3'>
+          <div className='flex-none p3 f-sm'>
             <CurrentFilter />
           </div>
           <hr className='flex-auto' style={{height: 1, margin: '25px 0 0 0'}} />

@@ -34,8 +34,8 @@ const UserInfo = React.createClass({
       <Dropdown style={{padding: '14px 15px 13px 25px', marginRight: 16}}>
         <div className='inline-block hover-opacity-trigger pointer' onClick={this.onNameClick}>
           <div className='inline-block'>
-            <div className='f-xs semibold white'>{user.profile.name}</div>
-            <div className='f-xxs semibold white opacity-40 hover-opacity-50'>{`Organisation name`}</div>
+            <div className='f-xs regular white'>{user.profile.name}</div>
+            <div className='f-xxs regular white opacity-40 hover-opacity-50' style={{marginTop: 2}}>{`Organisation name`}</div>
           </div>
           <div className='inline-block' style={{ verticalAlign: '5px', padding: '0 0 0 10px' }}>
             <Arrow direction='down' />

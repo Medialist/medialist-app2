@@ -7,7 +7,7 @@ import CampaignInfo from './campaign-info'
 import CampaignContactList from './campaign-contact-list'
 import PostBox from '../contacts/post-box'
 import ActivityFeed from '../dashboard/activity-feed'
-// import EditCampaign from './edit-campaign'
+import EditCampaign from './edit-campaign'
 
 const CampaignActivityPage = React.createClass({
   propTypes: {
@@ -20,7 +20,7 @@ const CampaignActivityPage = React.createClass({
   },
 
   getInitialState () {
-    return { editModalOpen: true }
+    return { editModalOpen: false }
   },
 
   toggleEditModal () {
@@ -43,18 +43,21 @@ const CampaignActivityPage = React.createClass({
   },
 
   render () {
-    const { campaign, contacts, contactsCount, contactsAll } = this.props
+    const { toggleEditModal, onBackClick, onFeedback } = this
+    const { campaign, contacts, contactsCount, clients, contactsAll } = this.props
+    const { editModalOpen } = this.state
     if (!campaign) return null
 
     return (
       <div>
-        <CampaignTopbar onBackClick={this.onBackClick} contactsAll={contactsAll} campaign={campaign} contacts={contacts} />
+        <CampaignTopbar onBackClick={onBackClick} contactsAll={contactsAll} campaign={campaign} contacts={contacts} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
-            <CampaignInfo campaign={campaign} onEditClick={this.toggleEditModal} />
+            <CampaignInfo campaign={campaign} onEditClick={toggleEditModal} />
+            <EditCampaign campaign={campaign} open={editModalOpen} onDismiss={toggleEditModal} clients={clients} />
           </div>
           <div className='flex-auto px2' >
-            <PostBox campaigns={[campaign]} onFeedback={this.onFeedback} />
+            <PostBox campaigns={[campaign]} onFeedback={onFeedback} />
             <ActivityFeed campaign={campaign} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>

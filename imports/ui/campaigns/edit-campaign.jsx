@@ -6,14 +6,16 @@ const EditCampaign = React.createClass({
   propTypes: {
     open: PropTypes.bool.isRequired,
     onDismiss: PropTypes.func.isRequired,
-    clients: PropTypes.array.isRequired
+    clients: PropTypes.array.isRequired,
+    campaign: PropTypes.object
   },
   getInitialState () {
+    const { campaign } = this.props
     return {
       campaign: {
-        name: '',
-        purpose: '',
-        clientName: '',
+        name: campaign && campaign.name || '',
+        purpose: campaign && campaign.purpose || '',
+        clientName: campaign && campaign.client.name || '',
         website: ''
       }
     }
@@ -60,7 +62,7 @@ const EditCampaign = React.createClass({
           </div>
           <div>
             <input
-              className='center gray60 input-inline mt4 f-xxl semibold'
+              className='center gray10 input-inline mt4 f-xxl semibold'
               type='text'
               name='name'
               value={name}
@@ -69,7 +71,7 @@ const EditCampaign = React.createClass({
           </div>
           <div>
             <input
-              className='center gray60 input-inline mt1 f-lg gray10'
+              className='center gray10 input-inline mt1 f-lg gray10'
               type='text'
               name='clientName'
               value={clientName}
@@ -81,7 +83,7 @@ const EditCampaign = React.createClass({
           <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft: 70}}>Details</label>
           <div className='mx-auto py2' style={{width: inputWidth + iconWidth}}>
             <div className='pt3'>
-              <BioIcon style={iconStyle} className='inline-block align-top' />
+              <BioIcon style={iconStyle} className='inline-block align-top mt1' />
               <div className='inline-block align-middle'>
                 <textarea
                   style={inputStyle}
@@ -94,7 +96,7 @@ const EditCampaign = React.createClass({
               </div>
             </div>
             <div className='pt3'>
-              <WebsiteIcon style={iconStyle} className='inline-block align-top' />
+              <WebsiteIcon style={iconStyle} className='inline-block' />
               <div className='inline-block align-middle'>
                 <input
                   style={inputStyle}
