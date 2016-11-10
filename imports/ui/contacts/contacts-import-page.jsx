@@ -14,7 +14,7 @@ export default React.createClass({
     return (
       <div>
         <Topbar backLinkText='Cancel' />
-        <section className='mx-auto center py6' style={{width: `${window.innerWidth / 1.7}px`}}>
+        <section className='max-width-md mx-auto center py6'>
           <h1 className='mt6'>Import your contacts</h1>
           <h2 className='normal'>Select a CSV file or Excel spreadsheet below</h2>
           <div className='border-gray80 bg-white mx-auto py6 width-100' style={style}>
