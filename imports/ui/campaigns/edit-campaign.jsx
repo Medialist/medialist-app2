@@ -83,7 +83,7 @@ const EditCampaign = React.createClass({
           <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft: 70}}>Details</label>
           <div className='mx-auto py2' style={{width: inputWidth + iconWidth}}>
             <div className='pt3'>
-              <BioIcon style={iconStyle} className='inline-block align-top' />
+              <BioIcon style={iconStyle} className='inline-block align-top mt1' />
               <div className='inline-block align-middle'>
                 <textarea
                   style={inputStyle}
@@ -96,7 +96,7 @@ const EditCampaign = React.createClass({
               </div>
             </div>
             <div className='pt3'>
-              <WebsiteIcon style={iconStyle} className='inline-block align-top' />
+              <WebsiteIcon style={iconStyle} className='inline-block' />
               <div className='inline-block align-middle'>
                 <input
                   style={inputStyle}
