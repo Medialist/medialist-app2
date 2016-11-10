@@ -13,7 +13,7 @@ export default React.createClass({
     }
     return (
       <div>
-        <Topbar backLinkText='cancel' />
+        <Topbar backLinkText='Cancel' />
         <section className='mx-auto center py6' style={{width: `${window.innerWidth / 1.7}px`}}>
           <h1 className='mt6'>Import your contacts</h1>
           <h2 className='normal'>Select a CSV file or Excel spreadsheet below</h2>
