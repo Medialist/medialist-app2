@@ -13,9 +13,9 @@ const EditCampaign = React.createClass({
     const { campaign } = this.props
     return {
       campaign: {
-        name: campaign.name || '',
-        purpose: campaign.purpose || '',
-        clientName: campaign.client.name || '',
+        name: campaign && campaign.name || '',
+        purpose: campaign && campaign.purpose || '',
+        clientName: campaign && campaign.client.name || '',
         website: ''
       }
     }
@@ -62,7 +62,7 @@ const EditCampaign = React.createClass({
           </div>
           <div>
             <input
-              className='center gray60 input-inline mt4 f-xxl semibold'
+              className='center gray10 input-inline mt4 f-xxl semibold'
               type='text'
               name='name'
               value={name}
@@ -71,7 +71,7 @@ const EditCampaign = React.createClass({
           </div>
           <div>
             <input
-              className='center gray60 input-inline mt1 f-lg gray10'
+              className='center gray10 input-inline mt1 f-lg gray10'
               type='text'
               name='clientName'
               value={clientName}
