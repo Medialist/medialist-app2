@@ -141,6 +141,7 @@ button {
 .px6 { padding-left:   var(--space-6); padding-right:  var(--space-6) }
 
 .mt6 { margin-top: var(--space-6) }
+.my6 { margin-top: var(--space-6); margin-bottom: var(--space-6) }
 
 .f-xxl { font-size:25px }
 .f-xl { font-size:18px }

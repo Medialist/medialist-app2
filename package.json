@@ -30,6 +30,7 @@
     "mkdirp": "^0.5.1",
     "moment": "^2.15.1",
     "npm-run-all": "^3.1.1",
+    "papaparse": "^4.1.2",
     "postcss-calc": "^5.3.1",
     "postcss-cli": "^2.6.0",
     "postcss-custom-media": "^5.0.1",
