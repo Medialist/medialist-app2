@@ -1,6 +1,8 @@
 import React, { PropTypes } from 'react'
 import { CameraIcon, BioIcon, WebsiteIcon } from '../images/icons'
+import { Meteor } from 'meteor/meteor'
 import Modal from '../navigation/modal'
+import ClientAutocomplete from './client-autocomplete'
 
 const EditCampaign = React.createClass({
   propTypes: {
@@ -15,7 +17,7 @@ const EditCampaign = React.createClass({
       campaign: {
         name: campaign && campaign.name || '',
         purpose: campaign && campaign.purpose || '',
-        clientName: campaign && campaign.client.name || '',
+        client: campaign && campaign.client || {name: ''},
         website: ''
       }
     }
@@ -31,15 +33,17 @@ const EditCampaign = React.createClass({
   },
   onSubmit (evt) {
     evt.preventDefault()
-    const { name, purpose, clientName } = this.state.campaign
+    const { name, purpose, clientName, clientId } = this.state.campaign
     const payload = {
       name,
       purpose,
       client: {
+        _id: clientId,
         name: clientName
       }
     }
-    console.log(payload)
+    if (!payload.client.name || !payload.client._id || !payload.name) return
+    Meteor.call('medialists/create', payload)
     this.props.onDismiss()
   },
   onReset () {
@@ -47,15 +51,16 @@ const EditCampaign = React.createClass({
   },
   render () {
     if (!this.props.open) return null
-    const { onChange, onSubmit, onReset } = this
-    const { name, purpose, clientName, website } = this.state.campaign
+    const { onChange, onSubmit, onReset, updateField } = this
+    const { clients } = this.props
+    const { name, purpose, client, website } = this.state.campaign
     const inputWidth = 270
     const iconWidth = 30
     const inputStyle = { width: inputWidth, resize: 'none' }
     const iconStyle = { width: iconWidth }
 
     return (
-      <form onChange={onChange} onSubmit={onSubmit} onReset={onReset}>
+      <form onSubmit={onSubmit} onReset={onReset}>
         <div className='p4 center'>
           <div className='bg-gray40 center rounded mx-auto' style={{height: '123px', width: '123px', lineHeight: '123px'}}>
             <CameraIcon />
@@ -67,17 +72,16 @@ const EditCampaign = React.createClass({
               name='name'
               value={name}
               placeholder='Campaign Name'
-              size={name.length === 0 ? 15 : name.length + 2} />
+              size={name.length === 0 ? 15 : name.length + 2}
+              onChange={onChange}
+               />
           </div>
-          <div>
-            <input
-              className='center gray10 input-inline mt1 f-lg gray10'
-              type='text'
-              name='clientName'
-              value={clientName}
-              placeholder='Client'
-              size={clientName.length === 0 ? 8 : clientName.length + 2} />
-          </div>
+          <ClientAutocomplete
+            clients={clients}
+            className='center input-inline mt1 f-lg gray10'
+            name='clientName'
+            clientName={client.name}
+            onSelect={updateField} />
         </div>
         <div className='bg-gray90 border-top border-gray80'>
           <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft: 70}}>Details</label>
@@ -92,7 +96,8 @@ const EditCampaign = React.createClass({
                   rows='5'
                   name='purpose'
                   value={purpose}
-                  placeholder='Key Message' />
+                  placeholder='Key Message'
+                  onChange={onChange} />
               </div>
             </div>
             <div className='pt3'>
@@ -104,7 +109,8 @@ const EditCampaign = React.createClass({
                   type='text'
                   name='website'
                   value={website}
-                  placeholder='Website' />
+                  placeholder='Website'
+                  onChange={onChange} />
               </div>
             </div>
           </div>

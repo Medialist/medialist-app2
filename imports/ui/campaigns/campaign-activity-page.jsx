@@ -16,7 +16,7 @@ const CampaignActivityPage = React.createClass({
     campaign: PropTypes.object,
     contacts: PropTypes.array,
     contactsCount: PropTypes.number,
-    contactsAll: PropTypes.array
+    clients: PropTypes.array
   },
 
   getInitialState () {
@@ -80,6 +80,6 @@ export default createContainer((props) => {
   // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
   const contacts = window.Contacts.find({medialists: slug}, {limit: 7, sort: {updatedAt: -1}}).fetch()
   const contactsCount = window.Contacts.find({medialists: slug}).count()
-  const contactsAll = window.Contacts.find({medialists: {$nin: [slug]}}, {limit: 20, sort: {name: 1}}).fetch()
-  return { ...props, campaign, contacts, contactsCount, contactsAll, loading }
+  const clients = window.Clients.find({}, {sort: {name: 1}}).fetch()
+  return { ...props, campaign, contacts, contactsCount, loading, clients }
 }, withRouter(CampaignActivityPage))
