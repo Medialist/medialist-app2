@@ -7,6 +7,7 @@ import YouOrName from '../users/you-or-name'
 import { CircleAvatar } from '../images/avatar'
 import isSameItems from '../lists/is-same-items'
 import StatusSelector from '../feedback/status-selector'
+import Loading from '../lists/loading'
 
 const ContactsTable = React.createClass({
   propTypes: {
@@ -23,7 +24,9 @@ const ContactsTable = React.createClass({
     // Optional campaign for calculating a contacts status
     campaign: PropTypes.object,
     // Callback when contact status is changed
-    onStatusChange: PropTypes.func
+    onStatusChange: PropTypes.func,
+    // returns true while subscriptionts are still syncing data.
+    loading: PropTypes.func
   },
 
   onSelectAllChange () {
@@ -53,7 +56,9 @@ const ContactsTable = React.createClass({
   },
 
   render () {
-    const { sort, onSortChange, contacts, selections, campaign, onStatusChange } = this.props
+    const { sort, onSortChange, contacts, selections, campaign, onStatusChange, loading } = this.props
+
+    if (loading && loading()) return <div className='center p4'><Loading /></div>
 
     if (!contacts.length) {
       return <p className='p4 mb2 f-xl semibold center'>No contacts yet</p>
