@@ -49,7 +49,7 @@ const CampaignsPage = React.createClass({
 
     return (
       <div>
-        <div className='flex items-center justify-end bg-white width-100'>
+        <div className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
           <div className='flex-auto border-right border-gray80'>
             <SectorSelectorContainer selected={selectedSector} onSectorChange={onSectorChange} />
           </div>
@@ -58,7 +58,7 @@ const CampaignsPage = React.createClass({
           </div>
         </div>
         <EditCampaignContainer onDismiss={this.toggleEditCampaign} open={editCampaignOpen} />
-        <div className='bg-white shadow-2 m4'>
+        <div className='bg-white shadow-2 m4 mt8'>
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
               <SearchBox onTermChange={this.onTermChange} placeholder='Search campaigns...' />

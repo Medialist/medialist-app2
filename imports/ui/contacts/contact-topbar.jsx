@@ -16,7 +16,7 @@ const ContactTopbar = React.createClass({
     if (!contact) return null
 
     return (
-      <nav className='block bg-white mb4 flex items-center'>
+      <nav className='block bg-white mb4 flex items-center shadow-inset-2'>
         <div className='flex-auto'>
           <a className='inline-block p4' href='#' onClick={this.onBackClick}>◀ Back</a>
         </div>
