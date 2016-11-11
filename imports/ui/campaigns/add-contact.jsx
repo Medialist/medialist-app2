@@ -32,21 +32,10 @@ const AddContact = React.createClass({
   isActive (slug) {
     return this.props.selectedContacts.indexOf(slug) < 0 ? '' : 'active'
   },
-  selectContacts (contact) {
-    const isActive = this.isActive
-    const onSelect = this.props.onSelect
-    const properties = Object.assign({}, {contact}, {isActive}, {onSelect})
-    return selectFragment(properties)
-  },
-  campaignContacts (contact) {
-    const properties = Object.assign({}, {contact}, this.props)
-    return contactFragment(properties)
-  },
   render () {
     const {
       toggleTab,
-      selectContacts,
-      campaignContacts
+      isActive
     } = this
     const { tabLeft } = this.state
     const {
@@ -54,7 +43,11 @@ const AddContact = React.createClass({
       onSubmit,
       filteredContacts,
       contacts,
-      onSearch
+      onSearch,
+      onSelect,
+      onRemove,
+      onStatusChange,
+      campaign
     } = this.props
 
     const scrollableHeight = window.innerHeight - 380
@@ -73,7 +66,19 @@ const AddContact = React.createClass({
           <input className='flex-auto f-lg pa2 mx2' placeholder={tabLeft ? 'Find a contact...' : 'Search campaign\'s contacts...'} onChange={onSearch} style={{outline: 'none'}} />
         </div>
         <div style={{height: scrollableHeight, overflowY: 'scroll'}}>
-          {tabLeft ? (filteredContacts.map(selectContacts)) : (contacts.map(campaignContacts))}
+          {tabLeft ? (
+            <AllContacts
+              isActive={isActive}
+              onSelect={onSelect}
+              contacts={filteredContacts}
+              />
+          ) : (
+            <CampaignContacts
+              contacts={contacts}
+              onStatusChange={onStatusChange}
+              onRemove={onRemove}
+              campaign={campaign} />
+          )}
         </div>
         <form className='p4 right' onReset={onReset} onSubmit={onSubmit}>
           <button className='btn bg-completed white right px3' type='submit'>Save Changes</button>
@@ -142,67 +147,78 @@ const AddContactContainer = React.createClass({
 
 export default Modal(AddContactContainer)
 
-function selectFragment (properties) {
+const AllContacts = (props) => {
   const {
     isActive,
-    onSelect
-  } = properties
+    onSelect,
+    contacts
+  } = props
 
-  const {
-    slug,
-    avatar,
-    name,
-    jobTitles,
-    primaryOutlets,
-    medialists
-  } = properties.contact
-
-  return (<div className={`flex items-center pointer border-top border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger active-bg-green-light ${isActive(slug)}`} key={slug} onClick={onSelect.bind(null, slug)}>
-    <CircleAvatar avatar={avatar} />
-    <div className='inline-block pl4' style={{width: '24rem'}}>
-      <span className='f-xl gray40 py1'>{name}</span><br />
-      <span className='gray60 py1'>{jobTitles}</span><br />
-      <span className='gray60 py1'>{primaryOutlets.substring(0, 30)}...</span>
-    </div>
-    <div className='flex-none px4'>{medialists.length} campaigns</div>
-    <div className={`flex-none px4 ${isActive(slug) ? '' : 'opacity-0'} hover-opacity-100`}>
-      {isActive(slug) ? <SelectedIcon /> : <AddIcon />}
-    </div>
-  </div>)
+  return (
+    <div>
+      {contacts.map((contact) => {
+        const {
+          slug,
+          avatar,
+          name,
+          jobTitles,
+          primaryOutlets,
+          medialists
+        } = contact
+        return (
+          <div className={`flex items-center pointer border-top border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger active-bg-green-light ${isActive(slug)}`} key={slug} onClick={onSelect.bind(null, slug)}>
+            <CircleAvatar avatar={avatar} />
+            <div className='inline-block pl4' style={{width: '24rem'}}>
+              <span className='f-xl gray40 py1'>{name}</span><br />
+              <span className='gray60 py1'>{jobTitles}</span><br />
+              <span className='gray60 py1'>{primaryOutlets.substring(0, 30)}...</span>
+            </div>
+            <div className='flex-none px4'>{medialists.length} campaigns</div>
+            <div className={`flex-none px4 ${isActive(slug) ? '' : 'opacity-0'} hover-opacity-100`}>
+              {isActive(slug) ? <SelectedIcon /> : <AddIcon />}
+            </div>
+          </div>
+        )
+      })
+      }
+    </div>)
 }
 
-function contactFragment (properties) {
+const CampaignContacts = (props) => {
   const {
     campaign,
     onStatusChange,
     onRemove,
-    contact
-  } = properties
-
-  const {
-    slug,
-    avatar,
-    name,
-    jobTitles,
-    primaryOutlets
-  } = properties.contact
-
-  const status = campaign.contacts[slug]
+    contacts
+  } = props
 
   return (
-    <div className={`flex items-center pointer border-top border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger active-bg-green-light`} key={slug}>
-      <CircleAvatar avatar={avatar} />
-      <div className='inline-block pl4' style={{width: '24rem'}}>
-        <span className='f-xl gray40 py1'>{name}</span><br />
-        <span className='gray60 py1'>{jobTitles}</span><br />
-        <span className='gray60 py1'>{primaryOutlets.substring(0, 30)}...</span>
-      </div>
-      <div className='flex-none px4'>
-        <StatusSelector status={status} onChange={(status) => onStatusChange({status, contact})} />
-      </div>
-      <div className='flex-auto mr2'>
-        <RemoveIcon className='right pr4' onClick={(evt) => onRemove(contact)} />
-      </div>
+    <div>
+      {contacts.map((contact) => {
+        const {
+          slug,
+          avatar,
+          name,
+          jobTitles,
+          primaryOutlets
+        } = contact
+        const status = campaign.contacts[slug]
+        return (
+          <div className={`flex items-center pointer border-top border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger active-bg-green-light`} key={slug}>
+            <CircleAvatar avatar={avatar} />
+            <div className='inline-block pl4' style={{width: '24rem'}}>
+              <span className='f-xl gray40 py1'>{name}</span><br />
+              <span className='gray60 py1'>{jobTitles}</span><br />
+              <span className='gray60 py1'>{primaryOutlets.substring(0, 30)}...</span>
+            </div>
+            <div className='flex-none px4'>
+              <StatusSelector status={status} onChange={(status) => onStatusChange({status, contact})} />
+            </div>
+            <div className='flex-auto mr2'>
+              <RemoveIcon className='right pr4' onClick={(evt) => onRemove(contact)} />
+            </div>
+          </div>)
+      })}
     </div>
   )
 }
