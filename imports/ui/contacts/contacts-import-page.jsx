@@ -2,6 +2,7 @@ import React from 'react'
 import Topbar from '../navigation/topbar'
 import FilePicker from 'react-file-input'
 import Papa from 'papaparse'
+import ImportTable from './contacts-import-table'
 
 export default React.createClass({
   getInitialState () {
@@ -13,22 +14,14 @@ export default React.createClass({
   parseCSV (file) {
     const opts = {
       delimiter: ',',
-      newline: '',
       header: true,
       dynamicTyping: true,
       preview: 5,
       encoding: '',
-      worker: false,
-      comments: false,
       step: this.onReadRow,
       complete: this.onComplete,
       error: undefined,
-      download: false,
-      skipEmptyLines: false,
-      chunk: undefined,
-      fastMode: undefined,
-      beforeFirstChunk: undefined,
-      withCredentials: undefined
+      skipEmptyLines: true
     }
     Papa.parse(file, opts)
   },
@@ -100,15 +93,6 @@ const UploadFile = (props) => {
       </div>
       <h4 className='normal' style={{lineHeight: '2rem'}}>Importing a CSV file or Excel spreadsheet allows you to add and update contacts stored in Medialist. If a contact email address or Twitter handle in your spreadsheet matches an existing contact, the contact will be updated with the mapped values from your spreadsheet. Otherwise, a new contact will be created.</h4>
     </section>
-  )
-}
-
-const ImportTable = (props) => {
-  const { headerRow } = props
-  return (
-    <div className='table width-100 bg-white'>
-      {headerRow.map((heading) => <div className='table-cell center p2'>{heading}</div>)}
-    </div>
   )
 }
 
