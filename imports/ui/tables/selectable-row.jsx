@@ -5,7 +5,7 @@ const SelectableRow = ({ selected, data, children, onSelectChange, className }) 
   <tr className={classnames(className, 'hover-opacity-trigger', { active: selected })}>
     <td>
       <input
-        className='opacity-0 hover-opacity-100'
+        className={classnames('hover-opacity-100', { 'opacity-0': !selected })}
         type='checkbox'
         checked={selected}
         onChange={() => onSelectChange(data)}
