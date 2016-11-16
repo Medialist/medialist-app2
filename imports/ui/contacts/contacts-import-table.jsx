@@ -70,13 +70,13 @@ const ImportTable = React.createClass({
       whiteSpace: 'nowrap'
     }
     return (
-      <div className='table bg-white' style={overflow}>
+      <div className='bg-white pl2' style={overflow}>
         {Object.keys(columns).map((heading) => {
           const { field, selected } = columns[heading]
           return (
-            <div className='inline-block pointer center py2 px3 border-bottom border-right border-gray80' style={{width: '12rem'}}>
+            <div className='inline-block pointer border-bottom border-gray80' style={{width: '12rem'}}>
               <Dropdown>
-                <input className='input center' value={selected ? field : ''} placeholder='Select field' onFocus={(evt) => onFocus(field)} />
+                <input className='input m2' style={{width: 'auto'}} value={selected ? field : ''} placeholder='Select field' onFocus={(evt) => onFocus(field)} />
                 <DropdownMenu open={open && field === focusedField} onDismiss={onDismiss}>
                   <ul className='list-reset mt0'>
                     {fields.map((f) => {
@@ -85,20 +85,18 @@ const ImportTable = React.createClass({
                   </ul>
                 </DropdownMenu>
               </Dropdown>
-              <div className='center py2'>
-                <input type='checkbox' checked={selected} onChange={(evt) => unSelect(heading)} />
-              </div>
-              <div className='center py2'>
-                <label>{heading}</label>
+              <div className='bg-gray90'>
+                <input className='inline-block my4 mx2' type='checkbox' checked={selected} onChange={(evt) => unSelect(heading)} />
+                <label className='inline-block ml1' >{heading}</label>
               </div>
             </div>
           )
         })}
         {dataRows.map((row) => {
           return (
-            <div className='block'>
+            <div className='block pl2'>
               {Object.keys(row).map((field) => {
-                return <div className='inline-block center py2 border-bottom border-right border-gray80 gray60' style={{width: '12rem'}}>{row[field] || ' '}</div>
+                return <div className='inline-block py2 border-bottom border-gray80 gray40' style={{width: '12rem'}}>{row[field] || ' '}</div>
               })}
             </div>
           )
