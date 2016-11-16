@@ -2,9 +2,14 @@ import React, { PropTypes } from 'react'
 import classnames from 'classnames'
 
 const SelectableRow = ({ selected, data, children, onSelectChange, className }) => (
-  <tr className={classnames(className, { active: selected })}>
+  <tr className={classnames(className, 'hover-opacity-trigger', { active: selected })}>
     <td>
-      <input type='checkbox' checked={selected} onChange={() => onSelectChange(data)} />
+      <input
+        className='opacity-0 hover-opacity-100'
+        type='checkbox'
+        checked={selected}
+        onChange={() => onSelectChange(data)}
+      />
     </td>
     {children}
   </tr>
