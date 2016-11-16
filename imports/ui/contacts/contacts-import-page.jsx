@@ -8,7 +8,8 @@ export default React.createClass({
   getInitialState () {
     return {
       headerRow: [],
-      dataRows: []
+      dataRows: [],
+      selectedColumnCount: 0
     }
   },
   parseCSV (file) {
@@ -38,12 +39,15 @@ export default React.createClass({
   onChange (evt) {
     this.parseCSV(evt.target.files[0])
   },
+  setColumnCount (count) {
+    this.setState({selectedColumnCount: count})
+  },
   hasFile () {
     return this.state.headerRow.length > 0 && this.state.dataRows.length > 0
   },
   render () {
-    const { hasFile, onChange } = this
-    const { headerRow, dataRows } = this.state
+    const { hasFile, onChange, setColumnCount } = this
+    const { headerRow, dataRows, selectedColumnCount } = this.state
     const style = {
       borderStyle: 'dashed',
       borderWidth: '4px'
@@ -61,11 +65,11 @@ export default React.createClass({
                   <span className='blue mr1'>{dataRows.length}</span>Contacts found
                 </div>
                 <div className='inline-block py3 px6'>
-                  <span className='blue mr1'>0</span>Columns selected
+                  <span className='blue mr1'>{selectedColumnCount}</span>Columns selected
                 </div>
               </div>
             </section>
-            <ImportTable headerRow={headerRow} dataRows={dataRows} />
+            <ImportTable headerRow={headerRow} dataRows={dataRows} setColumnCount={setColumnCount} />
           </div>
         ) : (
           <UploadFile style={style} onChange={onChange} />

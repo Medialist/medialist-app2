@@ -9,12 +9,17 @@ const fields = [
   'otherOutlets',
   'sectors',
   'jobTitles',
-  'languages'
+  'languages',
+  'emails',
+  'phone',
+  'socials'
 ]
 
 const ImportTable = React.createClass({
   PropTypes: {
-    headerRow: PropTypes.array.isRequired
+    headerRow: PropTypes.array.isRequired,
+    dataRows: PropTypes.array.isRequired,
+    setColumnCount: PropTypes.func.isRequired
   },
   getInitialState () {
     return {
@@ -23,20 +28,31 @@ const ImportTable = React.createClass({
       columns: readColumns(this.props)
     }
   },
+  componentWillMount () {
+    this.props.setColumnCount(countSelected(this.state.columns))
+  },
   onDismiss () {
     this.setState({ open: false })
   },
   onSelect (heading, field) {
-    const columns = Object.assign({}, this.state.columns, {[heading]: {field: field, selected: true}})
+    const { columns } = this.state
+    const { setColumnCount } = this.props
+    if (columns[field] && columns[field].selected) return this.onDismiss()
+
+    const newColumns = Object.assign({}, columns, {[heading]: {field: field, selected: true}})
     this.setState({
-      columns: columns,
+      columns: newColumns,
       focusedField: '',
       open: false
     })
+
+    setColumnCount(countSelected(columns))
   },
   unSelect (heading) {
+    const { setColumnCount } = this.props
     const columns = Object.assign({}, this.state.columns, {[heading]: {selected: false}})
     this.setState({columns})
+    setColumnCount(countSelected(columns))
   },
   onFocus (heading) {
     this.setState({
@@ -47,22 +63,22 @@ const ImportTable = React.createClass({
   render () {
     const { onDismiss, onFocus, onSelect, unSelect } = this
     const { open, focusedField, columns } = this.state
+    const { dataRows } = this.props
     const overflow = {
       overflowX: 'hidden',
-      overflowY: 'visible',
       overflow: 'scroll',
       whiteSpace: 'nowrap'
     }
     return (
-      <div className='bg-white' style={overflow}>
+      <div className='table bg-white' style={overflow}>
         {Object.keys(columns).map((heading) => {
           const { field, selected } = columns[heading]
           return (
-            <div className='inline-block pointer center py2 px3 border border-gray80' style={{width: '12rem'}}>
+            <div className='inline-block pointer center py2 px3 border-bottom border-right border-gray80' style={{width: '12rem'}}>
               <Dropdown>
                 <input className='input center' value={selected ? field : ''} placeholder='Select field' onFocus={(evt) => onFocus(field)} />
                 <DropdownMenu open={open && field === focusedField} onDismiss={onDismiss}>
-                  <ul className='list-reset'>
+                  <ul className='list-reset mt0'>
                     {fields.map((f) => {
                       return <li className='p2 left-align hover-bg-blue' onClick={(evt) => onSelect(heading, f)}>{f}</li>
                     })}
@@ -75,6 +91,15 @@ const ImportTable = React.createClass({
               <div className='center py2'>
                 <label>{heading}</label>
               </div>
+            </div>
+          )
+        })}
+        {dataRows.map((row) => {
+          return (
+            <div className='block'>
+              {Object.keys(row).map((field) => {
+                return <div className='inline-block center py2 border-bottom border-right border-gray80 gray60' style={{width: '12rem'}}>{row[field] || ' '}</div>
+              })}
             </div>
           )
         })}
@@ -92,4 +117,11 @@ function readColumns (props) {
     i > 0 ? cols[heading] = {field: fields[i], selected: true} : cols[heading] = {field: heading, selected: false}
     return cols
   }, {})
+}
+
+function countSelected (columns) {
+  return Object.keys(columns).reduce((count, field) => {
+    if (columns[field].selected) count += 1
+    return count
+  }, 0)
 }
