@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
+import Checkbox from '../tables/checkbox'
 
 const fields = [
   'name',
@@ -48,9 +49,10 @@ const ImportTable = React.createClass({
 
     setColumnCount(countSelected(columns))
   },
-  unSelect (heading) {
+  toggleSelect (columnHeading) {
+    const { field, selected } = columnHeading
     const { setColumnCount } = this.props
-    const columns = Object.assign({}, this.state.columns, {[heading]: {selected: false}})
+    const columns = Object.assign({}, this.state.columns, {[field]: {field, selected: !selected}})
     this.setState({columns})
     setColumnCount(countSelected(columns))
   },
@@ -61,7 +63,7 @@ const ImportTable = React.createClass({
     })
   },
   render () {
-    const { onDismiss, onFocus, onSelect, unSelect } = this
+    const { onDismiss, onFocus, onSelect, toggleSelect } = this
     const { open, focusedField, columns } = this.state
     const { dataRows } = this.props
     const overflow = {
@@ -86,7 +88,7 @@ const ImportTable = React.createClass({
                 </DropdownMenu>
               </Dropdown>
               <div className='bg-gray90'>
-                <input className='inline-block my4 mx2' type='checkbox' checked={selected} onChange={(evt) => unSelect(heading)} />
+                <Checkbox className='inline-block my4 mx2' checked={selected} data={columns[heading]} onChange={toggleSelect} />
                 <label className='inline-block ml1' >{heading}</label>
               </div>
             </div>
