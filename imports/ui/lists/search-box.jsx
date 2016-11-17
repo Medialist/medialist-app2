@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import { SearchGrayIcon } from '../images/icons'
+import { SearchDarkIcon } from '../images/icons'
 
 const SearchBox = React.createClass({
   propTypes: {
@@ -23,7 +23,7 @@ const SearchBox = React.createClass({
   render () {
     return (
       <div className='flex items-center border border-gray80 p2'>
-        <SearchGrayIcon className='flex-none f-lg ml1 mr2' />
+        <SearchDarkIcon className='flex-none f-lg ml1 mr2' />
         <input
           type='search'
           className='flex-auto pl1 mb0 f-lg normal gray20'
