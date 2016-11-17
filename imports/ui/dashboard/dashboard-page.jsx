@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
 import RecentCampaignsList from './recent-campaigns-list'
 import RecentContactsList from './recent-contacts-list'
@@ -27,8 +28,10 @@ const DashboardPage = React.createClass({
 })
 
 export default createContainer(() => {
+  Meteor.subscribe('medialists')
+  Meteor.subscribe('contacts')
   return {
     recentCampaigns: window.Medialists.find({}, { limit: 5, sort: { updatedAt: -1 } }).fetch(),
-    recentContacts: []
+    recentContacts: window.Contacts.find({}, { limit: 5 }).fetch()
   }
 }, DashboardPage)
