@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import SortableHeader from '../tables/sortable-header'
 import SelectableRow from '../tables/selectable-row'
+import Checkbox from '../tables/checkbox'
 import FromNow from '../time/from-now'
 import YouOrName from '../users/you-or-name'
 import { CircleAvatar } from '../images/avatar'
@@ -69,8 +70,7 @@ const ContactsTable = React.createClass({
         <thead>
           <tr className='bg-gray90'>
             <th className='center' style={{width: 55}}>
-              <input
-                type='checkbox'
+              <Checkbox
                 checked={isSameItems(selections, contacts)}
                 onChange={this.onSelectAllChange} />
             </th>
