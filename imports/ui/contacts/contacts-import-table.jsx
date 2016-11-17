@@ -49,10 +49,10 @@ const ImportTable = React.createClass({
 
     setColumnCount(countSelected(columns))
   },
-  toggleSelect (columnHeading) {
+  toggleSelect (heading, columnHeading) {
     const { field, selected } = columnHeading
     const { setColumnCount } = this.props
-    const columns = Object.assign({}, this.state.columns, {[field]: {field, selected: !selected}})
+    const columns = Object.assign({}, this.state.columns, {[heading]: {field, selected: !selected}})
     this.setState({columns})
     setColumnCount(countSelected(columns))
   },
@@ -69,15 +69,16 @@ const ImportTable = React.createClass({
     const overflow = {
       overflowX: 'hidden',
       overflow: 'scroll',
-      whiteSpace: 'nowrap'
+      whiteSpace: 'nowrap',
+      height: '18rem'
     }
     return (
-      <div className='bg-white pl2' style={overflow}>
+      <div style={overflow}>
         {Object.keys(columns).map((heading) => {
           const { field, selected } = columns[heading]
           return (
-            <div className='inline-block pointer border-bottom border-gray80' style={{width: '12rem'}} key={heading}>
-              <Dropdown>
+            <div className='inline-block pointer border-bottom border-gray80 bg-white' style={{width: '12rem'}} key={heading}>
+              <Dropdown className='right'>
                 <input className='input m2' style={{width: 'auto'}} value={selected ? field : ''} placeholder='Select field' onFocus={(evt) => onFocus(field)} />
                 <DropdownMenu open={open && field === focusedField} onDismiss={onDismiss}>
                   <ul className='list-reset mt0'>
@@ -88,7 +89,7 @@ const ImportTable = React.createClass({
                 </DropdownMenu>
               </Dropdown>
               <div className='bg-gray90'>
-                <Checkbox className='inline-block my4 mx2' checked={selected} data={columns[heading]} onChange={toggleSelect} />
+                <Checkbox className='inline-block my4 mx2' checked={selected} data={columns[heading]} onChange={toggleSelect.bind(null, heading)} />
                 <label className='inline-block ml1' >{heading}</label>
               </div>
             </div>
@@ -96,7 +97,7 @@ const ImportTable = React.createClass({
         })}
         {dataRows.map((row) => {
           return (
-            <div className='block pl2'>
+            <div className='block pl2 bg-white'>
               {Object.keys(row).map((field) => {
                 return <div className='inline-block py2 border-bottom border-gray80 gray40' style={{width: '12rem'}}>{row[field] || ' '}</div>
               })}

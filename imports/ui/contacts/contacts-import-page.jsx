@@ -72,7 +72,9 @@ export default React.createClass({
                 </div>
               </div>
             </section>
-            <ImportTable headerRow={headerRow} dataRows={dataRows} setColumnCount={setColumnCount} />
+            <section className='mt6'>
+              <ImportTable headerRow={headerRow} dataRows={dataRows} setColumnCount={setColumnCount} />
+            </section>
           </div>
         ) : (
           <UploadFile style={style} onChange={onChange} />
