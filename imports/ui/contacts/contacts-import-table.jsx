@@ -76,7 +76,7 @@ const ImportTable = React.createClass({
         {Object.keys(columns).map((heading) => {
           const { field, selected } = columns[heading]
           return (
-            <div className='inline-block pointer border-bottom border-gray80' style={{width: '12rem'}}>
+            <div className='inline-block pointer border-bottom border-gray80' style={{width: '12rem'}} key={heading}>
               <Dropdown>
                 <input className='input m2' style={{width: 'auto'}} value={selected ? field : ''} placeholder='Select field' onFocus={(evt) => onFocus(field)} />
                 <DropdownMenu open={open && field === focusedField} onDismiss={onDismiss}>

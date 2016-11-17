@@ -21,7 +21,7 @@ export default React.createClass({
       encoding: '',
       step: this.onReadRow,
       complete: this.onComplete,
-      error: undefined,
+      error: this.onError,
       skipEmptyLines: true
     }
     Papa.parse(file, opts)
@@ -35,6 +35,9 @@ export default React.createClass({
     const { dataRows } = this.state
     const headerRow = Object.keys(dataRows[0])
     this.setState({headerRow})
+  },
+  onError (err) {
+    console.error(err)
   },
   onChange (evt) {
     this.parseCSV(evt.target.files[0])
