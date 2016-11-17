@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react'
 import { Link, IndexLink } from 'react-router'
 import NotificationsBell from './notifications-bell'
 import UserInfo from './user-info'
-import SearchSite from './search-site'
+import SearchSiteBox from './search-site'
 import { Logo, MenuActivityIcon, MenuCampaignIcon, MenuContactIcon } from '../images/icons'
 
 const linkStyle = { padding: '19px 25px 20px', display: 'inline-block' }
@@ -39,8 +39,8 @@ const NavBar = React.createClass({
         <div className='inline-block right' style={{padding: '9px 0'}}>
           <NotificationsBell notifications={notifications} />
         </div>
-        <div className='inline-block right'>
-          <SearchSite />
+        <div className='inline-block right' style={{paddingTop: '12.5px'}}>
+          <SearchSiteBox />
         </div>
       </div>
     )
