@@ -34,14 +34,14 @@ const ItemFilter = React.createClass({
   render () {
     const { filter: CurrentFilter, filters } = this.props
     return (
-      <Dropdown>
+      <Dropdown className='inline-block'>
         <div className='flex pointer fm-sm semibold gray20' onClick={this.onButtonClick}>
           <div className='flex-none p3 f-sm'>
             <CurrentFilter />
           </div>
           <hr className='flex-auto' style={{height: 1, margin: '25px 0 0 0'}} />
         </div>
-        <DropdownMenu open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
+        <DropdownMenu left open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss} style={{width: 180}}>
           <nav>
             {filters.map((Filter, i) => {
               const isActive = Filter === CurrentFilter

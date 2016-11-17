@@ -19,17 +19,17 @@ const RecentCampaignsList = React.createClass({
             <span className='ml1'>My Recent Campaigns</span>
           </h1>
         </header>
-        <ul className='list-reset px3 pt1'>
-          {campaigns.map(({ name, avatar, client }) => (
-            <li className='py1 mb2'>
+        <nav className='p3'>
+          {campaigns.map(({ name, avatar, client, slug }) => (
+            <Link to={`/campaign/${slug}`} className='block py1 mb2' title={name}>
               <SquareAvatar size={38} avatar={avatar} name={name} />
               <div className='inline-block align-middle'>
                 <div className='ml3 semibold f-md gray10'>{name}</div>
                 <div className='ml3 regular f-sm gray20' style={{marginTop: 2}}>{client.name}</div>
               </div>
-            </li>
+            </Link>
           ))}
-        </ul>
+        </nav>
       </section>
     )
   }

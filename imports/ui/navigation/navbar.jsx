@@ -14,7 +14,7 @@ const NavBar = React.createClass({
   render () {
     const { notifications } = this.props
     return (
-      <div className='navbar bg-gray10 clearfix' style={{height: 58}}>
+      <div className='navbar bg-gray10 clearfix'>
         <nav className='inline-block align-top'>
           <IndexLink to='/' style={{ padding: '19px 28px 18px 26px', display: 'inline-block' }} className='white f5 semibold xs-hide align-top' >
             <Logo />

@@ -15,8 +15,8 @@ const CampaignActivityPage = React.createClass({
     loading: React.PropTypes.bool,
     campaign: PropTypes.object,
     contacts: PropTypes.array,
-    contactsCount: PropTypes.number,
-    clients: PropTypes.array
+    contactsAll: PropTypes.array,
+    contactsCount: PropTypes.number
   },
 
   getInitialState () {
@@ -26,10 +26,6 @@ const CampaignActivityPage = React.createClass({
   toggleEditModal () {
     const editModalOpen = !this.state.editModalOpen
     this.setState({ editModalOpen })
-  },
-
-  onAddClick () {
-    console.log('TODO: Add contact to campaign')
   },
 
   onBackClick () {
@@ -43,25 +39,25 @@ const CampaignActivityPage = React.createClass({
       message,
       status
     }
-    console.log('onFeedBack', post)
     Meteor.call('posts/create', post)
   },
 
   render () {
-    const { toggleEditModal } = this
-    const { campaign, contacts, contactsCount, clients } = this.props
+    const { toggleEditModal, onBackClick, onFeedback } = this
+    const { campaign, contacts, contactsCount, clients, contactsAll } = this.props
     const { editModalOpen } = this.state
     if (!campaign) return null
+
     return (
       <div>
-        <CampaignTopbar onAddClick={this.onAddClick} onBackClick={this.onBackClick} />
+        <CampaignTopbar onBackClick={onBackClick} contactsAll={contactsAll} campaign={campaign} contacts={contacts} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
-            <CampaignInfo campaign={campaign} onEditClick={this.toggleEditModal} />
+            <CampaignInfo campaign={campaign} onEditClick={toggleEditModal} />
             <EditCampaign campaign={campaign} open={editModalOpen} onDismiss={toggleEditModal} clients={clients} />
           </div>
           <div className='flex-auto px2' >
-            <PostBox campaigns={[campaign]} onFeedback={this.onFeedback} />
+            <PostBox campaigns={[campaign]} onFeedback={onFeedback} />
             <ActivityFeed campaign={campaign} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
@@ -77,13 +73,13 @@ export default createContainer((props) => {
   const { slug } = props.params
   const subs = [
     Meteor.subscribe('medialist', slug),
-    Meteor.subscribe('clients')
+    Meteor.subscribe('contacts')
   ]
   const loading = subs.some((s) => !s.ready())
   const campaign = window.Medialists.findOne({ slug })
   // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
   const contacts = window.Contacts.find({medialists: slug}, {limit: 7, sort: {updatedAt: -1}}).fetch()
   const contactsCount = window.Contacts.find({medialists: slug}).count()
-  const clients = window.Clients.find({}, {sort: {name: 1}}).fetch()
-  return { ...props, campaign, contacts, contactsCount, loading, clients }
+  const contactsAll = window.Contacts.find({}, {sort: {name: 1}}).fetch()
+  return { ...props, campaign, contacts, contactsCount, loading, contactsAll }
 }, withRouter(CampaignActivityPage))
