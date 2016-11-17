@@ -14,7 +14,7 @@ const RecentContactsList = (props) => {
           <span className='ml1'>My Recent Contacts</span>
         </h1>
       </header>
-      <ul className='list-reset'>
+      <ul className='list-reset pl3'>
         {contacts.map((contact) => <CampaignContact key={contact.slug} {...contact} />)}
       </ul>
     </section>
