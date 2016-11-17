@@ -39,7 +39,7 @@ const NavBar = React.createClass({
         <div className='inline-block right' style={{padding: '9px 0'}}>
           <NotificationsBell notifications={notifications} />
         </div>
-        <div className='inline-block right' style={{paddingTop: '12.5px'}}>
+        <div className='inline-block right mr2' style={{paddingTop: '12.5px'}}>
           <SearchSiteBox />
         </div>
       </div>
