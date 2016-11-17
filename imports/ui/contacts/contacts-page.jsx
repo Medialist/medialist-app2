@@ -1,10 +1,16 @@
 import React from 'react'
 import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
+import { Link } from 'react-router'
+import Arrow from 'rebass/dist/Arrow'
+import Dropdown from 'rebass/dist/Dropdown'
+import DropdownMenu from 'rebass/dist/DropdownMenu'
 import ContactsTable from './contacts-table'
 import SearchBox from '../lists/search-box'
 import ContactsActionsToast from './contacts-actions-toast'
 import SectorSelector from '../campaigns/sector-selector.jsx'
+import EditContact from './edit-contact.jsx'
+import { BioIcon } from '../images/icons'
 
 const ContactsPage = React.createClass({
   getInitialState () {
@@ -12,7 +18,9 @@ const ContactsPage = React.createClass({
       sort: { updatedAt: -1 },
       selections: [],
       term: '',
-      selectedSector: null
+      selectedSector: null,
+      isDropdownOpen: false,
+      addContactModalOpen: false
     }
   },
 
@@ -36,6 +44,22 @@ const ContactsPage = React.createClass({
     this.setState({ selections: [] })
   },
 
+  onDropdownArrowClick () {
+    this.setState({ isDropdownOpen: true })
+  },
+
+  onDropdownDismiss () {
+    this.setState({ isDropdownOpen: false })
+  },
+
+  onLinkClick () {
+    this.setState({ isDropdownOpen: false })
+  },
+
+  toggleAddContactModal () {
+    this.setState({ addContactModalOpen: !this.state.addContactModalOpen })
+  },
+
   render () {
     const { onSortChange, onSelectionsChange, onSectorChange } = this
     const { sort, term, selections } = this.state
@@ -46,9 +70,22 @@ const ContactsPage = React.createClass({
           <div className='flex-auto border-right border-gray80'>
             <SectorSelectorContainer selected={this.state.selectedSector} onSectorChange={onSectorChange} />
           </div>
-          <div className='flex-none bg-white center px4'>
-            <button className='btn bg-completed white mx4'>New Contact</button>
-          </div>
+          <Dropdown>
+            <div className='flex-none bg-white center px4'>
+              <button className='btn bg-completed white ml4 mr1' onClick={this.toggleAddContactModal}>New Contact</button>
+              <button className='btn bg-completed white mr4' onClick={this.onDropdownArrowClick} >
+                <Arrow direction='down' style={{ marginLeft: 0 }} />
+              </button>
+              <DropdownMenu right style={{ top: '2.8rem', right: '2.7rem' }} open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
+                <nav className='block border-top border-gray80 py1'>
+                  <Link to='/contacts/import' className='block px3 py2 f-md normal gray20 hover-bg-blue' activeClassName='active' onClick={this.onLinkClick}>
+                    <BioIcon />
+                    <span className='ml2'>Import Contacts</span>
+                  </Link>
+                </nav>
+              </DropdownMenu>
+            </div>
+          </Dropdown>
         </div>
         <div className='bg-white shadow-2 m4 mt8'>
           <div className='p4 flex items-center'>
@@ -74,6 +111,7 @@ const ContactsPage = React.createClass({
           onTagClick={() => console.log('TODO: add/edit tags')}
           onDeleteClick={() => console.log('TODO: delete contact(s)')}
           onDeselectAllClick={this.onDeselectAllClick} />
+        <EditContact onDismiss={this.toggleAddContactModal} open={this.state.addContactModalOpen} />
       </div>
     )
   }
