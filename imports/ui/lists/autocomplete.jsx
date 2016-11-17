@@ -1,6 +1,9 @@
 import React, { PropTypes } from 'react'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
+import { dropdownMenuStyle } from '../common-styles'
+
+const dropdownStyle = Object.assign({}, dropdownMenuStyle, { maxWidth: 300 })
 
 export default React.createClass({
   propTypes: {
@@ -43,7 +46,7 @@ export default React.createClass({
           placeholder={placeholder}
           autoComplete='off'
           onChange={onChange} />
-        <DropdownMenu right open={open} onDismiss={onDismiss} style={{maxWidth: 300}}>
+        <DropdownMenu right open={open} onDismiss={onDismiss} style={dropdownStyle}>
           <ol className='list-reset'>{suggestions.map((s) => {
             return (
               <li key={s} className='block px3 py2 pointer left-align f-sm normal gray20 hover-bg-blue' onClick={() => onClick(s)}>

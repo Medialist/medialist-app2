@@ -2,6 +2,9 @@ import React, { PropTypes } from 'react'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
 import { SquareAvatar } from '../images/avatar.jsx'
+import { dropdownMenuStyle } from '../common-styles'
+
+const dropdownStyle = Object.assign({}, dropdownMenuStyle, { width: 223 })
 
 const Campaign = (props) => {
   const { name, avatar, client } = props.campaign
@@ -53,7 +56,7 @@ const CampaignSelector = React.createClass({
           <button className='btn bg-transparent border-gray80 mx2' onClick={this.openDropdown} disabled={!campaigns.length}>
             { campaign ? <CampaignButton campaign={campaign} /> : 'Select a Campaign' }
           </button>
-          <DropdownMenu right style={{ width: 223 }} open={this.state.open} onDismiss={this.closeDropdown}>
+          <DropdownMenu right style={dropdownStyle} open={this.state.open} onDismiss={this.closeDropdown}>
             <nav className='py1'>
               {campaigns.map((item) => (
                 <div key={item._id} className='px3 py2 pointer hover-bg-gray90' onClick={() => this.onLinkClick(item)}>

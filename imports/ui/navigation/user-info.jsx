@@ -5,9 +5,9 @@ import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
 import { CircleAvatar } from '../images/avatar.jsx'
 import { SettingsIcon, ExitIcon } from '../images/icons'
-import { dropdownMenu } from '../common-styles'
+import { dropdownMenuStyle } from '../common-styles'
 
-const dropdownStyle = Object.assign({}, dropdownMenu, { width: 223 })
+const dropdownStyle = Object.assign({}, dropdownMenuStyle, { width: 223 })
 
 const UserInfo = React.createClass({
   propTypes: {
