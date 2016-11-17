@@ -16,6 +16,10 @@ export default React.createClass({
   getInitialState () {
     return { open: false }
   },
+  componentWillReceiveProps (props) {
+    const { suggestions } = props
+    this.setState({open: suggestions.length > 0})
+  },
   onChange (evt) {
     this.props.onChange(evt.target.value)
     this.setState({open: true})
