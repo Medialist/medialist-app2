@@ -32,6 +32,6 @@ export default createContainer(() => {
   Meteor.subscribe('contacts')
   return {
     recentCampaigns: window.Medialists.find({}, { limit: 5, sort: { updatedAt: -1 } }).fetch(),
-    recentContacts: window.Contacts.find({}, { limit: 5 }).fetch()
+    recentContacts: window.Contacts.find({}, { limit: 5, sort: { updatedAt: -1 } }).fetch()
   }
 }, DashboardPage)

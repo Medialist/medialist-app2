@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import { SquareAvatar } from '../images/avatar'
-import { MenuCampaignIcon } from '../images/icons'
+import { MenuCampaignIcon, ChevronRight } from '../images/icons'
 
 const RecentCampaignsList = React.createClass({
   propTypes: {
@@ -13,7 +13,7 @@ const RecentCampaignsList = React.createClass({
     return (
       <section className='block'>
         <header className='clearfix p4 border-gray80 border-bottom'>
-          <Link to='/campaigns' className='f-sm semibold blue right' >See All</Link>
+          <Link to='/campaigns' className='f-sm semibold blue right' >See All <ChevronRight className='ml1' /></Link>
           <h1 className='m0 f-md semibold gray20 left'>
             <MenuCampaignIcon className='gray60' />
             <span className='ml1'>My Recent Campaigns</span>
