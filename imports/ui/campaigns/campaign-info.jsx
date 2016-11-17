@@ -58,14 +58,14 @@ const CampaignInfo = React.createClass({
           sectors={['Corporate', 'Media']}
           tags={[
             {
+              _id: 'mongoidforamazon',
               name: 'Amazon',
-              count: 43,
-              onClick: (evt) => { console.log('Remove Tag') }
+              count: 43
             },
             {
+              _id: 'mongoidforretail',
               name: 'Retail',
-              count: 13,
-              onClick: (evt) => { console.log('Remove Tag') }
+              count: 13
             }
           ]}
           onAddSectors={onAddSectors} onAddTags={onAddTags} />

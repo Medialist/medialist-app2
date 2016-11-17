@@ -16,8 +16,8 @@ const QuickAdd = (props) => {
         <InfoHeader name='Tags' onClick={onAddTags} />
         <div className='px2 py3'>
           {tags.map((tag) => {
-            const { name, count, onRemove } = tag
-            return <Tag name={name} count={count} onClick={onRemove} />
+            const { _id, name, count } = tag
+            return <Tag name={name} count={count} onClick={() => removeTag(_id)} />
           })}
         </div>
       </section>
@@ -30,6 +30,10 @@ QuickAdd.PropTypes = {
   sectors: PropTypes.array.isRequired,
   onAddTag: PropTypes.func.isRequired,
   onAddSectors: PropTypes.func.isRequired
+}
+
+function removeTag (id) {
+  console.log('remove this tag ', id)
 }
 
 export default QuickAdd
