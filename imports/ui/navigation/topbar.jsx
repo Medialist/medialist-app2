@@ -20,7 +20,7 @@ const Topbar = React.createClass({
     const { onBackClick } = this
     const { backLinkText } = this.props
     return (
-      <nav className='block bg-white mb4 flex items-center width-100'>
+      <nav className='block bg-white mb4 flex items-center width-100 shadow-inset'>
         <div className='flex-auto'>
           <span className='pointer inline-block p4' onClick={onBackClick}>{`◀ ${backLinkText}`}</span>
         </div>

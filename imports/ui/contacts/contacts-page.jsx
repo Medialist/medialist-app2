@@ -42,8 +42,15 @@ const ContactsPage = React.createClass({
 
     return (
       <div>
-        <SectorSelectorContainer selected={this.state.selectedSector} onSectorChange={onSectorChange} />
-        <div className='bg-white shadow-2 m4'>
+        <div className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
+          <div className='flex-auto border-right border-gray80'>
+            <SectorSelectorContainer selected={this.state.selectedSector} onSectorChange={onSectorChange} />
+          </div>
+          <div className='flex-none bg-white center px4'>
+            <button className='btn bg-completed white mx4'>New Contact</button>
+          </div>
+        </div>
+        <div className='bg-white shadow-2 m4 mt8'>
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
               <SearchBox onTermChange={this.onTermChange} placeholder='Search contacts...' />
@@ -85,8 +92,10 @@ const ContactsTotalContainer = createContainer((props) => {
 }, ContactsTotal)
 
 const ContactsTableContainer = createContainer((props) => {
-  Meteor.subscribe('contacts')
-
+  const subs = [
+    Meteor.subscribe('contacts')
+  ]
+  const loading = () => subs.some((s) => !s.ready())
   const query = {}
 
   if (props.term) {
@@ -99,7 +108,7 @@ const ContactsTableContainer = createContainer((props) => {
   }
 
   const contacts = window.Contacts.find(query, { sort: props.sort }).fetch()
-  return { ...props, contacts }
+  return { ...props, contacts, loading }
 }, ContactsTable)
 
 export default ContactsPage
