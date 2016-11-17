@@ -92,8 +92,10 @@ const ContactsTotalContainer = createContainer((props) => {
 }, ContactsTotal)
 
 const ContactsTableContainer = createContainer((props) => {
-  Meteor.subscribe('contacts')
-
+  const subs = [
+    Meteor.subscribe('contacts')
+  ]
+  const loading = () => subs.some((s) => !s.ready())
   const query = {}
 
   if (props.term) {
@@ -106,7 +108,7 @@ const ContactsTableContainer = createContainer((props) => {
   }
 
   const contacts = window.Contacts.find(query, { sort: props.sort }).fetch()
-  return { ...props, contacts }
+  return { ...props, contacts, loading }
 }, ContactsTable)
 
 export default ContactsPage

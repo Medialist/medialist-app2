@@ -424,6 +424,40 @@ button {
 .active-border-bottom-blue.active {
   box-shadow: inset 0 -3px 0 0 var(--blue) !important;
 }
+
+/* ---- Animations -----------------------------------------------------------*/
+
+/* lolo loading spinner */
+/* See: http://jsbin.com/jimawe/edit?html,css,output */
+@keyframes lolo {
+  0%, 100% {
+    width: 10px;
+    transform: translateX(0px);
+  }
+  25%, 75% {
+    width: 70px;
+    transform: translateX(0px);
+  }
+  50% {
+    width: 10px;
+    transform: translateX(60px);
+  }
+}
+.lolo {
+  display: inline-block;
+  width: 70px;
+  height: 6px;
+}
+.lolo::after {
+  content:'';
+  display:block;
+  background: var(--blue);
+  width: 10px;
+  height: 100%;
+  transform: translateX(0px);
+  animation: lolo 1.5s cubic-bezier(0.25,0.1,0.25,1) infinite;
+}
+
 /* ---- Rebass overrides ---------------------------------------------------- */
 
 .Menu {
