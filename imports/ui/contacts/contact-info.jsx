@@ -63,17 +63,17 @@ const ContactInfo = React.createClass({
           </section>
         }
         <QuickAdd
-          sectors={['Energy, Healthcare, Robotics']}
+          sectors={['Energy', 'Healthcare', 'Robotics']}
           tags={[
             {
+              _id: 'mongoidfornhs',
               name: 'NHS',
-              count: 23,
-              onRemove: (evt) => { console.log('Remove Tag') }
+              count: 23
             },
             {
+              _id: 'mongoidfortechnology',
               name: 'Technology',
-              count: 78,
-              onRemove: (evt) => { console.log('Remove Tag') }
+              count: 78
             }
           ]}
           onAddTags={onAddTags}
