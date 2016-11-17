@@ -10,7 +10,7 @@ import SearchBox from '../lists/search-box'
 import ContactsActionsToast from './contacts-actions-toast'
 import SectorSelector from '../campaigns/sector-selector.jsx'
 import EditContact from './edit-contact.jsx'
-import { BioIcon } from '../images/icons'
+import { FeedContactIcon } from '../images/icons'
 
 const ContactsPage = React.createClass({
   getInitialState () {
@@ -60,6 +60,14 @@ const ContactsPage = React.createClass({
     this.setState({ addContactModalOpen: !this.state.addContactModalOpen })
   },
 
+  onAddContactChange (contact) {
+    console.log('change', contact)
+  },
+
+  onAddContactSubmit (contact) {
+    console.log('submit', contact)
+  },
+
   render () {
     const { onSortChange, onSelectionsChange, onSectorChange } = this
     const { sort, term, selections } = this.state
@@ -78,8 +86,8 @@ const ContactsPage = React.createClass({
               </button>
               <DropdownMenu right style={{ top: '2.8rem', right: '2.7rem' }} open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
                 <nav className='block border-top border-gray80 py1'>
-                  <Link to='/contacts/import' className='block px3 py2 f-md normal gray20 hover-bg-blue' activeClassName='active' onClick={this.onLinkClick}>
-                    <BioIcon />
+                  <Link to='/contacts/import' className='block px3 py2 f-md normal gray20 hover-bg-gray90' activeClassName='active' onClick={this.onLinkClick}>
+                    <FeedContactIcon />
                     <span className='ml2'>Import Contacts</span>
                   </Link>
                 </nav>
@@ -111,7 +119,11 @@ const ContactsPage = React.createClass({
           onTagClick={() => console.log('TODO: add/edit tags')}
           onDeleteClick={() => console.log('TODO: delete contact(s)')}
           onDeselectAllClick={this.onDeselectAllClick} />
-        <EditContact onDismiss={this.toggleAddContactModal} open={this.state.addContactModalOpen} />
+        <EditContact
+          onDismiss={this.toggleAddContactModal}
+          onChange={this.onAddContactChange}
+          onSubmit={this.onAddContactSubmit}
+          open={this.state.addContactModalOpen} />
       </div>
     )
   }
