@@ -2,6 +2,9 @@ import React, { PropTypes } from 'react'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
 import classnames from 'classnames'
+import { dropdownMenuStyle } from '../common-styles'
+
+const dropdownStyle = Object.assign({}, dropdownMenuStyle, { width: 180 })
 
 // A general filtering component for lists
 const ItemFilter = React.createClass({
@@ -41,7 +44,7 @@ const ItemFilter = React.createClass({
           </div>
           <hr className='flex-auto' style={{height: 1, margin: '25px 0 0 0'}} />
         </div>
-        <DropdownMenu left open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss} style={{width: 180}}>
+        <DropdownMenu left open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss} style={dropdownStyle}>
           <nav>
             {filters.map((Filter, i) => {
               const isActive = Filter === CurrentFilter
