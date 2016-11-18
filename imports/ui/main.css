@@ -261,6 +261,9 @@ button {
   border-spacing: 0;
   font-size: 14px;
 }
+.table tr:hover td {
+  background-color: var(--gray90);
+}
 .table th,
 .table td {
   vertical-align: middle;
