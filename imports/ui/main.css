@@ -1,6 +1,7 @@
 /* ---- Medialist main.css -------------------------------------------------- */
 
-@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700');
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700&subset=latin-ext');
+
 @import 'basscss-typography';
 @import 'basscss-layout';
 @import 'basscss-align';
@@ -77,6 +78,14 @@ body {
   margin: 0;
   color: var(--gray20);
   background-color: var(--gray90);
+
+  /* Disable subpixel font rendering as it makes our font appear too bold
+    compared to the designs... It's questionable if it's an impromvement, but
+    we can't make the ui match the design spec without it.
+    See: http://usabilitypost.com/2012/11/05/stop-fixing-font-smoothing/
+  */
+  -webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 img {
