@@ -254,9 +254,7 @@ button {
   height: 21px;
 }
 
-.stroke-gray20 {
-  stroke: var(--gray20);
-}
+.stroke-gray20 { stroke: var(--gray20) }
 
 .table {
   width: 100%;
@@ -418,6 +416,10 @@ button {
 .hover-opacity-trigger:hover .hover-opacity-100 {
   opacity: 1;
 }
+.hover-white:hover,
+.hover-color-trigger:hover .hover-white {
+  color: var(--white) !important;
+}
 .hover-bg-blue:hover {
   color: var(--white);
   background-color: var(--blue);
@@ -428,6 +430,11 @@ button {
 .hover-blue:hover {
   color: var(--blue);
 }
+.hover-fill-trigger:hover .hover-fill-current svg,
+.hover-fill-current:hover svg{
+  fill: currentColor;
+}
+
 .active-bg-green-light.active {
   background-color: var(--green-light);
 }
