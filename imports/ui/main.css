@@ -249,6 +249,10 @@ button {
   fill: currentColor;
   vertical-align: middle;
 }
+.svg-icon-lg svg {
+  width: 21px;
+  height: 21px;
+}
 
 .stroke-gray20 {
   stroke: var(--gray20);
