@@ -2,18 +2,7 @@ import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
 import ActivityList from './activity-list'
-import ItemFilter from '../lists/item-filter'
-import {
-  TopActivityFilter,
-  CoverageFilter,
-  NeedToKnowFilter
-} from './activity-filters'
-
-const ACTIVITY_FILTERS = [
-  TopActivityFilter,
-  CoverageFilter,
-  NeedToKnowFilter
-]
+import ActivityFilter from './activity-filter'
 
 const ActivityFeed = React.createClass({
   propTypes: {
@@ -22,20 +11,20 @@ const ActivityFeed = React.createClass({
   },
 
   getInitialState () {
-    return { activityFilter: TopActivityFilter }
+    return { filterName: 'Top Activity' }
   },
 
-  onFilterChange (filter) {
-    this.setState({ activityFilter: filter })
+  onFilterChange (filterName) {
+    this.setState({ filterName })
   },
 
   render () {
     const { campaign, contact } = this.props
-    const { activityFilter } = this.state
+    const { filterName } = this.state
     return (
       <div>
-        <ItemFilter filter={activityFilter} filters={ACTIVITY_FILTERS} onChange={this.onFilterChange} />
-        <ActivityListContainer filter={activityFilter} campaign={campaign} contact={contact} />
+        <ActivityFilter selected={filterName} onChange={this.onFilterChange} />
+        <ActivityListContainer filter={filterName} campaign={campaign} contact={contact} />
       </div>
     )
   }
@@ -43,16 +32,12 @@ const ActivityFeed = React.createClass({
 
 const ActivityListContainer = createContainer((props) => {
   const limit = props.limit || 10
-  let types = props.filter
-
-  if (!types || types === TopActivityFilter) {
-    types = ['need-to-knows', 'medialists changed', 'feedback']
-  } else if (types === NeedToKnowFilter) {
-    types = ['need-to-knows']
-  } else if (types === CoverageFilter) {
-    // TODO: chnage to coverage when we have some.
-    types = ['feedback']
+  const typesForFilter = {
+    'Top Activity': ['need-to-knows', 'medialists changed', 'feedback'],
+    'Coverage': ['coverage'],
+    'Need To Know': ['need-to-knows']
   }
+  const types = typesForFilter[props.filter]
 
   Meteor.subscribe('medialist-favourites')
   Meteor.subscribe('posts', { limit, types })
