@@ -11,11 +11,123 @@ npm install
 npm run watch
 ```
 
+## Data model
+
+**Contact**
+
+```js
+{
+  "_id" : "22zjKES2iEkN9PTdD",
+  "slug" : "SteveRose",
+  "name" : "Steve Rose",
+  "avatar" : "https://pbs.twimg.com/profile_images/530735370120331264/25YBKDB-_normal.jpeg",
+  "primaryOutlets" : "the Guardian, Freelance",
+  "otherOutlets" : "Freelance, the Guardian - g2 (supplement) - Features",
+  "sectors" : "Entertainment (Cinema, Film & DVD), Home Interest (Architecture), Arts",
+  "bio" : "I'm a freelance writer, mainly on cinema and architecture. I often write for the Guardian: http://t.co/xgjs5FoFLn"
+  "languages" : "English",
+	"emails" : [
+		{ "label" : "Email", "value" : "steverose7@gmail.com" }
+	],
+	"socials" : [
+		{ "label" : "Twitter", "value" : "steverose7", "twitterId" : "109295079" }
+	],
+	"jobTitles" : "Freelance Writer",
+	"phones" : [
+		{ "label" : "Mobile", "value" : "+44 (0)7980 327 310" }
+	],
+	"address" : "53 Athenlay Road, London, SE15 3EN, United Kingdom",
+	"importedData" : [
+		{
+			"data" : { "columns" : [], "row" : [] },
+			"importedAt" : ISODate("2016-02-26T13:12:53.455Z")
+		}
+	],
+	"medialists" : [
+    "medialistSlug"
+  ],
+	"createdAt" : ISODate("2016-02-26T13:12:53.456Z"),
+	"createdBy" : {
+    "_id" : "hNc2ArK9TcAWyEXqQ",
+		"name" : "Olly Gilbert",
+		"avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
+	},
+	"updatedAt" : ISODate("2016-02-26T13:12:53.456Z"),
+	"updatedBy" : {
+		"_id" : "hNc2ArK9TcAWyEXqQ",
+		"name" : "Olly Gilbert",
+		"avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
+	}
+}
+```
+
+**Medialist**
+
+```js
+{
+	"_id" : "54gbNST2YBuqbrB4T",
+	"name" : "dailymailjournos",
+	"client" : {
+		"name" : "Amazon",
+		"_id" : "iYurjZ3HbvmMbuRYr"
+	},
+	"purpose" : "Amazon is good for the UK",
+	"topics" : [ ],
+	"contacts" : {
+		"EleanorHarding" : "To Contact",
+		"SeanWilliams" : "To Contact",
+		"NicPaton" : "To Contact",
+		"RogerBaird" : "To Contact",
+		"GeoffFoster" : "Hot Lead"
+	},
+	"createdAt" : ISODate("2016-02-24T22:26:39.782Z"),
+	"createdBy" : {
+		"_id" : "hNc2ArK9TcAWyEXqQ",
+		"name" : "Olly Gilbert"
+	},
+	"updatedAt" : ISODate("2016-09-29T12:30:02.895Z"),
+	"updatedBy" : {
+		"_id" : "hNc2ArK9TcAWyEXqQ",
+		"name" : "Olly Gilbert"
+	},
+	"slug" : "dailymailjournos"
+}
+```
+
+**Post**
+
+```js
+{
+	"_id" : "2EnrcJ7r5i94JTmwZ",
+  "type" : "medialists changed",
+	"details" : {
+		"action" : "added"
+	}
+	"message" : "added Eleanor to #activeschools",
+	"contacts" : [
+		{
+			"slug" : "EleanorHarding",
+			"name" : "Eleanor Harding",
+			"avatar" : "https://pbs.twimg.com/profile_images/674213477477691392/63oxEK6E_normal.jpg"
+		}
+	],
+	"medialists" : [
+		"activeschools"
+	],
+	"createdBy" : {
+		"_id" : "hNc2ArK9TcAWyEXqQ",
+		"name" : "Olly Gilbert",
+		"avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
+	},
+	"createdAt" : ISODate("2016-03-08T11:14:22.670Z"),
+}
+```
+
 ## Styling
 
 Some [Basscss] plus custom atoms with [postcss] to build it. See `client/main.css`
 
-### Colours
+### Colours
 
 ![Charcoal](https://swatches-lkzftbccpg.now.sh/?color=%2324364C)
 ![Royal blue](https://swatches-lkzftbccpg.now.sh/?color=%232B60D5)
