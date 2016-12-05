@@ -27,11 +27,13 @@ export default React.createClass({
     Papa.parse(file, opts)
   },
   onReadRow (row) {
+    console.log('onReadRow', row)
     const newDataRows = this.state.dataRows.slice(0)
     newDataRows.push(row.data[0])
     this.setState({dataRows: newDataRows})
   },
   onComplete (results, file) {
+    console.log('onComplete', results)
     const { dataRows } = this.state
     const headerRow = Object.keys(dataRows[0])
     this.setState({headerRow})
@@ -40,6 +42,7 @@ export default React.createClass({
     console.error(err)
   },
   onChange (evt) {
+    console.log('onChange', evt.target.files[0])
     this.parseCSV(evt.target.files[0])
   },
   setColumnCount (count) {
@@ -72,7 +75,7 @@ export default React.createClass({
                 </div>
               </div>
             </section>
-            <section className='mt6'>
+            <section className='mt6 px3'>
               <ImportTable headerRow={headerRow} dataRows={dataRows} setColumnCount={setColumnCount} />
             </section>
           </div>

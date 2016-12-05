@@ -66,44 +66,51 @@ const ImportTable = React.createClass({
     const { onDismiss, onFocus, onSelect, toggleSelect } = this
     const { open, focusedField, columns } = this.state
     const { dataRows } = this.props
-    const overflow = {
-      overflowX: 'hidden',
-      overflow: 'scroll',
-      whiteSpace: 'nowrap',
-      height: '18rem'
-    }
     return (
-      <div style={overflow}>
-        {Object.keys(columns).map((heading) => {
-          const { field, selected } = columns[heading]
-          return (
-            <div className='inline-block pointer border-bottom border-gray80 bg-white' style={{width: '12rem'}} key={heading}>
-              <Dropdown className='right'>
-                <input className='input m2' style={{width: 'auto'}} value={selected ? field : ''} placeholder='Select field' onFocus={(evt) => onFocus(field)} />
-                <DropdownMenu open={open && field === focusedField} onDismiss={onDismiss}>
-                  <ul className='list-reset mt0'>
-                    {fields.map((f) => {
-                      return <li className='p2 left-align hover-bg-blue' onClick={(evt) => onSelect(heading, f)}>{f}</li>
-                    })}
-                  </ul>
-                </DropdownMenu>
-              </Dropdown>
-              <div className='bg-gray90'>
-                <Checkbox className='inline-block my4 mx2' checked={selected} data={columns[heading]} onChange={toggleSelect.bind(null, heading)} />
-                <label className='inline-block ml1' >{heading}</label>
-              </div>
-            </div>
-          )
-        })}
-        {dataRows.map((row) => {
-          return (
-            <div className='block pl2 bg-white'>
-              {Object.keys(row).map((field) => {
-                return <div className='inline-block py2 border-bottom border-gray80 gray40' style={{width: '12rem'}}>{row[field] || ' '}</div>
+      <div style={{overflowY: 'scroll'}}>
+        <table className='table bg-white shadow-2' >
+          <thead>
+            <tr>
+              {Object.keys(columns).map((heading) => {
+                const { field, selected } = columns[heading]
+                return (
+                  <th className='pointer bg-white' style={{padding: '0px 80px 0 0', borderLeft: '0 none', borderRight: '0 none'}} key={heading}>
+                    <Dropdown className='right'>
+                      <input className='input m2' style={{width: 180}} value={selected ? field : ''} placeholder='Select a field' onFocus={(evt) => onFocus(field)} />
+                      <DropdownMenu open={open && field === focusedField} onDismiss={onDismiss}>
+                        <ul className='list-reset mt0'>
+                          {fields.map((f) => {
+                            return <li className='p2 left-align hover-bg-blue' onClick={(evt) => onSelect(heading, f)}>{f}</li>
+                          })}
+                        </ul>
+                      </DropdownMenu>
+                    </Dropdown>
+                  </th>
+                )
               })}
-            </div>
-          )
-        })}
+            </tr>
+            <tr className='bg-gray90'>
+              {Object.keys(columns).map((heading) => {
+                const { selected } = columns[heading]
+                return (
+                  <th className='left-align' style={{padding: '5px 20px', borderLeft: '0 none', borderRight: '0 none'}}>
+                    <Checkbox className='inline-block my3' checked={selected} data={columns[heading]} onChange={toggleSelect.bind(null, heading)} />
+                    <label className='inline-block ml1' >{heading}</label>
+                  </th>
+                )
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {dataRows.map((row) => (
+              <tr>
+                {Object.keys(row).map((field, i) => {
+                  return <td className={i === 0 ? 'gray10' : 'gray20'}>{row[field] || ' '}</td>
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     )
   }
