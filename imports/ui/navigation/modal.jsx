@@ -25,6 +25,9 @@ export default function (Component) {
       open: PropTypes.bool.isRequired,
       onDismiss: PropTypes.func.isRequired
     },
+    onDismiss (evt) {
+      if (evt.currentTarget === evt.target) this.props.onDismiss(evt)
+    },
     render () {
       const { open, onDismiss } = this.props
       if (!open) return null
@@ -33,10 +36,11 @@ export default function (Component) {
       return (
         <div>
           <Helmet htmlAttributes={{ style: htmlStyle }} />
-          <div className='fixed top-0 right-0 left-0 bottom-0' style={{background: 'rgba(35, 54, 75, 0.8)'}} onClick={onDismiss} />
-          <div className='absolute top-0 right-0 left-0 bg-white fit mx-auto z100' style={{width: 675}}>
-            <div className='inline-block right pointer f-xxl mx2 gray60 hover-blue' onClick={onDismiss}>&times;</div>
-            <Component {...this.props} />
+          <div className='fixed top-0 right-0 left-0 bottom-0 flex items-center justify-center' style={{background: 'rgba(35, 54, 75, 0.8)'}} onClick={this.onDismiss}>
+            <div className='bg-white fit z100' style={{width: 675}}>
+              <div className='inline-block right pointer f-xxl mx2 gray60 hover-blue' onClick={onDismiss}>&times;</div>
+              <Component {...this.props} />
+            </div>
           </div>
         </div>
       )

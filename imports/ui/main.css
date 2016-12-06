@@ -1,6 +1,7 @@
 /* ---- Medialist main.css -------------------------------------------------- */
 
-@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700');
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700&subset=latin-ext');
+
 @import 'basscss-typography';
 @import 'basscss-layout';
 @import 'basscss-align';
@@ -77,6 +78,14 @@ body {
   margin: 0;
   color: var(--gray20);
   background-color: var(--gray90);
+
+  /* Disable subpixel font rendering as it makes our font appear too bold
+    compared to the designs... It's questionable if it's an impromvement, but
+    we can't make the ui match the design spec without it.
+    See: http://usabilitypost.com/2012/11/05/stop-fixing-font-smoothing/
+  */
+  -webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 img {
@@ -240,10 +249,12 @@ button {
   fill: currentColor;
   vertical-align: middle;
 }
-
-.stroke-gray20 {
-  stroke: var(--gray20);
+.svg-icon-lg svg {
+  width: 21px;
+  height: 21px;
 }
+
+.stroke-gray20 { stroke: var(--gray20) }
 
 .table {
   width: 100%;
@@ -251,6 +262,9 @@ button {
   border-collapse: collapse;
   border-spacing: 0;
   font-size: 14px;
+}
+.table tr:hover td {
+  background-color: var(--gray90);
 }
 .table th,
 .table td {
@@ -402,6 +416,10 @@ button {
 .hover-opacity-trigger:hover .hover-opacity-100 {
   opacity: 1;
 }
+.hover-white:hover,
+.hover-color-trigger:hover .hover-white {
+  color: var(--white) !important;
+}
 .hover-bg-blue:hover {
   color: var(--white);
   background-color: var(--blue);
@@ -412,6 +430,11 @@ button {
 .hover-blue:hover {
   color: var(--blue);
 }
+.hover-fill-trigger:hover .hover-fill-current svg,
+.hover-fill-current:hover svg{
+  fill: currentColor;
+}
+
 .active-bg-green-light.active {
   background-color: var(--green-light);
 }
@@ -469,7 +492,7 @@ button {
   content:'';
   display: inline-block;
   position: absolute;
-  top: -8px;
+  top: -7px;
   right: 11px;
   width: 0;
   height: 0;
@@ -477,9 +500,4 @@ button {
   border-bottom-color:var(--white);
   border-top: 0 none;
   border-radius: 2px;
-}
-
-.DropdownMenu {
-  top: 3.1rem !important;
-  right: .27rem !important;
 }

@@ -5,6 +5,7 @@ import DropdownMenu from 'rebass/dist/DropdownMenu'
 import Button from 'rebass/dist/Button'
 import { NotificationBell, ChevronRight } from '../images/icons'
 import { Notifications, NotificationsSummary } from '../users/notification'
+import { dropdownMenuStyle } from '../common-styles'
 
 const NotificationsBell = React.createClass({
   propTypes: {
@@ -38,7 +39,7 @@ const NotificationsBell = React.createClass({
     return (
       <Dropdown>
         <Button backgroundColor='transparent' onClick={onBellClick}><NotificationBell /></Button>
-        <DropdownMenu open={isDropdownOpen} onDismiss={onDropdownDismiss} right>
+        <DropdownMenu style={dropdownMenuStyle} open={isDropdownOpen} onDismiss={onDropdownDismiss} right>
           <div style={style}>
             <NotificationsSummary notifications={notifications} onMarkAllReadClick={onMarkAllReadClick} />
             <Notifications notifications={notifications} />

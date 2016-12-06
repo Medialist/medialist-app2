@@ -260,9 +260,11 @@ const EditContact = React.createClass({
           </div>
         </div>
         <div className='p4 bg-white'>
-          <button className='btn bg-completed white right' onClick={onSubmit}>Save Changes</button>
-          <button className='btn bg-transparent gray40 right mr2' onClick={onDismiss}>Cancel</button>
-          <button className='btn bg-transparent not-interested' onClick={onDelete}>Delete Contact</button>
+          <div className='clearfix'>
+            <button className='btn bg-completed white right' onClick={onSubmit}>Save Changes</button>
+            <button className='btn bg-transparent gray40 right mr2' onClick={onDismiss}>Cancel</button>
+            {this.props.contact && <button className='btn bg-transparent not-interested' onClick={onDelete}>Delete Contact</button>}
+          </div>
         </div>
       </div>
     )

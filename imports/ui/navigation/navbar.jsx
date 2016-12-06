@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react'
 import { Link, IndexLink } from 'react-router'
 import NotificationsBell from './notifications-bell'
 import UserInfo from './user-info'
+import SearchSiteBox from './search-site'
 import { Logo, MenuActivityIcon, MenuCampaignIcon, MenuContactIcon } from '../images/icons'
 
 const linkStyle = { padding: '19px 25px 20px', display: 'inline-block' }
@@ -19,15 +20,15 @@ const NavBar = React.createClass({
           <IndexLink to='/' style={{ padding: '19px 28px 18px 26px', display: 'inline-block' }} className='white f5 semibold xs-hide align-top' >
             <Logo />
           </IndexLink>
-          <IndexLink to='/' style={linkStyle} className='white f-sm regular opacity-30 hover-opacity-50 active-opacity-100' activeClassName='active bg-black'>
+          <IndexLink to='/' style={linkStyle} className='white f-sm semibold opacity-30 hover-opacity-50 active-opacity-100' activeClassName='active bg-black'>
             <MenuActivityIcon style={{verticalAlign: 2}} />
             <span style={{marginLeft: 3}}>Activity</span>
           </IndexLink>
-          <Link to='/campaigns' style={linkStyle} className='white f-sm regular opacity-30 hover-opacity-50 active-opacity-100' activeClassName='active bg-black'>
+          <Link to='/campaigns' style={linkStyle} className='white f-sm semibold opacity-30 hover-opacity-50 active-opacity-100' activeClassName='active bg-black'>
             <MenuCampaignIcon style={{verticalAlign: 2}} />
             <span style={{marginLeft: 3}}>Campaigns</span>
           </Link>
-          <Link to='/contacts' style={linkStyle} className='white f-sm regular opacity-30 hover-opacity-50 active-opacity-100' activeClassName='active bg-black'>
+          <Link to='/contacts' style={linkStyle} className='white f-sm semibold opacity-30 hover-opacity-50 active-opacity-100' activeClassName='active bg-black'>
             <MenuContactIcon style={{verticalAlign: 2}} />
             <span style={{marginLeft: 3}}>Contacts</span>
           </Link>
@@ -37,6 +38,9 @@ const NavBar = React.createClass({
         </div>
         <div className='inline-block right' style={{padding: '9px 0'}}>
           <NotificationsBell notifications={notifications} />
+        </div>
+        <div className='inline-block right mr2' style={{paddingTop: '12.5px'}}>
+          <SearchSiteBox />
         </div>
       </div>
     )

@@ -61,7 +61,7 @@ const EditCampaign = React.createClass({
 
     return (
       <form onSubmit={onSubmit} onReset={onReset}>
-        <div className='p4 center'>
+        <div className='px4 py6 center'>
           <div className='bg-gray40 center rounded mx-auto' style={{height: '123px', width: '123px', lineHeight: '123px'}}>
             <CameraIcon />
           </div>
