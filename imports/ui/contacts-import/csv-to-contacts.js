@@ -27,8 +27,9 @@ See: http://papaparse.com/docs for options.
 export function importCsvFile (file, cb) {
   Csv.parse(file, {
     skipEmptyLines: true,
-    complete: ({data, errors, meta}) => {
-      cb(errors, processCsvData(data))
+    complete: ({data, errors, meta}, file) => {
+      const err = errors.length ? errors : null
+      cb(err, processCsvData(data))
     }
   })
 }
@@ -181,7 +182,7 @@ const schemaDetectors = [
   }
 ]
 
-export const labels = schemaDetectors.map((obj) => obj.field.label)
+export const allColumns = schemaDetectors.map((obj) => obj.field)
 
 /*
 Create contacts from column definitions and rows of data.

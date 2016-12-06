@@ -245,9 +245,15 @@ button {
 .border-gray80 { border-color:var(--gray80) !important }
 .border-blue { border-color: var(--blue) !important }
 
+.svg-icon {
+  display: inline-block;
+}
+
 .svg-icon svg {
   fill: currentColor;
   vertical-align: middle;
+  max-width: 100%;
+  max-height: 100%;
 }
 .svg-icon-lg svg {
   width: 21px;

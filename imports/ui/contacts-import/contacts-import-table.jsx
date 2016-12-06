@@ -1,74 +1,66 @@
 import React, { PropTypes } from 'react'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
-import Checkbox from '../tables/checkbox'
-import { labels } from './csv-to-contacts.js'
+import { SelectedIcon, ChevronDown } from '../images/icons'
+import { allColumns } from './csv-to-contacts.js'
 
 const ImportTable = React.createClass({
   PropTypes: {
-    headerRow: PropTypes.array.isRequired,
-    dataRows: PropTypes.array.isRequired,
-    setColumnCount: PropTypes.func.isRequired
+    rows: PropTypes.array.isRequired,
+    cols: PropTypes.array.isRequired,
+    onColumnChange: PropTypes.func.isRequired
   },
+
   getInitialState () {
-    return {
-      open: false,
-      focusedField: '',
-      columns: readColumns(this.props)
-    }
+    return { open: false }
   },
-  componentWillMount () {
-    this.props.setColumnCount(countSelected(this.state.columns))
-  },
+
   onDismiss () {
     this.setState({ open: false })
   },
-  onSelect (heading, field) {
-    const { columns } = this.state
-    const { setColumnCount } = this.props
-    if (columns[field] && columns[field].selected) return this.onDismiss()
 
-    const newColumns = Object.assign({}, columns, {[heading]: {field: field, selected: true}})
-    this.setState({
-      columns: newColumns,
-      focusedField: '',
-      open: false
-    })
+  onColumnSelect (i) {
+    this.setState({ open: i })
+  },
 
-    setColumnCount(countSelected(columns))
-  },
-  toggleSelect (heading, columnHeading) {
-    const { field, selected } = columnHeading
-    const { setColumnCount } = this.props
-    const columns = Object.assign({}, this.state.columns, {[heading]: {field, selected: !selected}})
-    this.setState({columns})
-    setColumnCount(countSelected(columns))
-  },
-  onFocus (heading) {
-    this.setState({
-      open: true,
-      focusedField: heading
-    })
-  },
   render () {
-    const { onDismiss, onFocus, onSelect, toggleSelect } = this
-    const { open, focusedField, columns } = this.state
-    const { dataRows } = this.props
+    const { onDismiss, onColumnSelect } = this
+    const { open } = this.state
+    const { rows, cols, onColumnChange } = this.props
+    const firstRow = rows[0]
+    const otherRows = rows.slice(1)
+
+    /*
+    cols is
+    [{key: 'name', label: 'Name'}, {key: 'email', label: 'Email'}]
+
+    a col will be null if we couldn't figure out what to map the data to.
+
+    rows is
+    [['Dave', 'dave@exmaple.org'], ['Bob', 'bob@example.org']]
+    */
+
     return (
       <div style={{overflowY: 'scroll'}}>
-        <table className='table bg-white shadow-2' >
+        <table className='table bg-white shadow-2 nowrap' >
           <thead>
             <tr>
-              {Object.keys(columns).map((heading, i) => {
-                const { field, selected } = columns[heading]
+              {cols.map((col, columnIndex) => {
                 return (
-                  <th key={i} className='pointer bg-white' style={{padding: '0px 80px 0 0', borderLeft: '0 none', borderRight: '0 none'}}>
+                  <th key={columnIndex} className='pointer bg-white' style={{padding: '0px 80px 0 0', borderLeft: '0 none', borderRight: '0 none'}}>
                     <Dropdown className='right'>
-                      <input className='input m2' style={{width: 180}} value={selected ? field : ''} placeholder='Select a field' onFocus={(evt) => onFocus(field)} />
-                      <DropdownMenu open={open && field === focusedField} onDismiss={onDismiss}>
+                      <div className='p2 m2 rounded border border-gray80 left-align' style={{width: 180}} onClick={() => onColumnSelect(columnIndex)}>
+                        <ChevronDown className='right' />
+                        {col ? (
+                          <span className='gray10 semibold'>{col.label}</span>
+                        ) : (
+                          <span className='gray40'>Select a field</span>
+                        )}
+                      </div>
+                      <DropdownMenu open={open && open === columnIndex} onDismiss={onDismiss}>
                         <ul className='list-reset mt0'>
-                          {labels.map((f) => {
-                            return <li className='p2 left-align hover-bg-blue' onClick={(evt) => onSelect(heading, f)}>{f}</li>
+                          {allColumns.map((newCol, i) => {
+                            return <li key={i} className='p2 left-align hover-bg-blue' onClick={(evt) => onColumnChange(newCol, columnIndex)}>{newCol.label}</li>
                           })}
                         </ul>
                       </DropdownMenu>
@@ -77,24 +69,23 @@ const ImportTable = React.createClass({
                 )
               })}
             </tr>
-            <tr className='bg-gray90'>
-              {Object.keys(columns).map((heading, i) => {
-                const { selected } = columns[heading]
-                return (
-                  <th key={i} className='left-align' style={{padding: '5px 20px', borderLeft: '0 none', borderRight: '0 none'}}>
-                    <Checkbox className='inline-block my3' checked={selected} data={columns[heading]} onChange={toggleSelect.bind(null, heading)} />
-                    <label className='inline-block ml1' >{heading}</label>
-                  </th>
-                )
-              })}
-            </tr>
           </thead>
           <tbody>
-            {dataRows.map((row) => (
-              <tr>
-                {Object.keys(row).map((field, i) => {
-                  return <td key={i} className={i === 0 ? 'gray10' : 'gray20'}>{row[field] || ' '}</td>
-                })}
+            <tr className='bg-gray90'>
+              {firstRow.map((cell, i) => (
+                <td key={i} className='left-align' style={{borderLeft: '0 none', borderRight: '0 none'}}>
+                  <div className='inline-block truncate align-middle semibold f-sm gray20' style={{maxWidth: '40em'}} >{cell}</div>
+                  { cols[i] && <SelectedIcon className='ml2' style={{width: 14, height: 14}} /> }
+                </td>
+              ))}
+            </tr>
+            {otherRows.map((row, i) => (
+              <tr key={i}>
+                {row.map((cell, i) => (
+                  <td key={i} className={`truncate ${i === 0 ? 'gray10' : 'gray20'}`} style={{maxWidth: '40em'}}>
+                    {cell}
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>
@@ -105,19 +96,3 @@ const ImportTable = React.createClass({
 })
 
 export default ImportTable
-
-function readColumns (props) {
-  const { headerRow } = props
-  return headerRow.reduce((cols, heading) => {
-    const i = labels.indexOf(heading)
-    i > 0 ? cols[heading] = {field: labels[i], selected: true} : cols[heading] = {field: heading, selected: false}
-    return cols
-  }, {})
-}
-
-function countSelected (columns) {
-  return Object.keys(columns).reduce((count, field) => {
-    if (columns[field].selected) count += 1
-    return count
-  }, 0)
-}
