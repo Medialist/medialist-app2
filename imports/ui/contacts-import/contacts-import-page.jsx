@@ -1,8 +1,8 @@
 import React from 'react'
 import Topbar from '../navigation/topbar'
 import FilePicker from 'react-file-input'
-import Papa from 'papaparse'
 import ImportTable from './contacts-import-table'
+import CsvToContacts from './csv-to-contacts'
 
 export default React.createClass({
   getInitialState () {
@@ -12,38 +12,25 @@ export default React.createClass({
       selectedColumnCount: 0
     }
   },
-  parseCSV (file) {
-    const opts = {
-      delimiter: ',',
-      header: true,
-      dynamicTyping: true,
-      preview: 5,
-      encoding: '',
-      step: this.onReadRow,
-      complete: this.onComplete,
-      error: this.onError,
-      skipEmptyLines: true
-    }
-    Papa.parse(file, opts)
-  },
-  onReadRow (row) {
-    console.log('onReadRow', row)
-    const newDataRows = this.state.dataRows.slice(0)
-    newDataRows.push(row.data[0])
-    this.setState({dataRows: newDataRows})
-  },
-  onComplete (results, file) {
-    console.log('onComplete', results)
-    const { dataRows } = this.state
-    const headerRow = Object.keys(dataRows[0])
-    this.setState({headerRow})
-  },
-  onError (err) {
-    console.error(err)
-  },
+  // onReadRow (row) {
+  //   console.log('onReadRow', row)
+  //   const newDataRows = this.state.dataRows.slice(0)
+  //   newDataRows.push(row.data[0])
+  //   this.setState({dataRows: newDataRows})
+  // },
+  // onComplete (results, file) {
+  //   console.log('onComplete', results)
+  //   const { dataRows } = this.state
+  //   const headerRow = Object.keys(dataRows[0])
+  //   this.setState({headerRow})
+  // },
+  // onError (err) {
+  //   console.error(err)
+  // },
   onChange (evt) {
     console.log('onChange', evt.target.files[0])
-    this.parseCSV(evt.target.files[0])
+    const file = evt.target.files[0]
+    CsvToContacts.importCsvFile(file)
   },
   setColumnCount (count) {
     this.setState({selectedColumnCount: count})

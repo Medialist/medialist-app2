@@ -2,19 +2,7 @@ import React, { PropTypes } from 'react'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
 import Checkbox from '../tables/checkbox'
-
-const fields = [
-  'name',
-  'address',
-  'primaryOutlets',
-  'otherOutlets',
-  'sectors',
-  'jobTitles',
-  'languages',
-  'emails',
-  'phone',
-  'socials'
-]
+import { labels } from './csv-to-contacts.js'
 
 const ImportTable = React.createClass({
   PropTypes: {
@@ -71,15 +59,15 @@ const ImportTable = React.createClass({
         <table className='table bg-white shadow-2' >
           <thead>
             <tr>
-              {Object.keys(columns).map((heading) => {
+              {Object.keys(columns).map((heading, i) => {
                 const { field, selected } = columns[heading]
                 return (
-                  <th className='pointer bg-white' style={{padding: '0px 80px 0 0', borderLeft: '0 none', borderRight: '0 none'}} key={heading}>
+                  <th key={i} className='pointer bg-white' style={{padding: '0px 80px 0 0', borderLeft: '0 none', borderRight: '0 none'}}>
                     <Dropdown className='right'>
                       <input className='input m2' style={{width: 180}} value={selected ? field : ''} placeholder='Select a field' onFocus={(evt) => onFocus(field)} />
                       <DropdownMenu open={open && field === focusedField} onDismiss={onDismiss}>
                         <ul className='list-reset mt0'>
-                          {fields.map((f) => {
+                          {labels.map((f) => {
                             return <li className='p2 left-align hover-bg-blue' onClick={(evt) => onSelect(heading, f)}>{f}</li>
                           })}
                         </ul>
@@ -90,10 +78,10 @@ const ImportTable = React.createClass({
               })}
             </tr>
             <tr className='bg-gray90'>
-              {Object.keys(columns).map((heading) => {
+              {Object.keys(columns).map((heading, i) => {
                 const { selected } = columns[heading]
                 return (
-                  <th className='left-align' style={{padding: '5px 20px', borderLeft: '0 none', borderRight: '0 none'}}>
+                  <th key={i} className='left-align' style={{padding: '5px 20px', borderLeft: '0 none', borderRight: '0 none'}}>
                     <Checkbox className='inline-block my3' checked={selected} data={columns[heading]} onChange={toggleSelect.bind(null, heading)} />
                     <label className='inline-block ml1' >{heading}</label>
                   </th>
@@ -105,7 +93,7 @@ const ImportTable = React.createClass({
             {dataRows.map((row) => (
               <tr>
                 {Object.keys(row).map((field, i) => {
-                  return <td className={i === 0 ? 'gray10' : 'gray20'}>{row[field] || ' '}</td>
+                  return <td key={i} className={i === 0 ? 'gray10' : 'gray20'}>{row[field] || ' '}</td>
                 })}
               </tr>
             ))}
@@ -121,8 +109,8 @@ export default ImportTable
 function readColumns (props) {
   const { headerRow } = props
   return headerRow.reduce((cols, heading) => {
-    const i = fields.indexOf(heading)
-    i > 0 ? cols[heading] = {field: fields[i], selected: true} : cols[heading] = {field: heading, selected: false}
+    const i = labels.indexOf(heading)
+    i > 0 ? cols[heading] = {field: labels[i], selected: true} : cols[heading] = {field: heading, selected: false}
     return cols
   }, {})
 }
