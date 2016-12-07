@@ -1,3 +1,6 @@
+
+// TODO: reafactor to return _ids of created and updated users, so we can do batch actions on them. Or use the tag?
+
 Meteor.methods({
   'contacts/import' (contacts) {
     if (!this.userId) throw new Meteor.Error('Only a logged in user can import contacts')
@@ -15,8 +18,7 @@ Meteor.methods({
       otherOutlets: Match.Optional(String),
       sectors: Match.Optional(String),
       jobTitles: Match.Optional(String),
-      languages: Match.Optional(String),
-      importedData: {columns: [String], row: [String]}
+      languages: Match.Optional(String)
     }])
 
     console.log(`Importing ${contacts.length} contacts`)
@@ -52,7 +54,6 @@ function createContact (data, user) {
   data.emails = data.emails || []
   data.socials = data.socials || []
   data.phones = data.phones || []
-  data.importedData = [{data: data.importedData, importedAt: new Date()}]
 
   data.avatar = '/images/avatar.svg'
   data.slug = App.cleanSlug(data.name)
@@ -95,10 +96,6 @@ function mergeContact (data, contact, user) {
     }
   })
 
-  contact.importedData = contact.importedData || []
-  contact.importedData.unshift({data: data.importedData, importedAt: new Date()})
-
-  // TODO: Remove?
   contact.createdAt = moment(contact.createdAt).toDate()
 
   contact.updatedAt = new Date()

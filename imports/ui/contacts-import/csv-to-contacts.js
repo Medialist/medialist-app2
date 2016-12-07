@@ -270,8 +270,6 @@ export function createContacts ({cols, rows}) {
     delete contact.notes
     delete contact.salutation
 
-    contact.importedData = {columns: cols.map(c => c.key || ''), row: row}
-
     return contact
   })
 
