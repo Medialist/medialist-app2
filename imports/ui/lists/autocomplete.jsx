@@ -56,7 +56,7 @@ export default React.createClass({
               <li key={s} className='block px3 py2 pointer left-align f-sm normal gray20 hover-bg-blue' onClick={() => onClick(s)}>
                 {s}
               </li>
-              )
+            )
           })}</ol>
         </DropdownMenu>
       </Dropdown>

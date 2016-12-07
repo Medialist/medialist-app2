@@ -6,10 +6,15 @@ import ImportTable from './contacts-import-table'
 
 export default React.createClass({
   getInitialState () {
-    return {
-      rows: [],
-      cols: []
+    const { state } = this.props.location
+    console.log('state', state)
+    if (!state) {
+      return {
+        rows: [],
+        cols: []
+      }
     }
+    return state
   },
 
   onColumnChange (newCol, i) {
@@ -30,7 +35,7 @@ export default React.createClass({
     return (
       <div>
         <Topbar backLinkText='Cancel'>
-          <button className='btn bg-completed white mx4' onClick={onClick}>
+          <button className='btn bg-completed white mx4' onClick={onSave}>
             Save and import contacts
           </button>
         </Topbar>
@@ -40,7 +45,7 @@ export default React.createClass({
   }
 })
 
-export default const ContactImportPreview = ({rows, cols, onColumnChange}) => (
+const ContactImportPreview = ({rows, cols, onColumnChange}) => (
   <section className='block'>
     <div className='my6 center pt6'>
       <h2 className='normal mt6'>Match your spreadsheet fields to Medialist fields</h2>
