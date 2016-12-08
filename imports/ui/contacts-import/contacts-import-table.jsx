@@ -5,7 +5,7 @@ import { SelectedIcon, ChevronDown } from '../images/icons'
 import { allColumns } from './csv-to-contacts.js'
 
 const ImportTable = React.createClass({
-  PropTypes: {
+  propTypes: {
     rows: PropTypes.array.isRequired,
     cols: PropTypes.array.isRequired,
     onColumnChange: PropTypes.func.isRequired
