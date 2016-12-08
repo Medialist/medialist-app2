@@ -43,6 +43,8 @@ export default withRouter(React.createClass({
   }
 }))
 
+const PREVIEW_ROW_COUNT = 26
+
 const ContactImportPreview = ({rows, cols, onColumnChange}) => (
   <section className='block'>
     <div className='center py4'>
@@ -58,7 +60,7 @@ const ContactImportPreview = ({rows, cols, onColumnChange}) => (
       </div>
     </div>
     <div className='mt6 px3'>
-      <ImportTable cols={cols} rows={rows} onColumnChange={onColumnChange} />
+      <ImportTable cols={cols} rows={rows.slice(0, PREVIEW_ROW_COUNT)} onColumnChange={onColumnChange} />
     </div>
   </section>
 )
