@@ -1,65 +1,33 @@
 var React = require('react')
 
-var FileInput = React.createClass({
-  getInitialState: function () {
-    return {
-      value: '',
-      styles: {
-        parent: {
-          position: 'relative'
-        },
-        file: {
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          opacity: 0,
-          width: '100%',
-          zIndex: 1
-        },
-        text: {
-          position: 'relative',
-          zIndex: -1
-        }
-      }
-    }
+/*
+ Create a hidden file input, and simulate a click on it when parent element is
+ clicked.
+
+ Pass in a button or any children you want to see on the page.
+*/
+const FileInput = React.createClass({
+  onClick () {
+    console.log('fileInput onclick', this.fileInput)
+    this.fileInput.click()
   },
 
-  handleChange: function (e) {
-    this.setState({
-      value: e.target.value.split(/(\\|\/)/g).pop()
-    })
-    if (this.props.onChange) this.props.onChange(e)
-  },
+  render () {
+    const { className, disabled, accept, onChange } = this.props
+    return (
+      <div className={className} style={{position: 'relative', overflow: 'hidden'}} onClick={this.onClick}>
+        <input
+          ref={(r) => { this.fileInput = r }}
+          type='file'
+          accept={accept}
+          disabled={disabled}
+          onChange={onChange}
+          style={{visibility: 'none', position: 'absolute', top: '-9999px'}} />
 
-  render: function () {
-    return React.DOM.div({
-      style: this.state.styles.parent
-    },
-
-      // Actual file input
-      React.DOM.input({
-        type: 'file',
-        name: this.props.name,
-        className: this.props.className,
-        onChange: this.handleChange,
-        disabled: this.props.disabled,
-        accept: this.props.accept,
-        style: this.state.styles.file
-      }),
-
-      // Emulated file input
-      React.DOM.input({
-        type: 'text',
-        tabIndex: -1,
-        name: this.props.name + '_filename',
-        value: this.state.value,
-        className: this.props.className,
-        onChange: function () {},
-        placeholder: this.props.placeholder,
-        disabled: this.props.disabled,
-        style: this.state.styles.text
-      }))
+        { this.props.children }
+      </div>
+    )
   }
 })
 
-module.exports = FileInput
+export default FileInput

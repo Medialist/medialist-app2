@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="109px" height="68px" viewBox="0 0 109 68" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 41.2 (35397) - http://www.bohemiancoding.com/sketch -->
+    <title>illustration</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="3" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0.262745098   0 0 0 0 0.478431373   0 0 0 0 0.956862745  0 0 0 0.4 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <rect id="path-2" x="0" y="0" width="101" height="58.8979592" rx="3"></rect>
+    </defs>
+    <g id="Import-Contacts" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Import-Contacts-3" transform="translate(-666.000000, -150.000000)">
+            <g id="illustration" transform="translate(670.000000, 151.000000)">
+                <g id="screen" filter="url(#filter-1)">
+                    <mask id="mask-3" fill="white">
+                        <use xlink:href="#path-2"></use>
+                    </mask>
+                    <use id="Mask" fill="#FFFFFF" xlink:href="#path-2"></use>
+                    <rect id="rectangle-9" fill="#437AF4" mask="url(#mask-3)" x="4.52238806" y="10.5714286" width="12.0597015" height="3.02040816"></rect>
+                    <rect id="rectangle-8" fill="#E4E9F1" mask="url(#mask-3)" x="4.52238806" y="21.1428571" width="91.9552239" height="4.53061224"></rect>
+                    <rect id="rectangle-7" fill="#E4E9F1" mask="url(#mask-3)" x="4.52238806" y="30.2040816" width="91.9552239" height="4.53061224"></rect>
+                    <rect id="rectangle-6" fill="#E4E9F1" mask="url(#mask-3)" x="4.52238806" y="39.2653061" width="91.9552239" height="4.53061224"></rect>
+                    <rect id="rectangle-5" fill="#E4E9F1" mask="url(#mask-3)" x="4.52238806" y="48.3265306" width="91.9552239" height="4.53061224"></rect>
+                    <rect id="rectangle-4" fill="#437AF4" mask="url(#mask-3)" x="24.119403" y="10.5714286" width="12.0597015" height="3.02040816"></rect>
+                    <rect id="rectangle-3" fill="#437AF4" mask="url(#mask-3)" x="42.2089552" y="10.5714286" width="16.5820896" height="3.02040816"></rect>
+                    <rect id="rectangle-2" fill="#437AF4" mask="url(#mask-3)" x="66.3283582" y="10.5714286" width="21.1044776" height="3.02040816"></rect>
+                    <rect id="rectangle-1" fill="#24364C" mask="url(#mask-3)" x="0" y="0" width="101" height="7.55102041"></rect>
+                </g>
+                <path d="M47.5318769,59.7615198 L47.5318769,67.1456492 C47.5318769,67.9773106 48.0427203,68.2135666 48.6728775,67.6810071 L65.3121638,53.6187868 C65.9470656,53.0822176 65.942321,52.2227779 65.3121638,51.6902184 L48.6728775,37.6279981 C48.0379756,37.0914289 47.5318769,37.3351265 47.5318769,38.163356 L47.5318769,45.5474854 L37.1722873,45.5474854 C36.6321257,45.5474854 36.1791045,45.9949783 36.1791045,46.5469887 L36.1791045,58.7620165 C36.1791045,59.3205354 36.6237676,59.7615198 37.1722873,59.7615198 L47.5318769,59.7615198 Z" id="arrow" fill="#34BF77" transform="translate(50.500000, 52.653061) rotate(-90.000000) translate(-50.500000, -52.653061) "></path>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -112,7 +112,7 @@ const EditContact = React.createClass({
           <CircleAvatar size={110} avatar={contact.avatar} name={contact.name} />
           <div>
             <input
-              className='center input-inline mt4 f-xxl semibold'
+              className='center input-inline mt4 f-xxxl semibold'
               placeholder='Contact Name'
               type='text'
               name='name'
