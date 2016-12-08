@@ -221,9 +221,9 @@ export function createContacts ({cols, rows}) {
 
   var contacts = rows.map(row => {
     var contact = cols.reduce((contact, col, i) => {
-      var key = col.key
-      if (!key) return contact // Empty keys are ignore
+      if (!col) return contact // Empty cols are ignored
 
+      var key = col.key
       var value = (row[i] ? `${row[i]}` : '').trim()
       if (!value) return contact
 

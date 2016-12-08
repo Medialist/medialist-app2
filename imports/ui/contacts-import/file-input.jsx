@@ -8,7 +8,6 @@ var React = require('react')
 */
 const FileInput = React.createClass({
   onClick () {
-    console.log('fileInput onclick', this.fileInput)
     this.fileInput.click()
   },
 

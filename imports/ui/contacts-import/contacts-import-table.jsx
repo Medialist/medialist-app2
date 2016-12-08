@@ -23,10 +23,16 @@ const ImportTable = React.createClass({
     this.setState({ open: i })
   },
 
+  onColumnChange (newCol, columnIndex) {
+    const { onColumnChange } = this.props
+    this.setState({ open: false })
+    onColumnChange(newCol, columnIndex)
+  },
+
   render () {
-    const { onDismiss, onColumnSelect } = this
+    const { onDismiss, onColumnSelect, onColumnChange } = this
     const { open } = this.state
-    const { rows, cols, onColumnChange } = this.props
+    const { rows, cols } = this.props
     const firstRow = rows[0]
     const otherRows = rows.slice(1)
 

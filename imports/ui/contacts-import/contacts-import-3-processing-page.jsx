@@ -1,6 +1,7 @@
 import React from 'react'
-// import { Meteor } from 'meteor/meteor'
-// import CsvToContacts from './csv-to-contacts'
+import { Link, withRouter } from 'react-router'
+import { Meteor } from 'meteor/meteor'
+import CsvToContacts from './csv-to-contacts'
 import Topbar from '../navigation/topbar'
 import Tag from '../navigation/tag'
 import {
@@ -10,10 +11,9 @@ import {
   TagIcon
 } from '../images/icons'
 
-export default React.createClass({
+export default withRouter(React.createClass({
   getInitialState () {
     const { state } = this.props.location
-    console.log('state', state)
     return Object.assign({
       rows: [],
       cols: [],
@@ -24,18 +24,16 @@ export default React.createClass({
   },
 
   componentDidMount () {
-    // const { cols, rows } = this.state
-    // if (!rows || !rows.length) return
-    // const contacts = CsvToContacts.createContacts({cols, rows})
-    // this.setState({contacts})
-    // Meteor.call('contacts/import', contacts, (err, results) => {
-    //   if (err) return console.error(err) // TODO: snackbar / alert user.
-    //   this.setState({results})
-    // })
-  },
-
-  onFinish () {
-    // go to contacts... or activity feed with a post about the import.
+    const { cols, rows } = this.state
+    if (!rows || !rows.length) return
+    console.log({ cols, rows })
+    // TODO: automagic header detection.
+    const contacts = CsvToContacts.createContacts({cols, rows: rows.slice(1)})
+    this.setState({contacts})
+    Meteor.call('contacts/import', contacts, (err, results) => {
+      if (err) return console.error(err) // TODO: snackbar / alert user.
+      this.setState({results})
+    })
   },
 
   onCampaignClick () {
@@ -59,30 +57,19 @@ export default React.createClass({
     return (
       <div>
         <Topbar>
-          { results && <button className='btn bg-blue white mx4' onClick={this.onFinish}>Finish</button> }
+          { results && <Link className='btn bg-blue white mx4' to='/contacts'>Finish</Link> }
         </Topbar>
         <div className='mx-auto center py2' style={{maxWidth: 554}}>
           <img src='/import.svg' width={101} height={67} />
           { results ? (
-            <section className='center p6'>
-              <h1 className='blue semibold f-xxxl'>Contacts imported</h1>
-              <p>Created {results.created} contacts and updated {results.updated} contacts. Contacts are tagged with:</p>
-              <div className='py6'>
-                <Tag name={tag} count={results.created + results.updated} />
-              </div>
-              <div>
-                <hr />
-                <p>Assign your contacts to campaigns, sectors, and tags to stay organised</p>
-                <div className='py6'>
-                  <div className='shadow-1'>
-                    <FeedCampaignIcon className='svg-icon-lg p3 pointer' onClick={() => this.onCampaignClick(contacts)} />
-                    <SectorIcon className='svg-icon-lg p3 pointer' onClick={() => this.onSectorClick(contacts)} />
-                    <FavouritesIcon className='svg-icon-lg p3 pointer' onClick={() => this.onFavouriteClick(contacts)} />
-                    <TagIcon className='svg-icon-lg p3 pointer' onClick={() => this.onTagClick(contacts)} />
-                  </div>
-                </div>
-              </div>
-            </section>
+            <CompletePanel
+              results={results}
+              tag={tag}
+              contacts={contacts}
+              onCampaignClick={this.onCampaignClick}
+              onSectorClick={this.oncSectorClick}
+              onFavouriteClick={this.onFavouriteClick}
+              onTagClick={this.onTagClick} />
           ) : (
             <ProcessingPanel rows={rows} tag={tag} />
           )}
@@ -90,7 +77,7 @@ export default React.createClass({
       </div>
     )
   }
-})
+}))
 
 const ProcessingPanel = ({rows, tag}) => (
   <section className='center p4'>
@@ -99,6 +86,28 @@ const ProcessingPanel = ({rows, tag}) => (
     Created and updated contacts will be available for browsing shortly, tagged with:</p>
     <div className='py6'>
       <Tag name={tag} count={rows && rows.length || 0} />
+    </div>
+  </section>
+)
+
+const CompletePanel = ({results, tag, contacts, onCampaignClick, onSectorClick, onFavouriteClick, onTagClick}) => (
+  <section className='center p6'>
+    <h1 className='blue semibold f-xxxl'>Contacts imported</h1>
+    <p>Created {results.created} contacts and updated {results.updated} contacts. Contacts are tagged with:</p>
+    <div className='py6'>
+      <Tag name={tag} count={results.created + results.updated} />
+    </div>
+    <div>
+      <hr />
+      <p className='m0 pt3 pb2'>Assign your contacts to campaigns, sectors, and tags to stay organised</p>
+      <div className='py4'>
+        <div className='shadow-1 inline-block bg-white px2'>
+          <FeedCampaignIcon className='svg-icon-lg p3 pointer' onClick={() => onCampaignClick(contacts)} />
+          <SectorIcon className='svg-icon-lg p3 pointer' onClick={() => onSectorClick(contacts)} />
+          <FavouritesIcon className='svg-icon-lg p3 pointer' onClick={() => onFavouriteClick(contacts)} />
+          <TagIcon className='svg-icon-lg p3 pointer' onClick={() => onTagClick(contacts)} />
+        </div>
+      </div>
     </div>
   </section>
 )

@@ -6,7 +6,6 @@ import ImportTable from './contacts-import-table'
 export default withRouter(React.createClass({
   getInitialState () {
     const { state } = this.props.location
-    console.log('state', state)
     return Object.assign({
       rows: [],
       cols: []
@@ -14,7 +13,6 @@ export default withRouter(React.createClass({
   },
 
   onColumnChange (newCol, i) {
-    console.log('onColumnChange', newCol, i)
     const cols = Array.from(this.state.cols)
     cols[i] = newCol
     this.setState({cols})
