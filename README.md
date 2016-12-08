@@ -136,10 +136,11 @@ Some [Basscss] plus custom atoms with [postcss] to build it. See `client/main.cs
 
 ### Font sizes
 
-We've got loads of font sizes, and they don't follow a typescale, so `f-xxl` through `f-xxxxs` is used to denote font size. Most of the site is `f-md`, `f-sm` and `f-lg`, while the more extreme sizes occur infrequently so this feel like the most natural way to model it.
+We've got loads of font sizes, and they don't follow a typescale, so `f-xxxl` through `f-xxxxs` is used to denote font size. Most of the site is `f-md`, `f-sm` and `f-lg`, while the more extreme sizes occur infrequently so this feel like the most natural way to model it.
 
 ```css
-.f-xxl { font-size:25px }
+.f-xxxl { font-size:25px }
+.f-xxl { font-size:20px }
 .f-xl { font-size:18px }
 .f-lg { font-size:16px }
 .f-md { font-size:15px }

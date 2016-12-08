@@ -7,7 +7,9 @@ import CampaignsPage from './campaigns/campaigns-page'
 import CampaignActivityPage from './campaigns/campaign-activity-page'
 import CampaignContactsPage from './campaigns/campaign-contacts-page'
 import ContactsPage from './contacts/contacts-page'
-import ContactsImportPage from './contacts/contacts-import-page'
+import ContactsImportUpload from './contacts-import/contacts-import-1-upload-page'
+import ContactsImportPreview from './contacts-import/contacts-import-2-preview-page'
+import ContactsImportProcessing from './contacts-import/contacts-import-3-processing-page'
 import ContactPage from './contacts/contact-page'
 import SettingsPage from './users/settings/settings-page'
 import NotFoundPage from './errors/not-found-page'
@@ -27,7 +29,11 @@ const Routes = ({ store, history }) => {
         </Route>
         <Route path='contacts'>
           <IndexRoute component={ContactsPage} />
-          <Route path='import' component={ContactsImportPage} />
+          <Route path='import'>
+            <IndexRoute component={ContactsImportUpload} />
+            <Route path='preview' component={ContactsImportPreview} />
+            <Route path='processing' component={ContactsImportProcessing} />
+          </Route>
         </Route>
         <Route path='contact/:slug' component={ContactPage} />
         <Route path='settings' component={SettingsPage}>

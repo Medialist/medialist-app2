@@ -4,7 +4,8 @@ import { browserHistory } from 'react-router'
 const Topbar = React.createClass({
   propTypes: {
     backLinkText: PropTypes.string,
-    onBackClick: PropTypes.func
+    onBackClick: PropTypes.func,
+    children: PropTypes.node
   },
 
   getDefaultProps () {
@@ -18,12 +19,11 @@ const Topbar = React.createClass({
 
   render () {
     const { onBackClick } = this
-    const { backLinkText } = this.props
+    const { backLinkText, children } = this.props
     return (
-      <nav className='block bg-white mb4 flex items-center width-100 shadow-inset'>
-        <div className='flex-auto'>
-          <span className='pointer inline-block p4' onClick={onBackClick}>{`◀ ${backLinkText}`}</span>
-        </div>
+      <nav className='block bg-white mb4 flex items-center width-100'>
+        <span className='flex-auto pointer inline-block p4' onClick={onBackClick}>{`◀ ${backLinkText}`}</span>
+        <span className='flex-none inline-block'>{children}</span>
       </nav>
     )
   }

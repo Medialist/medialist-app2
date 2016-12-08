@@ -152,7 +152,8 @@ button {
 .mt6 { margin-top: var(--space-6) }
 .mt8 { margin-top: 40px }
 
-.f-xxl { font-size:25px }
+.f-xxxl { font-size:25px }
+.f-xxl { font-size:20px }
 .f-xl { font-size:18px }
 .f-lg { font-size:16px }
 .f-md { font-size:15px }
@@ -245,9 +246,15 @@ button {
 .border-gray80 { border-color:var(--gray80) !important }
 .border-blue { border-color: var(--blue) !important }
 
+.svg-icon {
+  display: inline-block;
+}
+
 .svg-icon svg {
   fill: currentColor;
   vertical-align: middle;
+  max-width: 100%;
+  max-height: 100%;
 }
 .svg-icon-lg svg {
   width: 21px;

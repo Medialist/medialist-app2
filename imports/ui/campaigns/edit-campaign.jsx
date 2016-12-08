@@ -67,7 +67,7 @@ const EditCampaign = React.createClass({
           </div>
           <div>
             <input
-              className='center gray10 input-inline mt4 f-xxl semibold'
+              className='center gray10 input-inline mt4 f-xxxl semibold'
               type='text'
               name='name'
               value={name}
