@@ -27,7 +27,7 @@ const ContactsTable = React.createClass({
     // Callback when contact status is changed
     onStatusChange: PropTypes.func,
     // returns true while subscriptionts are still syncing data.
-    loading: PropTypes.func
+    loading: PropTypes.bool
   },
 
   onSelectAllChange () {
@@ -59,7 +59,7 @@ const ContactsTable = React.createClass({
   render () {
     const { sort, onSortChange, contacts, selections, campaign, onStatusChange, loading } = this.props
 
-    if (loading && loading()) return <div className='center p4'><Loading /></div>
+    if (loading) return <div className='center p4'><Loading /></div>
 
     if (!contacts.length) {
       return <p className='p4 mb2 f-xl semibold center'>No contacts yet</p>

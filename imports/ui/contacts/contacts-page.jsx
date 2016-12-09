@@ -10,6 +10,7 @@ import SearchBox from '../lists/search-box'
 import ContactsActionsToast from './contacts-actions-toast'
 import SectorSelector from '../campaigns/sector-selector.jsx'
 import EditContact from './edit-contact.jsx'
+import ContactListEmpty from './contacts-list-empty'
 import { FeedContactIcon } from '../images/icons'
 
 const ContactsPage = React.createClass({
@@ -44,6 +45,15 @@ const ContactsPage = React.createClass({
     this.setState({ selections: [] })
   },
 
+  onDeleteAllClick () {
+    const { selections } = this.state
+    const contactIds = selections.map((s) => s._id)
+    Meteor.call('contacts/remove', contactIds, (err, res) => {
+      if (err) return console.error('Removing contacts failed', err)
+      this.setState({ selections: [] })
+    })
+  },
+
   onDropdownArrowClick () {
     this.setState({ isDropdownOpen: true })
   },
@@ -71,7 +81,8 @@ const ContactsPage = React.createClass({
   render () {
     const { onSortChange, onSelectionsChange, onSectorChange } = this
     const { sort, term, selections } = this.state
-
+    const { contactsCount, loading } = this.props
+    if (!loading && contactsCount === 0) return <ContactListEmpty />
     return (
       <div>
         <div className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
@@ -101,10 +112,11 @@ const ContactsPage = React.createClass({
               <SearchBox onTermChange={this.onTermChange} placeholder='Search contacts...' />
             </div>
             <div className='flex-none pl4 f-xs'>
-              <ContactsTotalContainer />
+              <ContactsTotal total={contactsCount} />
             </div>
           </div>
           <ContactsTableContainer
+            loading={loading}
             sort={sort}
             term={term}
             selections={selections}
@@ -117,7 +129,7 @@ const ContactsPage = React.createClass({
           onSectorClick={() => console.log('TODO: add/edit sectors')}
           onFavouriteClick={() => console.log('TODO: toggle favourite')}
           onTagClick={() => console.log('TODO: add/edit tags')}
-          onDeleteClick={() => console.log('TODO: delete contact(s)')}
+          onDeleteClick={this.onDeleteAllClick}
           onDeselectAllClick={this.onDeselectAllClick} />
         <EditContact
           onDismiss={this.toggleAddContactModal}
@@ -137,17 +149,15 @@ const ContactsTotal = ({ total }) => (
   <div>{total} contact{total === 1 ? '' : 's'} total</div>
 )
 
-const ContactsTotalContainer = createContainer((props) => {
-  return { ...props, total: window.Contacts.find({}).count() }
-}, ContactsTotal)
+const ContactsPageContainer = createContainer((props) => {
+  const sub = Meteor.subscribe('contacts')
+  const loading = !sub.ready()
+  const contactsCount = loading ? [] : window.Contacts.find({}).count()
+  return { ...props, contactsCount, loading }
+}, ContactsPage)
 
 const ContactsTableContainer = createContainer((props) => {
-  const subs = [
-    Meteor.subscribe('contacts')
-  ]
-  const loading = () => subs.some((s) => !s.ready())
   const query = {}
-
   if (props.term) {
     const filterRegExp = new RegExp(props.term, 'gi')
     query.$or = [
@@ -156,12 +166,11 @@ const ContactsTableContainer = createContainer((props) => {
       { primaryOutlets: filterRegExp }
     ]
   }
-
   const contacts = window.Contacts.find(query, { sort: props.sort }).fetch()
-  return { ...props, contacts, loading }
+  return { ...props, contacts }
 }, ContactsTable)
 
-export default ContactsPage
+export default ContactsPageContainer
 
 // Fake data
 const items = [

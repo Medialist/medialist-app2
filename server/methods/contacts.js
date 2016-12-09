@@ -1,5 +1,11 @@
 Meteor.methods({
 
+  'contacts/remove': function (contactIds) {
+    if (!this.userId) throw new Meteor.Error('Only a logged in user can create a contact')
+    check(contactIds, Array)
+    return Contacts.remove({_id: {$in: contactIds}})
+  },
+
   'contacts/create': function (details, medialistSlug) {
     if (!this.userId) throw new Meteor.Error('Only a logged in user can create a contact')
     check(details, Object)
