@@ -1,3 +1,9 @@
+const campaignCounter = new Counter('campaignCount', Medialists.find({}))
+
+Meteor.publish('campaignCount', function () {
+  return campaignCounter
+})
+
 Meteor.publish('medialists', function (opts) {
   if (!this.userId) return this.ready()
   return Medialists.search(opts)

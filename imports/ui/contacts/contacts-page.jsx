@@ -1,7 +1,7 @@
 import React from 'react'
 import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
-import { Link } from 'react-router'
+import { Link, withRouter } from 'react-router'
 import Arrow from 'rebass/dist/Arrow'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
@@ -16,9 +16,10 @@ import { FeedContactIcon } from '../images/icons'
 const ContactsPage = React.createClass({
   getInitialState () {
     return {
+      term: '',
+      limit: 50
       sort: { updatedAt: -1 },
       selections: [],
-      term: '',
       selectedSector: null,
       isDropdownOpen: false,
       addContactModalOpen: false
@@ -81,7 +82,6 @@ const ContactsPage = React.createClass({
   render () {
     const { onSortChange, onSelectionsChange, onSectorChange } = this
     const { sort, term, selections } = this.state
-    const { contactsCount, loading } = this.props
     if (!loading && contactsCount === 0) return <ContactListEmpty />
     return (
       <div>
@@ -112,12 +112,13 @@ const ContactsPage = React.createClass({
               <SearchBox onTermChange={this.onTermChange} placeholder='Search contacts...' />
             </div>
             <div className='flex-none pl4 f-xs'>
-              <ContactsTotal total={contactsCount} />
+              <ContactsTotalContainer />
             </div>
           </div>
           <ContactsTableContainer
             loading={loading}
             sort={sort}
+            limit={25}
             term={term}
             selections={selections}
             onSortChange={onSortChange}
@@ -145,32 +146,51 @@ const SectorSelectorContainer = createContainer((props) => {
   return { ...props, items, selected: props.selected || items[0] }
 }, SectorSelector)
 
+
 const ContactsTotal = ({ total }) => (
   <div>{total} contact{total === 1 ? '' : 's'} total</div>
 )
 
-const ContactsPageContainer = createContainer((props) => {
-  const sub = Meteor.subscribe('contacts')
+const ContactsTotalContainer = createContainer((props) => {
+  const sub = Meteor.subscribe('contactCount')
   const loading = !sub.ready()
-  const contactsCount = loading ? [] : window.Contacts.find({}).count()
+  const contactsCount = window.Counter.get('contactCount')
   return { ...props, contactsCount, loading }
-}, ContactsPage)
+}, ContactsTotal)
 
 const ContactsTableContainer = createContainer((props) => {
+  const { limit, sort, term } = props
   const query = {}
-  if (props.term) {
-    const filterRegExp = new RegExp(props.term, 'gi')
+  if (term) {
+    const filterRegExp = new RegExp(term, 'gi')
     query.$or = [
       { name: filterRegExp },
       { jobTitles: filterRegExp },
       { primaryOutlets: filterRegExp }
     ]
   }
-  const contacts = window.Contacts.find(query, { sort: props.sort }).fetch()
+  const sub = Meteor.subscribe('contacts', { limit, regex: filterRegExp })
+  const contacts = window.Contacts.find(query, { sort: props.sort, limit: props.limit }).fetch()
   return { ...props, contacts }
 }, ContactsTable)
 
-export default ContactsPageContainer
+const ContactsPageContainer = createContainer((props) => {
+  const { limit, sort, term } = props
+  const query = {}
+  if (term) {
+    const filterRegExp = new RegExp(term, 'gi')
+    query.$or = [
+      { name: filterRegExp },
+      { jobTitles: filterRegExp },
+      { primaryOutlets: filterRegExp }
+    ]
+  }
+  const sub = Meteor.subscribe('contacts', { limit, regex: filterRegExp })
+  const contacts = window.Contacts.find(query, { sort: props.sort, limit: props.limit }).fetch()
+  return { ...props, contacts }
+}, ContactsTable)
+
+export default ContactsPage
 
 // Fake data
 const items = [

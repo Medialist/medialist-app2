@@ -1,3 +1,17 @@
+const contactCounter = new Counter('contactCount', Contacts.find({}))
+
+Meteor.publish('contactCount', function () {
+  return contactCounter
+})
+
+Meteor.publish('my-contacts-and-campaigns', function () {
+  if (!this.userId) return this.ready()
+  return [
+    Contacts.find({}, { sort: { updatedAt: -1 }, limit: 50}),
+    Medialists.find({ sort: { updatedAt: -1 }, limit: 25})
+  ]
+})
+
 Meteor.publish('contacts', function (opts) {
   if (!this.userId) return this.ready()
 
