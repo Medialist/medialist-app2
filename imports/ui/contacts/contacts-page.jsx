@@ -1,7 +1,8 @@
+import querystring from 'querystring'
 import React from 'react'
 import { Meteor } from 'meteor/meteor'
-import { createContainer } from 'meteor/react-meteor-data'
-import { Link } from 'react-router'
+import { ReactMeteorData, createContainer } from 'meteor/react-meteor-data'
+import { Link, withRouter } from 'react-router'
 import Arrow from 'rebass/dist/Arrow'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
@@ -13,12 +14,23 @@ import EditContact from './edit-contact.jsx'
 import ContactListEmpty from './contacts-list-empty'
 import { FeedContactIcon } from '../images/icons'
 
+/*
+ * ContactPage and ContactsPageContainer
+ *
+ * The Router passes in parameters on query string.
+ * The Page component is wrapped in a Meteor data container.
+ * The container handles the subscription, and maps the query params to subscription filters.
+ * The subscription should be stable across param changes. The router will update the page rather than destroy and re-create, as the same page is matched each time the query changes.
+ * The subcription is initially the n recently updated contacts
+ * The sort options are encoded as `?sort=updatedAt+asc`
+ * The search term is `?q=<term>`
+ * The sector-selector is ?sector=<sector>
+ */
+
 const ContactsPage = React.createClass({
   getInitialState () {
     return {
-      sort: { updatedAt: -1 },
       selections: [],
-      term: '',
       selectedSector: null,
       isDropdownOpen: false,
       addContactModalOpen: false
@@ -30,15 +42,15 @@ const ContactsPage = React.createClass({
   },
 
   onSortChange (sort) {
-    this.setState({ sort })
+    this.props.setQuery({ sort })
+  },
+
+  onTermChange (term) {
+    this.props.setQuery({ term })
   },
 
   onSelectionsChange (selections) {
     this.setState({ selections })
-  },
-
-  onTermChange (term) {
-    this.setState({ term })
   },
 
   onDeselectAllClick () {
@@ -79,9 +91,9 @@ const ContactsPage = React.createClass({
   },
 
   render () {
-    const { onSortChange, onSelectionsChange, onSectorChange } = this
-    const { sort, term, selections } = this.state
-    const { contactsCount, loading } = this.props
+    const { contactsCount, loading, searching, contacts, term, sort } = this.props
+    const { onSortChange, onSelectionsChange, onSectorChange, onTermChange } = this
+    const { selections } = this.state
     if (!loading && contactsCount === 0) return <ContactListEmpty />
     return (
       <div>
@@ -109,15 +121,17 @@ const ContactsPage = React.createClass({
         <div className='bg-white shadow-2 m4 mt8'>
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
-              <SearchBox onTermChange={this.onTermChange} placeholder='Search contacts...' />
+              <SearchBox onTermChange={onTermChange} placeholder='Search contacts...' />
             </div>
             <div className='flex-none pl4 f-xs'>
-              <ContactsTotal total={contactsCount} />
+              <ContactsTotal searching={searching} results={contacts} total={contactsCount} />
             </div>
           </div>
-          <ContactsTableContainer
+          <ContactsTable
+            contacts={contacts}
             loading={loading}
             sort={sort}
+            limit={25}
             term={term}
             selections={selections}
             onSortChange={onSortChange}
@@ -145,30 +159,63 @@ const SectorSelectorContainer = createContainer((props) => {
   return { ...props, items, selected: props.selected || items[0] }
 }, SectorSelector)
 
-const ContactsTotal = ({ total }) => (
-  <div>{total} contact{total === 1 ? '' : 's'} total</div>
-)
+const ContactsTotal = ({ searching, results, total }) => {
+  const num = searching ? results.length : total
+  const label = searching ? 'match' : 'total'
+  return <div>{num} contact{num === 1 ? '' : 's'} {label}</div>
+}
 
-const ContactsPageContainer = createContainer((props) => {
-  const sub = Meteor.subscribe('contacts')
-  const loading = !sub.ready()
-  const contactsCount = loading ? [] : window.Contacts.find({}).count()
-  return { ...props, contactsCount, loading }
-}, ContactsPage)
+// I decode and encode the search options from the query string
+// and set up the subscriptions and collecton queries from those options.
+const ContactsPageContainer = withRouter(React.createClass({
+  mixins: [ReactMeteorData],
 
-const ContactsTableContainer = createContainer((props) => {
-  const query = {}
-  if (props.term) {
-    const filterRegExp = new RegExp(props.term, 'gi')
-    query.$or = [
-      { name: filterRegExp },
-      { 'outlets.value': filterRegExp },
-      { 'outlets.label': filterRegExp }
-    ]
+  // API is like setState..
+  // Pass an obj with the new params you want to set on the query string.
+  setQuery (opts) {
+    const { location, router } = this.props
+    const newQuery = {}
+    if (opts.sort) newQuery.sort = JSON.stringify(opts.sort)
+    if (opts.hasOwnProperty('term')) {
+      newQuery.q = opts.term
+    }
+    const query = Object.assign({}, location.query, newQuery)
+    if (query.q === '') delete query.q
+    const qs = querystring.stringify(query)
+    router.replace('/contacts?' + qs)
+  },
+
+  parseQuery ({query}) {
+    const sort = query.sort ? JSON.parse(query.sort) : { updatedAt: -1 }
+    const term = query.q || ''
+    return { sort, term }
+  },
+
+  getMeteorData () {
+    const { sort, term } = this.parseQuery(this.props.location)
+    const subs = [ Meteor.subscribe('contactCount') ]
+    const contactsCount = window.Counter.get('contactCount')
+    const query = {}
+    const minSearchLength = 3
+    const searching = term.length >= minSearchLength
+    if (searching) {
+      const filterRegExp = new RegExp(term, 'gi')
+      query.$or = [
+        { name: filterRegExp },
+        { 'outlets.value': filterRegExp },
+        { 'outlets.label': filterRegExp }
+      ]
+      subs.push(Meteor.subscribe('contacts', {regex: term.substring(0, minSearchLength)}))
+    }
+    const contacts = window.Contacts.find(query, { sort }).fetch()
+    const loading = !subs.every((sub) => sub.ready())
+    return { contacts, contactsCount, loading, searching, sort, term }
+  },
+
+  render () {
+    return <ContactsPage {...this.props} {...this.data} setQuery={this.setQuery} />
   }
-  const contacts = window.Contacts.find(query, { sort: props.sort }).fetch()
-  return { ...props, contacts }
-}, ContactsTable)
+}))
 
 export default ContactsPageContainer
 

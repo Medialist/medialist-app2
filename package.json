@@ -28,6 +28,7 @@
     "basscss-responsive-padding": "^1.1.0",
     "classnames": "^2.2.5",
     "lodash.clonedeep": "^4.5.0",
+    "lodash.debounce": "^4.0.8",
     "lodash.values": "^4.3.0",
     "meteor-node-stubs": "~0.2.0",
     "mkdirp": "^0.5.1",
