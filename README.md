@@ -13,6 +13,45 @@ npm run watch
 
 ## Data model
 
+**User**
+
+```js
+{
+	"_id" : "CBdsCSdGr3X7pLwnJ",
+	"createdAt" : ISODate("2017-01-04T16:00:03.904Z"),
+	"services" : {
+		"twitter" : {
+			"id" : "271419228",
+			"screenName" : "richsilvo",
+			"accessToken" : "ncsoidjjpejfw0e9fjwepifjweifjwefoiwefow",
+			"accessTokenSecret" : "sdicnweoifweoinweoinweoviwneoiwneoiwenfow",
+			"profile_image_url" : "http://pbs.twimg.com/profile_images/780358752566439936/iP6RPCYM_normal.jpg",
+			"profile_image_url_https" : "https://pbs.twimg.com/profile_images/780358752566439936/iP6RPCYM_normal.jpg",
+			"lang" : "en"
+		},
+		"resume" : {
+			"loginTokens" : [
+				{
+					"when" : ISODate("2017-01-04T16:00:03.913Z"),
+					"hashedToken" : "osidnsoidvsodivsdoinsndoifjsdofijsjdf="
+				}
+			]
+		}
+	},
+	"profile" : {
+		"name" : "Richard Silverton"
+	},
+	"medialists": [
+		{
+			"_id": "eoriwoerijgworigjw409jgw4",
+			"slug": "next-big-thing",
+			"image": "https://example.com/image.png",
+			"updatedAt": ISODate("2017-01-04T15:38:14.882Z")
+		}	
+	]
+}
+```
+
 **Contact**
 
 ```js
