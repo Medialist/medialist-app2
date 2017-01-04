@@ -263,7 +263,7 @@ export function createContacts ({cols, rows}) {
 
     contact.jobTitles = (contact.jobTitles || '').split(/,\s*/)[0]
     contact.outlets = (contact.outlets || '').split(/,\s*/)
-      .filter((outlet) => !/freelance/i.exec(outlet))
+      .filter((outlet) => !/freelance/i.test(outlet))
       .map((outlet) => ({
         label: outlet,
         value: contact.jobTitles
