@@ -24,8 +24,8 @@ const ContactPage = React.createClass({
     this.setState({ editContactOpen })
   },
 
-  onEditContact (state) {
-    console.log('onEditContact', state)
+  onEditContact (contact) {
+    console.log('onEditContact', contact)
   },
 
   onAddClick () {

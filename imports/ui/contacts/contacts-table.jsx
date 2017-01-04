@@ -87,15 +87,15 @@ const ContactsTable = React.createClass({
               </SortableHeader>
               <SortableHeader
                 className='left-align'
-                sortDirection={sort['jobTitles']}
-                onSortChange={(d) => onSortChange({ 'jobTitles': d })}>
+                sortDirection={sort['outlets.value']}
+                onSortChange={(d) => onSortChange({ 'outlets.value': d })}>
                 Title
               </SortableHeader>
               <SortableHeader
                 className='left-align'
-                sortDirection={sort['primaryOutlets']}
+                sortDirection={sort['outlets.label']}
                 style={{width: '20%'}}
-                onSortChange={(d) => onSortChange({ 'primaryOutlets': d })}>
+                onSortChange={(d) => onSortChange({ 'outlets.label': d })}>
                 Media Outlet
               </SortableHeader>
               <th className='left-align' style={{width: '15%'}}>Email</th>
@@ -119,9 +119,8 @@ const ContactsTable = React.createClass({
                 name,
                 avatar,
                 slug,
-                jobTitles,
-                primaryOutlets,
                 emails,
+                outlets,
                 phones,
                 updatedAt,
                 updatedBy
@@ -135,8 +134,8 @@ const ContactsTable = React.createClass({
                       <span className='ml3 semibold'>{name}</span>
                     </Link>
                   </td>
-                  <td className='left-align'>{jobTitles}</td>
-                  <td className='left-align'>{primaryOutlets}</td>
+                  <td className='left-align'>{(outlets && outlets.length) ? outlets[0].value : null}</td>
+                  <td className='left-align'>{outlets.map((o) => o.label).join(', ')}</td>
                   <td className='left-align'>
                     <DisplayEmail emails={emails} />
                   </td>

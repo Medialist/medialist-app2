@@ -5,6 +5,11 @@ import { SearchBlueIcon, AddIcon, SelectedIcon, RemoveIcon } from '../images/ico
 import { CircleAvatar } from '../images/avatar'
 import StatusSelector from '../feedback/status-selector'
 
+function truncate (str, chars) {
+  if (str.length <= chars) return str
+  return str.substring(0, chars) + '...'
+}
+
 const AddContact = React.createClass({
   PropTypes: {
     open: PropTypes.bool.isRequired,
@@ -161,8 +166,7 @@ const AllContacts = (props) => {
           slug,
           avatar,
           name,
-          jobTitles,
-          primaryOutlets,
+          outlets,
           medialists
         } = contact
         return (
@@ -170,8 +174,8 @@ const AllContacts = (props) => {
             <CircleAvatar avatar={avatar} />
             <div className='inline-block pl4' style={{width: '24rem'}}>
               <span className='f-xl gray40 py1'>{name}</span><br />
-              <span className='gray60 py1'>{jobTitles}</span><br />
-              <span className='gray60 py1'>{primaryOutlets.substring(0, 30)}...</span>
+              <span className='gray60 py1'>{(outlets && outlets.length) ? outlets[0].value : null}</span><br />
+              <span className='gray60 py1'>{truncate(outlets.map((o) => o.label).join(', '), 30)}</span>
             </div>
             <div className='flex-none px4'>{medialists.length} campaigns</div>
             <div className={`flex-none px4 ${isActive(slug) ? '' : 'opacity-0'} hover-opacity-100`}>
@@ -199,8 +203,7 @@ const CampaignContacts = (props) => {
           slug,
           avatar,
           name,
-          jobTitles,
-          primaryOutlets
+          outlets
         } = contact
         const status = campaign.contacts[slug]
         return (
@@ -208,8 +211,8 @@ const CampaignContacts = (props) => {
             <CircleAvatar avatar={avatar} />
             <div className='inline-block pl4' style={{width: '24rem'}}>
               <span className='f-xl gray40 py1'>{name}</span><br />
-              <span className='gray60 py1'>{jobTitles}</span><br />
-              <span className='gray60 py1'>{primaryOutlets.substring(0, 30)}...</span>
+              <span className='gray60 py1'>{(outlets && outlets.length) ? outlets[0].value : null}</span><br />
+              <span className='gray60 py1'>{truncate(outlets.map((o) => o.label).join(', '), 30)}</span>
             </div>
             <div className='flex-none px4'>
               <StatusSelector status={status} onChange={(status) => onStatusChange({status, contact})} />

@@ -202,8 +202,8 @@ const ContactsPageContainer = withRouter(React.createClass({
       const filterRegExp = new RegExp(term, 'gi')
       query.$or = [
         { name: filterRegExp },
-        { jobTitles: filterRegExp },
-        { primaryOutlets: filterRegExp }
+        { 'outlets.value': filterRegExp },
+        { 'outlets.label': filterRegExp }
       ]
       subs.push(Meteor.subscribe('contacts', {regex: term.substring(0, minSearchLength)}))
     }

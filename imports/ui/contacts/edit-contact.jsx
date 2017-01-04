@@ -14,15 +14,18 @@ const EditContact = React.createClass({
   },
 
   getInitialState () {
-    return cloneDeep(this.props.contact) || {
+    const state = cloneDeep(this.props.contact) || {
       avatar: '',
       name: '',
-      jobTitles: '',
-      outlets: '',
+      outlets: [],
       emails: [],
       phones: [],
       socials: []
     }
+    state.jobTitles = state.outlets.map((o) => o.value).join(', ')
+    state.primaryOutlets = state.outlets.map((o) => o.label).join(', ')
+    delete state.outlets
+    return state
   },
 
   onProfileChange (evt) {
@@ -79,7 +82,7 @@ const EditContact = React.createClass({
 
   onSubmit (evt) {
     evt.preventDefault()
-    this.props.onSubmit(this.state)
+    this.props.onSubmit(cloneDeep(this.state))
   },
 
   inputSize (value) {

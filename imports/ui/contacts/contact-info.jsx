@@ -30,7 +30,7 @@ const ContactInfo = React.createClass({
   render () {
     if (!this.props.contact) return null
     const { onAddSectors, onAddTags } = this
-    const { name, avatar, emails, jobTitles, primaryOutlets, medialists } = this.props.contact
+    const { name, avatar, emails, outlets, medialists } = this.props.contact
     const { showMore } = this.state
     return (
       <div>
@@ -38,8 +38,8 @@ const ContactInfo = React.createClass({
           <CircleAvatar className='ml2' size={70} avatar={avatar} name={name} />
           <div className='ml3 inline-block align-middle'>
             <span className='semibold block f-xl mb1'>{name}</span>
-            <span className='block f-sm'>{jobTitles}</span>
-            <span className='block f-sm'>{primaryOutlets}</span>
+            <span className='block f-sm'>{(outlets && outlets.length) ? outlets[0].value : null}</span>
+            <span className='block f-sm'>{outlets.map((o) => o.label).join(', ')}</span>
           </div>
         </div>
         <div className='clearfix p3 pt4 mt4 border-gray80 border-bottom'>
