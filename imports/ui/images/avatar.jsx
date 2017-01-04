@@ -8,7 +8,8 @@ const Avatar = React.createClass({
     avatar: PropTypes.string,
     name: PropTypes.string,
     className: PropTypes.string,
-    style: PropTypes.object
+    style: PropTypes.object,
+    onClick: PropTypes.func
   },
 
   getInitialState () {
@@ -21,7 +22,7 @@ const Avatar = React.createClass({
 
   render () {
     const { imageLoadError } = this.state
-    const { avatar, name } = this.props
+    const { avatar, name, onClick } = this.props
     const className = classNames(this.props.className, 'inline-block overflow-hidden white normal align-middle center')
     const size = Number(this.props.size || defaultSize) // px
     const fontSize = ((size / defaultSize) * 100) + '%' // a size of 40px gives a fontSize of 100% which matches the body fontSize.
@@ -29,7 +30,7 @@ const Avatar = React.createClass({
 
     if (avatar && !imageLoadError) {
       return (
-        <div className={className} style={style}>
+        <div className={className} style={style} onClick={onClick}>
           <img style={{width: '100%', height: '100%'}} src={avatar} alt={name} title={name} onError={this.onError} />
         </div>
       )
