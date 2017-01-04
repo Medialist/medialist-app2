@@ -7,8 +7,8 @@ Meteor.publish('contactCount', function () {
 Meteor.publish('my-contacts-and-campaigns', function () {
   if (!this.userId) return this.ready()
   return [
-    Contacts.find({}, { sort: { updatedAt: -1 }, limit: 50}),
-    Medialists.find({ sort: { updatedAt: -1 }, limit: 25})
+    Contacts.find({}, { sort: { updatedAt: -1 }, limit: 100}),
+    Medialists.find({ sort: { updatedAt: -1 }, limit: 10})
   ]
 })
 

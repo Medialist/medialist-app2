@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
 import { SearchDarkIcon } from '../images/icons'
+import debounce from 'lodash.debounce'
 
 const SearchBox = React.createClass({
   propTypes: {
@@ -16,8 +17,14 @@ const SearchBox = React.createClass({
   },
 
   onChange (e) {
-    this.setState({ term: e.target.value })
-    this.props.onTermChange(e.target.value)
+    const value = e.target.value
+    this.setState({ term: value })
+    this.onTermChange(value)
+    console.log('onChange', value)
+  },
+
+  componentWillMount () {
+    this.onTermChange = debounce(this.props.onTermChange, 200, {maxWait: 600})
   },
 
   render () {
