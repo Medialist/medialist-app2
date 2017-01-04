@@ -8,4 +8,14 @@ App.medialistUpdated = function (medialistSlug, userId) {
   }})
 }
 
+App.contactUpdated = function (contactSlug, userId) {
+  var user = Meteor.users.findOne(userId)
+  if (!user) throw new Meteor.Error('unknown-user', 'Contact cannot be updated by an unknown user')
+  return Contacts.update({slug: contactSlug}, {$set: {
+    'updatedBy._id': user._id,
+    'updatedBy.name': user.profile.name,
+    'updatedAt': new Date()
+  }})
+}
+
 Meteor.startup(() => ContactsTask.periodicallyUpdate())
