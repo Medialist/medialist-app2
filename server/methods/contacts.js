@@ -24,7 +24,7 @@ Meteor.methods({
       slug: App.uniqueSlug(details.twitter || App.cleanSlug(details.name), Contacts),
       avatar: '/images/avatar.svg',
       bio: '',
-      primaryOutlets: details.primaryOutlets,
+      outlets: details.outlets,
       sectors: '',
       jobTitles: details.jobTitles,
       languages: 'English',
@@ -118,24 +118,25 @@ Meteor.methods({
     })
   },
 
-  'contacts/addDetails': function (contactSlug, details) {
+  'contacts/addDetails': function (contactSlug, outlet) {
     if (!this.userId) throw new Meteor.Error('Only a logged in user can add roles to a contact')
     check(contactSlug, String)
+    check(outlet, { label: String, value: String })
     var user = Meteor.users.findOne(this.userId)
     if (!Contacts.find({slug: contactSlug}).count()) throw new Meteor.Error('Contact #' + contactSlug + ' does not exist')
 
-    var org = Orgs.findOne({ name: details.primaryOutlets })
+    var org = Orgs.findOne({ name: outlet.label })
     if (!org) {
-      Orgs.insert({ name: details.primaryOutlets })
+      Orgs.insert({ name: outlet.label })
     }
     check(details, Schemas.ContactDetails)
-    _.extend(details, {
+    const updateSet = {
       'updatedBy._id': user._id,
       'updatedBy.name': user.profile.name,
       'updatedBy.avatar': user.services.twitter.profile_image_url_https,
       'updatedAt': new Date()
-    })
-    return Contacts.update({ slug: contactSlug }, { $set: details })
+    }
+    return Contacts.update({ slug: contactSlug }, { $set: updateSet, $push: { outlets: outlet } })
   },
 
   'contacts/setLabel': function (contactSlug, type, index, newLabel) {

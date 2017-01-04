@@ -13,8 +13,7 @@ Meteor.publish('contacts', function (opts) {
     query = { $or: [
       { name: regex },
       { jobTitles: regex },
-      { primaryOutlets: regex },
-      { otherOutlets: regex }
+      { 'outlets.label': regex }
     ]}
   }
 

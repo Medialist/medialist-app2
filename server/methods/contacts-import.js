@@ -1,3 +1,4 @@
+import moment from 'moment'
 
 // TODO: reafactor to return _ids of created and updated users, so we can do batch actions on them. Or use the tag?
 
@@ -14,8 +15,7 @@ Meteor.methods({
       phones: Match.Optional([{label: String, value: String}]),
       name: Match.Optional(String),
       address: Match.Optional(String),
-      primaryOutlets: Match.Optional(String),
-      otherOutlets: Match.Optional(String),
+      outlets: Match.Optional([{label: String, value: String}]),
       sectors: Match.Optional(String),
       jobTitles: Match.Optional(String),
       languages: Match.Optional(String)
@@ -85,8 +85,7 @@ function mergeContact (data, contact, user) {
   ;[
     'name',
     'address',
-    'primaryOutlets',
-    'otherOutlets',
+    'outlets',
     'sectors',
     'jobTitles',
     'languages'

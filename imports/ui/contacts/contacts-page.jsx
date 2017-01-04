@@ -75,6 +75,13 @@ const ContactsPage = React.createClass({
   },
 
   onAddContactSubmit (contact) {
+    contact.jobTitles = (contact.jobTitles || '').split(/,\s*/)
+    contact.outlets = (contact.primaryOutlets || '').split(/,\s*/).map((outlet) => ({
+      label: outlet,
+      value: contact.jobTitles[0]
+    }))
+    delete contact.jobTitles
+    delete contact.primaryOutlets
     console.log('submit', contact)
   },
 
@@ -163,7 +170,7 @@ const ContactsTableContainer = createContainer((props) => {
     query.$or = [
       { name: filterRegExp },
       { jobTitles: filterRegExp },
-      { primaryOutlets: filterRegExp }
+      { 'outlets.label': filterRegExp }
     ]
   }
   const contacts = window.Contacts.find(query, { sort: props.sort }).fetch()

@@ -112,7 +112,7 @@ const ContactsTableContainer = createContainer((props) => {
     query.$or = [
       { name: filterRegExp },
       { jobTitles: filterRegExp },
-      { primaryOutlets: filterRegExp }
+      { 'outlets.label': filterRegExp }
     ]
   }
 

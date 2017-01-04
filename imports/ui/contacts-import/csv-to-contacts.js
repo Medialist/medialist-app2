@@ -117,12 +117,8 @@ const schemaDetectors = [
     test: value => value === 'salutation'
   },
   {
-    field: {key: 'primaryOutlets', label: 'Primary Outlet(s)'},
+    field: {key: 'outlets', label: 'Outlet(s)'},
     test: value => value === 'primary outlet'
-  },
-  {
-    field: {key: 'otherOutlets', label: 'Other Outlets'},
-    test: value => value === 'all media outlets'
   },
   {
     field: {key: 'sectors', label: 'Sector(s)'},
@@ -264,6 +260,16 @@ export function createContacts ({cols, rows}) {
     delete contact.state
     delete contact.postcode
     delete contact.country
+
+    contact.jobTitles = (contact.jobTitles || '').split(/,\s*/)[0]
+    contact.outlets = (contact.outlets || '').split(/,\s*/)
+      .filter((outlet) => !/freelance/i.exec(outlet))
+      .map((outlet) => ({
+        label: outlet,
+        value: contact.jobTitles
+      }))
+
+    delete contact.jobTitles
 
     // We don't use these
     delete contact.memberType
