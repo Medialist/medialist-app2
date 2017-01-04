@@ -135,7 +135,7 @@ const ContactsTable = React.createClass({
                     </Link>
                   </td>
                   <td className='left-align'>{(outlets && outlets.length) ? outlets[0].value : null}</td>
-                  <td className='left-align'>{outlets.map((o) => o.label).join(', ')}</td>
+                  <td className='left-align'>{(outlets && outlets.length) ? outlets[0].label : null}</td>
                   <td className='left-align'>
                     <DisplayEmail emails={emails} />
                   </td>
