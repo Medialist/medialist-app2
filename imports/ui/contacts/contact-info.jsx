@@ -38,7 +38,7 @@ const ContactInfo = React.createClass({
           <CircleAvatar className='ml2' size={70} avatar={avatar} name={name} />
           <div className='ml3 inline-block align-middle'>
             <span className='semibold block f-xl mb1'>{name}</span>
-            <span className='block f-sm'>{outlets[0].value}</span>
+            <span className='block f-sm'>{(outlets && outlets.length) ? outlets[0].value : null}</span>
             <span className='block f-sm'>{outlets.map((o) => o.label).join(', ')}</span>
           </div>
         </div>

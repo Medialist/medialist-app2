@@ -17,7 +17,6 @@ Meteor.methods({
       address: Match.Optional(String),
       outlets: Match.Optional([{label: String, value: String}]),
       sectors: Match.Optional(String),
-      jobTitles: Match.Optional(String),
       languages: Match.Optional(String)
     }])
 
@@ -87,7 +86,6 @@ function mergeContact (data, contact, user) {
     'address',
     'outlets',
     'sectors',
-    'jobTitles',
     'languages'
   ].forEach(key => {
     if (!contact[key] && data[key]) {

@@ -25,13 +25,6 @@ const ContactPage = React.createClass({
   },
 
   onEditContact (contact) {
-    contact.jobTitles = (contact.jobTitles || '').split(/,\s*/)
-    contact.outlets = (contact.primaryOutlets || '').split(/,\s*/).map((outlet) => ({
-      label: outlet,
-      value: contact.jobTitles[0]
-    }))
-    delete contact.jobTitles
-    delete contact.primaryOutlets
     console.log('onEditContact', contact)
   },
 

@@ -34,7 +34,6 @@ npm run watch
 	"socials" : [
 		{ "label" : "Twitter", "value" : "steverose7", "twitterId" : "109295079" }
 	],
-	"jobTitles" : "Freelance Writer",
 	"phones" : [
 		{ "label" : "Mobile", "value" : "+44 (0)7980 327 310" }
 	],

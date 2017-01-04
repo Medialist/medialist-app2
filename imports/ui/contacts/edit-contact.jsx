@@ -82,7 +82,7 @@ const EditContact = React.createClass({
 
   onSubmit (evt) {
     evt.preventDefault()
-    this.props.onSubmit({ ...this.state })
+    this.props.onSubmit(cloneDeep(this.state))
   },
 
   inputSize (value) {

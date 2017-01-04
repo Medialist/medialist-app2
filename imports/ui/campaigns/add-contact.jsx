@@ -6,7 +6,7 @@ import { CircleAvatar } from '../images/avatar'
 import StatusSelector from '../feedback/status-selector'
 
 function truncate (str, chars) {
-  if (str.length < chars) return str
+  if (str.length <= chars) return str
   return str.substring(0, chars) + '...'
 }
 
@@ -174,7 +174,7 @@ const AllContacts = (props) => {
             <CircleAvatar avatar={avatar} />
             <div className='inline-block pl4' style={{width: '24rem'}}>
               <span className='f-xl gray40 py1'>{name}</span><br />
-              <span className='gray60 py1'>{outlets[0].value}</span><br />
+              <span className='gray60 py1'>{(outlets && outlets.length) ? outlets[0].value : null}</span><br />
               <span className='gray60 py1'>{truncate(outlets.map((o) => o.label).join(', '), 30)}</span>
             </div>
             <div className='flex-none px4'>{medialists.length} campaigns</div>
@@ -211,7 +211,7 @@ const CampaignContacts = (props) => {
             <CircleAvatar avatar={avatar} />
             <div className='inline-block pl4' style={{width: '24rem'}}>
               <span className='f-xl gray40 py1'>{name}</span><br />
-              <span className='gray60 py1'>{outlets[0].value}</span><br />
+              <span className='gray60 py1'>{(outlets && outlets.length) ? outlets[0].value : null}</span><br />
               <span className='gray60 py1'>{truncate(outlets.map((o) => o.label).join(', '), 30)}</span>
             </div>
             <div className='flex-none px4'>
