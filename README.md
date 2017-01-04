@@ -21,8 +21,10 @@ npm run watch
   "slug" : "SteveRose",
   "name" : "Steve Rose",
   "avatar" : "https://pbs.twimg.com/profile_images/530735370120331264/25YBKDB-_normal.jpeg",
-  "primaryOutlets" : "the Guardian, Freelance",
-  "otherOutlets" : "Freelance, the Guardian - g2 (supplement) - Features",
+  "outlets" : [
+		{ "label": "the Guardian", "value": "Freelance" },
+		{ "label": "the Guardian - g2 (supplement)", "value": "Features" }
+	],
   "sectors" : "Entertainment (Cinema, Film & DVD), Home Interest (Architecture), Arts",
   "bio" : "I'm a freelance writer, mainly on cinema and architecture. I often write for the Guardian: http://t.co/xgjs5FoFLn"
   "languages" : "English",
@@ -32,7 +34,6 @@ npm run watch
 	"socials" : [
 		{ "label" : "Twitter", "value" : "steverose7", "twitterId" : "109295079" }
 	],
-	"jobTitles" : "Freelance Writer",
 	"phones" : [
 		{ "label" : "Mobile", "value" : "+44 (0)7980 327 310" }
 	],
