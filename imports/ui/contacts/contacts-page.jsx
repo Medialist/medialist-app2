@@ -92,7 +92,7 @@ const ContactsPage = React.createClass({
   },
 
   render () {
-    const { contactsCount, loading, contacts, term, sort } = this.props
+    const { contactsCount, loading, searching, contacts, term, sort } = this.props
     const { onSortChange, onSelectionsChange, onSectorChange, onTermChange } = this
     const { selections } = this.state
     if (!loading && contactsCount === 0) return <ContactListEmpty />
@@ -125,7 +125,7 @@ const ContactsPage = React.createClass({
               <SearchBox onTermChange={onTermChange} placeholder='Search contacts...' />
             </div>
             <div className='flex-none pl4 f-xs'>
-              <ContactsTotal total={contactsCount} />
+              <ContactsTotal searching={searching} results={contacts} total={contactsCount} />
             </div>
           </div>
           <ContactsTable
@@ -160,9 +160,11 @@ const SectorSelectorContainer = createContainer((props) => {
   return { ...props, items, selected: props.selected || items[0] }
 }, SectorSelector)
 
-const ContactsTotal = ({ total }) => (
-  <div>{total} contact{total === 1 ? '' : 's'} total</div>
-)
+const ContactsTotal = ({ searching, results, total }) => {
+  const num = searching ? results.length : total
+  const label = searching ? 'match' : 'total'
+  return <div>{num} contact{num === 1 ? '' : 's'} {label}</div>
+}
 
 // I decode and encode the search options from the query string
 // and set up the subscriptions and collecton queries from those options.
