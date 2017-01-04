@@ -9,12 +9,14 @@ Meteor.methods({
     medialist.createdAt = new Date()
     medialist.createdBy = {
       _id: user._id,
-      name: user.profile.name
+      name: user.profile.name,
+      avatar: user.services.twitter.profile_image_url_https
     }
     medialist.updatedAt = new Date()
     medialist.updatedBy = {
       _id: user._id,
-      name: user.profile.name
+      name: user.profile.name,
+      avatar: user.services.twitter.profile_image_url_https
     }
     medialist.contacts = medialist.contacts || {}
     medialist.slug = App.uniqueSlug(App.cleanSlug(medialist.name), Medialists)

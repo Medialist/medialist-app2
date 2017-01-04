@@ -50,6 +50,7 @@ Meteor.methods({
       App.medialistUpdated(thisMedialistSlug, thisUser._id)
     })
     Medialists.update({ slug: opts.medialistSlug }, { $set: medialistUpdate })
+    App.contactUpdated(opts.contactSlug, thisUser._id)
     return Posts.insert(post)
   },
 
