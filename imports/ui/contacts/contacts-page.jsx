@@ -46,7 +46,6 @@ const ContactsPage = React.createClass({
   },
 
   onTermChange (term) {
-    console.log('onTermChange', term)
     this.props.setQuery({ term })
   },
 

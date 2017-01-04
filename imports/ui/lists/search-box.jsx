@@ -20,7 +20,6 @@ const SearchBox = React.createClass({
     const value = e.target.value
     this.setState({ term: value })
     this.onTermChange(value)
-    console.log('onChange', value)
   },
 
   componentWillMount () {
