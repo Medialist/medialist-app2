@@ -41,7 +41,7 @@ Meteor.methods({
     })
 
     const medialistId = Medialists.insert(medialist)
-    Meteor.users.update({ _id: user._id }, { $push: { medialists: {
+    Meteor.users.update({ _id: user._id }, { $push: { 'profile.medialists': {
       _id: medialistId,
       name: medialist.name,
       slug: medialist.slug,
@@ -70,4 +70,4 @@ Meteor.methods({
     } } })
   }
 
-});
+})
