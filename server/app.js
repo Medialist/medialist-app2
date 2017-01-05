@@ -10,8 +10,9 @@ App.medialistUpdated = function (medialistSlug, userId) {
     Meteor.users.update({ _id: userId }, { $push: { 'profile.medialists': {
       _id: medialist._id,
       slug: medialist.slug,
-      image: medialist.image,
+      avatar: medialist.avatar,
       name: medialist.name,
+      clientName: medialist.client.name,
       updatedAt: new Date()
     } } })
   }

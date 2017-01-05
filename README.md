@@ -45,7 +45,8 @@ npm run watch
 				"_id": "eoriwoerijgworigjw409jgw4",
 				"name": "The Next Big Thing",
 				"slug": "next-big-thing",
-				"image": "https://example.com/image.png",
+				"avatar": "https://example.com/image.png",
+				"clientName": "ABC Corp.",
 				"updatedAt": ISODate("2017-01-04T15:38:14.882Z")
 			}	
 		]

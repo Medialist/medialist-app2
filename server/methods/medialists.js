@@ -45,7 +45,8 @@ Meteor.methods({
       _id: medialistId,
       name: medialist.name,
       slug: medialist.slug,
-      image: medialist.image,
+      avatar: medialist.avatar,
+      clientName: medialist.client.name,
       updatedAt: new Date()
     } } })
     return medialist.slug
@@ -65,7 +66,8 @@ Meteor.methods({
       _id: medialist._id,
       name: medialist.name,
       slug: medialist.slug,
-      image: medialist.image,
+      avatar: medialist.avatar,
+      clientName: medialist.client.name,
       updatedAt: new Date()
     } } })
   }
