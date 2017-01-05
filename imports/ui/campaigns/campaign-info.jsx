@@ -4,6 +4,7 @@ import { SquareAvatar, CircleAvatar } from '../images/avatar'
 import { BioIcon, FavouritesIcon, FavouritesIconGold } from '../images/icons'
 import InfoHeader from '../lists/info-header'
 import QuickAdd from '../lists/quick-add'
+import Tooltip from '../navigation/tooltip'
 
 const CampaignInfo = React.createClass({
   propTypes: {
@@ -40,7 +41,9 @@ const CampaignInfo = React.createClass({
     const { onAddTeamMembers, onAddSectors, onAddTags } = this
     const { onEditClick, user, campaign } = this.props
     const { name, avatar, purpose } = this.props.campaign
-    const Icon = user.myMedialists.some((m) => m._id === campaign._id) ? FavouritesIconGold : FavouritesIcon
+    const isFavourite = user.myMedialists.some((m) => m._id === campaign._id)
+    const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
+    const tooltip = isFavourite ? 'Remove from My Campaigns' : 'Add to My Campaigns'
     return (
       <div>
         <div className='mb1'>
@@ -48,7 +51,9 @@ const CampaignInfo = React.createClass({
           <div className='ml3 inline-block align-middle'>
             <span className='semibold block f-xl mb1'>
               {name}
-              <Icon className='ml2 pointer svg-icon-lg vertical-align-bottom' onClick={this.onToggleFavourite} />
+              <Tooltip title={tooltip}>
+                <Icon className='mx2 pointer svg-icon-lg vertical-align-bottom' onClick={this.onToggleFavourite} />
+              </Tooltip>
             </span>
           </div>
         </div>
