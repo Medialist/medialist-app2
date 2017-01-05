@@ -6,12 +6,12 @@ import InfoHeader from '../lists/info-header'
 import AddToMasterList from '../lists/add-to-master-list'
 
 // Dummy data to be replaced with subscription data
-const sectors = [
+const usersMasterLists = [
   {_id: 0, label: 'Energy', slug: 'energy'},
   {_id: 0, label: 'Healthcare', slug: 'healthcare'},
   {_id: 0, label: 'Personal Fitness', slug: 'personal-fitness'}
 ]
-const allSectors = [
+const allMasterLists = [
   {_id: 0, label: 'Energy', slug: 'energy', count: 12},
   {_id: 0, label: 'Healthcare', slug: 'healthcare', count: 3},
   {_id: 0, label: 'Personal Fitness', slug: 'personal-fitness', count: 1},
@@ -21,6 +21,7 @@ const allSectors = [
   {_id: 0, label: 'Quietness', slug: 'quietness'},
   {_id: 0, label: 'Fashion Bloggers', slug: 'fashion-bloggers', count: 7}
 ]
+// END of dummy data
 
 const ContactInfo = React.createClass({
   propTypes: {
@@ -48,13 +49,17 @@ const ContactInfo = React.createClass({
     this.setState({addToMasterListOpen: false})
   },
 
+  updateMasterList (payload) {
+    console.log(payload)
+  },
+
   onAddTags () {
     console.log(`TODO: add a tag to ${this.props.contact.name}'s contact`)
   },
 
   render () {
     if (!this.props.contact) return null
-    const { onAddToMasterList, onAddTags, dismissAddToMasterList } = this
+    const { onAddToMasterList, onAddTags, dismissAddToMasterList, updateMasterList } = this
     const { addToMasterListOpen } = this.state
     const { name, avatar, emails, outlets, medialists } = this.props.contact
     const { showMore } = this.state
@@ -91,11 +96,12 @@ const ContactInfo = React.createClass({
         <AddToMasterList
           open={addToMasterListOpen}
           onDismiss={dismissAddToMasterList}
-          currentlyBelongsTo={sectors}
-          masterLists={allSectors}
+          onSave={updateMasterList}
+          currentlyBelongsTo={usersMasterLists}
+          masterLists={allMasterLists}
           title='Contact' />
         <QuickAdd
-          sectors={sectors}
+          usersMasterLists={usersMasterLists}
           tags={[
             {
               _id: 'mongoidfornhs',
@@ -109,7 +115,7 @@ const ContactInfo = React.createClass({
             }
           ]}
           onAddTags={onAddTags}
-          onAddSectors={onAddToMasterList} />
+          onAddToMasterList={onAddToMasterList} />
       </div>
     )
   }

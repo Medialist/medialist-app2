@@ -3,13 +3,13 @@ import Tag from '../navigation/tag'
 import InfoHeader from '../lists/info-header'
 
 const QuickAdd = (props) => {
-  const { sectors, tags, onAddSectors, onAddTags } = props
+  const { usersMasterLists, tags, onAddToMasterList, onAddTags } = props
   return (
     <div>
       <section>
-        <InfoHeader name='Master Lists' onClick={onAddSectors} />
+        <InfoHeader name='Master Lists' onClick={onAddToMasterList} />
         <div className='py3'>
-          {sectors.map((s) => <span className='pointer p2 blue f-sm'>{s.label}</span>)}
+          {usersMasterLists.map((l) => <span className='pointer p2 blue f-sm' key={l.label}>{l.label}</span>)}
         </div>
       </section>
       <section>
@@ -17,7 +17,7 @@ const QuickAdd = (props) => {
         <div className='px2 py3'>
           {tags.map((tag) => {
             const { _id, name, count } = tag
-            return <Tag name={name} count={count} onClick={() => removeTag(_id)} />
+            return <Tag name={name} count={count} onClick={() => removeTag(_id)} key={name} />
           })}
         </div>
       </section>
@@ -27,9 +27,9 @@ const QuickAdd = (props) => {
 
 QuickAdd.PropTypes = {
   tags: PropTypes.array.isRequired,
-  sectors: PropTypes.array.isRequired,
+  usersMasterLists: PropTypes.array.isRequired,
   onAddTag: PropTypes.func.isRequired,
-  onAddSectors: PropTypes.func.isRequired
+  onAddToMasterList: PropTypes.func.isRequired
 }
 
 function removeTag (id) {

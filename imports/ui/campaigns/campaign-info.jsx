@@ -5,6 +5,23 @@ import InfoHeader from '../lists/info-header'
 import QuickAdd from '../lists/quick-add'
 import AddToMasterList from '../lists/add-to-master-list'
 
+// Dummy data to be replaced with subscription data
+const usersMasterLists = [
+  {_id: 0, label: 'Healthcare', slug: 'healthcare'},
+  {_id: 0, label: 'Energy', slug: 'energy'}
+]
+const allMasterLists = [
+  {_id: 0, label: 'Energy', slug: 'energy', count: 12},
+  {_id: 0, label: 'Healthcare', slug: 'healthcare', count: 3},
+  {_id: 0, label: 'Personal Fitness', slug: 'personal-fitness', count: 1},
+  {_id: 0, label: 'Robotics', slug: 'robotics', count: 15},
+  {_id: 0, label: 'Technology', slug: 'technology', count: 8},
+  {_id: 0, label: 'Money and Glory', slug: 'money-and-glory'},
+  {_id: 0, label: 'Quietness', slug: 'quietness'},
+  {_id: 0, label: 'Fashion Bloggers', slug: 'fashion-bloggers', count: 7}
+]
+// END of dummy data
+
 const CampaignInfo = React.createClass({
   propTypes: {
     campaign: PropTypes.object,
@@ -13,7 +30,7 @@ const CampaignInfo = React.createClass({
 
   getInitialState () {
     return {
-      AddMasterListOpen: false
+      addToMasterListOpen: false
     }
   },
 
@@ -26,12 +43,16 @@ const CampaignInfo = React.createClass({
     console.log('TODO: onAddTeamMembers')
   },
 
-  onAddSectors (e) {
-    this.setState({AddMasterListOpen: true})
+  onAddToMasterList (e) {
+    this.setState({addToMasterListOpen: true})
   },
 
-  onDismiss () {
-    this.setState({AddMasterListOpen: false})
+  dismissAddToMasterList () {
+    this.setState({addToMasterListOpen: false})
+  },
+
+  updateMasterList (payload) {
+    console.log(payload)
   },
 
   onAddTags (e) {
@@ -40,8 +61,8 @@ const CampaignInfo = React.createClass({
 
   render () {
     if (!this.props.campaign) return null
-    const { onAddTeamMembers, onAddSectors, onAddTags, onDismiss } = this
-    const { AddMasterListOpen } = this.state
+    const { onAddTeamMembers, onAddToMasterList, onAddTags, dismissAddToMasterList, updateMasterList } = this
+    const { addToMasterListOpen } = this.state
     const { onEditClick } = this.props
     const { name, avatar, purpose } = this.props.campaign
     return (
@@ -66,9 +87,15 @@ const CampaignInfo = React.createClass({
             <CircleAvatar name={'other one'} size={38} />
           </div>
         </section>
-        <AddToMasterList onDismiss={onDismiss} open={AddMasterListOpen} />
+        <AddToMasterList
+          open={addToMasterListOpen}
+          onDismiss={dismissAddToMasterList}
+          onSave={updateMasterList}
+          currentlyBelongsTo={usersMasterLists}
+          masterLists={allMasterLists}
+          title='Campaign' />
         <QuickAdd
-          sectors={['Corporate', 'Media']}
+          usersMasterLists={usersMasterLists}
           tags={[
             {
               _id: 'mongoidforamazon',
@@ -81,7 +108,7 @@ const CampaignInfo = React.createClass({
               count: 13
             }
           ]}
-          onAddSectors={onAddSectors}
+          onAddToMasterList={onAddToMasterList}
           onAddTags={onAddTags} />
       </div>
     )
