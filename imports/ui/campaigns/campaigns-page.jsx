@@ -1,5 +1,5 @@
 import React from 'react'
-import { browserHistory } from 'react-router'
+import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
 import CampaignsTable from './campaigns-table'
@@ -20,10 +20,10 @@ const CampaignsPage = React.createClass({
   },
 
   componentDidMount () {
-    const { location: { pathname, query } } = this.props
+    const { location: { pathname, query }, router } = this.props
     if (query && query.editCampaignOpen) {
       this.setState({ editCampaignOpen: true })
-      browserHistory.replace(pathname)
+      router.replace(pathname)
     }
   },
 
@@ -143,4 +143,4 @@ const SectorSelectorContainer = createContainer((props) => {
   return { ...props, items, selected: props.selected || items[0] }
 }, SectorSelector)
 
-export default CampaignsPage
+export default withRouter(CampaignsPage)
