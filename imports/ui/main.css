@@ -246,8 +246,6 @@ button {
 .border-gray80 { border-color:var(--gray80) !important }
 .border-blue { border-color: var(--blue) !important }
 
-.vertical-align-bottom { vertical-align: bottom }
-
 .svg-icon {
   display: inline-block;
 }
