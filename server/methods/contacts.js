@@ -26,6 +26,7 @@ Meteor.methods({
       bio: '',
       outlets: details.outlets,
       sectors: '',
+      masterLists: [],
       languages: 'English',
       emails:  [{label: Contacts.emailTypes[0], value: details.email}],
       phones:  [{label: Contacts.phoneTypes[0], value: details.phone}],

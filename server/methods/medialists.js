@@ -27,6 +27,7 @@ Meteor.methods({
     } else {
       medialist.client._id = Clients.insert({ name: medialist.client.name })
     }
+    medialist.masterLists = []
 
     check(medialist, Schemas.Medialists)
 
@@ -40,8 +41,36 @@ Meteor.methods({
       })
     })
 
-    Medialists.insert(medialist)
+    const medialistId = Medialists.insert(medialist)
+    Meteor.users.update({ _id: user._id }, { $push: { myMedialists: {
+      _id: medialistId,
+      name: medialist.name,
+      slug: medialist.slug,
+      avatar: medialist.avatar,
+      clientName: medialist.client.name,
+      updatedAt: new Date()
+    } } })
     return medialist.slug
+  },
+
+  'medialists/toggle-favourite': function (medialistSlug) {
+    if (!this.userId) throw new Meteor.Error('Only a logged-in user can (un)favourite a medialist')
+    const user = Meteor.users.findOne(this.userId, { fields: { myMedialists: 1 } })
+    check(medialistSlug, String)
+    const medialist = Medialists.findOne({ slug: medialistSlug }, { fields: { image: 1, slug: 1, name: 1, client: 1 }})
+    if (!medialist) throw new Meteor.Error('Cannot find medialist')
+
+    if (user.myMedialists.some((m) => m._id === medialist._id)) {
+      return Meteor.users.update(this.userId, { $pull: { myMedialists: { _id: medialist._id } } })
+    }
+    return Meteor.users.update(this.userId, { $push: { myMedialists: {
+      _id: medialist._id,
+      name: medialist.name,
+      slug: medialist.slug,
+      avatar: medialist.avatar,
+      clientName: medialist.client.name,
+      updatedAt: new Date()
+    } } })
   }
 
-});
+})
