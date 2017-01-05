@@ -212,7 +212,7 @@ var MigrationVersions = [
       // Adds a medialist array to user docs
       Meteor.users.find({}).forEach(user => {
         if (!user.medialists) {
-          Meteor.users.update(user._id, { $set: { medialists: [] } })
+          Meteor.users.update(user._id, { $set: { 'profile.medialists': [] } })
         }
       })
     }
