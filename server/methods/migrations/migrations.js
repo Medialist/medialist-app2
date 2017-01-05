@@ -204,6 +204,18 @@ var MigrationVersions = [
         if (save) Contacts.update(contact._id, contact)
       })
     }
+  },
+
+  {
+    number: 12,
+    instructions () {
+      // Adds a medialist array to user docs
+      Meteor.users.find({}).forEach(user => {
+        if (!user.medialists) {
+          Meteor.users.update(user._id, { $set: { 'myMedialists': [] } })
+        }
+      })
+    }
   }
 ]
 

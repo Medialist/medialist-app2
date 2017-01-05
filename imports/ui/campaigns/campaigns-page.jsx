@@ -1,4 +1,5 @@
 import React from 'react'
+import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
 import CampaignsTable from './campaigns-table'
@@ -15,6 +16,14 @@ const CampaignsPage = React.createClass({
       term: '',
       selectedSector: null,
       editCampaignOpen: false
+    }
+  },
+
+  componentDidMount () {
+    const { location: { pathname, query }, router } = this.props
+    if (query && query.editCampaignOpen) {
+      this.setState({ editCampaignOpen: true })
+      router.replace(pathname)
     }
   },
 
@@ -134,4 +143,4 @@ const SectorSelectorContainer = createContainer((props) => {
   return { ...props, items, selected: props.selected || items[0] }
 }, SectorSelector)
 
-export default CampaignsPage
+export default withRouter(CampaignsPage)

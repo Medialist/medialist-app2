@@ -55,8 +55,7 @@ const SettingsPage = React.createClass({
 })
 
 export default createContainer(() => {
-  Meteor.subscribe('userData')
-  return { user: window.Meteor.users.find().fetch()[0] }
+  return { user: Meteor.user() }
 }, SettingsPage)
 
 function userInfo (user) {
