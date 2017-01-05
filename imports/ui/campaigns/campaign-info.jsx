@@ -52,7 +52,7 @@ const CampaignInfo = React.createClass({
     this.setState({addToMasterListOpen: false})
   },
 
-  updateMasterList (payload) {
+  onUpdateMasterList (payload) {
     console.log(payload)
   },
 
@@ -78,7 +78,7 @@ const CampaignInfo = React.createClass({
       onAddToMasterList,
       onAddTags,
       dismissAddToMasterList,
-      updateMasterList,
+      onUpdateMasterList,
       onAvatarChange,
       onAvatarError
     } = this
@@ -112,7 +112,7 @@ const CampaignInfo = React.createClass({
         <AddToMasterList
           open={addToMasterListOpen}
           onDismiss={dismissAddToMasterList}
-          onSave={updateMasterList}
+          onSave={onUpdateMasterList}
           usersMasterLists={usersMasterLists}
           masterLists={allMasterLists}
           title='Campaign' />

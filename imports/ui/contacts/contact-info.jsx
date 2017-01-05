@@ -49,7 +49,7 @@ const ContactInfo = React.createClass({
     this.setState({addToMasterListOpen: false})
   },
 
-  updateMasterList (payload) {
+  onUpdateMasterList (payload) {
     console.log(payload)
   },
 
@@ -59,7 +59,7 @@ const ContactInfo = React.createClass({
 
   render () {
     if (!this.props.contact) return null
-    const { onAddToMasterList, onAddTags, dismissAddToMasterList, updateMasterList } = this
+    const { onAddToMasterList, onAddTags, dismissAddToMasterList, onUpdateMasterList } = this
     const { addToMasterListOpen } = this.state
     const { name, avatar, emails, outlets, medialists } = this.props.contact
     const { showMore } = this.state
@@ -96,7 +96,7 @@ const ContactInfo = React.createClass({
         <AddToMasterList
           open={addToMasterListOpen}
           onDismiss={dismissAddToMasterList}
-          onSave={updateMasterList}
+          onSave={onUpdateMasterList}
           usersMasterLists={usersMasterLists}
           masterLists={allMasterLists}
           title='Contact' />
