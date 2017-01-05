@@ -383,11 +383,6 @@ button {
   cursor: default;
 }
 
-.btn-lg {
-  border-radius: 8px;
-  height: 80px;
-}
-
 ::-moz-focus-inner {
   border: 0;
   padding: 0;
@@ -442,9 +437,16 @@ button {
 .hover-blue:hover {
   color: var(--blue);
 }
+.hover-border-blue:hover {
+  border-color: var(--blue) !important;
+}
 .hover-fill-trigger:hover .hover-fill-current svg,
 .hover-fill-current:hover svg{
   fill: currentColor;
+}
+
+.hover-display-trigger:hover .hover-display {
+  display: block !important;
 }
 
 .active-bg-green-light.active {

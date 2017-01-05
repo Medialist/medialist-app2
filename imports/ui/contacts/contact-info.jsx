@@ -12,14 +12,14 @@ const sectors = [
   {_id: 0, label: 'Personal Fitness', slug: 'personal-fitness'}
 ]
 const allSectors = [
-  {_id: 0, label: 'Energy', slug: 'energy'},
-  {_id: 0, label: 'Healthcare', slug: 'healthcare'},
-  {_id: 0, label: 'Personal Fitness', slug: 'personal-fitness'},
-  {_id: 0, label: 'Robotics', slug: 'robotics'},
-  {_id: 0, label: 'Technology', slug: 'technology'},
+  {_id: 0, label: 'Energy', slug: 'energy', count: 12},
+  {_id: 0, label: 'Healthcare', slug: 'healthcare', count: 3},
+  {_id: 0, label: 'Personal Fitness', slug: 'personal-fitness', count: 1},
+  {_id: 0, label: 'Robotics', slug: 'robotics', count: 15},
+  {_id: 0, label: 'Technology', slug: 'technology', count: 8},
   {_id: 0, label: 'Money and Glory', slug: 'money-and-glory'},
   {_id: 0, label: 'Quietness', slug: 'quietness'},
-  {_id: 0, label: 'Fashion Bloggers', slug: 'fashion-bloggers'}
+  {_id: 0, label: 'Fashion Bloggers', slug: 'fashion-bloggers', count: 7}
 ]
 
 const ContactInfo = React.createClass({
