@@ -7,12 +7,28 @@ const stubFunc = () => {}
 
 test('should not render initially', (t) => {
   t.plan(1)
-  const wrapper = shallow(<AddToMasterList open={false} onDismiss={stubFunc} />)
+  const wrapper = shallow(
+    <AddToMasterList
+      open={false}
+      onDismiss={stubFunc}
+      onSave={stubFunc}
+      usersMasterLists={[]}
+      masterLists={[]}
+      title='Test' />
+  )
   t.falsy(wrapper.node)
 })
 
 test('should render in modal', (t) => {
   t.plan(1)
-  const wrapper = shallow(<AddToMasterList open onDismiss={stubFunc} />)
-  t.truthy(wrapper.node)
+  const wrapper = shallow(
+    <AddToMasterList
+      open={false}
+      onDismiss={stubFunc}
+      onSave={stubFunc}
+      usersMasterLists={[]}
+      masterLists={[]}
+      title='Test' />
+  )
+  t.true(wrapper.length === 1)
 })
