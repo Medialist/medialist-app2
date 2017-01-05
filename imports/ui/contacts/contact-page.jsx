@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
 import ContactTopbar from './contact-topbar'
@@ -11,11 +12,20 @@ import EditContact from './edit-contact'
 const ContactPage = React.createClass({
   propTypes: {
     campaigns: PropTypes.array,
-    contact: PropTypes.object
+    contact: PropTypes.object,
+    user: PropTypes.object
   },
 
   getInitialState () {
     return { editContactOpen: true }
+  },
+
+  componentDidMount () {
+    const { location: { pathname, query }, router } = this.props
+    if (query && query.editContactOpen) {
+      this.setState({ editContactOpen: true })
+      router.replace(pathname)
+    }
   },
 
   toggleEditContact () {
@@ -44,7 +54,7 @@ const ContactPage = React.createClass({
   },
 
   render () {
-    const { contact, campaigns } = this.props
+    const { contact, campaigns, user } = this.props
     const { editContactOpen } = this.state
     if (!contact) return null
     return (
@@ -52,7 +62,7 @@ const ContactPage = React.createClass({
         <ContactTopbar contact={contact} onAddClick={this.onAddClick} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
-            <ContactInfo contact={contact} onEditClick={this.toggleEditContact} />
+            <ContactInfo contact={contact} onEditClick={this.toggleEditContact} user={user} />
           </div>
           <div className='flex-auto px2' >
             <PostBox contact={contact} campaigns={campaigns} onFeedback={this.onFeedback} />
@@ -74,8 +84,9 @@ export default createContainer((props) => {
   Meteor.subscribe('medialists')
   const contact = window.Contacts.findOne({ slug })
   const campaigns = contact ? window.Medialists.find({ slug: { $in: contact.medialists } }).fetch() : []
-  return { ...props, contact, campaigns }
-}, ContactPage)
+  const user = Meteor.user()
+  return { ...props, contact, campaigns, user }
+}, withRouter(ContactPage))
 
 const needToKnows = [
   {

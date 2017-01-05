@@ -1,12 +1,15 @@
 import React, { PropTypes } from 'react'
+import { Meteor } from 'meteor/meteor'
 import { CircleAvatar, SquareAvatar } from '../images/avatar'
-import { EmailIcon } from '../images/icons'
+import { EmailIcon, FavouritesIconGold, FavouritesIcon } from '../images/icons'
 import QuickAdd from '../lists/quick-add'
 import InfoHeader from '../lists/info-header'
+import Tooltip from '../navigation/tooltip'
 
 const ContactInfo = React.createClass({
   propTypes: {
     contact: PropTypes.object,
+    user: PropTypes.object,
     onEditClick: PropTypes.func
   },
 
@@ -27,17 +30,31 @@ const ContactInfo = React.createClass({
     console.log(`TODO: add a tag to ${this.props.contact.name}'s contact`)
   },
 
+  onToggleFavourite () {
+    Meteor.call('contacts/toggle-favourite', this.props.contact.slug, (err) => {
+      if (err) console.error('Could not toggle favourite status for contact', err)
+    })
+  },
+
   render () {
     if (!this.props.contact) return null
     const { onAddSectors, onAddTags } = this
-    const { name, avatar, emails, outlets, medialists } = this.props.contact
+    const { user: { myContacts }, contact: { _id, name, avatar, emails, outlets, medialists } } = this.props
     const { showMore } = this.state
+    const isFavourite = myContacts.some((c) => c._id === _id)
+    const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
+    const tooltip = isFavourite ? 'Remove from My Contacts' : 'Add to My Contacts'
     return (
       <div>
         <div className='mb1'>
           <CircleAvatar className='ml2' size={70} avatar={avatar} name={name} />
           <div className='ml3 inline-block align-middle'>
-            <span className='semibold block f-xl mb1'>{name}</span>
+            <span className='semibold block f-xl mb1'>
+              {name}
+              <Tooltip title={tooltip}>
+                <Icon className='mx2 pointer svg-icon-lg vertical-align-bottom' onClick={this.onToggleFavourite} />
+              </Tooltip>
+            </span>
             <span className='block f-sm'>{(outlets && outlets.length) ? outlets[0].value : null}</span>
             <span className='block f-sm'>{outlets.map((o) => o.label).join(', ')}</span>
           </div>

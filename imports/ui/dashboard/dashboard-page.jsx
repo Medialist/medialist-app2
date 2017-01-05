@@ -31,6 +31,6 @@ export default createContainer(() => {
   Meteor.subscribe('contacts')
   return {
     recentCampaigns: window.Meteor.user().myMedialists.sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 3),
-    recentContacts: window.Contacts.find({}, { limit: 5, sort: { updatedAt: -1 } }).fetch()
+    recentContacts: window.Meteor.user().myContacts.sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 5)
   }
 }, DashboardPage)

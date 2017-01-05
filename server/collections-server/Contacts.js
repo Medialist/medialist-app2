@@ -14,9 +14,12 @@ function checkScreenNameUpdate (id, fields) {
 }
 
 Contacts.changeScreenName = function (id, screenName) {
-  TwitterClient.grabUserByScreenName(screenName, (err, user) => {
-    if (err || !user) return console.log('Failed to get twitter info for contact', id, err)
-    Contacts.updateWithTwitterInfo(id, user)
+  return new Promise((resolve, reject) => {
+    TwitterClient.grabUserByScreenName(screenName, (err, user) => {
+      if (err) return reject(err)
+      if (!user) return reject('Failed to get twitter info for contact', id)
+      resolve(Contacts.updateWithTwitterInfo(id, user))
+    })
   })
 }
 

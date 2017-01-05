@@ -50,6 +50,15 @@ npm run watch
 			"clientName": "ABC Corp.",
 			"updatedAt": ISODate("2017-01-04T15:38:14.882Z")
 		}
+	],
+	"myContacts": [
+		{
+			"_id": "3rohu349f840fj3049j34g",
+			"name": "Andrea Person",
+			"slug": "andrea-person",
+			"avatar": "https://example.com/avatar.png",
+			"updatedAt": ISODate("2017-01-04T15:38:14.882Z")
+		}
 	]
 }
 ```
