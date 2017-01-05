@@ -54,7 +54,7 @@ Meteor.methods({
 
   'medialists/toggle-favourite': function (medialistSlug) {
     if (!this.userId) throw new Meteor.Error('Only a logged-in user can (un)favourite a medialist')
-    const user = Meteor.users.findOne(this.userId, { fields: { profile: 1 } })
+    const user = Meteor.users.findOne(this.userId, { fields: { myMedialists: 1 } })
     check(medialistSlug, String)
     const medialist = Medialists.findOne({ slug: medialistSlug }, { fields: { image: 1, slug: 1, name: 1, client: 1 }})
     if (!medialist) throw new Meteor.Error('Cannot find medialist')
