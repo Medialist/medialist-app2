@@ -10,42 +10,42 @@ const AddCampaignToMasterList = React.createClass({
     open: PropTypes.bool.isRequired,
     onDismiss: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
-    currentlyBelongsTo: PropTypes.array,
+    usersMasterLists: PropTypes.array,
     masterLists: PropTypes.array.isRequired,
     title: PropTypes.string.isRequired
   },
   getInitialState () {
-    const { masterLists, currentlyBelongsTo } = this.props
+    const { masterLists, usersMasterLists } = this.props
     return {
-      wantsToBelongTo: currentlyBelongsTo,
-      selectableList: markSelected(masterLists, currentlyBelongsTo)
+      usersMasterLists: usersMasterLists,
+      selectableList: markSelected(masterLists, usersMasterLists)
     }
   },
   onSelect (item) {
-    item.selected ? this.removeSelectedItem(item) : this.addSelectedItem(item)
+    let newList = this.state.usersMasterLists.slice(0)
+    newList = item.selected ? this.removeSelectedItem(newList, item) : this.addSelectedItem(newList, item)
+    this.setNewSelectedItems(newList)
   },
-  addSelectedItem (item) {
-    const newList = this.state.wantsToBelongTo.slice(0)
+  addSelectedItem (newList, item) {
     const {_id, label, slug} = item
     newList.push({_id, label, slug})
-    this.setNewSelectedItems(newList)
+    return newList
   },
-  removeSelectedItem (item) {
-    const newList = this.state.wantsToBelongTo.slice(0)
-    const index = findIndex(this.state.wantsToBelongTo, {slug: item.slug})
+  removeSelectedItem (newList, item) {
+    const index = findIndex(this.state.usersMasterLists, {slug: item.slug})
     newList.splice(index, 1)
-    this.setNewSelectedItems(newList)
+    return newList
   },
   setNewSelectedItems (newList) {
     this.setState({
-      wantsToBelongTo: newList,
+      usersMasterLists: newList,
       selectableList: markSelected(this.props.masterLists, newList)
     })
   },
   onSave () {
     this.props.onSave({
-      oldList: this.props.currentlyBelongsTo,
-      newList: this.state.wantsToBelongTo
+      oldList: this.props.usersMasterLists,
+      newList: this.state.usersMasterLists
     })
     this.props.onDismiss()
   },

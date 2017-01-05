@@ -97,7 +97,7 @@ const ContactInfo = React.createClass({
           open={addToMasterListOpen}
           onDismiss={dismissAddToMasterList}
           onSave={updateMasterList}
-          currentlyBelongsTo={usersMasterLists}
+          usersMasterLists={usersMasterLists}
           masterLists={allMasterLists}
           title='Contact' />
         <QuickAdd

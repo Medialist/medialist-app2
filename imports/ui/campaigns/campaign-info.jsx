@@ -91,7 +91,7 @@ const CampaignInfo = React.createClass({
           open={addToMasterListOpen}
           onDismiss={dismissAddToMasterList}
           onSave={updateMasterList}
-          currentlyBelongsTo={usersMasterLists}
+          usersMasterLists={usersMasterLists}
           masterLists={allMasterLists}
           title='Campaign' />
         <QuickAdd
