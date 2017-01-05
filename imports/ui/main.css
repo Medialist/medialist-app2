@@ -169,8 +169,6 @@ button {
 .uppercase { text-transform: uppercase }
 .letter-spacing-1 { letter-spacing: 1px }
 
-.underline { text-decoration: underline }
-
 .opacity-70 { opacity:0.7 }
 .opacity-50 { opacity:0.5 }
 .opacity-40 { opacity:0.4 }
@@ -247,8 +245,6 @@ button {
 .border-gray60 { border-color:var(--gray60) !important }
 .border-gray80 { border-color:var(--gray80) !important }
 .border-blue { border-color: var(--blue) !important }
-
-.vertical-align-bottom { vertical-align: bottom }
 
 .svg-icon {
   display: inline-block;

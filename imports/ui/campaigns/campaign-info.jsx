@@ -52,7 +52,7 @@ const CampaignInfo = React.createClass({
             <span className='semibold block f-xl mb1'>
               {name}
               <Tooltip title={tooltip}>
-                <Icon className='mx2 pointer svg-icon-lg vertical-align-bottom' onClick={this.onToggleFavourite} />
+                <Icon className='mx2 pointer svg-icon-lg align-bottom' onClick={this.onToggleFavourite} />
               </Tooltip>
             </span>
           </div>
