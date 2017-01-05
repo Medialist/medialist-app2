@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import EditableAvatar from '../images/editable-avatar/index'
+import EditableAvatar from '../images/editable-avatar'
 import { SquareAvatar, CircleAvatar } from '../images/avatar'
 import { BioIcon } from '../images/icons'
 import InfoHeader from '../lists/info-header'
