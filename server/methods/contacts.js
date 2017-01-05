@@ -64,6 +64,7 @@ Meteor.methods({
           slug: contact.slug,
           avatar: contact.avatar,
           name: contact.name,
+          outlets: contact.outlets,
           updatedAt: new Date()
         } } })
         return contact
@@ -225,7 +226,7 @@ Meteor.methods({
     if (!this.userId) throw new Meteor.Error('Only a logged-in user can (un)favourite a medialist')
     const user = Meteor.users.findOne(this.userId, { fields: { myContacts: 1 } })
     check(contactSlug, String)
-    const contact = Contact.findOne({ slug: contactSlug }, { fields: { avatar: 1, slug: 1, name: 1 }})
+    const contact = Contacts.findOne({ slug: contactSlug }, { fields: { avatar: 1, slug: 1, name: 1, outlets: 1 }})
     if (!contact) throw new Meteor.Error('Cannot find contact')
 
     if (user.myContacts.some((c) => c._id === contact._id)) {
@@ -236,6 +237,7 @@ Meteor.methods({
       name: contact.name,
       slug: contact.slug,
       avatar: contact.avatar,
+      outlets: contact.outlets,
       updatedAt: new Date()
     } } })
   }

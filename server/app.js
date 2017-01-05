@@ -29,7 +29,7 @@ App.medialistUpdated = function (medialistSlug, userId) {
 App.contactUpdated = function (contactSlug, userId) {
   var user = Meteor.users.findOne(userId)
   if (!user) throw new Meteor.Error('unknown-user', 'Contact cannot be updated by an unknown user')
-  const contact = Contacts.findOne({ slug: contactSlug }, { fields: { name: 1, avatar: 1, slug: 1 } })
+  const contact = Contacts.findOne({ slug: contactSlug }, { fields: { name: 1, avatar: 1, slug: 1, outlets: 1 } })
   if (!contact) throw new Meteor.Error('unknown-contact', 'Cannot find contact')
 
   if (Meteor.users.find({ _id: userId, 'myContacts._id': contact._id }).count()) {
@@ -40,6 +40,7 @@ App.contactUpdated = function (contactSlug, userId) {
       slug: contact.slug,
       avatar: contact.avatar,
       name: contact.name,
+      outlets: contact.outlets,
       updatedAt: new Date()
     } } })
   }
@@ -54,7 +55,7 @@ App.contactUpdated = function (contactSlug, userId) {
 
 // This method is called when a contact is interacted with and we want to record the fact only on the user doc (e.g. they've been added to a campaign)
 App.contactInteracted = function (contactSlug, userId) {
-  const contact = Contacts.findOne({ slug: contactSlug }, { fields: { name: 1, avatar: 1, slug: 1 } })
+  const contact = Contacts.findOne({ slug: contactSlug }, { fields: { name: 1, avatar: 1, slug: 1, outlets: 1 } })
   if (!contact) throw new Meteor.Error('unknown-contact', 'Cannot find contact')
 
   if (Meteor.users.find({ _id: userId, 'myContacts._id': contact._id }).count()) {
@@ -65,6 +66,7 @@ App.contactInteracted = function (contactSlug, userId) {
       slug: contact.slug,
       avatar: contact.avatar,
       name: contact.name,
+      outlets: contact.outlets,
       updatedAt: new Date()
     } } })
   }
