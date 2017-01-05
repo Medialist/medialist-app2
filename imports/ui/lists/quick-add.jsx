@@ -7,7 +7,7 @@ const QuickAdd = (props) => {
   return (
     <div>
       <section>
-        <InfoHeader name='Sectors' onClick={onAddSectors} />
+        <InfoHeader name='Master Lists' onClick={onAddSectors} />
         <div className='py3'>
           {sectors.map((s) => <span className='pointer p2 blue f-sm'>{s}</span>)}
         </div>

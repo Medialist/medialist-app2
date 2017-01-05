@@ -3,6 +3,7 @@ import { CircleAvatar, SquareAvatar } from '../images/avatar'
 import { EmailIcon } from '../images/icons'
 import QuickAdd from '../lists/quick-add'
 import InfoHeader from '../lists/info-header'
+import AddToMasterList from '../lists/add-to-master-list'
 
 const ContactInfo = React.createClass({
   propTypes: {
@@ -11,7 +12,10 @@ const ContactInfo = React.createClass({
   },
 
   getInitialState () {
-    return { showMore: false }
+    return {
+      showMore: false,
+      addToMasterListOpen: false
+    }
   },
 
   onShowMoreToggleClick (e) {
@@ -20,7 +24,11 @@ const ContactInfo = React.createClass({
   },
 
   onAddSectors () {
-    console.log(`TODO: add sector to ${this.props.contact.name}'s contact`)
+    this.setState({addToMasterListOpen: true})
+  },
+
+  dismissAddSectors () {
+    this.setState({addToMasterListOpen: false})
   },
 
   onAddTags () {
@@ -29,7 +37,8 @@ const ContactInfo = React.createClass({
 
   render () {
     if (!this.props.contact) return null
-    const { onAddSectors, onAddTags } = this
+    const { onAddSectors, onAddTags, dismissAddSectors } = this
+    const { addToMasterListOpen } = this.state
     const { name, avatar, emails, outlets, medialists } = this.props.contact
     const { showMore } = this.state
     return (
@@ -62,6 +71,7 @@ const ContactInfo = React.createClass({
             </div>
           </section>
         }
+        <AddToMasterList open={addToMasterListOpen} onDismiss={dismissAddSectors} />
         <QuickAdd
           sectors={['Energy', 'Healthcare', 'Robotics']}
           tags={[

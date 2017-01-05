@@ -3,11 +3,18 @@ import { SquareAvatar, CircleAvatar } from '../images/avatar'
 import { BioIcon } from '../images/icons'
 import InfoHeader from '../lists/info-header'
 import QuickAdd from '../lists/quick-add'
+import AddToMasterList from '../lists/add-to-master-list'
 
 const CampaignInfo = React.createClass({
   propTypes: {
     campaign: PropTypes.object,
     onEditClick: PropTypes.func
+  },
+
+  getInitialState () {
+    return {
+      AddMasterListOpen: false
+    }
   },
 
   onShowMoreToggleClick (e) {
@@ -20,7 +27,11 @@ const CampaignInfo = React.createClass({
   },
 
   onAddSectors (e) {
-    console.log('TODO: onAddSectors')
+    this.setState({AddMasterListOpen: true})
+  },
+
+  onDismiss () {
+    this.setState({AddMasterListOpen: false})
   },
 
   onAddTags (e) {
@@ -29,7 +40,8 @@ const CampaignInfo = React.createClass({
 
   render () {
     if (!this.props.campaign) return null
-    const { onAddTeamMembers, onAddSectors, onAddTags } = this
+    const { onAddTeamMembers, onAddSectors, onAddTags, onDismiss } = this
+    const { AddMasterListOpen } = this.state
     const { onEditClick } = this.props
     const { name, avatar, purpose } = this.props.campaign
     return (
@@ -54,6 +66,7 @@ const CampaignInfo = React.createClass({
             <CircleAvatar name={'other one'} size={38} />
           </div>
         </section>
+        <AddToMasterList onDismiss={onDismiss} open={AddMasterListOpen} />
         <QuickAdd
           sectors={['Corporate', 'Media']}
           tags={[
@@ -68,7 +81,8 @@ const CampaignInfo = React.createClass({
               count: 13
             }
           ]}
-          onAddSectors={onAddSectors} onAddTags={onAddTags} />
+          onAddSectors={onAddSectors}
+          onAddTags={onAddTags} />
       </div>
     )
   }
