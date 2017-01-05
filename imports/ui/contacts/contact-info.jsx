@@ -11,6 +11,16 @@ const sectors = [
   {_id: 0, label: 'Healthcare', slug: 'healthcare'},
   {_id: 0, label: 'Personal Fitness', slug: 'personal-fitness'}
 ]
+const allSectors = [
+  {_id: 0, label: 'Energy', slug: 'energy'},
+  {_id: 0, label: 'Healthcare', slug: 'healthcare'},
+  {_id: 0, label: 'Personal Fitness', slug: 'personal-fitness'},
+  {_id: 0, label: 'Robotics', slug: 'robotics'},
+  {_id: 0, label: 'Technology', slug: 'technology'},
+  {_id: 0, label: 'Money and Glory', slug: 'money-and-glory'},
+  {_id: 0, label: 'Quietness', slug: 'quietness'},
+  {_id: 0, label: 'Fashion Bloggers', slug: 'fashion-bloggers'}
+]
 
 const ContactInfo = React.createClass({
   propTypes: {
@@ -78,7 +88,12 @@ const ContactInfo = React.createClass({
             </div>
           </section>
         }
-        <AddToMasterList open={addToMasterListOpen} onDismiss={dismissAddToMasterList} currentlyBelongsTo={sectors} />
+        <AddToMasterList
+          open={addToMasterListOpen}
+          onDismiss={dismissAddToMasterList}
+          currentlyBelongsTo={sectors}
+          masterLists={allSectors}
+          title='Contact' />
         <QuickAdd
           sectors={sectors}
           tags={[
