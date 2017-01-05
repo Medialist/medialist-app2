@@ -28,10 +28,9 @@ const DashboardPage = React.createClass({
 })
 
 export default createContainer(() => {
-  Meteor.subscribe('medialists')
   Meteor.subscribe('contacts')
   return {
-    recentCampaigns: window.Medialists.find({}, { limit: 5, sort: { updatedAt: -1 } }).fetch(),
+    recentCampaigns: window.Meteor.user().myMedialists.sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 3),
     recentContacts: window.Contacts.find({}, { limit: 5, sort: { updatedAt: -1 } }).fetch()
   }
 }, DashboardPage)
