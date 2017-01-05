@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import EditableAvatar from '../images/editable-avatar'
 import { SquareAvatar, CircleAvatar } from '../images/avatar'
 import { BioIcon } from '../images/icons'
 import InfoHeader from '../lists/info-header'
@@ -59,16 +60,37 @@ const CampaignInfo = React.createClass({
     console.log('TODO: onAddTags')
   },
 
+  onAvatarChange (e) {
+    console.log('TODO: onAvatarChange', e.url)
+    this.props.campaign.avatar = e.url
+    this.forceUpdate()
+  },
+
+  onAvatarError (err) {
+    console.error('Failed to change avatar', err)
+    console.log('TODO: toast error message')
+  },
+
   render () {
     if (!this.props.campaign) return null
-    const { onAddTeamMembers, onAddToMasterList, onAddTags, dismissAddToMasterList, updateMasterList } = this
+    const {
+      onAddTeamMembers,
+      onAddToMasterList,
+      onAddTags,
+      dismissAddToMasterList,
+      updateMasterList,
+      onAvatarChange,
+      onAvatarError
+    } = this
     const { addToMasterListOpen } = this.state
     const { onEditClick } = this.props
     const { name, avatar, purpose } = this.props.campaign
     return (
       <div>
         <div className='mb1'>
-          <SquareAvatar className='ml2' size={70} avatar={avatar} name={name} />
+          <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError}>
+            <SquareAvatar size={70} avatar={avatar} name={name} />
+          </EditableAvatar>
           <div className='ml3 inline-block align-middle'>
             <span className='semibold block f-xl mb1'>{name}</span>
           </div>
