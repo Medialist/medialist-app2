@@ -5,6 +5,13 @@ import QuickAdd from '../lists/quick-add'
 import InfoHeader from '../lists/info-header'
 import AddToMasterList from '../lists/add-to-master-list'
 
+// Dummy data to be replaced with subscription data
+const sectors = [
+  {_id: 0, label: 'Energy', slug: 'energy'},
+  {_id: 0, label: 'Healthcare', slug: 'healthcare'},
+  {_id: 0, label: 'Personal Fitness', slug: 'personal-fitness'}
+]
+
 const ContactInfo = React.createClass({
   propTypes: {
     contact: PropTypes.object,
@@ -23,11 +30,11 @@ const ContactInfo = React.createClass({
     this.setState({ showMore: !this.state.showMore })
   },
 
-  onAddSectors () {
+  onAddToMasterList () {
     this.setState({addToMasterListOpen: true})
   },
 
-  dismissAddSectors () {
+  dismissAddToMasterList () {
     this.setState({addToMasterListOpen: false})
   },
 
@@ -37,7 +44,7 @@ const ContactInfo = React.createClass({
 
   render () {
     if (!this.props.contact) return null
-    const { onAddSectors, onAddTags, dismissAddSectors } = this
+    const { onAddToMasterList, onAddTags, dismissAddToMasterList } = this
     const { addToMasterListOpen } = this.state
     const { name, avatar, emails, outlets, medialists } = this.props.contact
     const { showMore } = this.state
@@ -71,9 +78,9 @@ const ContactInfo = React.createClass({
             </div>
           </section>
         }
-        <AddToMasterList open={addToMasterListOpen} onDismiss={dismissAddSectors} />
+        <AddToMasterList open={addToMasterListOpen} onDismiss={dismissAddToMasterList} currentlyBelongsTo={sectors} />
         <QuickAdd
-          sectors={['Energy', 'Healthcare', 'Robotics']}
+          sectors={sectors}
           tags={[
             {
               _id: 'mongoidfornhs',
@@ -87,7 +94,7 @@ const ContactInfo = React.createClass({
             }
           ]}
           onAddTags={onAddTags}
-          onAddSectors={onAddSectors} />
+          onAddSectors={onAddToMasterList} />
       </div>
     )
   }
