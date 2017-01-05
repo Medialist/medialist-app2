@@ -49,7 +49,7 @@ npm run watch
 			"avatar": "https://example.com/image.png",
 			"clientName": "ABC Corp.",
 			"updatedAt": ISODate("2017-01-04T15:38:14.882Z")
-		}	
+		}
 	]
 }
 ```
@@ -86,8 +86,8 @@ npm run watch
 		}
 	],
 	"medialists" : [
-    "medialistSlug"
-  ],
+		"medialistSlug"
+	],
 	"createdAt" : ISODate("2016-02-26T13:12:53.456Z"),
 	"createdBy" : {
     "_id" : "hNc2ArK9TcAWyEXqQ",
@@ -99,7 +99,10 @@ npm run watch
 		"_id" : "hNc2ArK9TcAWyEXqQ",
 		"name" : "Olly Gilbert",
 		"avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
-	}
+	},
+	"masterLists": [
+		{ "_id": "123", "slug": "tech", "name": "Tech" }
+	],
 }
 ```
 
@@ -132,7 +135,10 @@ npm run watch
 		"_id" : "hNc2ArK9TcAWyEXqQ",
 		"name" : "Olly Gilbert"
 	},
-	"slug" : "dailymailjournos"
+	"slug" : "dailymailjournos",
+	"masterLists": [
+		{ "_id": "123", "slug": "tech", "name": "Tech" }
+	],
 }
 ```
 
@@ -162,6 +168,20 @@ npm run watch
 		"avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
 	},
 	"createdAt" : ISODate("2016-03-08T11:14:22.670Z"),
+}
+```
+
+**MasterList**
+
+```js
+{
+  "type": "Contacts",
+  "name": "Tech",
+  "slug": "tech",
+  "items": [
+    "contact _id"
+  ]
+  "priority": 1
 }
 ```
 
