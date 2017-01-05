@@ -30,6 +30,8 @@ const CampaignInfo = React.createClass({
 
   onAvatarChange (e) {
     console.log('TODO: onAvatarChange', e.url)
+    this.props.campaign.avatar = e.url
+    this.forceUpdate()
   },
 
   onAvatarError (err) {

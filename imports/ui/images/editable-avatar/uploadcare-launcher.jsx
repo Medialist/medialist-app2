@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
 import uploadcare from 'uploadcare-widget'
-import Progress from 'rebass/dist/Progress'
+import Progress from './progress'
 
 const UploadcareLauncher = React.createClass({
   propTypes: {
@@ -39,7 +39,7 @@ const UploadcareLauncher = React.createClass({
           })
           .done((fileInfo) => {
             this.setState({ uploading: false, progress: 0 })
-            onSuccess({ url: fileInfo.originalUrl, type: 'uploadcare', fileInfo })
+            onSuccess({ url: fileInfo.cdnUrl, fileInfo })
           })
           .fail((err) => {
             this.setState({ uploading: false, progress: 0 })
@@ -51,14 +51,7 @@ const UploadcareLauncher = React.createClass({
 
   render () {
     const { uploading, progress } = this.state
-    if (!uploading) return null
-
-    return (
-      <div className='px2 py1'>
-        <p className='f-xs normal gray20'>Uploading image...</p>
-        <Progress color='primary' value={progress} />
-      </div>
-    )
+    return uploading ? <Progress value={progress} /> : null
   }
 })
 

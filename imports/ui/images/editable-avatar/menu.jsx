@@ -22,7 +22,7 @@ const EditableAvatarMenu = React.createClass({
   },
 
   onRemoveClick () {
-    this.props.onChange(null)
+    this.props.onChange({ url: null })
   },
 
   onSuccess (url) {
