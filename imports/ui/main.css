@@ -445,10 +445,6 @@ button {
   fill: currentColor;
 }
 
-.hover-display-trigger:hover .hover-display {
-  display: block !important;
-}
-
 .active-bg-green-light.active {
   background-color: var(--green-light);
 }
