@@ -40,7 +40,7 @@ const CampaignInfo = React.createClass({
     const { onAddTeamMembers, onAddSectors, onAddTags } = this
     const { onEditClick, user, campaign } = this.props
     const { name, avatar, purpose } = this.props.campaign
-    const Icon = user.profile.medialists.some((m) => m._id === campaign._id) ? FavouritesIconGold : FavouritesIcon
+    const Icon = user.myMedialists.some((m) => m._id === campaign._id) ? FavouritesIconGold : FavouritesIcon
     return (
       <div>
         <div className='mb1'>

@@ -8,10 +8,10 @@ Meteor.methods({
     const medialist = window.Medialists.findOne({ slug: medialistSlug }, { fields: { image: 1, slug: 1, name: 1, client: 1 } })
     if (!medialist) throw new Meteor.Error('Cannot find medialist')
 
-    if (user.profile.medialists.some((m) => m._id === medialist._id)) {
-      return Meteor.users.update(this.userId, { $pull: { 'profile.medialists': { _id: medialist._id } } })
+    if (user.myMedialists.some((m) => m._id === medialist._id)) {
+      return Meteor.users.update(this.userId, { $pull: { myMedialists: { _id: medialist._id } } })
     }
-    return Meteor.users.update(this.userId, { $push: { 'profile.medialists': {
+    return Meteor.users.update(this.userId, { $push: { myMedialists: {
       _id: medialist._id,
       name: medialist.name,
       slug: medialist.slug,
