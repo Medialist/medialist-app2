@@ -9,5 +9,10 @@
     "whitelist": [
       "twitterHandle"
     ]
+  },
+  "public": {
+    "uploadcare": {
+      "publicKey": "${UPLOADCARE_PUBLIC_KEY}"
+    }
   }
 }

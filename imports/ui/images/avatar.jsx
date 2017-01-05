@@ -8,7 +8,8 @@ const Avatar = React.createClass({
     avatar: PropTypes.string,
     name: PropTypes.string,
     className: PropTypes.string,
-    style: PropTypes.object
+    style: PropTypes.object,
+    size: PropTypes.number
   },
 
   getInitialState () {
