@@ -1,6 +1,8 @@
 import React, {PropTypes} from 'react'
+import { Link } from 'react-router'
 import Modal from '../navigation/modal'
 import find from 'lodash.find'
+import findIndex from 'lodash.findindex'
 import { Check } from '../images/icons'
 
 const AddCampaignToMasterList = React.createClass({
@@ -13,10 +15,41 @@ const AddCampaignToMasterList = React.createClass({
   },
   getInitialState () {
     const { masterLists, currentlyBelongsTo } = this.props
-    return { selectableList: markSelected(masterLists, currentlyBelongsTo) }
+    return {
+      wantsToBelongTo: currentlyBelongsTo,
+      selectableList: markSelected(masterLists, currentlyBelongsTo)
+    }
+  },
+  onSelect (item) {
+    item.selected ? this.removeSelectedItem(item) : this.addSelectedItem(item)
+  },
+  addSelectedItem (item) {
+    const newList = this.state.wantsToBelongTo.slice(0)
+    newList.push(item)
+    this.setNewSelectedItems(newList)
+  },
+  removeSelectedItem (item) {
+    const newList = this.state.wantsToBelongTo.slice(0)
+    const index = findIndex(this.state.wantsToBelongTo, {slug: item.slug})
+    newList.splice(index, 1)
+    this.setNewSelectedItems(newList)
+  },
+  setNewSelectedItems (newList) {
+    this.setState({
+      wantsToBelongTo: newList,
+      selectableList: markSelected(this.props.masterLists, newList)
+    })
+  },
+  onSave () {
+    console.log({
+      oldList: this.props.currentlyBelongsTo,
+      newList: this.state.wantsToBelongTo
+    })
+    this.props.onDismiss()
   },
   render () {
     if (!this.props.open) return null
+    const { onSelect, onSave } = this
     const { title, onDismiss } = this.props
     const { selectableList } = this.state
 
@@ -26,13 +59,13 @@ const AddCampaignToMasterList = React.createClass({
           <span className='f-lg'>Add {title} to a Master List</span>
         </div>
         <div className='bg-gray90 border-top border-gray80 p2 flex flex-wrap'>
-          {selectableList.map((item, key) => <MasterListBtn item={item} key={key} title={title} />)}
+          {selectableList.map((item, key) => <MasterListBtn item={item} key={key} title={title} onSelect={onSelect} />)}
         </div>
         <div className='p4 bg-white'>
           <div className='clearfix'>
-            <button className='btn bg-completed white right'>Save Changes</button>
+            <button className='btn bg-completed white right' onClick={onSave}>Save Changes</button>
             <button className='btn bg-transparent gray40 right mr2' onClick={onDismiss}>Cancel</button>
-            <button className='btn bg-transparent blue'>Manage Master Lists</button>
+            <Link to='/settings/sector' className='btn bg-transparent blue'>Manage Master Lists</Link>
           </div>
         </div>
       </div>
@@ -46,9 +79,7 @@ const MasterListBtn = React.createClass({
     onSelect: PropTypes.func.isRequired
   },
   getInitialState () {
-    return {
-      showCount: false
-    }
+    return { showCount: false }
   },
   onMouseEnter () {
     this.setState({showCount: true})

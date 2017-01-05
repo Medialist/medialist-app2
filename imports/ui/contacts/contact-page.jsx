@@ -20,7 +20,6 @@ const ContactPage = React.createClass({
 
   toggleEditContact () {
     const editContactOpen = !this.state.editContactOpen
-    console.log('toggleEditContact', editContactOpen)
     this.setState({ editContactOpen })
   },
 
