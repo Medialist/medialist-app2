@@ -27,6 +27,7 @@ Meteor.methods({
     } else {
       medialist.client._id = Clients.insert({ name: medialist.client.name })
     }
+    medialist.masterLists = []
 
     check(medialist, Schemas.Medialists)
 
