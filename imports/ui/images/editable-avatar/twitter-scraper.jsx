@@ -22,7 +22,13 @@ const TwitterScraper = React.createClass({
   },
 
   getInitialState () {
-    return { inputValue: '', screenName: null, uploading: false, progress: 0 }
+    return {
+      inputValue: '',
+      screenName: null,
+      imageLoadStates: {},
+      uploading: false,
+      progress: 0
+    }
   },
 
   componentWillMount () {
@@ -35,24 +41,29 @@ const TwitterScraper = React.createClass({
     this.setState({ inputValue })
   },
 
-  setScreenName (screenName) {
-    this.setState({ screenName })
+  onImageLoad (e) {
+    const screenName = e.target.getAttribute('data-screen-name')
+    this.setImageLoadState(screenName, 'loaded')
   },
 
   onImageError (e) {
-    if (e.target.getAttribute('data-screen-name') === this.state.screenName) {
+    const screenName = e.target.getAttribute('data-screen-name')
+
+    if (screenName === this.state.screenName) {
       this.setState({ screenName: null })
     }
+
+    this.setImageLoadState(screenName, 'error')
   },
 
-  onCancelClick (e) {
+  onCancelClick () {
     this.props.onDismiss()
   },
 
-  onSubmitClick (e) {
+  onSubmit () {
     const { uploadcareConfig, onSuccess, onError } = this.props
     const { screenName } = this.state
-    if (!screenName) this.props.onError(new Error('Invalid Twitter screen name'))
+    if (!screenName) return
 
     this.setState({ uploading: true, progress: 0 })
 
@@ -70,35 +81,65 @@ const TwitterScraper = React.createClass({
       })
   },
 
+  setScreenName (screenName) {
+    this.setState({ screenName })
+  },
+
+  setImageLoadState (screenName, state) {
+    let { imageLoadStates } = this.state
+    imageLoadStates = { ...imageLoadStates, [screenName]: state }
+    this.setState({ imageLoadStates })
+  },
+
   getProfileImageUrl (screenName) {
     screenName = encodeURIComponent(screenName)
     return `https://twitter.com/${screenName}/profile_image?size=original`
   },
 
+  isImageLoaded (screenName) {
+    if (!screenName) return false
+    const { imageLoadStates } = this.state
+    return imageLoadStates[screenName] === 'loaded'
+  },
+
   render () {
-    const { onCancelClick, onSubmitClick, onImageError, onInputChange } = this
+    const { onCancelClick, onSubmit, onImageLoad, onImageError, onInputChange } = this
     const { inputValue, screenName, uploading, progress } = this.state
-    const src = screenName ? this.getProfileImageUrl(screenName) : null
 
     if (uploading) {
       return <Progress value={progress} />
     }
 
+    const imageLoaded = this.isImageLoaded(screenName)
+    const imageSrc = screenName ? this.getProfileImageUrl(screenName) : null
+    const imageClassName = imageLoaded ? '' : 'display-none'
+
     return (
-      <div className='px2 py1'>
+      <form onSubmit={onSubmit} className='px2 py1'>
         <p className='center'>Enter a Twitter username or URL</p>
         <div className='mb2 center'>
           {screenName &&
-            <img src={src} alt={screenName} style={{ width: 40, height: 40 }} onError={onImageError} data-screen-name={screenName} />}
+            <img
+              src={imageSrc}
+              alt={screenName}
+              className={imageClassName}
+              style={{ width: 40, height: 40 }}
+              onLoad={onImageLoad}
+              onError={onImageError}
+              data-screen-name={screenName} />}
         </div>
         <div className='mb2'>
-          <input className='input' value={inputValue} onChange={onInputChange} placeholder='Twitter username or URL' />
+          <input
+            className='input'
+            value={inputValue}
+            onChange={onInputChange}
+            placeholder='Twitter username or URL' />
         </div>
         <div className='center mb2'>
           <button type='button' className='btn gray40 bg-white mx2' onClick={onCancelClick}>Cancel</button>
-          <button type='button' className='btn white bg-blue mx2' onClick={onSubmitClick} disabled={!screenName}>Use Avatar</button>
+          <button type='submit' className='btn white bg-blue mx2' disabled={!(screenName && imageLoaded)}>Use Avatar</button>
         </div>
-      </div>
+      </form>
     )
   }
 })
