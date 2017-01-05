@@ -1,4 +1,5 @@
 import React from 'react'
+import { browserHistory } from 'react-router'
 import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
 import CampaignsTable from './campaigns-table'
@@ -15,6 +16,14 @@ const CampaignsPage = React.createClass({
       term: '',
       selectedSector: null,
       editCampaignOpen: false
+    }
+  },
+
+  componentDidMount () {
+    const { location: { pathname, query } } = this.props
+    if (query && query.editCampaignOpen) {
+      this.setState({ editCampaignOpen: true })
+      browserHistory.replace(pathname)
     }
   },
 
