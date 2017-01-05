@@ -4,10 +4,10 @@ App.medialistUpdated = function (medialistSlug, userId) {
   const medialist = Medialists.findOne({ slug: medialistSlug }, { fields: { name: 1, image: 1, slug: 1, client: 1 } })
   if (!medialist) throw new Meteor.Error('unknown-medialist', 'Cannot find medialist')
 
-  if (Meteor.users.find({ _id: userId, 'profile.medialists._id': medialist._id }).count()) {
-    Meteor.users.update({ _id: userId, 'profile.medialists._id': medialist._id }, { $set: { 'profile.medialists.$.updatedAt': new Date() } })
+  if (Meteor.users.find({ _id: userId, 'myMedialists._id': medialist._id }).count()) {
+    Meteor.users.update({ _id: userId, 'myMedialists._id': medialist._id }, { $set: { 'myMedialists.$.updatedAt': new Date() } })
   } else {
-    Meteor.users.update({ _id: userId }, { $push: { 'profile.medialists': {
+    Meteor.users.update({ _id: userId }, { $push: { 'myMedialists': {
       _id: medialist._id,
       slug: medialist.slug,
       avatar: medialist.avatar,

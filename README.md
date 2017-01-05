@@ -39,18 +39,18 @@ npm run watch
 		}
 	},
 	"profile" : {
-		"name" : "Richard Silverton",
-		"medialists": [
-			{
-				"_id": "eoriwoerijgworigjw409jgw4",
-				"name": "The Next Big Thing",
-				"slug": "next-big-thing",
-				"avatar": "https://example.com/image.png",
-				"clientName": "ABC Corp.",
-				"updatedAt": ISODate("2017-01-04T15:38:14.882Z")
-			}	
-		]
-	}
+		"name" : "Richard Silverton"
+	},
+	"myMedialists": [
+		{
+			"_id": "eoriwoerijgworigjw409jgw4",
+			"name": "The Next Big Thing",
+			"slug": "next-big-thing",
+			"avatar": "https://example.com/image.png",
+			"clientName": "ABC Corp.",
+			"updatedAt": ISODate("2017-01-04T15:38:14.882Z")
+		}	
+	]
 }
 ```
 
