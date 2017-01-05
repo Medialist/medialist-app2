@@ -1,25 +1,31 @@
 import React, { PropTypes } from 'react'
 import classNames from 'classnames/dedupe'
-import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
-import { dropdownMenuStyle } from '../common-styles'
-import Avatar from '../avatar'
-import EditableAvatarMenu from './menu'
+import { dropdownMenuStyle } from '../../common-styles'
+import Menu from './menu'
 
 const EditableAvatar = React.createClass({
   propTypes: {
     avatar: PropTypes.string,
-    name: PropTypes.string,
     className: PropTypes.string,
     style: PropTypes.object,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
+    onError: PropTypes.func.isRequired
   },
 
   getInitialState () {
     return { isDropdownOpen: false }
   },
 
-  onAvatarClick () {
+  onAvatarClick (e) {
+    // Don't open dropdown if click target is the menu or descendant of
+    let parent = e.target
+
+    while (parent) {
+      if (parent.className === 'DropdownMenu') return
+      parent = parent.parentElement
+    }
+
     this.setState({ isDropdownOpen: true })
   },
 
@@ -27,44 +33,38 @@ const EditableAvatar = React.createClass({
     this.setState({ isDropdownOpen: false })
   },
 
-  onImageChange (url) {
+  onImageChange (e) {
     this.setState({ isDropdownOpen: false })
-    this.props.onChange(url)
+    this.props.onChange(e)
+  },
+
+  onImageError (err) {
+    this.setState({ isDropdownOpen: false })
+    this.props.onError(err)
   },
 
   render () {
-    const { avatar, name, style, onDropdownDismiss } = this.props
-    const className = classNames(this.props.className, 'hover-opacity-50')
+    const { avatar, children, style } = this.props
     const { isDropdownOpen } = this.state
-    const { onImageChange, onAvatarClick } = this
+    const className = classNames(
+      'relative inline-block',
+      { 'hover-opacity-50 hover-cursor-pointer': !isDropdownOpen },
+      this.props.className
+    )
+    const { onImageChange, onImageError, onAvatarClick, onDropdownDismiss } = this
 
     return (
-      <Dropdown>
-        <Avatar
-          avatar={avatar}
-          name={name}
-          style={style}
-          className={className}
-          onClick={onAvatarClick} />
+      <div className={className} style={style} onClick={onAvatarClick}>
+        {children}
         <DropdownMenu
-          style={dropdownMenuStyle}
+          style={{ ...dropdownMenuStyle, width: 200 }}
           open={isDropdownOpen}
           onDismiss={onDropdownDismiss}>
-          <EditableAvatarMenu avatar={avatar} onChange={onImageChange} />
+          <Menu avatar={avatar} onChange={onImageChange} onError={onImageError} />
         </DropdownMenu>
-      </Dropdown>
+      </div>
     )
   }
 })
 
 export default EditableAvatar
-
-export const EditableCircleAvatar = (props) => {
-  const className = classNames(props.className, 'circle bg-gray60')
-  return <EditableAvatar {...props} className={className} />
-}
-
-export const EditableSquareAvatar = (props) => {
-  const className = classNames(props.className, 'rounded bg-black')
-  return <EditableAvatar {...props} className={className} />
-}

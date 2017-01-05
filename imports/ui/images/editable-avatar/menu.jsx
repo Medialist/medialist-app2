@@ -5,7 +5,8 @@ import TwitterScraper from './twitter-scraper'
 const EditableAvatarMenu = React.createClass({
   propTypes: {
     avatar: PropTypes.string,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
+    onError: PropTypes.func.isRequired
   },
 
   getInitialState () {
@@ -24,22 +25,36 @@ const EditableAvatarMenu = React.createClass({
     this.props.onChange(null)
   },
 
+  onSuccess (url) {
+    this.setState({ uploader: null })
+    this.props.onChange(url)
+  },
+
+  onError (err) {
+    this.setState({ uploader: null })
+    this.props.onError(err)
+  },
+
+  onDismiss () {
+    this.setState({ uploader: null })
+  },
+
   render () {
-    const { avatar, onChange } = this.props
+    const { avatar } = this.props
     const { uploader } = this.state
-    const { onUploadcareClick, onTwitterClick, onRemoveClick } = this
+    const { onUploadcareClick, onTwitterClick, onRemoveClick, onSuccess, onError, onDismiss } = this
 
     switch (uploader) {
       case 'uploadcare':
-        return <UploadcareLauncher onImage={onChange} />
+        return <UploadcareLauncher onSuccess={onSuccess} onError={onError} onDismiss={onDismiss} />
       case 'twitter':
-        return <TwitterScraper onImage={onChange} />
+        return <TwitterScraper onSuccess={onSuccess} onError={onError} onDismiss={onDismiss} />
       default:
         return (
-          <div>
-            <button onClick={onUploadcareClick}>Upload image</button>
-            <button onClick={onTwitterClick}>Import from Twitter</button>
-            {avatar && <button onClick={onRemoveClick}>Remove image</button>}
+          <div className='py1'>
+            <a href='#' className='block px3 py2 f-md normal gray20 hover-bg-blue hover-white' onClick={onUploadcareClick}>Upload image</a>
+            <a href='#' className='block px3 py2 f-md normal gray20 hover-bg-blue hover-white' onClick={onTwitterClick}>Import from Twitter</a>
+            {avatar && <a href='#' className='block px3 py2 f-md normal gray20 hover-bg-blue hover-white' onClick={onRemoveClick}>Remove image</a>}
           </div>
         )
     }

@@ -441,6 +441,9 @@ button {
 .hover-fill-current:hover svg{
   fill: currentColor;
 }
+.hover-cursor-pointer:hover {
+  cursor: pointer;
+}
 
 .active-bg-green-light.active {
   background-color: var(--green-light);

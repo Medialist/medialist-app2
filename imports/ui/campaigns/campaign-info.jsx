@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import EditableAvatar from '../images/editable-avatar/index'
 import { SquareAvatar, CircleAvatar } from '../images/avatar'
 import { BioIcon } from '../images/icons'
 import InfoHeader from '../lists/info-header'
@@ -27,15 +28,26 @@ const CampaignInfo = React.createClass({
     console.log('TODO: onAddTags')
   },
 
+  onAvatarChange (e) {
+    console.log('TODO: onAvatarChange', e.url)
+  },
+
+  onAvatarError (err) {
+    console.error('Failed to change avatar', err)
+    console.log('TODO: toast error message')
+  },
+
   render () {
     if (!this.props.campaign) return null
-    const { onAddTeamMembers, onAddSectors, onAddTags } = this
+    const { onAddTeamMembers, onAddSectors, onAddTags, onAvatarChange, onAvatarError } = this
     const { onEditClick } = this.props
     const { name, avatar, purpose } = this.props.campaign
     return (
       <div>
         <div className='mb1'>
-          <SquareAvatar className='ml2' size={70} avatar={avatar} name={name} />
+          <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError}>
+            <SquareAvatar size={70} avatar={avatar} name={name} />
+          </EditableAvatar>
           <div className='ml3 inline-block align-middle'>
             <span className='semibold block f-xl mb1'>{name}</span>
           </div>
