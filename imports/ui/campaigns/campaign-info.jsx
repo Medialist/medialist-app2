@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
+import EditableAvatar from '../images/editable-avatar'
 import { SquareAvatar, CircleAvatar } from '../images/avatar'
 import { BioIcon, FavouritesIcon, FavouritesIconGold } from '../images/icons'
 import InfoHeader from '../lists/info-header'
@@ -30,6 +31,17 @@ const CampaignInfo = React.createClass({
     console.log('TODO: onAddTags')
   },
 
+  onAvatarChange (e) {
+    console.log('TODO: onAvatarChange', e.url)
+    this.props.campaign.avatar = e.url
+    this.forceUpdate()
+  },
+
+  onAvatarError (err) {
+    console.error('Failed to change avatar', err)
+    console.log('TODO: toast error message')
+  },
+
   onToggleFavourite () {
     Meteor.call('medialists/toggle-favourite', this.props.campaign.slug, (err) => {
       if (err) console.error('Could not toggle favourite status for campaign', err)
@@ -38,7 +50,7 @@ const CampaignInfo = React.createClass({
 
   render () {
     if (!this.props.campaign) return null
-    const { onAddTeamMembers, onAddSectors, onAddTags } = this
+    const { onAddTeamMembers, onAddSectors, onAddTags, onAvatarChange, onAvatarError, onToggleFavourite } = this
     const { onEditClick, user, campaign } = this.props
     const { name, avatar, purpose } = this.props.campaign
     const isFavourite = user.myMedialists.some((m) => m._id === campaign._id)
@@ -47,12 +59,14 @@ const CampaignInfo = React.createClass({
     return (
       <div>
         <div className='mb1'>
-          <SquareAvatar className='ml2' size={70} avatar={avatar} name={name} />
+          <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError}>
+            <SquareAvatar size={70} avatar={avatar} name={name} />
+          </EditableAvatar>
           <div className='ml3 inline-block align-middle'>
             <span className='semibold block f-xl mb1'>
               {name}
               <Tooltip title={tooltip}>
-                <Icon className='mx2 pointer svg-icon-lg vertical-align-bottom' onClick={this.onToggleFavourite} />
+                <Icon className='mx2 pointer svg-icon-lg vertical-align-bottom' onClick={onToggleFavourite} />
               </Tooltip>
             </span>
           </div>
