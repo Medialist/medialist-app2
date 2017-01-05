@@ -24,6 +24,7 @@ ddp-rate-limiter@1.0.6
 ddp-server@1.2.10
 deps@1.0.12
 diff-sequence@1.0.7
+dispatch:mocha@0.0.9
 ecmascript@0.6.1
 ecmascript-runtime@0.3.15
 ejson@1.0.13
@@ -40,6 +41,7 @@ launch-screen@1.0.12
 livedata@1.0.18
 localstorage@1.0.12
 logging@1.1.16
+mdg:validated-method@1.1.0
 mdg:validation-error@0.2.0
 meteor@1.6.0
 meteor-base@1.0.4
@@ -58,6 +60,7 @@ oauth@1.1.12
 oauth1@1.1.11
 observe-sequence@1.0.14
 ordered-dict@1.0.9
+practicalmeteor:mocha-core@1.0.1
 promise@0.8.8
 random@1.0.10
 rate-limit@1.0.6
@@ -87,3 +90,4 @@ underscore@1.0.10
 url@1.0.11
 webapp@1.3.12
 webapp-hashing@1.0.9
+xolvio:cleaner@0.3.1

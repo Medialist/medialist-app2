@@ -4,8 +4,10 @@
   "scripts": {
     "postinstall": "run-s build:*",
     "start": "run-s build watch:server",
-    "test": "npm run lint && NODE_ENV=test ava --verbose",
-    "ava": "NODE_ENV=test ava --verbose",
+    "test": "run-p lint ava",
+    "test:server": "meteor test --once --driver-package dispatch:mocha --port 3100",
+    "test:server:watch": "TEST_WATCH=1 meteor test --driver-package dispatch:mocha --port 3100",
+    "ava": "NODE_ENV=test ava --verbose tests",
     "lint": "standard | snazzy",
     "lint:fix": "standard --fix",
     "build": "run-s build:*",
@@ -67,6 +69,7 @@
   },
   "standard": {
     "ignore": [
+      "**/*.test.js",
       "lib/**",
       "packages/**",
       "server/**"
