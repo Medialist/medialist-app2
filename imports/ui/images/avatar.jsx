@@ -8,7 +8,8 @@ const Avatar = React.createClass({
     avatar: PropTypes.string,
     name: PropTypes.string,
     className: PropTypes.string,
-    style: PropTypes.object
+    style: PropTypes.object,
+    size: PropTypes.number
   },
 
   getInitialState () {
@@ -17,6 +18,11 @@ const Avatar = React.createClass({
 
   onError () {
     this.setState({ imageLoadError: true })
+  },
+
+  resizeAvatar (url, size) {
+    if (url.indexOf('ucarecdn') === -1) return url
+    return `${url}-/scale_crop/${size}x${size}/center/`
   },
 
   render () {
@@ -28,9 +34,11 @@ const Avatar = React.createClass({
     const style = Object.assign({ width: size, height: size, lineHeight: size + 'px', fontSize }, this.props.style || {})
 
     if (avatar && !imageLoadError) {
+      const src = this.resizeAvatar(avatar, size * 2) // @2x for hdpi
+
       return (
         <div className={className} style={style}>
-          <img style={{width: '100%', height: '100%'}} src={avatar} alt={name} title={name} onError={this.onError} />
+          <img style={{width: '100%', height: '100%'}} src={src} alt={name} title={name} onError={this.onError} />
         </div>
       )
     }

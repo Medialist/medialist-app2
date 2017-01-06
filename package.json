@@ -28,6 +28,7 @@
     "basscss-responsive-padding": "^1.1.0",
     "classnames": "^2.2.5",
     "lodash.clonedeep": "^4.5.0",
+    "lodash.debounce": "^4.0.8",
     "lodash.values": "^4.3.0",
     "meteor-node-stubs": "~0.2.0",
     "mkdirp": "^0.5.1",
@@ -52,7 +53,8 @@
     "redux": "^3.6.0",
     "redux-thunk": "^2.1.0",
     "twitter-screen-name": "^1.0.0",
-    "underscore.string": "^3.3.4"
+    "underscore.string": "^3.3.4",
+    "uploadcare-widget": "^2.10.2"
   },
   "devDependencies": {
     "ava": "^0.16.0",

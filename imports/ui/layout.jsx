@@ -24,8 +24,9 @@ const Layout = React.createClass({
 
 export default createContainer(() => {
   const user = Meteor.user()
+  const loading = user ? Meteor.subscribe('my-contacts-and-campaigns').ready() : false
   const notifications = notificationsDummyData
-  return { user, notifications }
+  return { user, notifications, loading }
 }, Layout)
 
 // dummy data in lieu of actual notifications

@@ -59,10 +59,8 @@ const ContactsTable = React.createClass({
   render () {
     const { sort, onSortChange, contacts, selections, campaign, onStatusChange, loading } = this.props
 
-    if (loading) return <div className='center p4'><Loading /></div>
-
-    if (!contacts.length) {
-      return <p className='p4 mb2 f-xl semibold center'>No contacts yet</p>
+    if (!loading && !contacts.length) {
+      return <p className='pt2 pb5 mt0 f-xl semibold center'>No contacts found</p>
     }
 
     const selectionsById = selections.reduce((memo, selection) => {
@@ -71,92 +69,95 @@ const ContactsTable = React.createClass({
     }, {})
 
     return (
-      <table className='table'>
-        <thead>
-          <tr className='bg-gray90'>
-            <th className='center' style={{width: 55}}>
-              <Checkbox
-                checked={isSameItems(selections, contacts)}
-                onChange={this.onSelectAllChange} />
-            </th>
-            <SortableHeader
-              className='left-align'
-              sortDirection={sort['name']}
-              style={{width: '20%'}}
-              onSortChange={(d) => onSortChange({ name: d })}>
-              Name
-            </SortableHeader>
-            <SortableHeader
-              className='left-align'
-              sortDirection={sort['outlets.value']}
-              onSortChange={(d) => onSortChange({ 'outlets.value': d })}>
-              Title
-            </SortableHeader>
-            <SortableHeader
-              className='left-align'
-              sortDirection={sort['outlets.label']}
-              style={{width: '20%'}}
-              onSortChange={(d) => onSortChange({ 'outlets.label': d })}>
-              Media Outlet
-            </SortableHeader>
-            <th className='left-align' style={{width: '15%'}}>Email</th>
-            <th className='left-align' style={{width: '15%'}}>Phone</th>
-            <SortableHeader
-              className='left-align'
-              sortDirection={sort['updatedAt']}
-              style={{width: '11%'}}
-              onSortChange={(d) => onSortChange({ updatedAt: d })}>
-              Updated
-            </SortableHeader>
-            {campaign && (
-              <th className='left-align' style={{width: '15%'}}>Status</th>
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {contacts.map((contact) => {
-            const {
-              _id,
-              name,
-              avatar,
-              slug,
-              emails,
-              outlets,
-              phones,
-              updatedAt,
-              updatedBy
-            } = contact
-            const status = campaign && campaign.contacts[slug]
-            return (
-              <SelectableRow data={contact} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id}>
-                <td className='left-align'>
-                  <Link to={`/contact/${slug}`}>
-                    <CircleAvatar avatar={avatar} name={name} />
-                    <span className='ml3 semibold'>{name}</span>
-                  </Link>
-                </td>
-                <td className='left-align'>{(outlets && outlets.length) ? outlets[0].value : null}</td>
-                <td className='left-align'>{outlets.map((o) => o.label).join(', ')}</td>
-                <td className='left-align'>
-                  <DisplayEmail emails={emails} />
-                </td>
-                <td className='left-align'>
-                  <DisplayPhone phones={phones} />
-                </td>
-                <td className='left-align'>
-                  <FromNow className='semibold f-sm' date={updatedAt} />
-                  <div className='normal f-sm'>by <YouOrName user={updatedBy} /></div>
-                </td>
-                {campaign && (
+      <div>
+        <table className='table'>
+          <thead>
+            <tr className='bg-gray90'>
+              <th className='center' style={{width: 55}}>
+                <Checkbox
+                  checked={isSameItems(selections, contacts)}
+                  onChange={this.onSelectAllChange} />
+              </th>
+              <SortableHeader
+                className='left-align'
+                sortDirection={sort['name']}
+                style={{width: '20%'}}
+                onSortChange={(d) => onSortChange({ name: d })}>
+                Name
+              </SortableHeader>
+              <SortableHeader
+                className='left-align'
+                sortDirection={sort['outlets.value']}
+                onSortChange={(d) => onSortChange({ 'outlets.value': d })}>
+                Title
+              </SortableHeader>
+              <SortableHeader
+                className='left-align'
+                sortDirection={sort['outlets.label']}
+                style={{width: '20%'}}
+                onSortChange={(d) => onSortChange({ 'outlets.label': d })}>
+                Media Outlet
+              </SortableHeader>
+              <th className='left-align' style={{width: '15%'}}>Email</th>
+              <th className='left-align' style={{width: '15%'}}>Phone</th>
+              <SortableHeader
+                className='left-align'
+                sortDirection={sort['updatedAt']}
+                style={{width: '11%'}}
+                onSortChange={(d) => onSortChange({ updatedAt: d })}>
+                Updated
+              </SortableHeader>
+              {campaign && (
+                <th className='left-align' style={{width: '15%'}}>Status</th>
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            {contacts.map((contact) => {
+              const {
+                _id,
+                name,
+                avatar,
+                slug,
+                emails,
+                outlets,
+                phones,
+                updatedAt,
+                updatedBy
+              } = contact
+              const status = campaign && campaign.contacts[slug]
+              return (
+                <SelectableRow data={contact} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id}>
                   <td className='left-align'>
-                    <StatusSelector status={status} onChange={(status) => onStatusChange({status, contact})} />
+                    <Link to={`/contact/${slug}`}>
+                      <CircleAvatar avatar={avatar} name={name} />
+                      <span className='ml3 semibold'>{name}</span>
+                    </Link>
                   </td>
-                )}
-              </SelectableRow>
-            )
-          })}
-        </tbody>
-      </table>
+                  <td className='left-align'>{(outlets && outlets.length) ? outlets[0].value : null}</td>
+                  <td className='left-align'>{(outlets && outlets.length) ? outlets[0].label : null}</td>
+                  <td className='left-align'>
+                    <DisplayEmail emails={emails} />
+                  </td>
+                  <td className='left-align'>
+                    <DisplayPhone phones={phones} />
+                  </td>
+                  <td className='left-align'>
+                    <FromNow className='semibold f-sm' date={updatedAt} />
+                    <div className='normal f-sm'>by <YouOrName user={updatedBy} /></div>
+                  </td>
+                  {campaign && (
+                    <td className='left-align'>
+                      <StatusSelector status={status} onChange={(status) => onStatusChange({status, contact})} />
+                    </td>
+                  )}
+                </SelectableRow>
+              )
+            })}
+          </tbody>
+        </table>
+        { loading && <div className='center p4'><Loading /></div> }
+      </div>
     )
   }
 })

@@ -58,7 +58,7 @@ function createContact (data, user) {
   data.slug = App.cleanSlug(data.name)
   data.slug = App.uniqueSlug(data.slug, Contacts)
   data.medialists = []
-
+  data.masterLists = []
   data.createdAt = new Date()
   data.createdBy = {
     _id: user._id,
