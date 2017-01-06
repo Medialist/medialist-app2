@@ -78,7 +78,7 @@ const MasterListBtn = React.createClass({
           <div className='table center' style={{height: 80}}>
             <div className='table-cell align-middle normal f-lg pointer' onClick={() => onSelect(item)}>
               <label className='block mb1 pointer'>{item.item.label}</label>
-              {item.count &&
+              {item.item.count &&
                 <label className={`display-none f-xxs pointer ${item.selected ? 'white opacity-50' : 'blue'} hover-display-block`}>
                   {item.item.count} {title.toLowerCase()}s
                 </label>

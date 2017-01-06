@@ -1,10 +1,12 @@
 import React, { PropTypes } from 'react'
+import { Meteor } from 'meteor/meteor'
 import EditableAvatar from '../images/editable-avatar'
 import { SquareAvatar, CircleAvatar } from '../images/avatar'
-import { BioIcon } from '../images/icons'
+import { BioIcon, FavouritesIcon, FavouritesIconGold } from '../images/icons'
 import InfoHeader from '../lists/info-header'
 import QuickAdd from '../lists/quick-add'
 import AddToMasterList from '../lists/add-to-master-list'
+import Tooltip from '../navigation/tooltip'
 
 // Dummy data to be replaced with subscription data
 const selectedMasterLists = [
@@ -26,6 +28,7 @@ const allMasterLists = [
 const CampaignInfo = React.createClass({
   propTypes: {
     campaign: PropTypes.object,
+    user: PropTypes.object,
     onEditClick: PropTypes.func
   },
 
@@ -60,6 +63,12 @@ const CampaignInfo = React.createClass({
     console.log('TODO: onAddTags')
   },
 
+  onToggleFavourite () {
+    Meteor.call('medialists/toggle-favourite', this.props.campaign.slug, (err) => {
+      if (err) console.error('Could not toggle favourite status for campaign', err)
+    })
+  },
+
   onAvatarChange (e) {
     console.log('TODO: onAvatarChange', e.url)
     this.props.campaign.avatar = e.url
@@ -83,8 +92,11 @@ const CampaignInfo = React.createClass({
       onAvatarError
     } = this
     const { addToMasterListOpen } = this.state
-    const { onEditClick } = this.props
+    const { onEditClick, user, campaign } = this.props
     const { name, avatar, purpose } = this.props.campaign
+    const isFavourite = user.myMedialists.some((m) => m._id === campaign._id)
+    const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
+    const tooltip = isFavourite ? 'Remove from My Campaigns' : 'Add to My Campaigns'
     return (
       <div>
         <div className='mb1'>
@@ -92,7 +104,12 @@ const CampaignInfo = React.createClass({
             <SquareAvatar size={70} avatar={avatar} name={name} />
           </EditableAvatar>
           <div className='ml3 inline-block align-middle'>
-            <span className='semibold block f-xl mb1'>{name}</span>
+            <span className='semibold block f-xl mb1'>
+              {name}
+              <Tooltip title={tooltip}>
+                <Icon className='mx2 pointer svg-icon-lg align-bottom' onClick={this.onToggleFavourite} />
+              </Tooltip>
+            </span>
           </div>
         </div>
         <section>
