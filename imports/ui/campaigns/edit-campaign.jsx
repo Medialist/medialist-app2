@@ -22,6 +22,9 @@ const EditCampaign = React.createClass({
       website: ''
     }
   },
+  componentDidMount () {
+    this.nameInput.focus()
+  },
   onAvatarChange ({url}) {
     this.setState({avatar: url})
   },
@@ -32,7 +35,7 @@ const EditCampaign = React.createClass({
   onClientNameChange (clientName) {
     this.setState({clientName})
   },
-  onClientSelect ({name}) {
+  onClientSelect (name) {
     this.setState({clientName: name})
   },
   updateField (field, value) {
@@ -52,9 +55,8 @@ const EditCampaign = React.createClass({
       purpose,
       clientName
     }
-    console.log('medialists/create', {payload})
     create.call(payload, (err) => {
-      console.log('medialists/create', err)
+      if (err) return console.log(err)
       this.props.onDismiss()
     })
   },
@@ -80,6 +82,8 @@ const EditCampaign = React.createClass({
           </EditableAvatar>
           <div>
             <input
+              ref={(input) => { this.nameInput = input }}
+              autoComplete='off'
               className='center gray10 input-inline mt4 f-xxxl semibold'
               type='text'
               name='name'
