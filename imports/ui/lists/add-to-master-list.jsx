@@ -10,43 +10,30 @@ const AddCampaignToMasterList = React.createClass({
     open: PropTypes.bool.isRequired,
     onDismiss: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
-    usersMasterLists: PropTypes.array,
-    masterLists: PropTypes.array.isRequired,
+    selectedMasterLists: PropTypes.array,
+    allMasterLists: PropTypes.array.isRequired,
     title: PropTypes.string.isRequired
   },
   getInitialState () {
-    const { masterLists, usersMasterLists } = this.props
-    return {
-      usersMasterLists: usersMasterLists,
-      selectableList: markSelected(masterLists, usersMasterLists)
-    }
+    const { allMasterLists, selectedMasterLists } = this.props
+    const selectableList = allMasterLists.map((item) => {
+      const selected = !!find(selectedMasterLists, {slug: item.slug})
+      return { item, selected }
+    })
+    return { selectableList }
   },
   onSelect (item) {
-    let newList = this.state.usersMasterLists.slice(0)
-    newList = item.selected ? this.removeSelectedItem(newList, item) : this.addSelectedItem(newList, item)
-    this.setNewSelectedItems(newList)
-  },
-  addSelectedItem (newList, item) {
-    const {_id, label, slug} = item
-    newList.push({_id, label, slug})
-    return newList
-  },
-  removeSelectedItem (newList, item) {
-    const index = findIndex(this.state.usersMasterLists, {slug: item.slug})
-    newList.splice(index, 1)
-    return newList
-  },
-  setNewSelectedItems (newList) {
-    this.setState({
-      usersMasterLists: newList,
-      selectableList: markSelected(this.props.masterLists, newList)
-    })
+    item.selected = !item.selected
+    const selectableList = this.state.selectableList.slice(0)
+    const index = findIndex(selectableList, {item: {slug: item.item.slug}})
+    selectableList[index] = item
+    this.setState({ selectableList })
   },
   onSave () {
-    this.props.onSave({
-      oldList: this.props.usersMasterLists,
-      newList: this.state.usersMasterLists
-    })
+    const payload = this.state.selectableList
+      .filter((item) => item.selected)
+      .map((item) => item.item)
+    this.props.onSave(payload)
     this.props.onDismiss()
   },
   render () {
@@ -90,10 +77,10 @@ const MasterListBtn = React.createClass({
           {item.selected && <Check className='absolute top-0 right-0' style={{marginRight: 6}} />}
           <div className='table center' style={{height: 80}}>
             <div className='table-cell align-middle normal f-lg pointer' onClick={() => onSelect(item)}>
-              <label className='block mb1 pointer'>{item.label}</label>
+              <label className='block mb1 pointer'>{item.item.label}</label>
               {item.count &&
                 <label className={`display-none f-xxs pointer ${item.selected ? 'white opacity-50' : 'blue'} hover-display-block`}>
-                  {item.count} {title.toLowerCase()}s
+                  {item.item.count} {title.toLowerCase()}s
                 </label>
               }
             </div>
@@ -103,12 +90,5 @@ const MasterListBtn = React.createClass({
     )
   }
 })
-
-function markSelected (masterLists, currentlyBelongsTo) {
-  return masterLists.map((item) => {
-    item.selected = !!find(currentlyBelongsTo, {slug: item.slug})
-    return item
-  })
-}
 
 export default Modal(AddCampaignToMasterList)

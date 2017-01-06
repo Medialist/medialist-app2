@@ -7,7 +7,7 @@ import QuickAdd from '../lists/quick-add'
 import AddToMasterList from '../lists/add-to-master-list'
 
 // Dummy data to be replaced with subscription data
-const usersMasterLists = [
+const selectedMasterLists = [
   {_id: 0, label: 'Healthcare', slug: 'healthcare'},
   {_id: 0, label: 'Energy', slug: 'energy'}
 ]
@@ -113,11 +113,11 @@ const CampaignInfo = React.createClass({
           open={addToMasterListOpen}
           onDismiss={dismissAddToMasterList}
           onSave={onUpdateMasterList}
-          usersMasterLists={usersMasterLists}
-          masterLists={allMasterLists}
+          selectedMasterLists={selectedMasterLists}
+          allMasterLists={allMasterLists}
           title='Campaign' />
         <QuickAdd
-          usersMasterLists={usersMasterLists}
+          selectedMasterLists={selectedMasterLists}
           tags={[
             {
               _id: 'mongoidforamazon',

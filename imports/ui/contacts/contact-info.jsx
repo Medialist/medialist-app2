@@ -6,7 +6,7 @@ import InfoHeader from '../lists/info-header'
 import AddToMasterList from '../lists/add-to-master-list'
 
 // Dummy data to be replaced with subscription data
-const usersMasterLists = [
+const selectedMasterLists = [
   {_id: 0, label: 'Energy', slug: 'energy'},
   {_id: 0, label: 'Healthcare', slug: 'healthcare'},
   {_id: 0, label: 'Personal Fitness', slug: 'personal-fitness'}
@@ -97,11 +97,11 @@ const ContactInfo = React.createClass({
           open={addToMasterListOpen}
           onDismiss={dismissAddToMasterList}
           onSave={onUpdateMasterList}
-          usersMasterLists={usersMasterLists}
-          masterLists={allMasterLists}
+          selectedMasterLists={selectedMasterLists}
+          allMasterLists={allMasterLists}
           title='Contact' />
         <QuickAdd
-          usersMasterLists={usersMasterLists}
+          selectedMasterLists={selectedMasterLists}
           tags={[
             {
               _id: 'mongoidfornhs',
