@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import Tag from '../navigation/tag'
+import Tag from '../tags/tag'
 import InfoHeader from '../lists/info-header'
 
 const QuickAdd = (props) => {

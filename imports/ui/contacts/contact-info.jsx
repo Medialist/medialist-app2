@@ -4,6 +4,7 @@ import { EmailIcon } from '../images/icons'
 import QuickAdd from '../lists/quick-add'
 import InfoHeader from '../lists/info-header'
 import AddToMasterList from '../lists/add-to-master-list'
+import AddTags from '../tags/add-tags'
 
 // Dummy data to be replaced with subscription data
 const selectedMasterLists = [
@@ -17,9 +18,25 @@ const allMasterLists = [
   {_id: 0, label: 'Personal Fitness', slug: 'personal-fitness', count: 1},
   {_id: 0, label: 'Robotics', slug: 'robotics', count: 15},
   {_id: 0, label: 'Technology', slug: 'technology', count: 8},
-  {_id: 0, label: 'Money and Glory', slug: 'money-and-glory'},
-  {_id: 0, label: 'Quietness', slug: 'quietness'},
+  {_id: 0, label: 'Money and Glory', slug: 'money-and-glory', count: 1},
+  {_id: 0, label: 'Quietness', slug: 'quietness', count: 1},
   {_id: 0, label: 'Fashion Bloggers', slug: 'fashion-bloggers', count: 7}
+]
+const selectedTags = [
+  {_id: 0, name: 'Appropsal', slug: 'appropsal', count: 3},
+  {_id: 0, name: 'Attract', slug: 'attract', count: 8},
+  {_id: 0, name: 'Bees', slug: 'bees', count: 1},
+  {_id: 0, name: 'Burner', slug: 'burner', count: 1}
+]
+const allTags = [
+  {_id: 0, name: 'Apples', slug: 'apples', count: 12},
+  {_id: 0, name: 'Appropsal', slug: 'appropsal', count: 3},
+  {_id: 0, name: 'Attitude', slug: 'attitude', count: 1},
+  {_id: 0, name: 'Atack', slug: 'atack', count: 15},
+  {_id: 0, name: 'Attract', slug: 'attract', count: 8},
+  {_id: 0, name: 'Bees', slug: 'bees', count: 1},
+  {_id: 0, name: 'Burner', slug: 'burner', count: 1},
+  {_id: 0, name: 'Bloggers', slug: 'bloggers', count: 7}
 ]
 // END of dummy data
 
@@ -32,7 +49,8 @@ const ContactInfo = React.createClass({
   getInitialState () {
     return {
       showMore: false,
-      addToMasterListOpen: false
+      addToMasterListOpen: false,
+      addTagsOpen: false
     }
   },
 
@@ -49,18 +67,33 @@ const ContactInfo = React.createClass({
     this.setState({addToMasterListOpen: false})
   },
 
-  onUpdateMasterList (payload) {
-    console.log(payload)
+  onUpdateMasterList (selectedMasterLists) {
+    console.log(selectedMasterLists)
   },
 
   onAddTags () {
-    console.log(`TODO: add a tag to ${this.props.contact.name}'s contact`)
+    this.setState({addTagsOpen: true})
+  },
+
+  dismissAddTags () {
+    this.setState({addTagsOpen: false})
+  },
+
+  onUpdateTags (tags) {
+    console.log(tags)
   },
 
   render () {
     if (!this.props.contact) return null
-    const { onAddToMasterList, onAddTags, dismissAddToMasterList, onUpdateMasterList } = this
-    const { addToMasterListOpen } = this.state
+    const {
+      onAddToMasterList,
+      dismissAddToMasterList,
+      onUpdateMasterList,
+      onAddTags,
+      dismissAddTags,
+      onUpdateTags
+    } = this
+    const { addToMasterListOpen, addTagsOpen } = this.state
     const { name, avatar, emails, outlets, medialists } = this.props.contact
     const { showMore } = this.state
     return (
@@ -100,20 +133,16 @@ const ContactInfo = React.createClass({
           selectedMasterLists={selectedMasterLists}
           allMasterLists={allMasterLists}
           title='Contact' />
+        <AddTags
+          open={addTagsOpen}
+          onDismiss={dismissAddTags}
+          title={`Tag ${name}`}
+          selectedTags={selectedTags}
+          allTags={allTags}
+          onUpdateTags={onUpdateTags} />
         <QuickAdd
           selectedMasterLists={selectedMasterLists}
-          tags={[
-            {
-              _id: 'mongoidfornhs',
-              name: 'NHS',
-              count: 23
-            },
-            {
-              _id: 'mongoidfortechnology',
-              name: 'Technology',
-              count: 78
-            }
-          ]}
+          tags={selectedTags}
           onAddTags={onAddTags}
           onAddToMasterList={onAddToMasterList} />
       </div>
