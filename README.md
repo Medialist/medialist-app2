@@ -190,7 +190,7 @@ npm run watch
   "items": [
     "contact _id"
   ]
-  "priority": 1
+  "order": 0
 }
 ```
 

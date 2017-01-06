@@ -17,7 +17,7 @@ const ContactPage = React.createClass({
   },
 
   getInitialState () {
-    return { editContactOpen: true }
+    return { editContactOpen: false }
   },
 
   componentDidMount () {
@@ -30,7 +30,6 @@ const ContactPage = React.createClass({
 
   toggleEditContact () {
     const editContactOpen = !this.state.editContactOpen
-    console.log('toggleEditContact', editContactOpen)
     this.setState({ editContactOpen })
   },
 

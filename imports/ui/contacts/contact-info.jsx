@@ -4,7 +4,26 @@ import { CircleAvatar, SquareAvatar } from '../images/avatar'
 import { EmailIcon, FavouritesIconGold, FavouritesIcon } from '../images/icons'
 import QuickAdd from '../lists/quick-add'
 import InfoHeader from '../lists/info-header'
+import AddToMasterList from '../lists/add-to-master-list'
 import Tooltip from '../navigation/tooltip'
+
+// Dummy data to be replaced with subscription data
+const selectedMasterLists = [
+  {_id: 0, label: 'Energy', slug: 'energy'},
+  {_id: 0, label: 'Healthcare', slug: 'healthcare'},
+  {_id: 0, label: 'Personal Fitness', slug: 'personal-fitness'}
+]
+const allMasterLists = [
+  {_id: 0, label: 'Energy', slug: 'energy', count: 12},
+  {_id: 0, label: 'Healthcare', slug: 'healthcare', count: 3},
+  {_id: 0, label: 'Personal Fitness', slug: 'personal-fitness', count: 1},
+  {_id: 0, label: 'Robotics', slug: 'robotics', count: 15},
+  {_id: 0, label: 'Technology', slug: 'technology', count: 8},
+  {_id: 0, label: 'Money and Glory', slug: 'money-and-glory'},
+  {_id: 0, label: 'Quietness', slug: 'quietness'},
+  {_id: 0, label: 'Fashion Bloggers', slug: 'fashion-bloggers', count: 7}
+]
+// END of dummy data
 
 const ContactInfo = React.createClass({
   propTypes: {
@@ -14,7 +33,10 @@ const ContactInfo = React.createClass({
   },
 
   getInitialState () {
-    return { showMore: false }
+    return {
+      showMore: false,
+      addToMasterListOpen: false
+    }
   },
 
   onShowMoreToggleClick (e) {
@@ -22,8 +44,16 @@ const ContactInfo = React.createClass({
     this.setState({ showMore: !this.state.showMore })
   },
 
-  onAddSectors () {
-    console.log(`TODO: add sector to ${this.props.contact.name}'s contact`)
+  onAddToMasterList () {
+    this.setState({addToMasterListOpen: true})
+  },
+
+  dismissAddToMasterList () {
+    this.setState({addToMasterListOpen: false})
+  },
+
+  onUpdateMasterList (payload) {
+    console.log(payload)
   },
 
   onAddTags () {
@@ -38,9 +68,9 @@ const ContactInfo = React.createClass({
 
   render () {
     if (!this.props.contact) return null
-    const { onAddSectors, onAddTags } = this
+    const { onAddToMasterList, onAddTags, dismissAddToMasterList, onUpdateMasterList } = this
+    const { addToMasterListOpen, showMore } = this.state
     const { user: { myContacts }, contact: { _id, name, avatar, emails, outlets, medialists } } = this.props
-    const { showMore } = this.state
     const isFavourite = myContacts.some((c) => c._id === _id)
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
     const tooltip = isFavourite ? 'Remove from My Contacts' : 'Add to My Contacts'
@@ -79,8 +109,15 @@ const ContactInfo = React.createClass({
             </div>
           </section>
         }
+        <AddToMasterList
+          open={addToMasterListOpen}
+          onDismiss={dismissAddToMasterList}
+          onSave={onUpdateMasterList}
+          selectedMasterLists={selectedMasterLists}
+          allMasterLists={allMasterLists}
+          title='Contact' />
         <QuickAdd
-          sectors={['Energy', 'Healthcare', 'Robotics']}
+          selectedMasterLists={selectedMasterLists}
           tags={[
             {
               _id: 'mongoidfornhs',
@@ -94,7 +131,7 @@ const ContactInfo = React.createClass({
             }
           ]}
           onAddTags={onAddTags}
-          onAddSectors={onAddSectors} />
+          onAddToMasterList={onAddToMasterList} />
       </div>
     )
   }
