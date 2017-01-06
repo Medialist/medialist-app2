@@ -60,7 +60,10 @@ const TwitterScraper = React.createClass({
     this.props.onDismiss()
   },
 
-  onSubmit () {
+  onSubmit (e) {
+    console.log('W')
+    e.stopPropagation()
+    e.nativeEvent.stopImmediatePropagation()
     const { uploadcareConfig, onSuccess, onError } = this.props
     const { screenName } = this.state
     if (!screenName) return

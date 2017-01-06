@@ -51,7 +51,7 @@ const EditableAvatarMenu = React.createClass({
         return <TwitterScraper onSuccess={onSuccess} onError={onError} onDismiss={onDismiss} />
       default:
         return (
-          <div className='py1'>
+          <div className='py1 left-align'>
             <a href='#' className='block px3 py2 f-md normal gray20 hover-bg-blue hover-white' onClick={onUploadcareClick}>Upload image</a>
             <a href='#' className='block px3 py2 f-md normal gray20 hover-bg-blue hover-white' onClick={onTwitterClick}>Import from Twitter</a>
             {avatar && <a href='#' className='block px3 py2 f-md normal gray20 hover-bg-blue hover-white' onClick={onRemoveClick}>Remove image</a>}
