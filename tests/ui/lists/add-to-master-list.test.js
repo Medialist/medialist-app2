@@ -23,12 +23,12 @@ test('should render in modal', (t) => {
   t.plan(1)
   const wrapper = shallow(
     <AddToMasterList
-      open={false}
+      open
       onDismiss={stubFunc}
       onSave={stubFunc}
       usersMasterLists={[]}
       masterLists={[]}
       title='Test' />
   )
-  t.true(wrapper.length === 1)
+  t.truthy(wrapper.node)
 })
