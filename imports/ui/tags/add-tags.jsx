@@ -17,11 +17,14 @@ const AddTags = React.createClass({
   updatedSelectedTags (tags) {
     this.setState({ tags })
   },
+  onSave () {
+    this.props.onUpdateTags(this.state.tags)
+    this.props.onDismiss()
+  },
   render () {
     if (!this.props.open) return null
-    const { updatedSelectedTags } = this
-    const { tags } = this.state
-    const { onDismiss, title, allTags, selectedTags, onUpdateTags } = this.props
+    const { updatedSelectedTags, onSave } = this
+    const { onDismiss, title, allTags, selectedTags } = this.props
     return (
       <div>
         <div className='py6 center f-lg normal'>
@@ -32,7 +35,7 @@ const AddTags = React.createClass({
         </div>
         <div className='p4 bg-white'>
           <div className='clearfix'>
-            <button className='btn bg-completed white right' onClick={() => onUpdateTags(tags)}>Save Changes</button>
+            <button className='btn bg-completed white right' onClick={onSave}>Save Changes</button>
             <button className='btn bg-transparent gray40 right mr2' onClick={onDismiss}>Cancel</button>
           </div>
         </div>
