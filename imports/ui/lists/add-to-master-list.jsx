@@ -69,11 +69,11 @@ const MasterListBtn = React.createClass({
   },
   render () {
     const { item, title, onSelect } = this.props
-    const btnStyle = item.selected ? 'border-blue bg-blue white shadow-1' : 'border-gray80 bg-white gray20'
+    const selectedClasses = item.selected ? 'border-blue bg-blue white shadow-1' : 'border-gray80 bg-white gray20'
 
     return (
       <div className='p2' style={{width: '25%'}}>
-        <div className={`width-100 relative border ${btnStyle} hover-border-blue hover-display-trigger`} style={{borderRadius: 8}}>
+        <div className={`width-100 relative border ${selectedClasses} hover-border-blue hover-display-trigger`} style={{borderRadius: 8}}>
           {item.selected && <Check className='absolute top-0 right-0' style={{marginRight: 6}} />}
           <div className='table center' style={{height: 80}}>
             <div className='table-cell align-middle normal f-lg pointer' onClick={() => onSelect(item)}>
