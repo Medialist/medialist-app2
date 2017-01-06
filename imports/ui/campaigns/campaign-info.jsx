@@ -7,6 +7,7 @@ import InfoHeader from '../lists/info-header'
 import QuickAdd from '../lists/quick-add'
 import AddToMasterList from '../lists/add-to-master-list'
 import Tooltip from '../navigation/tooltip'
+import { update } from '../../api/medialists/methods'
 
 // Dummy data to be replaced with subscription data
 const selectedMasterLists = [
@@ -63,21 +64,22 @@ const CampaignInfo = React.createClass({
     console.log('TODO: onAddTags')
   },
 
-  onToggleFavourite () {
-    Meteor.call('medialists/toggle-favourite', this.props.campaign.slug, (err) => {
-      if (err) console.error('Could not toggle favourite status for campaign', err)
-    })
-  },
-
   onAvatarChange (e) {
-    console.log('TODO: onAvatarChange', e.url)
-    this.props.campaign.avatar = e.url
-    this.forceUpdate()
+    const { _id } = this.props.campaign
+    update.call({ _id, avatar: e.url }, (err) => {
+      if (err) console.error('Failed to update campaign avatar', err)
+    })
   },
 
   onAvatarError (err) {
     console.error('Failed to change avatar', err)
     console.log('TODO: toast error message')
+  },
+
+  onToggleFavourite () {
+    Meteor.call('medialists/toggle-favourite', this.props.campaign.slug, (err) => {
+      if (err) console.error('Could not toggle favourite status for campaign', err)
+    })
   },
 
   render () {
@@ -89,7 +91,8 @@ const CampaignInfo = React.createClass({
       dismissAddToMasterList,
       onUpdateMasterList,
       onAvatarChange,
-      onAvatarError
+      onAvatarError,
+      onToggleFavourite
     } = this
     const { addToMasterListOpen } = this.state
     const { onEditClick, user, campaign } = this.props
@@ -107,7 +110,7 @@ const CampaignInfo = React.createClass({
             <span className='semibold block f-xl mb1'>
               {name}
               <Tooltip title={tooltip}>
-                <Icon className='mx2 pointer svg-icon-lg align-bottom' onClick={this.onToggleFavourite} />
+                <Icon className='mx2 pointer svg-icon-lg align-bottom' onClick={onToggleFavourite} />
               </Tooltip>
             </span>
           </div>
