@@ -31,6 +31,8 @@
     "classnames": "^2.2.5",
     "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8",
+    "lodash.find": "^4.6.0",
+    "lodash.findindex": "^4.6.0",
     "lodash.values": "^4.3.0",
     "meteor-node-stubs": "~0.2.0",
     "mkdirp": "^0.5.1",

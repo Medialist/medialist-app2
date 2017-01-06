@@ -437,12 +437,19 @@ button {
 .hover-blue:hover {
   color: var(--blue);
 }
+.hover-border-blue:hover {
+  border-color: var(--blue) !important;
+}
 .hover-fill-trigger:hover .hover-fill-current svg,
 .hover-fill-current:hover svg{
   fill: currentColor;
 }
 .hover-cursor-pointer:hover {
   cursor: pointer;
+}
+
+.hover-display-trigger:hover .hover-display-block {
+  display: block !important;
 }
 
 .active-bg-green-light.active {
