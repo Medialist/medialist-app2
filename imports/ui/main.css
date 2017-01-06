@@ -448,6 +448,10 @@ button {
   cursor: pointer;
 }
 
+.hover-display-trigger:hover .hover-display-block {
+  display: block !important;
+}
+
 .active-bg-green-light.active {
   background-color: var(--green-light);
 }

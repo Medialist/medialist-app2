@@ -15,7 +15,7 @@ const ContactPage = React.createClass({
   },
 
   getInitialState () {
-    return { editContactOpen: true }
+    return { editContactOpen: false }
   },
 
   toggleEditContact () {

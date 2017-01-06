@@ -80,30 +80,19 @@ const MasterListBtn = React.createClass({
     item: PropTypes.object.isRequired,
     onSelect: PropTypes.func.isRequired
   },
-  getInitialState () {
-    return { showCount: false }
-  },
-  onMouseEnter () {
-    this.setState({showCount: true})
-  },
-  onMouseLeave () {
-    this.setState({showCount: false})
-  },
   render () {
-    const { onMouseEnter, onMouseLeave } = this
-    const { showCount } = this.state
     const { item, title, onSelect } = this.props
     const btnStyle = item.selected ? 'border-blue bg-blue white shadow-1' : 'border-gray80 bg-white gray20'
 
     return (
       <div className='p2' style={{width: '25%'}}>
-        <div className={`width-100 relative border ${btnStyle} hover-border-blue`} style={{borderRadius: 8}}>
+        <div className={`width-100 relative border ${btnStyle} hover-border-blue hover-display-trigger`} style={{borderRadius: 8}}>
           {item.selected && <Check className='absolute top-0 right-0' style={{marginRight: 6}} />}
           <div className='table center' style={{height: 80}}>
-            <div className='table-cell align-middle normal f-lg pointer' onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onClick={() => onSelect(item)}>
+            <div className='table-cell align-middle normal f-lg pointer' onClick={() => onSelect(item)}>
               <label className='block mb1 pointer'>{item.label}</label>
               {item.count &&
-                <label className={`f-xxs pointer ${item.selected ? 'white opacity-50' : 'blue'} ${showCount ? 'block' : 'hide'}`}>
+                <label className={`display-none f-xxs pointer ${item.selected ? 'white opacity-50' : 'blue'} hover-display-block`}>
                   {item.count} {title.toLowerCase()}s
                 </label>
               }
