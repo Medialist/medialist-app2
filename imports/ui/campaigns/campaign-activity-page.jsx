@@ -14,6 +14,7 @@ const CampaignActivityPage = React.createClass({
     router: PropTypes.object,
     loading: React.PropTypes.bool,
     campaign: PropTypes.object,
+    user: PropTypes.object,
     contacts: PropTypes.array,
     contactsAll: PropTypes.array,
     contactsCount: PropTypes.number
@@ -44,7 +45,7 @@ const CampaignActivityPage = React.createClass({
 
   render () {
     const { toggleEditModal, onBackClick, onFeedback } = this
-    const { campaign, contacts, contactsCount, clients, contactsAll } = this.props
+    const { campaign, contacts, contactsCount, clients, contactsAll, user } = this.props
     const { editModalOpen } = this.state
     if (!campaign) return null
 
@@ -53,7 +54,7 @@ const CampaignActivityPage = React.createClass({
         <CampaignTopbar onBackClick={onBackClick} contactsAll={contactsAll} campaign={campaign} contacts={contacts} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
-            <CampaignInfo campaign={campaign} onEditClick={toggleEditModal} />
+            <CampaignInfo campaign={campaign} onEditClick={toggleEditModal} user={user} />
             <EditCampaign campaign={campaign} open={editModalOpen} onDismiss={toggleEditModal} clients={clients} />
           </div>
           <div className='flex-auto px2' >
@@ -81,5 +82,6 @@ export default createContainer((props) => {
   const contacts = window.Contacts.find({medialists: slug}, {limit: 7, sort: {updatedAt: -1}}).fetch()
   const contactsCount = window.Contacts.find({medialists: slug}).count()
   const contactsAll = window.Contacts.find({}, {sort: {name: 1}}).fetch()
-  return { ...props, campaign, contacts, contactsCount, loading, contactsAll }
+  const user = Meteor.user()
+  return { ...props, campaign, contacts, contactsCount, loading, contactsAll, user }
 }, withRouter(CampaignActivityPage))
