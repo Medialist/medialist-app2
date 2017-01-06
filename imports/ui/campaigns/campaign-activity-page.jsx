@@ -8,6 +8,7 @@ import CampaignContactList from './campaign-contact-list'
 import PostBox from '../contacts/post-box'
 import ActivityFeed from '../dashboard/activity-feed'
 import EditCampaign from './edit-campaign'
+import EditTeam from './edit-team'
 
 const CampaignActivityPage = React.createClass({
   propTypes: {
@@ -21,12 +22,17 @@ const CampaignActivityPage = React.createClass({
   },
 
   getInitialState () {
-    return { editModalOpen: false }
+    return { editModalOpen: false, editTeamModalOpen: false }
   },
 
   toggleEditModal () {
     const editModalOpen = !this.state.editModalOpen
     this.setState({ editModalOpen })
+  },
+
+  toggleEditTeamModal () {
+    const editTeamModalOpen = !this.state.editTeamModalOpen
+    this.setState({ editTeamModalOpen })
   },
 
   onBackClick () {
@@ -44,9 +50,9 @@ const CampaignActivityPage = React.createClass({
   },
 
   render () {
-    const { toggleEditModal, onBackClick, onFeedback } = this
+    const { toggleEditModal, toggleEditTeamModal, onBackClick, onFeedback } = this
     const { campaign, contacts, contactsCount, clients, contactsAll, user } = this.props
-    const { editModalOpen } = this.state
+    const { editModalOpen, editTeamModalOpen } = this.state
     if (!campaign) return null
 
     return (
@@ -54,8 +60,9 @@ const CampaignActivityPage = React.createClass({
         <CampaignTopbar onBackClick={onBackClick} contactsAll={contactsAll} campaign={campaign} contacts={contacts} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
-            <CampaignInfo campaign={campaign} onEditClick={toggleEditModal} user={user} />
+            <CampaignInfo campaign={campaign} onEditClick={toggleEditModal} onEditTeamClick={toggleEditTeamModal} user={user} />
             <EditCampaign campaign={campaign} open={editModalOpen} onDismiss={toggleEditModal} clients={clients} />
+            <EditTeam campaign={campaign} open={editTeamModalOpen} onDismiss={toggleEditTeamModal} />
           </div>
           <div className='flex-auto px2' >
             <PostBox campaigns={[campaign]} onFeedback={onFeedback} />

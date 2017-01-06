@@ -30,7 +30,8 @@ const CampaignInfo = React.createClass({
   propTypes: {
     campaign: PropTypes.object,
     user: PropTypes.object,
-    onEditClick: PropTypes.func
+    onEditClick: PropTypes.func,
+    onEditTeamClick: PropTypes.func
   },
 
   getInitialState () {
@@ -44,12 +45,12 @@ const CampaignInfo = React.createClass({
     this.setState({ showMore: !this.state.showMore })
   },
 
-  onAddTeamMembers (e) {
-    console.log('TODO: onAddTeamMembers')
-  },
-
   onAddToMasterList (e) {
     this.setState({addToMasterListOpen: true})
+  },
+
+  onAddSectors (e) {
+    console.log('TODO: onAddSectors')
   },
 
   dismissAddToMasterList () {
@@ -85,7 +86,6 @@ const CampaignInfo = React.createClass({
   render () {
     if (!this.props.campaign) return null
     const {
-      onAddTeamMembers,
       onAddToMasterList,
       onAddTags,
       dismissAddToMasterList,
@@ -95,7 +95,7 @@ const CampaignInfo = React.createClass({
       onToggleFavourite
     } = this
     const { addToMasterListOpen } = this.state
-    const { onEditClick, user, campaign } = this.props
+    const { onEditClick, onEditTeamClick, user, campaign } = this.props
     const { name, avatar, purpose } = this.props.campaign
     const isFavourite = user.myMedialists.some((m) => m._id === campaign._id)
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
@@ -123,10 +123,9 @@ const CampaignInfo = React.createClass({
           </div>
         </section>
         <section>
-          <InfoHeader name='Team Members' onClick={onAddTeamMembers} />
+          <InfoHeader name='Team Members' onClick={onEditTeamClick} />
           <div className='px2 py3'>
-            <CircleAvatar style={{margin: '0 2px 2px 0'}} name={'fake one'} size={38} />
-            <CircleAvatar name={'other one'} size={38} />
+            <TeamList campaign={campaign} />
           </div>
         </section>
         <AddToMasterList
@@ -158,3 +157,15 @@ const CampaignInfo = React.createClass({
 })
 
 export default CampaignInfo
+
+const TeamList = ({ campaign }) => {
+  const { team } = campaign
+
+  if (!team || !team.length) {
+    return <p className='f-xs normal gray60 center'>No team members yet</p>
+  }
+
+  return team.map(({ _id, name, avatar }) => {
+    <CircleAvatar key={_id} avatar={avatar} style={{margin: '0 2px 2px 0'}} name={name} size={38} />
+  })
+}

@@ -4,6 +4,7 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { check, Match } from 'meteor/check'
 import nothing from '/imports/lib/nothing'
 import { MasterListRefSchema } from '/imports/api/master-lists/master-lists'
+import { UserRefSchema } from '/imports/api/users/users'
 
 const Medialists = new Mongo.Collection('medialists')
 
@@ -101,6 +102,9 @@ export const MedialistSchema = new SimpleSchema({
   },
   masterLists: {
     type: [MasterListRefSchema]
+  },
+  team: {
+    type: [UserRefSchema]
   }
 })
 
