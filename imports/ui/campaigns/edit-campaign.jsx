@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
 import { CameraIcon, BioIcon, WebsiteIcon } from '../images/icons'
 import Modal from '../navigation/modal'
+import EditableAvatar from '../images/editable-avatar'
 import ClientAutocomplete from './client-autocomplete'
 import { create } from '/imports/api/medialists/methods'
 
@@ -14,11 +15,19 @@ const EditCampaign = React.createClass({
   getInitialState () {
     const { campaign } = this.props
     return {
+      avatar: null,
       name: campaign && campaign.name || '',
       purpose: campaign && campaign.purpose || '',
       clientName: campaign && campaign.client && campaign.client.name || '',
       website: ''
     }
+  },
+  onAvatarChange ({url}) {
+    this.setState({avatar: url})
+  },
+  onAvatarError (err) {
+    console.error('Failed to change avatar', err)
+    console.log('TODO: toast error message')
   },
   onClientNameChange (clientName) {
     this.setState({clientName})
@@ -36,8 +45,9 @@ const EditCampaign = React.createClass({
   },
   onSubmit (evt) {
     evt.preventDefault()
-    const { name, purpose, clientName } = this.state
+    const { avatar, name, purpose, clientName } = this.state
     const payload = {
+      avatar,
       name,
       purpose,
       clientName
@@ -53,20 +63,21 @@ const EditCampaign = React.createClass({
   },
   render () {
     if (!this.props.open) return null
-    const { onChange, onSubmit, onReset, onClientNameChange, onClientSelect } = this
+    const { onChange, onSubmit, onReset, onClientNameChange, onClientSelect, onAvatarChange, onAvatarError } = this
     const { clients } = this.props
-    const { name, purpose, clientName, website } = this.state
+    const { avatar, name, purpose, clientName, website } = this.state
     const inputWidth = 270
     const iconWidth = 30
     const inputStyle = { width: inputWidth, resize: 'none' }
     const iconStyle = { width: iconWidth }
-
     return (
       <form onSubmit={onSubmit} onReset={onReset}>
         <div className='px4 py6 center'>
-          <div className='bg-gray40 center rounded mx-auto' style={{height: '123px', width: '123px', lineHeight: '123px'}}>
-            <CameraIcon />
-          </div>
+          <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError}>
+            <div className='bg-gray40 center rounded mx-auto' style={{height: '123px', width: '123px', lineHeight: '123px'}}>
+              { avatar ? <img src={avatar} width='100%' height='100%' /> : <CameraIcon /> }
+            </div>
+          </EditableAvatar>
           <div>
             <input
               className='center gray10 input-inline mt4 f-xxxl semibold'
