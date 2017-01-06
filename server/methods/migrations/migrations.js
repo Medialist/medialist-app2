@@ -216,6 +216,18 @@ var MigrationVersions = [
         }
       })
     }
+  },
+
+  {
+    number: 13,
+    instructions () {
+      // Adds a medialist array to user docs
+      Meteor.users.find({}).forEach(user => {
+        if (!user.medialists) {
+          Meteor.users.update(user._id, { $set: { 'myContacts': [] } })
+        }
+      })
+    }
   }
 ]
 

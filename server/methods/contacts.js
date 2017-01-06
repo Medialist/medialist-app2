@@ -1,8 +1,9 @@
 Meteor.methods({
 
   'contacts/remove': function (contactIds) {
-    if (!this.userId) throw new Meteor.Error('Only a logged in user can create a contact')
+    if (!this.userId) throw new Meteor.Error('Only a logged in user can remove a contact')
     check(contactIds, Array)
+    Meteor.users.update({ 'myContacts._id': { $in: contactIds } }, { $pull: { myContacts: { _id: { $in: contactIds } } } })
     return Contacts.remove({_id: {$in: contactIds}})
   },
 
@@ -55,11 +56,19 @@ Meteor.methods({
       App.medialistUpdated(medialistSlug, this.userId)
     }
 
-    if (details.twitter) {
-      Contacts.changeScreenName(contactId, details.twitter)
-    }
-
-    return contact
+    return (details.twitter ? Contacts.changeScreenName(contactId, details.twitter) : Promise.resolve())
+      .then(() => {
+        const contact = Contacts.findOne(contactId)
+        Meteor.users.update({ _id: this.userId }, { $push: { 'myContacts': {
+          _id: contactId,
+          slug: contact.slug,
+          avatar: contact.avatar,
+          name: contact.name,
+          outlets: contact.outlets,
+          updatedAt: new Date()
+        } } })
+        return contact
+      })
   },
 
   'contacts/addToMedialist': function (contactSlugs, medialistSlug) {
@@ -80,6 +89,7 @@ Meteor.methods({
         medialistSlug,
         action: 'added'
       })
+      App.contactInteracted(contactSlug, this.userId)
     })
 
 	  App.medialistUpdated(medialistSlug, this.userId)
@@ -136,6 +146,8 @@ Meteor.methods({
       'updatedBy.avatar': user.services.twitter.profile_image_url_https,
       'updatedAt': new Date()
     }
+    App.contactInteracted(contactSlug, this.userId)
+    
     return Contacts.update({ slug: contactSlug }, { $set: updateSet, $push: { outlets: outlet } })
   },
 
@@ -149,6 +161,8 @@ Meteor.methods({
     var key = [prop, index, 'label'].join('.')
     var query = {}
     query[key] = newLabel
+    App.contactInteracted(contactSlug, this.userId)
+
     return Contacts.update({ slug: contactSlug }, { $set: query })
   },
 
@@ -160,6 +174,8 @@ Meteor.methods({
     var prop = type + 's'
     var query = { $pull: {} }
     query.$pull[prop] = item
+    App.contactInteracted(contactSlug, this.userId)
+
     return Contacts.update({ slug: contactSlug }, query)
   },
 
@@ -167,6 +183,8 @@ Meteor.methods({
     if (!this.userId) throw new Meteor.Error('Only a logged in user can add roles to a contact')
     checkContactSlug(contactSlug)
     var item = { label: Contacts.phoneTypes[0], value:'' }
+    App.contactInteracted(contactSlug, this.userId)
+
     return Contacts.update({ slug: contactSlug }, { $push: { phones: item }})
   },
 
@@ -174,6 +192,8 @@ Meteor.methods({
     if (!this.userId) throw new Meteor.Error('Only a logged in user can add roles to a contact')
     checkContactSlug(contactSlug)
     var item = { label: Contacts.emailTypes[0], value:'' }
+    App.contactInteracted(contactSlug, this.userId)
+
     return Contacts.update({ slug: contactSlug }, { $push: { emails: item }})
   },
 
@@ -181,6 +201,8 @@ Meteor.methods({
     if (!this.userId) throw new Meteor.Error('Only a logged in user can add roles to a contact')
     checkContactSlug(contactSlug)
     var item = { label: Contacts.socialTypes[1], value:''}
+    App.contactInteracted(contactSlug, this.userId)
+
     return Contacts.update({ slug: contactSlug }, { $push: { socials: item }})
   },
 
@@ -192,6 +214,7 @@ Meteor.methods({
     var contact = Contacts.findOne({slug: contactSlug}, {fields: {avatar: 1}})
 
     if (!contact) return
+    App.contactInteracted(contactSlug, this.userId)
 
     HTTP.get(contact.avatar, err => {
       if (!err) return // avatar is fine. ignore.

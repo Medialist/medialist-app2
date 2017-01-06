@@ -14,8 +14,19 @@ const RecentContactsList = (props) => {
           <span className='ml1'>My Recent Contacts</span>
         </h1>
       </header>
-      <div className='pl3'>
-        {contacts.map((contact) => <CampaignContact key={contact.slug} {...contact} />)}
+      <div className='p3'>
+        {contacts.length
+          ? contacts.map((contact) => <CampaignContact key={contact.slug} {...contact} />)
+          : (
+            <Link
+              to='/contacts?editContactOpen=true'
+              className='block py1 pl1 underline semibold blue'
+              style={{ marginLeft: '21px' }}
+              title='Create a new contact'>
+                Create a new contact
+            </Link>
+          )
+        }
       </div>
     </section>
   )

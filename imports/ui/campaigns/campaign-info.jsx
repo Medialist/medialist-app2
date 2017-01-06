@@ -63,12 +63,6 @@ const CampaignInfo = React.createClass({
     console.log('TODO: onAddTags')
   },
 
-  onToggleFavourite () {
-    Meteor.call('medialists/toggle-favourite', this.props.campaign.slug, (err) => {
-      if (err) console.error('Could not toggle favourite status for campaign', err)
-    })
-  },
-
   onAvatarChange (e) {
     console.log('TODO: onAvatarChange', e.url)
     this.props.campaign.avatar = e.url
@@ -80,6 +74,12 @@ const CampaignInfo = React.createClass({
     console.log('TODO: toast error message')
   },
 
+  onToggleFavourite () {
+    Meteor.call('medialists/toggle-favourite', this.props.campaign.slug, (err) => {
+      if (err) console.error('Could not toggle favourite status for campaign', err)
+    })
+  },
+
   render () {
     if (!this.props.campaign) return null
     const {
@@ -89,7 +89,8 @@ const CampaignInfo = React.createClass({
       dismissAddToMasterList,
       onUpdateMasterList,
       onAvatarChange,
-      onAvatarError
+      onAvatarError,
+      onToggleFavourite
     } = this
     const { addToMasterListOpen } = this.state
     const { onEditClick, user, campaign } = this.props
@@ -107,7 +108,7 @@ const CampaignInfo = React.createClass({
             <span className='semibold block f-xl mb1'>
               {name}
               <Tooltip title={tooltip}>
-                <Icon className='mx2 pointer svg-icon-lg align-bottom' onClick={this.onToggleFavourite} />
+                <Icon className='mx2 pointer svg-icon-lg align-bottom' onClick={onToggleFavourite} />
               </Tooltip>
             </span>
           </div>
