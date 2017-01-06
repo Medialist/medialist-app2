@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react'
 import { CameraIcon, BioIcon, WebsiteIcon } from '../images/icons'
-import { Meteor } from 'meteor/meteor'
 import Modal from '../navigation/modal'
 import ClientAutocomplete from './client-autocomplete'
+import { create } from '/imports/api/medialists/methods'
 
 const EditCampaign = React.createClass({
   propTypes: {
@@ -14,17 +14,20 @@ const EditCampaign = React.createClass({
   getInitialState () {
     const { campaign } = this.props
     return {
-      campaign: {
-        name: campaign && campaign.name || '',
-        purpose: campaign && campaign.purpose || '',
-        client: campaign && campaign.client || {name: ''},
-        website: ''
-      }
+      name: campaign && campaign.name || '',
+      purpose: campaign && campaign.purpose || '',
+      clientName: campaign && campaign.client && campaign.client.name || '',
+      website: ''
     }
   },
+  onClientNameChange (clientName) {
+    this.setState({clientName})
+  },
+  onClientSelect ({name}) {
+    this.setState({clientName: name})
+  },
   updateField (field, value) {
-    const newValues = Object.assign({}, this.state.campaign, {[field]: value})
-    this.setState({ campaign: newValues })
+    this.setState({ [field]: value })
   },
   onChange (evt) {
     const { name, value } = evt.target
@@ -33,27 +36,26 @@ const EditCampaign = React.createClass({
   },
   onSubmit (evt) {
     evt.preventDefault()
-    const { name, purpose, clientName, clientId } = this.state.campaign
+    const { name, purpose, clientName } = this.state
     const payload = {
       name,
       purpose,
-      client: {
-        _id: clientId,
-        name: clientName
-      }
+      clientName
     }
-    if (!payload.client.name || !payload.client._id || !payload.name) return
-    Meteor.call('medialists/create', payload)
-    this.props.onDismiss()
+    console.log('medialists/create', {payload})
+    create.call(payload, (err) => {
+      console.log('medialists/create', err)
+      this.props.onDismiss()
+    })
   },
   onReset () {
     this.props.onDismiss()
   },
   render () {
     if (!this.props.open) return null
-    const { onChange, onSubmit, onReset, updateField } = this
+    const { onChange, onSubmit, onReset, onClientNameChange, onClientSelect } = this
     const { clients } = this.props
-    const { name, purpose, client, website } = this.state.campaign
+    const { name, purpose, clientName, website } = this.state
     const inputWidth = 270
     const iconWidth = 30
     const inputStyle = { width: inputWidth, resize: 'none' }
@@ -80,8 +82,9 @@ const EditCampaign = React.createClass({
             clients={clients}
             className='center input-inline mt1 f-lg gray10'
             name='clientName'
-            clientName={client.name}
-            onSelect={updateField} />
+            clientName={clientName}
+            onSelect={onClientSelect}
+            onChange={onClientNameChange} />
         </div>
         <div className='bg-gray90 border-top border-gray80'>
           <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft: 70}}>Details</label>

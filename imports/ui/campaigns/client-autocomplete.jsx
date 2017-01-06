@@ -5,7 +5,8 @@ export default React.createClass({
   propTypes: {
     clients: PropTypes.array.isRequired,
     clientName: PropTypes.string.isRequired,
-    onSelect: PropTypes.func.isRequired
+    onSelect: PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired
   },
   getInitialState () {
     const clientName = this.props.clientName || ''
@@ -30,6 +31,7 @@ export default React.createClass({
       clientName: value,
       suggestions: this.getSuggestions(value)
     })
+    this.props.onChange(value)
   },
   onSelect (suggestion) {
     const res = this.props.clients.filter((client) => suggestion === client.name)
