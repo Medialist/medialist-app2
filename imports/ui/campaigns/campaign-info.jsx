@@ -6,6 +6,7 @@ import { BioIcon, FavouritesIcon, FavouritesIconGold } from '../images/icons'
 import InfoHeader from '../lists/info-header'
 import QuickAdd from '../lists/quick-add'
 import Tooltip from '../navigation/tooltip'
+import { update } from '../../api/medialists/methods'
 
 const CampaignInfo = React.createClass({
   propTypes: {
@@ -38,9 +39,10 @@ const CampaignInfo = React.createClass({
   },
 
   onAvatarChange (e) {
-    console.log('TODO: onAvatarChange', e.url)
-    this.props.campaign.avatar = e.url
-    this.forceUpdate()
+    const { _id } = this.props.campaign
+    update.call({ _id, avatar: e.url }, (err) => {
+      if (err) console.error('Failed to update campaign avatar', err)
+    })
   },
 
   onAvatarError (err) {

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { check } from 'meteor/check'
+import '/imports/api/medialists/methods'
 
 const Medialists = (typeof window === 'undefined') ? global.Medialists : window.Medialists
 
