@@ -45,6 +45,6 @@ describe('master-lists', function () {
     assert.equal(list.slug, 'hello')
     assert.equal(list.name, 'Hello')
     assert.equal(list.type, 'Contacts')
-    assert.equal(list.order, 1)
+    assert.equal(list.order, 0)
   })
 })

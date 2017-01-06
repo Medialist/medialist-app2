@@ -181,7 +181,7 @@ npm run watch
   "items": [
     "contact _id"
   ]
-  "order": 1
+  "order": 0
 }
 ```
 
