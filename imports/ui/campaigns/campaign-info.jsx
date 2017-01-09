@@ -6,6 +6,7 @@ import { BioIcon, FavouritesIcon, FavouritesIconGold } from '../images/icons'
 import InfoHeader from '../lists/info-header'
 import QuickAdd from '../lists/quick-add'
 import AddToMasterList from '../lists/add-to-master-list'
+import AddTags from '../tags/add-tags'
 import Tooltip from '../navigation/tooltip'
 import { update } from '../../api/medialists/methods'
 
@@ -24,6 +25,22 @@ const allMasterLists = [
   {_id: 0, label: 'Quietness', slug: 'quietness'},
   {_id: 0, label: 'Fashion Bloggers', slug: 'fashion-bloggers', count: 7}
 ]
+const selectedTags = [
+  {_id: 0, name: 'Appropsal', slug: 'appropsal', count: 3},
+  {_id: 0, name: 'Attract', slug: 'attract', count: 8},
+  {_id: 0, name: 'Bees', slug: 'bees', count: 1},
+  {_id: 0, name: 'Burner', slug: 'burner', count: 1}
+]
+const allTags = [
+  {_id: 0, name: 'Apples', slug: 'apples', count: 12},
+  {_id: 0, name: 'Appropsal', slug: 'appropsal', count: 3},
+  {_id: 0, name: 'Attitude', slug: 'attitude', count: 1},
+  {_id: 0, name: 'Atack', slug: 'atack', count: 15},
+  {_id: 0, name: 'Attract', slug: 'attract', count: 8},
+  {_id: 0, name: 'Bees', slug: 'bees', count: 1},
+  {_id: 0, name: 'Burner', slug: 'burner', count: 1},
+  {_id: 0, name: 'Bloggers', slug: 'bloggers', count: 7}
+]
 // END of dummy data
 
 const CampaignInfo = React.createClass({
@@ -35,7 +52,8 @@ const CampaignInfo = React.createClass({
 
   getInitialState () {
     return {
-      addToMasterListOpen: false
+      addToMasterListOpen: false,
+      addTagsOpen: false
     }
   },
 
@@ -60,8 +78,16 @@ const CampaignInfo = React.createClass({
     console.log(payload)
   },
 
-  onAddTags (e) {
-    console.log('TODO: onAddTags')
+  onAddTags () {
+    this.setState({addTagsOpen: true})
+  },
+
+  dismissAddTags () {
+    this.setState({addTagsOpen: false})
+  },
+
+  onUpdateTags (tags) {
+    console.log(tags)
   },
 
   onAvatarChange (e) {
@@ -92,9 +118,11 @@ const CampaignInfo = React.createClass({
       onUpdateMasterList,
       onAvatarChange,
       onAvatarError,
-      onToggleFavourite
+      onToggleFavourite,
+      dismissAddTags,
+      onUpdateTags
     } = this
-    const { addToMasterListOpen } = this.state
+    const { addToMasterListOpen, addTagsOpen } = this.state
     const { onEditClick, user, campaign } = this.props
     const { name, avatar, purpose } = this.props.campaign
     const isFavourite = user.myMedialists.some((m) => m._id === campaign._id)
@@ -136,20 +164,16 @@ const CampaignInfo = React.createClass({
           selectedMasterLists={selectedMasterLists}
           allMasterLists={allMasterLists}
           title='Campaign' />
+        <AddTags
+          open={addTagsOpen}
+          onDismiss={dismissAddTags}
+          title={`Tag the ${name} Campaign`}
+          selectedTags={selectedTags}
+          allTags={allTags}
+          onUpdateTags={onUpdateTags} />
         <QuickAdd
           selectedMasterLists={selectedMasterLists}
-          tags={[
-            {
-              _id: 'mongoidforamazon',
-              name: 'Amazon',
-              count: 43
-            },
-            {
-              _id: 'mongoidforretail',
-              name: 'Retail',
-              count: 13
-            }
-          ]}
+          tags={selectedTags}
           onAddToMasterList={onAddToMasterList}
           onAddTags={onAddTags} />
       </div>

@@ -440,6 +440,9 @@ button {
 .hover-border-blue:hover {
   border-color: var(--blue) !important;
 }
+.hover-border-gray80:hover {
+  border-color: var(--gray80) !important;
+}
 .hover-fill-trigger:hover .hover-fill-current svg,
 .hover-fill-current:hover svg{
   fill: currentColor;
