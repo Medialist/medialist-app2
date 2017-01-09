@@ -23,15 +23,16 @@ const AddTags = React.createClass({
   },
   render () {
     if (!this.props.open) return null
+    const { tags } = this.state
     const { updatedSelectedTags, onSave } = this
-    const { onDismiss, title, allTags, selectedTags } = this.props
+    const { onDismiss, title, allTags } = this.props
     return (
       <div>
         <div className='py6 center f-lg normal'>
           {title}
         </div>
         <div className='border-bottom border-gray80'>
-          <TagSelector selectedTags={selectedTags} allTags={allTags} parentState={updatedSelectedTags} />
+          <TagSelector selectedTags={tags} allTags={allTags} parentState={updatedSelectedTags} />
         </div>
         <div className='p4 bg-white'>
           <div className='clearfix'>

@@ -8,19 +8,23 @@ const TagSelector = React.createClass({
   propTypes: {
     selectedTags: PropTypes.array.isRequired,
     allTags: PropTypes.array.isRequired,
-    parentState: PropTypes.func
+    parentState: PropTypes.func.isRequired
   },
   getInitialState () {
-    const { allTags, selectedTags } = this.props
-    const filteredTags = allTags.filter((tag) => !find(selectedTags, {slug: tag.slug}))
-    return { value: '', selectedTags, filteredTags }
+    return {
+      value: '',
+      filteredTags: this.createFilteredTags(this.props)
+    }
   },
-  updateTagLists (selectedTags) {
-    this.setState({
-      selectedTags,
-      filteredTags: this.props.allTags.filter((tag) => !find(selectedTags, {slug: tag.slug}))
-    })
-    if (this.props.parentState) this.props.parentState(selectedTags)
+  componentWillReceiveProps (props) {
+    this.setState({ filteredTags: this.createFilteredTags(props) })
+  },
+  createFilteredTags (props) {
+    const { allTags, selectedTags } = props
+    return allTags.filter((tag) => !find(selectedTags, {slug: tag.slug}))
+  },
+  reRenderTags (selectedTags) {
+    this.props.parentState(selectedTags)
   },
   onChange (e) {
     const { value } = e.target
@@ -30,17 +34,17 @@ const TagSelector = React.createClass({
     this.setState({ value, filteredTags })
   },
   onSelect (tag) {
-    const selectedTags = this.state.selectedTags.slice(0)
+    const selectedTags = this.props.selectedTags.slice(0)
     if (find(selectedTags, {slug: tag.slug})) return
     selectedTags.push(tag)
-    this.updateTagLists(selectedTags)
+    this.reRenderTags(selectedTags)
     this.refs['tag-input'].focus()
   },
   onRemoveTag (tag) {
-    const selectedTags = this.state.selectedTags.slice(0)
+    const selectedTags = this.props.selectedTags.slice(0)
     const index = findIndex(selectedTags, {slug: tag.slug})
     selectedTags.splice(index, 1)
-    this.updateTagLists(selectedTags)
+    this.reRenderTags(selectedTags)
   },
   createTag () {
     const newTag = {
@@ -57,7 +61,8 @@ const TagSelector = React.createClass({
   },
   render () {
     const { onChange, onSelect, onRemoveTag, createTag, onKeyUp } = this
-    const { value, selectedTags, filteredTags } = this.state
+    const { selectedTags } = this.props
+    const { value, filteredTags } = this.state
     return (
       <div>
         <div className='border-top border-gray80 py1 px4'>
