@@ -1,14 +1,14 @@
 import React, {PropTypes} from 'react'
 import Tag from './tag'
 import find from 'lodash.find'
-import findIndex from 'lodash.findindex'
 import capitalize from 'underscore.string/capitalize'
 
 const TagSelector = React.createClass({
   propTypes: {
     selectedTags: PropTypes.array.isRequired,
     allTags: PropTypes.array.isRequired,
-    parentState: PropTypes.func.isRequired
+    onAddTag: PropTypes.func.isRequired,
+    onRemoveTag: PropTypes.func.isRequired
   },
   getInitialState () {
     return {
@@ -23,9 +23,6 @@ const TagSelector = React.createClass({
     const { allTags, selectedTags } = props
     return allTags.filter((tag) => !find(selectedTags, {slug: tag.slug}))
   },
-  reRenderTags (selectedTags) {
-    this.props.parentState(selectedTags)
-  },
   onChange (e) {
     const { value } = e.target
     const filteredTags = this.props.allTags.filter((tag) => {
@@ -33,18 +30,12 @@ const TagSelector = React.createClass({
     })
     this.setState({ value, filteredTags })
   },
-  onSelect (tag) {
-    const selectedTags = this.props.selectedTags.slice(0)
-    if (find(selectedTags, {slug: tag.slug})) return
-    selectedTags.push(tag)
-    this.reRenderTags(selectedTags)
+  onAddTag (tag) {
+    this.props.onAddTag(tag)
     this.refs['tag-input'].focus()
   },
   onRemoveTag (tag) {
-    const selectedTags = this.props.selectedTags.slice(0)
-    const index = findIndex(selectedTags, {slug: tag.slug})
-    selectedTags.splice(index, 1)
-    this.reRenderTags(selectedTags)
+    this.props.onRemoveTag(tag)
   },
   createTag () {
     const newTag = {
@@ -60,7 +51,7 @@ const TagSelector = React.createClass({
     if (e.key === 'Enter' || e.key === 'Tab') this.createTag()
   },
   render () {
-    const { onChange, onSelect, onRemoveTag, createTag, onKeyUp } = this
+    const { onChange, onAddTag, onRemoveTag, createTag, onKeyUp } = this
     const { selectedTags } = this.props
     const { value, filteredTags } = this.state
     return (
@@ -77,10 +68,10 @@ const TagSelector = React.createClass({
         </div>
         <div className='border-top border-gray80 pb2 overflow-hidden overflow-scroll' style={{height: 270}}>
           {filteredTags.length > 0 ? (
-            filteredTags.map((tag, i) => <SelectableTag tag={tag} onSelect={onSelect} key={tag.slug} />)
+            filteredTags.map((tag, i) => <SelectableTag tag={tag} onAddTag={onAddTag} key={tag.slug} />)
           ) : (
             <div className='px4 py2 border-transparent border-top border-bottom hover-bg-gray90 hover-border-gray80' onClick={createTag}>
-              <span>Add tag "{value}"</span>
+              <span>{value.length > 0 ? `Add tag "${value}"` : `Add a tag`}</span>
             </div>
           )}
         </div>
@@ -90,9 +81,9 @@ const TagSelector = React.createClass({
 })
 
 const SelectableTag = (props) => {
-  const { tag, onSelect } = props
+  const { tag, onAddTag } = props
   return (
-    <div className='px4 py2 border-transparent border-top border-bottom hover-bg-gray90 hover-border-gray80' onClick={() => onSelect(tag)}>
+    <div className='px4 py2 border-transparent border-top border-bottom hover-bg-gray90 hover-border-gray80' onClick={() => onAddTag(tag)}>
       #{tag.name}<span className='gray60 ml2 semibold'>{tag.count}</span>
     </div>
   )
