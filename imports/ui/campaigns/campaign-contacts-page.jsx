@@ -42,11 +42,6 @@ const CampaignContactsPage = React.createClass({
     this.setState({ selections: [] })
   },
 
-  onBackClick () {
-    const { slug } = this.props.params
-    this.props.router.push(`/campaign/${slug}`)
-  },
-
   onStatusChange ({status, contact}) {
     const post = {
       contactSlug: contact.slug,
@@ -59,11 +54,11 @@ const CampaignContactsPage = React.createClass({
   render () {
     const { campaign } = this.props
     if (!campaign) return null
-    const { onSortChange, onSelectionsChange, onBackClick, onStatusChange } = this
+    const { onSortChange, onSelectionsChange, onStatusChange } = this
     const { sort, term, selections } = this.state
     return (
       <div>
-        <CampaignTopbar campaign={campaign} backLinkText={'Campaign\'s Activity'} onBackClick={onBackClick} />
+        <CampaignTopbar campaign={campaign} />
         <CampaignSummary campaign={campaign} />
         <div className='bg-white shadow-2 m4'>
           <div className='p4 flex items-center'>
@@ -105,18 +100,23 @@ const ContactsTotalContainer = createContainer((props) => {
 }, ContactsTotal)
 
 const ContactsTableContainer = createContainer((props) => {
-  const query = {}
-
-  if (props.term) {
-    const filterRegExp = new RegExp(props.term, 'gi')
-    query.$or = [
-      { name: filterRegExp },
-      { 'outlets.value': filterRegExp },
-      { 'outlets.label': filterRegExp }
-    ]
+  const { campaign, term, sort } = props
+  const contactIds = campaign.contacts ? Object.keys(campaign.contacts) : [ 'no conacts' ]
+  let query = { slug: { $in: contactIds } }
+  if (term) {
+    const filterRegExp = new RegExp(term, 'gi')
+    query = {
+      $and: [
+        { slug: { $in: contactIds } },
+        { $or: [
+          { name: filterRegExp },
+          { 'outlets.value': filterRegExp },
+          { 'outlets.label': filterRegExp }
+        ]}
+      ]
+    }
   }
-
-  const contacts = window.Contacts.find(query, { sort: props.sort }).fetch()
+  const contacts = window.Contacts.find(query, { sort }).fetch()
   return { ...props, contacts }
 }, ContactsTable)
 
