@@ -101,6 +101,10 @@ export const MedialistSchema = new SimpleSchema({
   },
   masterLists: {
     type: [MasterListRefSchema]
+  },
+  website: {
+    type: String,
+    optional: true
   }
 })
 
@@ -108,6 +112,28 @@ export const MedialistUpdateSchema = new SimpleSchema({
   '_id': {
     type: String,
     regEx: SimpleSchema.RegEx.Id
+  },
+  avatar: {
+    type: String,
+    optional: true
+  }
+})
+
+export const MedialistCreateSchema = new SimpleSchema({
+  name: {
+    type: String,
+    min: 1
+  },
+  clientName: {
+    type: String,
+    min: 1
+  },
+  purpose: {
+    type: String
+  },
+  website: {
+    type: String,
+    optional: true
   },
   avatar: {
     type: String,

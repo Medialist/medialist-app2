@@ -17,11 +17,16 @@ export default React.createClass({
     return { open: false }
   },
   componentWillReceiveProps (props) {
-    const { suggestions } = props
-    this.setState({open: suggestions.length > 0})
+    const { suggestions, value } = props
+    this.setState({open: suggestions.length > 0 && suggestions[0] !== value})
   },
   onChange (evt) {
     this.props.onChange(evt.target.value)
+    this.setState({open: true})
+  },
+  onKeyDown (evt) {
+    const { key } = evt
+    if (key !== 'ArrowDown') return
     this.setState({open: true})
   },
   onDismiss () {
@@ -29,7 +34,6 @@ export default React.createClass({
   },
   onClick (suggestion) {
     this.props.onSelect(suggestion)
-    this.onDismiss()
   },
   render () {
     const {
@@ -39,17 +43,20 @@ export default React.createClass({
       placeholder,
       suggestions
     } = this.props
-    const { onChange, onDismiss, onClick } = this
+    const { onChange, onDismiss, onClick, onKeyDown } = this
     const { open } = this.state
     return (
       <Dropdown style={{display: 'inline-block'}}>
         <input
+          type='text'
           className={className}
           name={name}
           value={value}
           placeholder={placeholder}
           autoComplete='off'
-          onChange={onChange} />
+          onChange={onChange}
+          onKeyDown={onKeyDown}
+        />
         <DropdownMenu right open={open} onDismiss={onDismiss} style={dropdownStyle}>
           <ol className='list-reset'>{suggestions.map((s) => {
             return (
