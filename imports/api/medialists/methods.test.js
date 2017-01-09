@@ -62,7 +62,7 @@ describe('Medialist create method', function () {
     assert.throws(() => create.validate({ name: 'YES', purpose: 'Zoom' }), /Client name is required/)
   })
 
-  it('if should create a medialist and client', function () {
+  it('should create a medialist and client', function () {
     const user = { profile: { name: 'O'}, services: { twitter: {profile_image_url_https: 'bar'} } }
     const userId = Meteor.users.insert(user)
     const payload = { name: 'Foo', clientName: 'Bar', purpose: 'Better!'}
@@ -73,7 +73,7 @@ describe('Medialist create method', function () {
     assert.equal(doc.client.name, payload.clientName)
   })
 
-  it('if should create a medialist and re-use existing client info', function () {
+  it('should create a medialist and re-use existing client info', function () {
     const user = { profile: { name: 'O'}, services: { twitter: {profile_image_url_https: 'bar'} } }
     const userId = Meteor.users.insert(user)
     const clientName = 'Marmite'
@@ -87,7 +87,7 @@ describe('Medialist create method', function () {
     assert.equal(Clients.find({}).count(), 1)
   })
 
-  it('if should update the myMedialists', function () {
+  it('should update the myMedialists', function () {
     const user = { profile: { name: 'O'}, services: { twitter: {profile_image_url_https: 'bar'} } }
     const userId = Meteor.users.insert(user)
     const payload = { name: 'Foo', clientName: 'Bar', purpose: 'Better!'}

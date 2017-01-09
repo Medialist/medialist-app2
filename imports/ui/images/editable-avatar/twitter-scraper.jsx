@@ -61,7 +61,6 @@ const TwitterScraper = React.createClass({
   },
 
   onSubmit (e) {
-    console.log('W')
     e.stopPropagation()
     e.nativeEvent.stopImmediatePropagation()
     const { uploadcareConfig, onSuccess, onError } = this.props
