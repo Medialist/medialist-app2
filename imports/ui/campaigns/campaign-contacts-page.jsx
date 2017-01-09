@@ -101,7 +101,7 @@ const ContactsTotalContainer = createContainer((props) => {
 
 const ContactsTableContainer = createContainer((props) => {
   const { campaign, term, sort } = props
-  const contactIds = campaign.contacts ? Object.keys(campaign.contacts) : [ 'no conacts' ]
+  const contactIds = campaign.contacts ? Object.keys(campaign.contacts) : []
   let query = { slug: { $in: contactIds } }
   if (term) {
     const filterRegExp = new RegExp(term, 'gi')
