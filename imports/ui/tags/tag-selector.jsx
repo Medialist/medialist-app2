@@ -25,13 +25,17 @@ const TagSelector = React.createClass({
   },
   onChange (e) {
     const { value } = e.target
-    const filteredTags = this.props.allTags.filter((tag) => {
-      return tag.name.toLowerCase().substring(0, value.length) === value.toLowerCase()
-    })
+    if (!value) return this.setState({ value })
+
+    const filteredTags = this.props.allTags
+      .filter((tag) => !find(this.props.selectedTags, {slug: tag.slug}))
+      .filter((tag) => tag.name.toLowerCase().substring(0, value.length) === value.toLowerCase())
+
     this.setState({ value, filteredTags })
   },
   onAddTag (tag) {
     this.props.onAddTag(tag)
+    this.setState({ value: '' })
     this.refs['tag-input'].focus()
   },
   onRemoveTag (tag) {
@@ -43,9 +47,8 @@ const TagSelector = React.createClass({
       slug: this.state.value.toLowerCase().replace(' ', '-'),
       count: 0
     }
-    this.setState({ value: '' })
-    this.onSelect(newTag)
-    console.log('TODO: Add a new tag to the DB')
+    this.onAddTag(newTag)
+    console.log('TODO: Add ', newTag.name, ' to DB')
   },
   onKeyUp (e) {
     if (e.key === 'Enter' || e.key === 'Tab') this.createTag()
