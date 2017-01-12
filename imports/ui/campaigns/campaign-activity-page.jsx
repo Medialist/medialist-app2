@@ -29,10 +29,6 @@ const CampaignActivityPage = React.createClass({
     this.setState({ editModalOpen })
   },
 
-  onBackClick () {
-    this.props.router.push(`/campaigns`)
-  },
-
   onFeedback ({message, contact, status}) {
     const post = {
       contactSlug: contact.slug,
@@ -44,14 +40,14 @@ const CampaignActivityPage = React.createClass({
   },
 
   render () {
-    const { toggleEditModal, onBackClick, onFeedback } = this
+    const { toggleEditModal, onFeedback } = this
     const { campaign, contacts, contactsCount, clients, contactsAll, user } = this.props
     const { editModalOpen } = this.state
     if (!campaign) return null
 
     return (
       <div>
-        <CampaignTopbar onBackClick={onBackClick} contactsAll={contactsAll} campaign={campaign} contacts={contacts} />
+        <CampaignTopbar contactsAll={contactsAll} campaign={campaign} contacts={contacts} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
             <CampaignInfo campaign={campaign} onEditClick={toggleEditModal} user={user} />
