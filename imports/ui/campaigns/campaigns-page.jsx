@@ -65,7 +65,7 @@ const CampaignsPage = React.createClass({
   },
 
   render () {
-    const { campaignCount, loading, sort, term } = this.props
+    const { campaignCount, campaigns, loading, total, sort, term } = this.props
     const { onSortChange, onSelectionsChange, onSectorChange } = this
     const { selections, selectedSector, editCampaignOpen } = this.state
 
@@ -93,12 +93,13 @@ const CampaignsPage = React.createClass({
               <SearchBox onTermChange={this.onTermChange} placeholder='Search campaigns...' />
             </div>
             <div className='flex-none pl4 f-xs'>
-              <CampaignsTotalContainer />
+              <CampaignsTotal total={total} />
             </div>
           </div>
-          <CampaignsTableContainer
-            sort={sort}
+          <CampaignsTable
             term={term}
+            sort={sort}
+            campaigns={campaigns}
             selections={selections}
             onSortChange={onSortChange}
             onSelectionsChange={onSelectionsChange} />
@@ -119,28 +120,6 @@ const CampaignsPage = React.createClass({
 const CampaignsTotal = ({ total }) => (
   <div>{total} campaign{total === 1 ? '' : 's'} total</div>
 )
-
-const CampaignsTableContainer = createContainer((props) => {
-  Meteor.subscribe('medialists')
-
-  const query = {}
-
-  if (props.term) {
-    const filterRegExp = new RegExp(props.term, 'gi')
-    query.$or = [
-      { name: filterRegExp },
-      { purpose: filterRegExp },
-      { 'client.name': filterRegExp }
-    ]
-  }
-
-  const campaigns = window.Medialists.find(query, { sort: props.sort }).fetch()
-  return { ...props, campaigns }
-}, CampaignsTable)
-
-const CampaignsTotalContainer = createContainer((props) => {
-  return { ...props, total: window.Medialists.find({}).count() }
-}, CampaignsTotal)
 
 const EditCampaignContainer = createContainer((props) => {
   Meteor.subscribe('clients')
@@ -163,27 +142,27 @@ const SectorSelectorContainer = createContainer((props) => {
   return { ...props, items, selected: props.selected || items[0] }
 }, SectorSelector)
 
-const CampaignsPageContainer = withRouter(createContainer((props) => {
-  const { location, router } = props
+const CampaignsPageContainer = withRouter(createContainer(({ location, router }) => {
   const { sort, term } = parseQuery(location)
   const subs = [ Meteor.subscribe('campaignCount') ]
   const campaignCount = window.Counter.get('campaignCount')
   const query = {}
   const minSearchLength = 3
-  const searching = term.length >= minSearchLength
+  const searching = !!term && term.length >= minSearchLength
   if (searching) {
     const filterRegExp = new RegExp(term, 'gi')
     query.$or = [
       { name: filterRegExp },
-      { 'outlets.value': filterRegExp },
-      { 'outlets.label': filterRegExp }
+      { purpose: filterRegExp },
+      { 'client.name': filterRegExp }
     ]
-    subs.push(Meteor.subscribe('medialists', {regex: term.substring(0, minSearchLength)}))
+    subs.push(Meteor.subscribe('medialists', {regex: term}))
   }
   const campaigns = window.Medialists.find(query, { sort }).fetch()
+  const total = window.Medialists.find().count()
   const loading = !subs.every((sub) => sub.ready())
   const boundSetQuery = setQuery.bind(null, location, router)
-  return { campaigns, campaignCount, loading, searching, sort, term, setQuery: boundSetQuery }
+  return { campaigns, campaignCount, total, loading, searching, sort, term, setQuery: boundSetQuery }
 }, CampaignsPage))
 
 function parseQuery ({query}) {
