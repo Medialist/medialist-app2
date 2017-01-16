@@ -30,10 +30,16 @@ describe('Medialist update method', function () {
   })
 
   it('should update avatar', function () {
+    const userId = Meteor.users.insert({
+      profile: { name: 'TESTER' },
+      services: {
+        twitter: { profile_image_url_https: 'http://example.org/user.jpg' }
+      }
+    })
     const _id = Medialists.insert({ avatar: 'http://example.org/image.jpg' })
     const updatedAvatarUrl = 'http://example.org/new_image.jpg'
 
-    update.run.call({ userId: '123' }, { _id, avatar: updatedAvatarUrl })
+    update.run.call({ userId }, { _id, avatar: updatedAvatarUrl })
 
     const updatedMedialist = Medialists.findOne({ _id })
     assert.equal(updatedMedialist.avatar, updatedAvatarUrl)
