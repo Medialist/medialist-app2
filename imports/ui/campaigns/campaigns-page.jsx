@@ -1,14 +1,26 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
 import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
+import querystring from 'querystring'
 import CampaignsTable from './campaigns-table'
 import SearchBox from '../lists/search-box'
 import SectorSelector from './sector-selector.jsx'
 import CampaignsActionsToast from './campaigns-actions-toast'
 import EditCampaign from './edit-campaign'
+import CampaignListEmpty from './campaign-list-empty'
 
 const CampaignsPage = React.createClass({
+  propTypes: {
+    campaigns: PropTypes.arrayOf(PropTypes.object),
+    campaignCount: PropTypes.number,
+    loading: PropTypes.bool,
+    searching: PropTypes.bool,
+    sort: PropTypes.object,
+    term: PropTypes.string,
+    setQuery: PropTypes.func
+  },
+
   getInitialState () {
     return {
       sort: { updatedAt: -1 },
@@ -33,7 +45,7 @@ const CampaignsPage = React.createClass({
   },
 
   onSortChange (sort) {
-    this.setState({ sort })
+    this.props.setQuery({ sort })
   },
 
   onSelectionsChange (selections) {
@@ -41,7 +53,7 @@ const CampaignsPage = React.createClass({
   },
 
   onTermChange (term) {
-    this.setState({ term })
+    this.props.setQuery({ term })
   },
 
   onSectorChange (selectedSector) {
@@ -53,8 +65,16 @@ const CampaignsPage = React.createClass({
   },
 
   render () {
+    const { campaignCount, loading, sort, term } = this.props
     const { onSortChange, onSelectionsChange, onSectorChange } = this
-    const { sort, term, selections, selectedSector, editCampaignOpen } = this.state
+    const { selections, selectedSector, editCampaignOpen } = this.state
+
+    if (!loading && campaignCount === 0) {
+      return (<div>
+        <CampaignListEmpty onAddCampaign={this.toggleEditCampaign} />
+        <EditCampaignContainer onDismiss={this.toggleEditCampaign} open={editCampaignOpen} />
+      </div>)
+    }
 
     return (
       <div>
@@ -143,4 +163,46 @@ const SectorSelectorContainer = createContainer((props) => {
   return { ...props, items, selected: props.selected || items[0] }
 }, SectorSelector)
 
-export default withRouter(CampaignsPage)
+const CampaignsPageContainer = withRouter(createContainer((props) => {
+  const { location, router } = props
+  const { sort, term } = parseQuery(location)
+  const subs = [ Meteor.subscribe('campaignCount') ]
+  const campaignCount = window.Counter.get('campaignCount')
+  const query = {}
+  const minSearchLength = 3
+  const searching = term.length >= minSearchLength
+  if (searching) {
+    const filterRegExp = new RegExp(term, 'gi')
+    query.$or = [
+      { name: filterRegExp },
+      { 'outlets.value': filterRegExp },
+      { 'outlets.label': filterRegExp }
+    ]
+    subs.push(Meteor.subscribe('medialists', {regex: term.substring(0, minSearchLength)}))
+  }
+  const campaigns = window.Medialists.find(query, { sort }).fetch()
+  const loading = !subs.every((sub) => sub.ready())
+  const boundSetQuery = setQuery.bind(null, location, router)
+  return { campaigns, campaignCount, loading, searching, sort, term, setQuery: boundSetQuery }
+}, CampaignsPage))
+
+function parseQuery ({query}) {
+  const sort = query.sort ? JSON.parse(query.sort) : { updatedAt: -1 }
+  const term = query.q || ''
+  return { sort, term }
+}
+
+function setQuery (location, router, opts) {
+  const newQuery = {}
+  if (opts.sort) newQuery.sort = JSON.stringify(opts.sort)
+  if (opts.hasOwnProperty('term')) {
+    newQuery.q = opts.term
+  }
+  const query = Object.assign({}, location.query, newQuery)
+  if (query.q === '') delete query.q
+  const qs = querystring.stringify(query)
+  router.replace('/campaigns?' + qs)
+}
+
+export default CampaignsPageContainer
+
