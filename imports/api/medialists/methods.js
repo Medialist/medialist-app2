@@ -104,6 +104,10 @@ export const create = new ValidatedMethod({
     check(doc, MedialistSchema)
     const _id = Medialists.insert(doc)
 
+    if (Meteor.isServer) {
+      Uploadcare.store(doc.avatar)
+    }
+
     const myMedialists = {
       _id,
       name: name,
