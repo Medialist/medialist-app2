@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
+import isEqual from 'lodash.isequal'
 import { dropdownMenuStyle } from '../common-styles'
 
 const dropdownStyle = Object.assign({}, dropdownMenuStyle, { maxWidth: 300 })
@@ -18,6 +19,7 @@ export default React.createClass({
   },
   componentWillReceiveProps (props) {
     const { suggestions, value } = props
+    if (isEqual(suggestions, this.props.suggestions) && value === props.value) return
     this.setState({open: suggestions.length > 0 && suggestions[0] !== value})
   },
   onChange (evt) {
@@ -37,16 +39,19 @@ export default React.createClass({
   },
   render () {
     const {
+      style,
       className,
       name,
       value,
       placeholder,
-      suggestions
+      suggestions,
+      onFocus,
+      onBlur
     } = this.props
     const { onChange, onDismiss, onClick, onKeyDown } = this
     const { open } = this.state
     return (
-      <Dropdown style={{display: 'inline-block'}}>
+      <Dropdown style={{ display: 'inline-block', ...style }}>
         <input
           type='text'
           className={className}
@@ -56,6 +61,8 @@ export default React.createClass({
           autoComplete='off'
           onChange={onChange}
           onKeyDown={onKeyDown}
+          onFocus={onFocus}
+          onBlur={onBlur}
         />
         <DropdownMenu right open={open} onDismiss={onDismiss} style={dropdownStyle}>
           <ol className='list-reset'>{suggestions.map((s) => {

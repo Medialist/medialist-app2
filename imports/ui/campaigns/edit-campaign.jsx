@@ -1,9 +1,15 @@
 import React, { PropTypes } from 'react'
-import { CameraIcon, BioIcon, WebsiteIcon } from '../images/icons'
+import { CameraIcon, BioIcon, WebsiteIcon, FilledCircle } from '../images/icons'
 import Modal from '../navigation/modal'
 import EditableAvatar from '../images/editable-avatar'
 import ClientAutocomplete from './client-autocomplete'
 import { create } from '/imports/api/medialists/methods'
+
+function callAll ([...funcs]) {
+  return (...args) => {
+    funcs.forEach((func) => func(...args))
+  }
+}
 
 const EditCampaign = React.createClass({
   propTypes: {
@@ -16,10 +22,11 @@ const EditCampaign = React.createClass({
     const { campaign } = this.props
     return {
       avatar: null,
+      focus: null,
       name: campaign && campaign.name || '',
       purpose: campaign && campaign.purpose || '',
       clientName: campaign && campaign.client && campaign.client.name || '',
-      website: ''
+      links: ['']
     }
   },
   componentDidMount () {
@@ -38,13 +45,25 @@ const EditCampaign = React.createClass({
   onClientSelect (name) {
     this.setState({clientName: name})
   },
-  updateField (field, value) {
-    this.setState({ [field]: value })
+  onChange (field) {
+    return ({ target: { value } }) => {
+      this.setState({ [field]: value })
+    }
   },
-  onChange (evt) {
-    const { name, value } = evt.target
-    const { updateField } = this
-    updateField(name, value)
+  onChangeLink (ind) {
+    return ({ target: { value } }) => {
+      const newLinks = Object.assign(this.state.links, { [ind]: value })
+      this.setState({ links: newLinks })
+    }
+  },
+  checkLinkEmpty (ind) {
+    return () => {
+      if (!this.state.links[ind] && this.state.links.length > 1) {
+        const newLinks = [...this.state.links]
+        newLinks.splice(ind, 1)
+        this.setState({ links: newLinks })
+      }
+    }
   },
   onSubmit (evt) {
     evt.preventDefault()
@@ -63,14 +82,26 @@ const EditCampaign = React.createClass({
   onReset () {
     this.props.onDismiss()
   },
+  addFocus (field) {
+    return () => this.setState({ focus: field })
+  },
+  removeFocus () {
+    this.setState({ focus: null })
+  },
+  focusState (field) {
+    return this.state.focus === field ? 'blue' : 'gray60'
+  },
+  addLink () {
+    if (this.state.links.some((l) => !l)) return
+    this.setState({ links: [...this.state.links, ''] })
+  },
   render () {
     if (!this.props.open) return null
-    const { onChange, onSubmit, onReset, onClientNameChange, onClientSelect, onAvatarChange, onAvatarError } = this
+    const { onChange, onChangeLink, onSubmit, onReset, onClientNameChange, onClientSelect, onAvatarChange, onAvatarError } = this
     const { clients } = this.props
-    const { avatar, name, purpose, clientName, website } = this.state
-    const inputWidth = 270
-    const iconWidth = 30
-    const inputStyle = { width: inputWidth, resize: 'none' }
+    const { avatar, name, purpose, clientName, links } = this.state
+    const iconWidth = 50
+    const inputStyle = { resize: 'none' }
     const iconStyle = { width: iconWidth }
     return (
       <form onSubmit={onSubmit} onReset={onReset}>
@@ -90,46 +121,87 @@ const EditCampaign = React.createClass({
               value={name}
               placeholder='Campaign Name'
               size={name.length === 0 ? 15 : name.length + 2}
-              onChange={onChange}
+              onChange={onChange('name')}
                />
           </div>
-          <ClientAutocomplete
-            clients={clients}
-            className='center input-inline mt1 f-lg gray10'
-            name='clientName'
-            clientName={clientName}
-            onSelect={onClientSelect}
-            onChange={onClientNameChange} />
         </div>
-        <div className='bg-gray90 border-top border-gray80'>
-          <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft: 70}}>Details</label>
-          <div className='mx-auto py2' style={{width: inputWidth + iconWidth}}>
-            <div className='pt3'>
-              <BioIcon style={iconStyle} className='inline-block align-top mt1' />
-              <div className='inline-block align-middle'>
+        <div className='bg-gray90 border-top border-gray80 py5'>
+          <div className='flex flex-column content-stretch px8'>
+            <div className='flex'>
+              <div style={iconStyle} />
+              <label className='block gray40 f-m'>Client</label>
+              <div style={iconStyle} />
+            </div>
+            <div className='flex items-stretch mt1'>
+              <div style={iconStyle} className='flex justify-end items-center flex-none pr3'>
+                <FilledCircle className={this.focusState('clientName')} />
+              </div>
+              <div className='flex-auto'>
+                <ClientAutocomplete
+                  onFocus={this.addFocus('clientName')}
+                  onBlur={this.removeFocus}
+                  clients={clients}
+                  style={{display: 'block'}}
+                  className='input block'
+                  name='clientName'
+                  placeholder='Client'
+                  clientName={clientName}
+                  onSelect={onClientSelect}
+                  onChange={onClientNameChange} />
+              </div>
+              <div style={iconStyle} />
+            </div>
+            <div className='flex mt3'>
+              <div style={iconStyle} />
+              <label className='block gray40 f-m'>Key Message</label>
+              <div style={iconStyle} />
+            </div>
+            <div className='flex items-stretch mt1'>
+              <div style={iconStyle} className='flex justify-end items-center flex-none pr3'>
+                <BioIcon className={this.focusState('purpose')} />
+              </div>
+              <div className='flex-auto'>
                 <textarea
+                  onFocus={this.addFocus('purpose')}
+                  onBlur={this.removeFocus}
                   style={inputStyle}
-                  className='textarea'
+                  className='input block textarea'
                   type='text'
                   rows='5'
                   name='purpose'
                   value={purpose}
                   placeholder='Key Message'
-                  onChange={onChange} />
+                  onChange={onChange('purpose')} />
               </div>
+              <div style={iconStyle} />
             </div>
-            <div className='pt3'>
-              <WebsiteIcon style={iconStyle} className='inline-block' />
-              <div className='inline-block align-middle'>
-                <input
-                  style={inputStyle}
-                  className='input'
-                  type='text'
-                  name='website'
-                  value={website}
-                  placeholder='Website'
-                  onChange={onChange} />
+            <div className='flex mt3'>
+              <div style={iconStyle} />
+              <label className='block gray40 f-m'>Links</label>
+              <div style={iconStyle} />
+            </div>
+            {this.state.links.map((link, ind) => (
+              <div key={ind} className='flex items-stretch mt1 icon-blue-highlight'>
+                <div style={iconStyle} className='flex justify-end items-center flex-none pr3'>
+                  <WebsiteIcon className={this.focusState(`link-${ind}`)} />
+                </div>
+                <div className='flex-auto'>
+                  <input
+                    onFocus={this.addFocus(`link-${ind}`)}
+                    onBlur={callAll([this.removeFocus, this.checkLinkEmpty(ind)])}
+                    style={inputStyle}
+                    className='input block'
+                    type='text'
+                    value={links[ind]}
+                    placeholder='Links'
+                    onChange={onChangeLink(ind)} />
+                </div>
+                <div style={iconStyle} />
               </div>
+            ))}
+            <div className='flex mt1'>
+              <div style={iconStyle} />
+              <div><a href='#' className='f-xs blue underline' onClick={this.addLink}>Add another link</a></div>
             </div>
           </div>
         </div>
