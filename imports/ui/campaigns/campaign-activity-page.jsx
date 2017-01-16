@@ -8,6 +8,8 @@ import CampaignContactList from './campaign-contact-list'
 import PostBox from '../contacts/post-box'
 import ActivityFeed from '../dashboard/activity-feed'
 import EditCampaign from './edit-campaign'
+import Clients from '/imports/api/clients/clients'
+import Medialists from '/imports/api/medialists/medialists'
 
 const CampaignActivityPage = React.createClass({
   propTypes: {
@@ -68,16 +70,23 @@ const CampaignActivityPage = React.createClass({
 
 export default createContainer((props) => {
   const { slug } = props.params
+
   const subs = [
     Meteor.subscribe('medialist', slug),
-    Meteor.subscribe('contacts')
+    Meteor.subscribe('contacts'),
+    Meteor.subscribe('clients')
   ]
   const loading = subs.some((s) => !s.ready())
-  const campaign = window.Medialists.findOne({ slug })
-  // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
-  const contacts = window.Contacts.find({medialists: slug}, {limit: 7, sort: {updatedAt: -1}}).fetch()
-  const contactsCount = window.Contacts.find({medialists: slug}).count()
-  const contactsAll = window.Contacts.find({}, {sort: {name: 1}}).fetch()
-  const user = Meteor.user()
-  return { ...props, campaign, contacts, contactsCount, loading, contactsAll, user }
+
+  return {
+    ...props,
+    loading,
+    campaign: Medialists.findOne({ slug }),
+    // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
+    contacts: window.Contacts.find({medialists: slug}, {limit: 7, sort: {updatedAt: -1}}).fetch(),
+    contactsCount: window.Contacts.find({medialists: slug}).count(),
+    contactsAll: window.Contacts.find({}, {sort: {name: 1}}).fetch(),
+    user: Meteor.user(),
+    clients: Clients.find({}).fetch()
+  }
 }, withRouter(CampaignActivityPage))

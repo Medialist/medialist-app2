@@ -113,6 +113,21 @@ export const MedialistUpdateSchema = new SimpleSchema({
     type: String,
     regEx: SimpleSchema.RegEx.Id
   },
+  name: {
+    type: String,
+    min: 1
+  },
+  clientName: {
+    type: String,
+    min: 1
+  },
+  purpose: {
+    type: String
+  },
+  website: {
+    type: String,
+    optional: true
+  },
   avatar: {
     type: String,
     optional: true
