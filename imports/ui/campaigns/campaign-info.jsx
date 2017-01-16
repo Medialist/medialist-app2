@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
 import EditableAvatar from '../images/editable-avatar'
 import { SquareAvatar, CircleAvatar } from '../images/avatar'
-import { BioIcon, FavouritesIcon, FavouritesIconGold } from '../images/icons'
+import { BioIcon, FavouritesIcon, FavouritesIconGold, WebsiteIcon } from '../images/icons'
 import InfoHeader from '../lists/info-header'
 import QuickAdd from '../lists/quick-add'
 import AddToMasterList from '../lists/add-to-master-list'
@@ -124,23 +124,35 @@ const CampaignInfo = React.createClass({
     } = this
     const { addToMasterListOpen, addTagsOpen } = this.state
     const { onEditClick, user, campaign } = this.props
-    const { name, avatar, purpose } = this.props.campaign
+    const { name, client, avatar, purpose, links } = this.props.campaign
     const isFavourite = user.myMedialists.some((m) => m._id === campaign._id)
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
     const tooltip = isFavourite ? 'Remove from My Campaigns' : 'Add to My Campaigns'
     return (
       <div>
-        <div className='mb1'>
+        <div className='flex items-start mb1'>
           <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError}>
             <SquareAvatar size={70} avatar={avatar} name={name} />
           </EditableAvatar>
-          <div className='ml3 inline-block align-middle'>
-            <span className='semibold block f-xl mb1'>
+          <div className='ml3 flex-auto'>
+            <div className='semibold block f-xl mb1' style={{ marginTop: '-3px' }}>
               {name}
               <Tooltip title={tooltip}>
-                <Icon className='mx2 pointer svg-icon-lg align-bottom' onClick={onToggleFavourite} />
+                <Icon className='mx1 pointer svg-icon-lg align-bottom' onClick={onToggleFavourite} />
               </Tooltip>
-            </span>
+            </div>
+            <div className='f-sm gray10 mb2'>{client.name}</div>
+            <div>
+              {(links || []).map((link) => (
+                <span className='mr2 hover-fill-trigger'>
+                  <Tooltip title={prettyUrl(link)} key={link}>
+                    <a href={link} target='_blank'>
+                      <WebsiteIcon className='svg-icon-md' />
+                    </a>
+                  </Tooltip>
+                </span>
+              ))}
+            </div>
           </div>
         </div>
         <section>
@@ -180,5 +192,10 @@ const CampaignInfo = React.createClass({
     )
   }
 })
+
+function prettyUrl (url) {
+  url = url.replace(/^https?:\/\//i, '')
+  return url[url.length - 1] === '/' ? url.slice(0, -1) : url
+}
 
 export default CampaignInfo
