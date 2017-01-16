@@ -145,9 +145,9 @@ const CampaignInfo = React.createClass({
         </div>
         <section>
           <InfoHeader name='Key Message' linkText='Edit campaign' onClick={onEditClick} />
-          <div className='px2 py3'>
+          <div className='px2 py3 flex'>
             <BioIcon className='inline-block' />
-            <div className='inline-block pl3 f-sm gray10'>{purpose}</div>
+            <div className='inline-block pl3 f-sm gray10 flex-auto'>{purpose}</div>
           </div>
         </section>
         <section>
