@@ -59,6 +59,7 @@
     "redux-thunk": "^2.1.0",
     "twitter-screen-name": "^1.0.0",
     "underscore.string": "^3.3.4",
+    "uploadcare": "^0.4.3",
     "uploadcare-widget": "^2.10.2"
   },
   "devDependencies": {

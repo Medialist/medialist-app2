@@ -5,6 +5,7 @@ import escapeRegExp from 'lodash.escaperegexp'
 import createUniqueSlug from '/imports/lib/slug'
 import Medialists, { MedialistSchema, MedialistUpdateSchema, MedialistCreateSchema } from './medialists'
 import Clients from '/imports/api/clients/clients'
+import Uploadcare from '/imports/lib/uploadcare'
 
 function findOrCreateClientRef (name) {
   const nameRegex = new RegExp('^' + escapeRegExp(name) + '$', 'i')
@@ -44,6 +45,11 @@ export const update = new ValidatedMethod({
     }
 
     const result = Medialists.update({ _id }, { $set: data })
+
+    if (Meteor.isServer) {
+      Uploadcare.store(data.avatar)
+    }
+
     const updatedMedialist = Medialists.findOne({ _id })
 
     Meteor.users.update({
@@ -97,6 +103,10 @@ export const create = new ValidatedMethod({
 
     check(doc, MedialistSchema)
     const _id = Medialists.insert(doc)
+
+    if (Meteor.isServer) {
+      Uploadcare.store(doc.avatar)
+    }
 
     const myMedialists = {
       _id,
