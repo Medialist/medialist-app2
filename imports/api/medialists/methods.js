@@ -29,7 +29,40 @@ export const update = new ValidatedMethod({
       throw new Error('Missing fields to update')
     }
 
-    return Medialists.update({ _id }, { $set: data })
+    if (!Medialists.find({ _id }).count()) {
+      throw new Meteor.Error('Medialist not found')
+    }
+
+    const user = Meteor.users.findOne({ _id: this.userId })
+    const now = new Date()
+
+    data.updatedAt = now
+    data.updatedBy = {
+      _id: user._id,
+      name: user.profile.name,
+      avatar: user.services.twitter.profile_image_url_https
+    }
+
+    const result = Medialists.update({ _id }, { $set: data })
+    const updatedMedialist = Medialists.findOne({ _id })
+
+    Meteor.users.update({
+      'myMedialists._id': _id
+    }, {
+      $set: {
+        'myMedialists.$.name': updatedMedialist.name,
+        'myMedialists.$.slug': updatedMedialist.slug,
+        'myMedialists.$.avatar': updatedMedialist.avatar,
+        'myMedialists.$.clientName': updatedMedialist.client
+          ? updatedMedialist.client.name
+          : null,
+        'myMedialists.$.updatedAt': now
+      }
+    }, {
+      multi: true
+    })
+
+    return result
   }
 })
 
