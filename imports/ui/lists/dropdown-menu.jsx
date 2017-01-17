@@ -8,6 +8,7 @@ const DropdownMenu = ({
   top,
   children,
   onDismiss,
+  menuClass,
   ...props
 }) => {
   const { zIndex, scale, borderColor, borderRadius, colors } = { ...config }
@@ -48,7 +49,7 @@ const DropdownMenu = ({
         <Base
           {...props}
           children={children}
-          className='CampaignMenu'
+          className={menuClass || 'Menu'}
           baseStyle={{
             display: 'flex',
             flexDirection: 'column',

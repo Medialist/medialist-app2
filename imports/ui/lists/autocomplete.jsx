@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import Dropdown from 'rebass/dist/Dropdown'
-import AutocompleteDropdownMenu from '../lists/autocomplete-dropdown-menu'
+import DropdownMenu from '../lists/dropdown-menu'
 import isEqual from 'lodash.isequal'
 import callAll from '/imports/lib/call-all'
 
@@ -90,7 +90,7 @@ export default React.createClass({
           onFocus={onFocus}
           onBlur={callAll([this.onBlur, onBlur])}
         />
-        <AutocompleteDropdownMenu open={open} onDismiss={onDismiss} style={dropdownStyle}>
+        <DropdownMenu open={open} onDismiss={onDismiss} style={dropdownStyle} menuClass='AutocompleteMenu'>
           <ol className='list-reset'>{suggestions.map((s, ind) => {
             const activeClass = (activeInd === ind) ? 'bg-blue white' : ''
             return (
@@ -104,7 +104,7 @@ export default React.createClass({
               </li>
             )
           })}</ol>
-        </AutocompleteDropdownMenu>
+        </DropdownMenu>
       </Dropdown>
     )
   }

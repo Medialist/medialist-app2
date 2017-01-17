@@ -101,7 +101,7 @@ const EditCampaign = React.createClass({
     return (
       <form onSubmit={onSubmit} onReset={onReset}>
         <div className='px4 py6 center'>
-          <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError}>
+          <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError} menuClass='CampaignAvatarMenu'>
             <div className='bg-gray40 center rounded mx-auto' style={{height: '123px', width: '123px', lineHeight: '123px'}}>
               { avatar ? <img src={avatar} width='100%' height='100%' /> : <CameraIcon /> }
             </div>
