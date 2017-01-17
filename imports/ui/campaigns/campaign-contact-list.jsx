@@ -22,7 +22,7 @@ const CampaignContactList = React.createClass({
             <span className='f-md semibold gray20 ml2'>Contacts</span>
           </Link>
         </header>
-        <List contacts={contacts} onAddContactClick={onAddContactClick} />
+        <List contacts={contacts} campaign={campaign} onAddContactClick={onAddContactClick} />
         <footer className='center border-gray80 border-top p4'>
           <Link to={`/campaign/${campaign.slug}/contacts`} className='block blue'>Show all</Link>
         </footer>
@@ -31,7 +31,7 @@ const CampaignContactList = React.createClass({
   }
 })
 
-const List = ({ contacts, onAddContactClick }) => {
+const List = ({ contacts, campaign, onAddContactClick }) => {
   if (!contacts.length) {
     return (
       <div className='px4'>
@@ -45,7 +45,7 @@ const List = ({ contacts, onAddContactClick }) => {
   return (
     <div className='px4 pb3'>
       {contacts.map((contact) => (
-        <CampaignContact key={contact.slug} {...contact} />
+        <CampaignContact key={contact.slug} contact={contact} campaign={campaign} />
       ))}
     </div>
   )
