@@ -60,7 +60,7 @@ const CampaignActivityPage = React.createClass({
             <ActivityFeed campaign={campaign} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
-            <CampaignContactList contacts={contacts} contactsCount={contactsCount} campaign={campaign} />
+            <CampaignContactList contacts={contacts} contactsAll={contactsAll} contactsCount={contactsCount} campaign={campaign} />
           </div>
         </div>
       </div>
