@@ -34,6 +34,9 @@ export const update = new ValidatedMethod({
       throw new Meteor.Error('Medialist not found')
     }
 
+    data.client = findOrCreateClientRef(data.clientName)
+    delete data.clientName
+
     const user = Meteor.users.findOne({ _id: this.userId })
     const now = new Date()
 

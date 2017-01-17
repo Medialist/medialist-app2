@@ -3,7 +3,7 @@ import { CameraIcon, BioIcon, WebsiteIcon, FilledCircle } from '../images/icons'
 import Modal from '../navigation/modal'
 import EditableAvatar from '../images/editable-avatar'
 import ClientAutocomplete from './client-autocomplete'
-import { create } from '/imports/api/medialists/methods'
+import { create, update } from '/imports/api/medialists/methods'
 import callAll from '/imports/lib/call-all'
 
 const EditCampaign = React.createClass({
@@ -21,7 +21,7 @@ const EditCampaign = React.createClass({
       name: campaign && campaign.name || '',
       purpose: campaign && campaign.purpose || '',
       clientName: campaign && campaign.client && campaign.client.name || '',
-      links: ['']
+      links: campaign && campaign.links || ['']
     }
   },
   componentDidMount () {
@@ -62,17 +62,19 @@ const EditCampaign = React.createClass({
   },
   onSubmit (evt) {
     evt.preventDefault()
-    const { avatar, name, purpose, clientName } = this.state
-    const payload = {
-      avatar,
-      name,
-      purpose,
-      clientName
-    }
-    create.call(payload, (err) => {
-      if (err) return console.log(err)
+    const { campaign } = this.props
+    const { avatar, name, purpose, clientName, links } = this.state
+    const payload = { avatar, name, purpose, clientName, links }
+    const done = (err) => {
+      if (err) return console.error('Failed to edit campaign', err)
       this.props.onDismiss()
-    })
+    }
+
+    if (campaign) {
+      update.call({ _id: campaign._id, ...payload }, done)
+    } else {
+      create.call(payload, done)
+    }
   },
   onReset () {
     this.props.onDismiss()
@@ -93,7 +95,7 @@ const EditCampaign = React.createClass({
   render () {
     if (!this.props.open) return null
     const { onChange, onChangeLink, onSubmit, onReset, onClientNameChange, onClientSelect, onAvatarChange, onAvatarError } = this
-    const { clients } = this.props
+    const { campaign, clients } = this.props
     const { avatar, name, purpose, clientName, links } = this.state
     const iconWidth = 50
     const inputStyle = { resize: 'none' }
@@ -201,7 +203,9 @@ const EditCampaign = React.createClass({
           </div>
         </div>
         <div className='p4 right'>
-          <button className='btn bg-completed white right' type='submit'>Create Campaign</button>
+          <button className='btn bg-completed white right' type='submit'>
+            {campaign ? 'Edit' : 'Create'} Campaign
+          </button>
           <button className='btn bg-transparent gray40 right mr2' type='reset'>Cancel</button>
         </div>
       </form>
