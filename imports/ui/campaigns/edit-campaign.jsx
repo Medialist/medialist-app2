@@ -21,7 +21,8 @@ const EditCampaign = React.createClass({
       name: campaign && campaign.name || '',
       purpose: campaign && campaign.purpose || '',
       clientName: campaign && campaign.client && campaign.client.name || '',
-      links: campaign && campaign.links || ['']
+      links: campaign && campaign.links || [''],
+      validationErrors: {}
     }
   },
   componentDidMount () {
@@ -42,7 +43,7 @@ const EditCampaign = React.createClass({
   },
   onChange (field) {
     return ({ target: { value } }) => {
-      this.setState({ [field]: value })
+      this.setState({ [field]: value }, () => this.validate(field))
     }
   },
   onChangeLink (ind) {
@@ -79,6 +80,10 @@ const EditCampaign = React.createClass({
   onReset () {
     this.props.onDismiss()
   },
+  validate (field) {
+    const nameError = (field === 'name' && !this.state.name)
+    this.setState({ validationErrors: nameError ? { name: true } : {} })
+  },
   addFocus (field) {
     return () => this.setState({ focus: field })
   },
@@ -94,14 +99,15 @@ const EditCampaign = React.createClass({
   },
   render () {
     if (!this.props.open) return null
-    const { onChange, onChangeLink, onSubmit, onReset, onClientNameChange, onClientSelect, onAvatarChange, onAvatarError } = this
+    const { onChange, onChangeLink, onSubmit, onReset, onClientNameChange, onClientSelect, onAvatarChange, onAvatarError, validate } = this
     const { campaign, clients } = this.props
-    const { avatar, name, purpose, clientName, links } = this.state
+    const { avatar, name, purpose, clientName, links, validationErrors } = this.state
     const iconWidth = 50
     const inputStyle = { resize: 'none' }
     const iconStyle = { width: iconWidth }
     return (
-      <form onSubmit={onSubmit} onReset={onReset}>
+      <form onSubmit={onSubmit} onReset={onReset} className='relative'>
+        {validationErrors.name ? <div className='absolute top-0 left-0 right-0 bg-yellow-lighter p2 bold' style={{zIndex: 1}}>Oops. Please add a campaign name</div> : null}
         <div className='px4 py6 center'>
           <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError} menuClass='CampaignAvatarMenu'>
             <div className='bg-gray40 center rounded mx-auto' style={{height: '123px', width: '123px', lineHeight: '123px'}}>
@@ -112,14 +118,16 @@ const EditCampaign = React.createClass({
             <input
               ref={(input) => { this.nameInput = input }}
               autoComplete='off'
-              className='center gray10 input-inline mt4 f-xxxl semibold'
+              className={`center gray10 input-inline mt4 f-xxxl semibold ${validationErrors.name ? 'error' : ''}`}
               type='text'
               name='name'
               value={name}
               placeholder='Campaign Name'
               size={name.length === 0 ? 15 : name.length + 2}
               onChange={onChange('name')}
+              onBlur={() => validate('name')}
                />
+            {validationErrors.name ? <div className='absolute left-0 right-0 mt1 red'>Please add a campaign name</div> : null}
           </div>
         </div>
         <div className='bg-gray90 border-top border-gray80 py5'>
