@@ -1,11 +1,6 @@
-
 import React from 'react'
 import Base from 'rebass/dist/Base'
-import Menu from 'rebass/dist/Menu'
-
-/**
- * Absolutely positioned Menu component for use within Dropdown component
- */
+import config from 'rebass/dist/config'
 
 const DropdownMenu = ({
   open,
@@ -14,8 +9,8 @@ const DropdownMenu = ({
   children,
   onDismiss,
   ...props
-}, { rebass }) => {
-  const { zIndex } = { ...rebass }
+}) => {
+  const { zIndex, scale, borderColor, borderRadius, colors } = { ...config }
 
   const sx = {
     root: {
@@ -37,6 +32,7 @@ const DropdownMenu = ({
     },
     content: {
       position: 'relative',
+      top: '2px',
       zIndex: zIndex[1]
     }
   }
@@ -49,8 +45,23 @@ const DropdownMenu = ({
       <div style={sx.overlay}
         onClick={onDismiss} />
       <div style={sx.content}>
-        <Menu {...props}
-          children={children} />
+        <Base
+          {...props}
+          children={children}
+          className='CampaignMenu'
+          baseStyle={{
+            display: 'flex',
+            flexDirection: 'column',
+            minWidth: 128,
+            marginBottom: scale[2],
+            overflow: 'hidden',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor,
+            borderRadius,
+            color: colors.black,
+            backgroundColor: colors.white
+          }} />
       </div>
     </Base>
   )

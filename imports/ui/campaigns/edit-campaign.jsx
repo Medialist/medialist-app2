@@ -4,12 +4,7 @@ import Modal from '../navigation/modal'
 import EditableAvatar from '../images/editable-avatar'
 import ClientAutocomplete from './client-autocomplete'
 import { create } from '/imports/api/medialists/methods'
-
-function callAll ([...funcs]) {
-  return (...args) => {
-    funcs.forEach((func) => func(...args))
-  }
-}
+import callAll from '/imports/lib/call-all'
 
 const EditCampaign = React.createClass({
   propTypes: {
