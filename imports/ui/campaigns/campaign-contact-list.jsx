@@ -1,35 +1,18 @@
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import CampaignContact from './campaign-contact'
-import AddContact from './add-contact'
 
 const CampaignContactList = React.createClass({
   propTypes: {
     campaign: PropTypes.object,
     contacts: PropTypes.array,
-    contactsAll: PropTypes.array,
-    contactsCount: PropTypes.number
-  },
-
-  getInitialState () {
-    return { addContactOpen: false }
-  },
-
-  onAddContactClick (e) {
-    e.preventDefault()
-    this.toggleAddContact()
-  },
-
-  toggleAddContact () {
-    const addContactOpen = !this.state.addContactOpen
-    this.setState({ addContactOpen })
+    contactsCount: PropTypes.number,
+    onAddContactClick: PropTypes.func.isRequired
   },
 
   render () {
-    const { contacts, contactsAll, campaign, contactsCount } = this.props
+    const { contacts, campaign, contactsCount, onAddContactClick } = this.props
     if (!contacts || !campaign) return null
-    const { addContactOpen } = this.state
-    const { toggleAddContact, onAddContactClick } = this
 
     return (
       <aside className='bg-white mb4 shadow-2'>
@@ -43,7 +26,6 @@ const CampaignContactList = React.createClass({
         <footer className='center border-gray80 border-top p4'>
           <Link to={`/campaign/${campaign.slug}/contacts`} className='block blue'>Show all</Link>
         </footer>
-        <AddContact onDismiss={toggleAddContact} open={addContactOpen} contacts={contacts} contactsAll={contactsAll} campaign={campaign} />
       </aside>
     )
   }

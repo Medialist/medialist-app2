@@ -7,15 +7,20 @@ import SearchBox from '../lists/search-box'
 import ContactsActionsToast from '../contacts/contacts-actions-toast'
 import CampaignTopbar from './campaign-topbar'
 import CampaignSummary from './campaign-summary'
+import Medialists from '/imports/api/medialists/medialists'
+import AddContact from './add-contact'
 
 const CampaignContactsPage = React.createClass({
   propTypes: {
     campaign: PropTypes.object,
+    contacts: PropTypes.array,
+    contactsAll: PropTypes.array,
     router: PropTypes.object
   },
 
   getInitialState () {
     return {
+      addContactOpen: false,
       sort: { updatedAt: -1 },
       selections: [],
       term: ''
@@ -51,14 +56,19 @@ const CampaignContactsPage = React.createClass({
     Meteor.call('posts/create', post)
   },
 
+  toggleAddContact () {
+    const addContactOpen = !this.state.addContactOpen
+    this.setState({ addContactOpen })
+  },
+
   render () {
-    const { campaign } = this.props
+    const { campaign, contacts, contactsAll } = this.props
     if (!campaign) return null
-    const { onSortChange, onSelectionsChange, onStatusChange } = this
-    const { sort, term, selections } = this.state
+    const { onSortChange, onSelectionsChange, onStatusChange, toggleAddContact } = this
+    const { addContactOpen, sort, term, selections } = this.state
     return (
       <div>
-        <CampaignTopbar campaign={campaign} />
+        <CampaignTopbar campaign={campaign} onAddContactClick={toggleAddContact} />
         <CampaignSummary campaign={campaign} />
         <div className='bg-white shadow-2 m4'>
           <div className='p4 flex items-center'>
@@ -66,7 +76,7 @@ const CampaignContactsPage = React.createClass({
               <SearchBox onTermChange={this.onTermChange} placeholder='Search contacts...' />
             </div>
             <div className='flex-none pl4 f-xs'>
-              <ContactsTotalContainer />
+              <ContactsTotal total={contacts.length} />
             </div>
           </div>
           <ContactsTableContainer
@@ -86,6 +96,7 @@ const CampaignContactsPage = React.createClass({
           onTagClick={() => console.log('TODO: add/edit tags')}
           onDeleteClick={() => console.log('TODO: delete contact(s)')}
           onDeselectAllClick={this.onDeselectAllClick} />
+        <AddContact onDismiss={toggleAddContact} open={addContactOpen} contacts={contacts} contactsAll={contactsAll} campaign={campaign} />
       </div>
     )
   }
@@ -94,10 +105,6 @@ const CampaignContactsPage = React.createClass({
 const ContactsTotal = ({ total }) => (
   <div>{total} contact{total === 1 ? '' : 's'} total</div>
 )
-
-const ContactsTotalContainer = createContainer((props) => {
-  return { ...props, total: window.Contacts.find({}).count() }
-}, ContactsTotal)
 
 const ContactsTableContainer = createContainer((props) => {
   const { campaign, term, sort } = props
@@ -122,8 +129,20 @@ const ContactsTableContainer = createContainer((props) => {
 
 export default createContainer((props) => {
   const { slug } = props.params
-  Meteor.subscribe('medialist', slug)
-  Meteor.subscribe('contacts-by-campaign', slug)
-  const campaign = window.Medialists.findOne({ slug })
-  return { ...props, campaign }
+
+  const subs = [
+    Meteor.subscribe('medialist', slug),
+    Meteor.subscribe('contacts')
+  ]
+  const loading = subs.some((s) => !s.ready())
+
+  return {
+    ...props,
+    loading,
+    campaign: Medialists.findOne({ slug }),
+    // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
+    contacts: window.Contacts.find({medialists: slug}, {sort: {updatedAt: -1}}).fetch(),
+    contactsAll: window.Contacts.find({}, {sort: {name: 1}}).fetch(),
+    user: Meteor.user()
+  }
 }, withRouter(CampaignContactsPage))
