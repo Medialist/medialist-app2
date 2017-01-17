@@ -161,7 +161,7 @@ const EditCampaign = React.createClass({
                 <textarea
                   onFocus={this.addFocus('purpose')}
                   onBlur={this.removeFocus}
-                  style={inputStyle}
+                  style={{ ...inputStyle, height: '70px' }}
                   className='input block textarea'
                   type='text'
                   rows='5'
