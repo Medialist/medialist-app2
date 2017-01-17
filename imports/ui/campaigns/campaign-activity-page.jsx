@@ -10,6 +10,7 @@ import ActivityFeed from '../dashboard/activity-feed'
 import EditCampaign from './edit-campaign'
 import Clients from '/imports/api/clients/clients'
 import Medialists from '/imports/api/medialists/medialists'
+import AddContact from './add-contact'
 
 const CampaignActivityPage = React.createClass({
   propTypes: {
@@ -23,7 +24,12 @@ const CampaignActivityPage = React.createClass({
   },
 
   getInitialState () {
-    return { editModalOpen: false }
+    return { addContactOpen: false, editModalOpen: false }
+  },
+
+  toggleAddContact () {
+    const addContactOpen = !this.state.addContactOpen
+    this.setState({ addContactOpen })
   },
 
   toggleEditModal () {
@@ -42,14 +48,14 @@ const CampaignActivityPage = React.createClass({
   },
 
   render () {
-    const { toggleEditModal, onFeedback } = this
+    const { toggleAddContact, toggleEditModal, onFeedback } = this
     const { campaign, contacts, contactsCount, clients, contactsAll, user } = this.props
-    const { editModalOpen } = this.state
+    const { addContactOpen, editModalOpen } = this.state
     if (!campaign) return null
 
     return (
       <div>
-        <CampaignTopbar contactsAll={contactsAll} campaign={campaign} contacts={contacts} />
+        <CampaignTopbar campaign={campaign} onAddContactClick={toggleAddContact} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
             <CampaignInfo campaign={campaign} onEditClick={toggleEditModal} user={user} />
@@ -60,9 +66,10 @@ const CampaignActivityPage = React.createClass({
             <ActivityFeed campaign={campaign} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
-            <CampaignContactList contacts={contacts} contactsCount={contactsCount} campaign={campaign} />
+            <CampaignContactList contacts={contacts} contactsAll={contactsAll} contactsCount={contactsCount} campaign={campaign} onAddContactClick={toggleAddContact} />
           </div>
         </div>
+        <AddContact onDismiss={toggleAddContact} open={addContactOpen} contacts={contacts} contactsAll={contactsAll} campaign={campaign} />
       </div>
     )
   }
