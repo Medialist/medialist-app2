@@ -34,8 +34,7 @@ const ActivityListContainer = createContainer((props) => {
   const limit = props.limit || 10
   const typesForFilter = {
     'Top Activity': ['need-to-knows', 'medialists changed', 'feedback'],
-    'Coverage': ['coverage'],
-    'Need To Know': ['need-to-knows']
+    'Coverage': ['coverage']
   }
   const types = typesForFilter[props.filter]
 

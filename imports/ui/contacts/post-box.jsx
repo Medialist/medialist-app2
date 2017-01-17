@@ -42,13 +42,16 @@ const FeedbackInput = React.createClass({
         <textarea
           rows={rows}
           className='textarea mb1'
-          style={{border: '0 none'}}
-          placeholder={`Any updates on ${name}'s work?`}
+          style={{border: '0 none', overflowY: 'scroll', resize: 'none'}}
+          placeholder={contact ? `Any updates on ${name}'s work?` : `What's happening with this campaign?`}
           onChange={this.onMessageChange}
           value={message}
           disabled={posting} />
         <div className={className}>
-          <button onClick={() => this.onSubmit()} className='btn bg-gray80 right' disabled={posting || !this.isValid()}>Post</button>
+          <button
+            onClick={() => this.onSubmit()}
+            className={`btn bg-gray80 right active-bg-blue ${message.length > 0 ? 'active' : ''}`}
+            disabled={message.length < 1 || posting || this.isValid()}>Post</button>
           <CampaignSelector onChange={this.onCampaignChange} campaigns={campaigns} />
           <div className='inline-block mx2'>
             <StatusSelector status={status} onChange={this.onStatusChange} />
@@ -66,15 +69,30 @@ const CoverarageInput = React.createClass({
     campaigns: PropTypes.array.isRequired,
     onSubmit: PropTypes.func.isRequired
   },
+  getInitialState () {
+    return {message: ''}
+  },
+  onMessageChange (evt) {
+    this.setState({message: evt.target.value})
+  },
   render () {
+    const {onMessageChange} = this
     const {focused, contact} = this.props
+    const {message} = this.state
     const className = focused ? '' : 'display-none'
     const rows = focused ? '3' : '1'
-    const name = contact && contact.name && contact.name.split(' ')[0]
+    const name = contact && contact.name && contact.name.split(' ')[0] || 'you'
     return (<div>
-      <textarea rows={rows} className='textarea mb1' style={{border: '0 none'}} placeholder={`Did ${name} post any coverage?`} />
+      <textarea
+        rows={rows}
+        className='textarea mb1' style={{border: '0 none', overflowY: 'scroll', resize: 'none'}}
+        placeholder={`Did ${name} post any coverage?`}
+        value={message}
+        onChange={onMessageChange} />
       <div className={className}>
-        <button className='btn bg-gray80 right'>Post</button>
+        <button
+          className={`btn bg-gray80 right active-bg-blue ${message.length > 0 ? 'active' : ''}`}
+          disabled={message.length < 1}>Post</button>
         <button className='btn bg-transparent border-gray80'>Select a Campaign</button>
       </div>
     </div>)
@@ -136,7 +154,7 @@ const PostBox = React.createClass({
           <div className={this.getTabClassName('Coverage')} onClick={() => this.setState({ selected: 'Coverage' })} >
             <FeedCoverageIcon /> Coverage
           </div>
-          <div className={this.getTabClassName('Need to Know')} onClick={() => this.setState({ selected: 'Need to Know' })} >
+          <div className={`${this.getTabClassName('Need to Know')} display-none`} onClick={() => this.setState({ selected: 'Need to Know' })} >
             <FeedNeedToKnowIcon /> Need to Know
           </div>
         </nav>

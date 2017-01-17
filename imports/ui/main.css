@@ -473,6 +473,10 @@ button {
 .active-bg-green-light.active {
   background-color: var(--green-light);
 }
+.active-bg-blue.active {
+  color: var(--white) !important;
+  background-color: var(--blue) !important;
+}
 .active-blue.active {
   color: var(--blue) !important;
 }
