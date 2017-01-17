@@ -144,15 +144,14 @@ const PostBox = React.createClass({
     const { contact, campaigns, onFeedback, onCoverage, onNeedToKnow } = this.props
     const { selected, focused } = this.state
     const childProps = { focused, contact }
-
     return (
       <div className='mb2' onFocus={() => this.setState({focused: true})}>
         <nav className='block' style={{padding: '2px 1px 0', height: 50, overflowY: 'hidden'}}>
           <div className={this.getTabClassName('Feedback')} onClick={() => this.setState({ selected: 'Feedback' })} >
-            <FeedFeedbackIcon /> Feedback
+            <FeedFeedbackIcon className={selected === 'Feedback' ? 'blue' : 'gray80'} /> Feedback
           </div>
           <div className={this.getTabClassName('Coverage')} onClick={() => this.setState({ selected: 'Coverage' })} >
-            <FeedCoverageIcon /> Coverage
+            <FeedCoverageIcon className={selected === 'Coverage' ? 'blue' : 'gray80'} /> Coverage
           </div>
           <div className={`${this.getTabClassName('Need to Know')} display-none`} onClick={() => this.setState({ selected: 'Need to Know' })} >
             <FeedNeedToKnowIcon /> Need to Know
