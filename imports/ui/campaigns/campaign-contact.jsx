@@ -7,7 +7,7 @@ const CampaignContact = ({ contact, campaign }) => {
   const status = campaign.contacts && campaign.contacts[contact.slug]
   return (
     <div className='pt3' style={{lineHeight: 1.3}}>
-      <Link to={`contact/${contact.slug}`}>
+      <Link to={`/campaign/${campaign.slug}/contact/${contact.slug}`}>
         <CircleAvatar className='inline-block' size={38} avatar={contact.avatar} name={contact.name} />
         <div className='inline-block align-top pl3' style={{width: 220, height: 55}}>
           <div className='f-md semibold gray10 truncate'>
