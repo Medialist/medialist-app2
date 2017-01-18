@@ -11,7 +11,7 @@ export default ({ item, currentUser }) => (
         <CircleAvatar avatar={item.createdBy.avatar} name={item.createdBy.name} />
       </div>
       <div className='flex-auto'>
-        <header className='py3 f-md'>
+        <header className='pt2 pb3 f-md'>
           <span className='f-sm semibold gray60 right'>
             <FromNow date={item.createdAt} />
           </span>
