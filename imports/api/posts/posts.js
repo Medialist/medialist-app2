@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
+import { check } from 'meteor/check'
 import values from 'lodash.values'
 import nothing from '/imports/lib/nothing'
 import Contacts, { ContactRefSchema } from '/imports/api/contacts/contacts'
@@ -48,7 +49,8 @@ export const PostSchema = new SimpleSchema({
       'feedback',
       'need to know',
       'details changed',
-      'medialists changed'
+      'medialists changed',
+      'campaign created'
     ],
     optional: true
   },
@@ -58,6 +60,34 @@ export const PostSchema = new SimpleSchema({
     optional: true
   }
 })
+
+Posts.createCampaignCreated = ({ campaign, author }) => {
+  const post = {
+    type: 'campaign created',
+    medialists: [campaign.slug],
+    contacts: [],
+    message: `created a campaign`,
+    details: {
+      campaign: {
+        _id: campaign._id,
+        slug: campaign.slug,
+        name: campaign.name,
+        avatar: campaign.avatar,
+        clientName: campaign.client && campaign.client.name,
+        updatedAt: campaign.updatedAt
+      }
+    },
+    createdAt: new Date(),
+    createdBy: {
+      _id: author._id,
+      name: author.profile.name,
+      avatar: author.services.twitter.profile_image_url_https
+    }
+  }
+
+  check(post, PostSchema)
+  return Posts.insert(post)
+}
 
 Posts.createMedialistChange = function (details) {
   var userId = Meteor.userId()

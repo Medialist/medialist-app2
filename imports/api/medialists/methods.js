@@ -6,6 +6,7 @@ import createUniqueSlug from '/imports/lib/slug'
 import Medialists, { MedialistSchema, MedialistUpdateSchema, MedialistCreateSchema } from './medialists'
 import Clients from '/imports/api/clients/clients'
 import Uploadcare from '/imports/lib/uploadcare'
+import Posts from '/imports/api/posts/posts'
 
 function findOrCreateClientRef (name) {
   const nameRegex = new RegExp('^' + escapeRegExp(name) + '$', 'i')
@@ -123,6 +124,8 @@ export const create = new ValidatedMethod({
       { _id: user._id },
       { $push: { myMedialists }
       })
+
+    Posts.createCampaignCreated({ campaign: doc, author: user })
 
     return slug
   }
