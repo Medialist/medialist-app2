@@ -178,7 +178,7 @@ const EditCampaign = React.createClass({
                     onChange={onChangeLink(ind)} />
                 </div>
               ))}
-              <div><a href='#' className='f-xs blue underline mt1' onClick={this.addLink}>Add another link</a></div>
+              <div className='mt1'><a href='#' className='f-xs blue underline' onClick={this.addLink}>Add another link</a></div>
             </div>
           </div>
         </div>
