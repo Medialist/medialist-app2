@@ -54,7 +54,7 @@ const ContactSelector = React.createClass({
             <button className='btn bg-transparent border-gray80 mx2' onClick={this.openDropdown} disabled={!contacts || !contacts.length}>
               { selectedContact ? <ContactButton contact={selectedContact} /> : 'Select a Contact' }
             </button>
-            <DropdownMenu right style={dropdownStyle} open={this.state.open} onDismiss={this.closeDropdown}>
+            <DropdownMenu style={dropdownStyle} open={this.state.open} onDismiss={this.closeDropdown}>
               <CampaignContacts campaign={campaign} contacts={contacts} onSelectContact={onSelectContact} />
             </DropdownMenu>
           </Dropdown>
