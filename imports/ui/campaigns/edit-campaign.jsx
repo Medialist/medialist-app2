@@ -138,7 +138,6 @@ const EditCampaign = React.createClass({
                   onFocus={this.addFocus('clientName')}
                   onBlur={this.removeFocus}
                   clients={clients}
-                  style={{display: 'block'}}
                   className='input block'
                   name='clientName'
                   placeholder='Client'

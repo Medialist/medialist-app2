@@ -8,7 +8,7 @@ const DropdownMenu = ({
   top,
   children,
   onDismiss,
-  menuClass,
+  arrowPosition, // either a valid CSS distance for the "right" property of the arrow, or false for no arrow
   ...props
 }) => {
   const { zIndex, scale, borderColor, borderRadius, colors } = { ...config }
@@ -38,6 +38,19 @@ const DropdownMenu = ({
     }
   }
 
+  const arrowStyle = {
+    display: 'inline-block',
+    position: 'absolute',
+    top: '-7px',
+    left: arrowPosition || 'calc(50% - 10px)',
+    width: '0',
+    height: '0',
+    border: '8px solid transparent',
+    borderBottomColor: 'white',
+    borderTop: '0 none',
+    borderRadius: '2px'
+  }
+
   return (
     <Base
       {...props}
@@ -46,10 +59,11 @@ const DropdownMenu = ({
       <div style={sx.overlay}
         onClick={onDismiss} />
       <div style={sx.content}>
+        {arrowPosition === false ? null : <div style={arrowStyle} />}
         <Base
           {...props}
+          className='Menu'
           children={children}
-          className={menuClass || 'Menu'}
           baseStyle={{
             display: 'flex',
             flexDirection: 'column',

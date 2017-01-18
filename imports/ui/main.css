@@ -522,40 +522,7 @@ button {
 }
 
 /* ---- Rebass overrides ---------------------------------------------------- */
-.AutocompleteMenu, .CampaignAvatarMenu {
-  border: 1px solid var(--gray80) !important;
-  box-shadow: 0px 1px 10px 0px rgba(0,0,0,0.20);
-}
 .Menu {
   border: 0 none !important;
   box-shadow: 0px 1px 10px 0px rgba(0,0,0,0.20);
-}
-/* triangle pointy thing */
-.Menu::before {
-  content:'';
-  display: inline-block;
-  position: absolute;
-  top: -7px;
-  right: 11px;
-  width: 0;
-  height: 0;
-  border: 8px solid transparent;
-  border-bottom-color:var(--white);
-  border-top: 0 none;
-  border-radius: 2px;
-}
-
-/* triangle pointy thing */
-.CampaignAvatarMenu::before {
-  content:'';
-  display: inline-block;
-  position: absolute;
-  top: -7px;
-  right: calc(50% - 4px);
-  width: 0;
-  height: 0;
-  border: 8px solid transparent;
-  border-bottom-color:var(--white);
-  border-top: 0 none;
-  border-radius: 2px;
 }
