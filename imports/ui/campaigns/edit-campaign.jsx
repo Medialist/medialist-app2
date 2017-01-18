@@ -25,7 +25,8 @@ const EditCampaign = React.createClass({
       purpose: campaign && campaign.purpose || '',
       clientName: campaign && campaign.client && campaign.client.name || '',
       links: campaign && campaign.links || [{ url: '' }],
-      validationErrors: {}
+      validationErrors: {},
+      isValid: false
     }
   },
   componentDidMount () {
@@ -84,17 +85,19 @@ const EditCampaign = React.createClass({
   onReset () {
     this.props.onDismiss()
   },
-  validationContext: MedialistCreateSchema.namedContext('add-edit-campaign'),
   validate () {
     const { avatar, name, purpose, clientName, links } = this.state
+    const validationContext = MedialistCreateSchema.newContext()
     const campaign = { avatar, name, purpose, clientName, links: links.filter((l) => l.url) }
-    this.validationContext.validate(campaign)
-    const validationErrors = this.validationContext.invalidKeys().reduce((validationErrors, error) => {
+    validationContext.validate(campaign)
+    let isValid = true
+    const validationErrors = validationContext.invalidKeys().reduce((validationErrors, error) => {
       const field = error.name
       validationErrors[field] = `Please add a ${MedialistCreateSchema.label(field)}`
+      isValid = false
       return validationErrors
     }, {})
-    this.setState({ validationErrors, validated: true })
+    this.setState({ validationErrors, isValid })
     return this.validationContext.isValid()
   },
   addFocus (field) {
@@ -112,9 +115,9 @@ const EditCampaign = React.createClass({
   },
   render () {
     if (!this.props.open) return null
-    const { onChange, onChangeLink, onSubmit, onReset, onClientNameChange, onClientSelect, onAvatarChange, onAvatarError, validate, validationContext } = this
+    const { onChange, onChangeLink, onSubmit, onReset, onClientNameChange, onClientSelect, onAvatarChange, onAvatarError, validate } = this
     const { campaign, clients } = this.props
-    const { avatar, name, purpose, clientName, links, validationErrors, validated } = this.state
+    const { avatar, name, purpose, clientName, links, validationErrors, isValid } = this.state
     const iconWidth = 50
     const inputStyle = { resize: 'none' }
     const iconStyle = { width: iconWidth }
@@ -224,7 +227,7 @@ const EditCampaign = React.createClass({
           </div>
         </div>
         <div className='p4 right'>
-          <button className='btn bg-completed white right' type='submit' disabled={!validationContext.isValid() || !validated}>
+          <button className='btn bg-completed white right' type='submit' disabled={!isValid}>
             {campaign ? 'Edit' : 'Create'} Campaign
           </button>
           <button className='btn bg-transparent gray40 right mr2' type='reset'>Cancel</button>
