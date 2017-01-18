@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import { MenuContactIcon, ChevronRight } from '../images/icons'
-import CampaignContact from '../campaigns/campaign-contact'
+import RecentContact from './recent-contact'
 
 const RecentContactsList = (props) => {
   const { contacts } = props
@@ -16,7 +16,7 @@ const RecentContactsList = (props) => {
       </header>
       <div className='p3'>
         {contacts.length
-          ? contacts.map((contact) => <CampaignContact key={contact.slug} {...contact} />)
+          ? contacts.map((contact) => <RecentContact key={contact.slug} {...contact} />)
           : (
             <Link
               to='/contacts?editContactOpen=true'

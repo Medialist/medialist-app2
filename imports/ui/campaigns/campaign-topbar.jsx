@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react'
 import { browserHistory } from 'react-router'
-import AddContact from './add-contact'
 import NavLink from '../navigation/nav-link'
 
 const CampaignTopbar = React.createClass({
@@ -8,12 +7,7 @@ const CampaignTopbar = React.createClass({
     backLinkText: PropTypes.string,
     onBackClick: PropTypes.func,
     campaign: PropTypes.object,
-    contactsAll: PropTypes.array,
-    contacts: PropTypes.array
-  },
-
-  getInitialState () {
-    return { addContactOpen: false }
+    onAddContactClick: PropTypes.func.isRequired
   },
 
   getDefaultProps () {
@@ -27,15 +21,9 @@ const CampaignTopbar = React.createClass({
     browserHistory.go(-1)
   },
 
-  toggleAddContact () {
-    const addContactOpen = !this.state.addContactOpen
-    this.setState({ addContactOpen })
-  },
-
   render () {
-    const { toggleAddContact, onBackClick } = this
-    const { backLinkText, contactsAll, campaign, contacts } = this.props
-    const { addContactOpen } = this.state
+    const { onBackClick } = this
+    const { backLinkText, campaign, onAddContactClick } = this.props
 
     return (
       <nav className='block bg-white mb4 flex items-center width-100 border-gray80 border-bottom'>
@@ -47,11 +35,10 @@ const CampaignTopbar = React.createClass({
             <NavLink to={`/campaign/${campaign.slug}`} onlyActiveOnIndex>Activity View</NavLink>
             <NavLink to={`/campaign/${campaign.slug}/contacts`}>List View</NavLink>
           </div>
-          <button type='button' className='btn white bg-blue mx6' onClick={toggleAddContact}>
+          <button type='button' className='btn white bg-blue mx6' onClick={onAddContactClick}>
             Add Contacts to Campaign
           </button>
         </div>
-        <AddContact onDismiss={toggleAddContact} open={addContactOpen} contacts={contacts} contactsAll={contactsAll} campaign={campaign} />
       </nav>
     )
   }

@@ -78,10 +78,10 @@ const ContactPage = React.createClass({
 })
 
 export default createContainer((props) => {
-  const { slug } = props.params
-  Meteor.subscribe('contact', slug)
+  const { contactSlug } = props.params
+  Meteor.subscribe('contact', contactSlug)
   Meteor.subscribe('medialists')
-  const contact = window.Contacts.findOne({ slug })
+  const contact = window.Contacts.findOne({ slug: contactSlug })
   const campaigns = contact ? window.Medialists.find({ slug: { $in: contact.medialists } }).fetch() : []
   const user = Meteor.user()
   return { ...props, contact, campaigns, user }

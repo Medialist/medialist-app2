@@ -462,6 +462,10 @@ button {
 .hover-fill-current:hover svg{
   fill: currentColor;
 }
+.hover-fill-trigger:hover .hover-fill-gray10,
+.hover-fill-gray10:hover {
+  fill: var(--gray10)
+}
 .hover-cursor-pointer:hover {
   cursor: pointer;
 }

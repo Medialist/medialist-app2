@@ -3,17 +3,16 @@ import values from 'lodash.values'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
 import { dropdownMenuStyle } from '../common-styles'
+import StatusDot from './status-dot'
 
 const dropdownStyle = Object.assign({}, dropdownMenuStyle, { width: 223 })
 
 const items = values(window.Contacts.status)
 
 const Status = (props) => {
-  const ref = props.name.toLowerCase().replace(' ', '-')
-  const className = `inline-block align-middle circle bg-${ref}`
   return (
     <div>
-      <span className={className} style={{width: 12, height: 12}} />
+      <StatusDot name={props.name} />
       <span className='ml2 uppercase f-xxs semibold gray20 letter-spacing-1'>{props.name}</span>
     </div>
   )
