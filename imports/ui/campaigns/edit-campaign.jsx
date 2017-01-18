@@ -58,7 +58,7 @@ const EditCampaign = React.createClass({
   },
   checkLinkEmpty (ind) {
     return () => {
-      if (this.state.links[ind] && this.state.links[ind].url && this.state.links.length > 1) {
+      if (this.state.links[ind] && !this.state.links[ind].url && this.state.links.length > 1) {
         const newLinks = [...this.state.links]
         newLinks.splice(ind, 1)
         this.setState({ links: newLinks })
@@ -94,11 +94,12 @@ const EditCampaign = React.createClass({
     const validationErrors = validationContext.invalidKeys().reduce((validationErrors, error) => {
       const field = error.name
       validationErrors[field] = `Please add a ${MedialistCreateSchema.label(field)}`
+      if (field.substr(0, 5) === 'links') validationErrors.links = 'Please only use valid URLs'
       isValid = false
       return validationErrors
     }, {})
     this.setState({ validationErrors, isValid })
-    return this.validationContext.isValid()
+    return validationContext.isValid()
   },
   addFocus (field) {
     return () => this.setState({ focus: field })
@@ -122,7 +123,7 @@ const EditCampaign = React.createClass({
     const iconStyle = { position: 'absolute', left: '-32px', top: '10px' }
     return (
       <form onSubmit={onSubmit} onReset={onReset} className='relative'>
-        <ValidationBanner error={validationErrors.name} />
+        <ValidationBanner error={validationErrors.name || validationErrors.links} />
         <div className='px4 py6 center'>
           <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError}>
             <div className='bg-gray40 center rounded mx-auto' style={{height: '123px', width: '123px', lineHeight: '123px'}}>
@@ -140,7 +141,7 @@ const EditCampaign = React.createClass({
               placeholder='Campaign Name'
               size={name.length === 0 ? 15 : name.length + 2}
               onChange={onChange('name')}
-              onBlur={() => validate('name')}
+              onBlur={validate}
                />
             {validationErrors.name ? <div className='absolute left-0 right-0 mt1 red'>{validationErrors.name}</div> : null}
           </div>
@@ -193,7 +194,7 @@ const EditCampaign = React.createClass({
                   </div>
                   <input
                     onFocus={this.addFocus(`link-${ind}`)}
-                    onBlur={callAll([this.removeFocus, this.checkLinkEmpty(ind)])}
+                    onBlur={callAll([this.removeFocus, this.checkLinkEmpty(ind), validate])}
                     style={inputStyle}
                     className='input block'
                     type='text'
