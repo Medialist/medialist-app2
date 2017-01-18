@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react'
-import ContactSelector from './contact-selector'
 import CampaignSelector from './campaign-selector'
 import { FeedFeedbackIcon, FeedCoverageIcon, FeedNeedToKnowIcon } from '../images/icons'
 
@@ -56,7 +55,6 @@ const PostBox = React.createClass({
 const FeedbackInput = React.createClass({
   propTypes: {
     contact: PropTypes.object,
-    contacts: PropTypes.array,
     campaigns: PropTypes.array,
     focused: PropTypes.bool.isRequired,
     onSubmit: PropTypes.func.isRequired
@@ -85,7 +83,7 @@ const FeedbackInput = React.createClass({
   },
   render () {
     const { onCampaignChange, onMessageChange } = this
-    const {focused, contact, contacts, campaigns} = this.props
+    const {focused, contact, campaigns} = this.props
     const {message, posting} = this.state
     const className = focused ? '' : 'display-none'
     const rows = focused ? '3' : '1'
@@ -106,7 +104,6 @@ const FeedbackInput = React.createClass({
             onClick={() => this.onSubmit()}
             className={`btn bg-gray80 right active-bg-blue ${message.length > 0 ? 'active' : ''}`}
             disabled={message.length < 1 || posting || this.isValid()}>Post</button>
-          <ContactSelector campaign={campaigns[0] || {}} contacts={contacts} />
           <CampaignSelector onChange={onCampaignChange} campaigns={campaigns} />
         </div>
       </div>
@@ -117,9 +114,9 @@ const FeedbackInput = React.createClass({
 const CoverarageInput = React.createClass({
   propTypes: {
     contact: PropTypes.object,
-    focused: PropTypes.bool.isRequired,
-    campaigns: PropTypes.array.isRequired,
-    onSubmit: PropTypes.func.isRequired
+    focused: PropTypes.bool,
+    campaigns: PropTypes.array,
+    onSubmit: PropTypes.func
   },
   getInitialState () {
     return {message: ''}
