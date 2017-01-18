@@ -115,14 +115,17 @@ export const MedialistUpdateSchema = new SimpleSchema({
   },
   name: {
     type: String,
-    min: 1
+    min: 1,
+    optional: true
   },
   clientName: {
     type: String,
-    min: 1
+    min: 1,
+    optional: true
   },
   purpose: {
-    type: String
+    type: String,
+    optional: true
   },
   website: {
     type: String,
