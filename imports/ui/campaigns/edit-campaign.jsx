@@ -121,7 +121,7 @@ const EditCampaign = React.createClass({
                />
           </div>
         </div>
-        <div className='bg-gray90 border-top border-gray80 py5 overflow-auto' style={{ maxHeight: '250px' }}>
+        <div className='bg-gray90 border-top border-gray80 py5 overflow-auto' style={{ maxHeight: '400px' }}>
           <div style={{ padding: '0 100px' }}>
             <div>
               <label className='block gray40 f-m mb2'>Client</label>
