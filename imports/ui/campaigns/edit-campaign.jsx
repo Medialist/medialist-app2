@@ -154,7 +154,7 @@ const EditCampaign = React.createClass({
               <div style={iconStyle} />
             </div>
             <div className='flex items-stretch mt1'>
-              <div style={iconStyle} className='flex justify-end items-center flex-none pr3'>
+              <div style={iconStyle} className='flex justify-end items-start flex-none pr3 pt1'>
                 <BioIcon className={this.focusState('purpose')} />
               </div>
               <div className='flex-auto'>
