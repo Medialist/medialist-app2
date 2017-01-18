@@ -128,10 +128,10 @@ const ContactsTableContainer = createContainer((props) => {
 }, ContactsTable)
 
 export default createContainer((props) => {
-  const { slug } = props.params
+  const { campaignSlug } = props.params
 
   const subs = [
-    Meteor.subscribe('medialist', slug),
+    Meteor.subscribe('medialist', campaignSlug),
     Meteor.subscribe('contacts')
   ]
   const loading = subs.some((s) => !s.ready())
@@ -139,9 +139,9 @@ export default createContainer((props) => {
   return {
     ...props,
     loading,
-    campaign: Medialists.findOne({ slug }),
+    campaign: Medialists.findOne({ slug: campaignSlug }),
     // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
-    contacts: window.Contacts.find({medialists: slug}, {sort: {updatedAt: -1}}).fetch(),
+    contacts: window.Contacts.find({medialists: campaignSlug}, {sort: {updatedAt: -1}}).fetch(),
     contactsAll: window.Contacts.find({}, {sort: {name: 1}}).fetch(),
     user: Meteor.user()
   }

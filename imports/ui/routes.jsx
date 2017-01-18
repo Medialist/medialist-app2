@@ -22,8 +22,9 @@ const Routes = ({ store, history }) => {
         <Route path='notifications' component={NotificationsPage} />
         <Route path='campaigns' component={CampaignsPage} />
         <Route path='campaign'>
-          <Route path=':slug'>
+          <Route path=':campaignSlug'>
             <IndexRoute component={CampaignActivityPage} />
+            <Route path='contact/:contactSlug' component={ContactPage} />
             <Route path='contacts' component={CampaignContactsPage} />
           </Route>
         </Route>
@@ -35,7 +36,7 @@ const Routes = ({ store, history }) => {
             <Route path='processing' component={ContactsImportProcessing} />
           </Route>
         </Route>
-        <Route path='contact/:slug' component={ContactPage} />
+        <Route path='contact/:contactSlug' component={ContactPage} />
         <Route path='settings' component={SettingsPage}>
           <Route path=':selected' component={SettingsPage} />
         </Route>

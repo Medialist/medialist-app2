@@ -76,10 +76,10 @@ const CampaignActivityPage = React.createClass({
 })
 
 export default createContainer((props) => {
-  const { slug } = props.params
+  const { campaignSlug } = props.params
 
   const subs = [
-    Meteor.subscribe('medialist', slug),
+    Meteor.subscribe('medialist', campaignSlug),
     Meteor.subscribe('contacts'),
     Meteor.subscribe('clients')
   ]
@@ -88,10 +88,10 @@ export default createContainer((props) => {
   return {
     ...props,
     loading,
-    campaign: Medialists.findOne({ slug }),
+    campaign: Medialists.findOne({ slug: campaignSlug }),
     // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
-    contacts: window.Contacts.find({medialists: slug}, {limit: 7, sort: {updatedAt: -1}}).fetch(),
-    contactsCount: window.Contacts.find({medialists: slug}).count(),
+    contacts: window.Contacts.find({medialists: campaignSlug}, {limit: 7, sort: {updatedAt: -1}}).fetch(),
+    contactsCount: window.Contacts.find({medialists: campaignSlug}).count(),
     contactsAll: window.Contacts.find({}, {sort: {name: 1}}).fetch(),
     user: Meteor.user(),
     clients: Clients.find({}).fetch()
