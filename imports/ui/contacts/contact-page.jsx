@@ -53,7 +53,7 @@ const ContactPage = React.createClass({
   },
 
   render () {
-    const { contact, campaigns, user, location } = this.props
+    const { contact, campaigns, user } = this.props
     const { editContactOpen } = this.state
     if (!contact) return null
     return (
@@ -64,7 +64,7 @@ const ContactPage = React.createClass({
             <ContactInfo contact={contact} onEditClick={this.toggleEditContact} user={user} />
           </div>
           <div className='flex-auto px2' >
-            <PostBox contact={contact} campaigns={campaigns} onFeedback={this.onFeedback} location={location} />
+            <PostBox contact={contact} campaigns={campaigns} onFeedback={this.onFeedback} />
             <ActivityFeed contact={contact} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
