@@ -97,13 +97,12 @@ const EditCampaign = React.createClass({
     const { onChange, onChangeLink, onSubmit, onReset, onClientNameChange, onClientSelect, onAvatarChange, onAvatarError } = this
     const { campaign, clients } = this.props
     const { avatar, name, purpose, clientName, links } = this.state
-    const iconWidth = 50
     const inputStyle = { resize: 'none' }
-    const iconStyle = { width: iconWidth }
+    const iconStyle = { position: 'absolute', left: '-32px', top: '10px' }
     return (
       <form onSubmit={onSubmit} onReset={onReset}>
         <div className='px4 py6 center'>
-          <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError} menuClass='CampaignAvatarMenu'>
+          <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError}>
             <div className='bg-gray40 center rounded mx-auto' style={{height: '123px', width: '123px', lineHeight: '123px'}}>
               { avatar ? <img src={avatar} width='100%' height='100%' /> : <CameraIcon /> }
             </div>
@@ -122,18 +121,14 @@ const EditCampaign = React.createClass({
                />
           </div>
         </div>
-        <div className='bg-gray90 border-top border-gray80 py5'>
-          <div className='flex flex-column content-stretch px8'>
-            <div className='flex'>
-              <div style={iconStyle} />
-              <label className='block gray40 f-m'>Client</label>
-              <div style={iconStyle} />
-            </div>
-            <div className='flex items-stretch mt1'>
-              <div style={iconStyle} className='flex justify-end items-center flex-none pr3'>
-                <FilledCircle className={this.focusState('clientName')} />
-              </div>
-              <div className='flex-auto'>
+        <div className='bg-gray90 border-top border-gray80 py5 overflow-auto' style={{ maxHeight: '250px' }}>
+          <div style={{ padding: '0 100px' }}>
+            <div>
+              <label className='block gray40 f-m mb2'>Client</label>
+              <div className='relative'>
+                <div style={iconStyle}>
+                  <FilledCircle className={this.focusState('clientName')} />
+                </div>
                 <ClientAutocomplete
                   onFocus={this.addFocus('clientName')}
                   onBlur={this.removeFocus}
@@ -145,18 +140,13 @@ const EditCampaign = React.createClass({
                   onSelect={onClientSelect}
                   onChange={onClientNameChange} />
               </div>
-              <div style={iconStyle} />
             </div>
-            <div className='flex mt3'>
-              <div style={iconStyle} />
-              <label className='block gray40 f-m'>Key Message</label>
-              <div style={iconStyle} />
-            </div>
-            <div className='flex items-stretch mt1'>
-              <div style={iconStyle} className='flex justify-end items-start flex-none pr3 pt1'>
-                <BioIcon className={this.focusState('purpose')} />
-              </div>
-              <div className='flex-auto'>
+            <div className='mt4'>
+              <label className='block gray40 f-m mb2'>Key Message</label>
+              <div className='relative'>
+                <div style={iconStyle}>
+                  <BioIcon className={this.focusState('purpose')} />
+                </div>
                 <textarea
                   onFocus={this.addFocus('purpose')}
                   onBlur={this.removeFocus}
@@ -169,19 +159,14 @@ const EditCampaign = React.createClass({
                   placeholder='Key Message'
                   onChange={onChange('purpose')} />
               </div>
-              <div style={iconStyle} />
             </div>
-            <div className='flex mt3'>
-              <div style={iconStyle} />
-              <label className='block gray40 f-m'>Links</label>
-              <div style={iconStyle} />
-            </div>
-            {this.state.links.map((link, ind) => (
-              <div key={ind} className='flex items-stretch mt1 icon-blue-highlight'>
-                <div style={iconStyle} className='flex justify-end items-center flex-none pr3'>
-                  <WebsiteIcon className={this.focusState(`link-${ind}`)} />
-                </div>
-                <div className='flex-auto'>
+            <div className='mt4'>
+              <label className='block gray40 f-m mb2'>Links</label>
+              {links.map((link, ind) => (
+                <div key={ind} className='relative mt1 icon-blue-highlight'>
+                  <div style={iconStyle}>
+                    <WebsiteIcon className={this.focusState(`link-${ind}`)} />
+                  </div>
                   <input
                     onFocus={this.addFocus(`link-${ind}`)}
                     onBlur={callAll([this.removeFocus, this.checkLinkEmpty(ind)])}
@@ -192,12 +177,8 @@ const EditCampaign = React.createClass({
                     placeholder='Links'
                     onChange={onChangeLink(ind)} />
                 </div>
-                <div style={iconStyle} />
-              </div>
-            ))}
-            <div className='flex mt1'>
-              <div style={iconStyle} />
-              <div><a href='#' className='f-xs blue underline' onClick={this.addLink}>Add another link</a></div>
+              ))}
+              <div><a href='#' className='f-xs blue underline mt1' onClick={this.addLink}>Add another link</a></div>
             </div>
           </div>
         </div>
