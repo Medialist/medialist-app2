@@ -24,10 +24,20 @@ const Layout = React.createClass({
 
 export default createContainer(() => {
   const user = Meteor.user()
-  const subs = [
+  let subs = [
     Meteor.subscribe('my-contacts-and-campaigns'),
     Meteor.subscribe('master-lists')
   ]
+
+  // Prefetch recent posts for my medialists
+  if (user) {
+    subs = subs.concat(
+      (user.myMedialists || []).map((c) => (
+        Meteor.subscribe('posts', { medialist: c.slug, limit: 5 })
+      ))
+    )
+  }
+
   const loading = !subs.every((sub) => sub.ready())
   const notifications = notificationsDummyData
   return { user, notifications, loading }
