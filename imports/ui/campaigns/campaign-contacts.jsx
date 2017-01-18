@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import { CircleAvatar } from '../images/avatar'
-import StatusSelector from '../feedback/status-selector'
+import StatusLabel from '../feedback/status-label'
 
 function truncate (str, chars) {
   if (str.length <= chars) return str
@@ -10,7 +10,6 @@ function truncate (str, chars) {
 const CampaignContacts = (props) => {
   const {
     campaign,
-    onStatusChange,
     contacts
   } = props
 
@@ -33,7 +32,7 @@ const CampaignContacts = (props) => {
               <span className='gray60 py1'>{truncate(outlets.map((o) => o.label).join(', '), 30)}</span>
             </div>
             <div className='flex-none right px4'>
-              <StatusSelector status={status} onChange={(status) => onStatusChange({status, contact})} />
+              <StatusLabel name={status} />
             </div>
           </div>)
       })}
@@ -43,7 +42,6 @@ const CampaignContacts = (props) => {
 
 CampaignContacts.PropTypes = {
   campaign: PropTypes.object.isRequired,
-  onStatusChange: PropTypes.func.isRequired,
   contacts: PropTypes.array.isRequired
 }
 

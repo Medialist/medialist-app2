@@ -20,14 +20,13 @@ const ContactButton = (props) => {
 
 const ContactSelector = React.createClass({
   propTypes: {
+    selectedContact: PropTypes.object,
     campaign: PropTypes.object.isRequired,
     contacts: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired
   },
   getInitialState () {
-    const contact = this.props.contacts && this.props.contacts[0] || {}
-    const status = this.props.campaign && this.props.campaign.contacts && this.props.campaign.contacts[contact.slug] || {}
-    return { open: false, contact, status }
+    return { open: false }
   },
   openDropdown () {
     this.setState({open: true})
@@ -36,20 +35,24 @@ const ContactSelector = React.createClass({
     this.setState({open: false})
   },
   onLinkClick (contact) {
-    this.setState({open: false, contact: contact})
+    this.setState({open: false})
     this.props.onChange(contact)
   },
+  onStatusChange (status) {
+    console.log({ status })
+  },
   render () {
-    const { contact, status } = this.state
-    const { contacts, campaign } = this.props
+    const { onStatusChange } = this
+    const { selectedContact, contacts, campaign } = this.props
+    const status = selectedContact && campaign.contacts[selectedContact.slug]
 
     return (
       <div className='inline-block'>
         <Dropdown>
           <button className='btn bg-transparent border-gray80 mx2' onClick={this.openDropdown} disabled={!contacts || !contacts.length}>
-            { contact ? <ContactButton contact={contact} /> : 'Select a Contact' }
+            { selectedContact ? <ContactButton contact={selectedContact} /> : 'Select a Contact' }
           </button>
-          <StatusSelector status={status} border onChange={(status) => { console.log('change status to ', status) }} />
+          <StatusSelector status={status} border onChange={onStatusChange} />
           <DropdownMenu right style={dropdownStyle} open={this.state.open} onDismiss={this.closeDropdown}>
             <CampaignContacts campaign={campaign} contacts={contacts} onStatusChange={({status, contact}) => console.log('ok ContactSelector got', {status, contact})} />
           </DropdownMenu>

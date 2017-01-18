@@ -3,20 +3,11 @@ import values from 'lodash.values'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
 import { dropdownMenuStyle } from '../common-styles'
-import StatusDot from './status-dot'
+import StatusLabel from './status-label'
 
 const dropdownStyle = Object.assign({}, dropdownMenuStyle, { width: 223 })
 
 const items = values(window.Contacts.status)
-
-const Status = (props) => {
-  return (
-    <div>
-      <StatusDot name={props.name} />
-      <span className='ml2 uppercase f-xxs semibold gray20 letter-spacing-1'>{props.name}</span>
-    </div>
-  )
-}
 
 const StatusSelector = React.createClass({
   propTypes: {
@@ -44,7 +35,7 @@ const StatusSelector = React.createClass({
         <Dropdown>
           { status ? (
             <button className={`btn bg-transparent ${border ? 'border-gray80' : ''}`} onClick={this.openDropdown}>
-              <Status name={status} />
+              <StatusLabel name={status} />
             </button>
         ) : (
           <button className='btn bg-transparent border-gray80' onClick={this.openDropdown}>
@@ -55,7 +46,7 @@ const StatusSelector = React.createClass({
             <nav className='py3'>
               {items.map((item) => (
                 <div key={item} className='px3 py2 pointer hover-bg-gray90' onClick={() => this.onLinkClick(item)}>
-                  <Status name={item} />
+                  <StatusLabel name={item} />
                 </div>
               ))}
             </nav>
