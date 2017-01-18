@@ -1,9 +1,11 @@
 import React, { PropTypes } from 'react'
 import { CameraIcon, BioIcon, WebsiteIcon, FilledCircle } from '../images/icons'
 import Modal from '../navigation/modal'
+import ValidationBanner from '../errors/validation-banner'
 import EditableAvatar from '../images/editable-avatar'
 import ClientAutocomplete from './client-autocomplete'
 import { create, update } from '/imports/api/medialists/methods'
+import { MedialistCreateSchema } from '/imports/api/medialists/medialists'
 import callAll from '/imports/lib/call-all'
 
 const EditCampaign = React.createClass({
@@ -18,10 +20,11 @@ const EditCampaign = React.createClass({
     return {
       avatar: null,
       focus: null,
+      validated: false, // to intially disable the submit button
       name: campaign && campaign.name || '',
       purpose: campaign && campaign.purpose || '',
       clientName: campaign && campaign.client && campaign.client.name || '',
-      links: campaign && campaign.links || [''],
+      links: campaign && campaign.links || [{ url: '' }],
       validationErrors: {}
     }
   },
@@ -48,13 +51,13 @@ const EditCampaign = React.createClass({
   },
   onChangeLink (ind) {
     return ({ target: { value } }) => {
-      const newLinks = Object.assign(this.state.links, { [ind]: value })
+      const newLinks = Object.assign(this.state.links, { [ind]: { url: value } })
       this.setState({ links: newLinks })
     }
   },
   checkLinkEmpty (ind) {
     return () => {
-      if (!this.state.links[ind] && this.state.links.length > 1) {
+      if (this.state.links[ind] && this.state.links[ind].url && this.state.links.length > 1) {
         const newLinks = [...this.state.links]
         newLinks.splice(ind, 1)
         this.setState({ links: newLinks })
@@ -63,6 +66,7 @@ const EditCampaign = React.createClass({
   },
   onSubmit (evt) {
     evt.preventDefault()
+    if (!this.validate()) return
     const { campaign } = this.props
     const { avatar, name, purpose, clientName, links } = this.state
     const payload = { avatar, name, purpose, clientName, links }
@@ -80,9 +84,18 @@ const EditCampaign = React.createClass({
   onReset () {
     this.props.onDismiss()
   },
-  validate (field) {
-    const nameError = (field === 'name' && !this.state.name)
-    this.setState({ validationErrors: nameError ? { name: true } : {} })
+  validationContext: MedialistCreateSchema.namedContext('add-edit-campaign'),
+  validate () {
+    const { avatar, name, purpose, clientName, links } = this.state
+    const campaign = { avatar, name, purpose, clientName, links: links.filter((l) => l.url) }
+    this.validationContext.validate(campaign)
+    const validationErrors = this.validationContext.invalidKeys().reduce((validationErrors, error) => {
+      const field = error.name
+      validationErrors[field] = `Please add a ${MedialistCreateSchema.label(field)}`
+      return validationErrors
+    }, {})
+    this.setState({ validationErrors, validated: true })
+    return this.validationContext.isValid()
   },
   addFocus (field) {
     return () => this.setState({ focus: field })
@@ -95,19 +108,19 @@ const EditCampaign = React.createClass({
   },
   addLink () {
     if (this.state.links.some((l) => !l)) return
-    this.setState({ links: [...this.state.links, ''] })
+    this.setState({ links: [...this.state.links, { url: '' }] })
   },
   render () {
     if (!this.props.open) return null
-    const { onChange, onChangeLink, onSubmit, onReset, onClientNameChange, onClientSelect, onAvatarChange, onAvatarError, validate } = this
+    const { onChange, onChangeLink, onSubmit, onReset, onClientNameChange, onClientSelect, onAvatarChange, onAvatarError, validate, validationContext } = this
     const { campaign, clients } = this.props
-    const { avatar, name, purpose, clientName, links, validationErrors } = this.state
+    const { avatar, name, purpose, clientName, links, validationErrors, validated } = this.state
     const iconWidth = 50
     const inputStyle = { resize: 'none' }
     const iconStyle = { width: iconWidth }
     return (
       <form onSubmit={onSubmit} onReset={onReset} className='relative'>
-        {validationErrors.name ? <div className='absolute top-0 left-0 right-0 bg-yellow-lighter p2 bold' style={{zIndex: 1}}>Oops. Please add a campaign name</div> : null}
+        <ValidationBanner error={validationErrors.name} />
         <div className='px4 py6 center'>
           <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError} menuClass='CampaignAvatarMenu'>
             <div className='bg-gray40 center rounded mx-auto' style={{height: '123px', width: '123px', lineHeight: '123px'}}>
@@ -127,7 +140,7 @@ const EditCampaign = React.createClass({
               onChange={onChange('name')}
               onBlur={() => validate('name')}
                />
-            {validationErrors.name ? <div className='absolute left-0 right-0 mt1 red'>Please add a campaign name</div> : null}
+            {validationErrors.name ? <div className='absolute left-0 right-0 mt1 red'>{validationErrors.name}</div> : null}
           </div>
         </div>
         <div className='bg-gray90 border-top border-gray80 py5'>
@@ -197,7 +210,7 @@ const EditCampaign = React.createClass({
                     style={inputStyle}
                     className='input block'
                     type='text'
-                    value={links[ind]}
+                    value={links[ind].url}
                     placeholder='Links'
                     onChange={onChangeLink(ind)} />
                 </div>
@@ -211,7 +224,7 @@ const EditCampaign = React.createClass({
           </div>
         </div>
         <div className='p4 right'>
-          <button className='btn bg-completed white right' type='submit'>
+          <button className='btn bg-completed white right' type='submit' disabled={!validationContext.isValid() || !validated}>
             {campaign ? 'Edit' : 'Create'} Campaign
           </button>
           <button className='btn bg-transparent gray40 right mr2' type='reset'>Cancel</button>
