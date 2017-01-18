@@ -21,9 +21,11 @@ const ContactButton = (props) => {
 const ContactSelector = React.createClass({
   propTypes: {
     selectedContact: PropTypes.object,
+    selectedStatus: PropTypes.string,
     campaign: PropTypes.object.isRequired,
     contacts: PropTypes.array.isRequired,
-    onChange: PropTypes.func.isRequired
+    onContactChange: PropTypes.func.isRequired,
+    onStatusChange: PropTypes.func.isRequired
   },
   getInitialState () {
     return { open: false }
@@ -34,29 +36,30 @@ const ContactSelector = React.createClass({
   closeDropdown () {
     this.setState({open: false})
   },
-  onLinkClick (contact) {
+  onSelectContact (contact) {
     this.setState({open: false})
-    this.props.onChange(contact)
+    this.props.onContactChange(contact)
   },
   onStatusChange (status) {
-    console.log({ status })
+    this.props.onStatusChange(status)
   },
   render () {
-    const { onStatusChange } = this
-    const { selectedContact, contacts, campaign } = this.props
-    const status = selectedContact && campaign.contacts[selectedContact.slug]
+    const { onSelectContact, onStatusChange } = this
+    const { selectedContact, selectedStatus, contacts, campaign } = this.props
 
     return (
-      <div className='inline-block'>
-        <Dropdown>
-          <button className='btn bg-transparent border-gray80 mx2' onClick={this.openDropdown} disabled={!contacts || !contacts.length}>
-            { selectedContact ? <ContactButton contact={selectedContact} /> : 'Select a Contact' }
-          </button>
-          <StatusSelector status={status} border onChange={onStatusChange} />
-          <DropdownMenu right style={dropdownStyle} open={this.state.open} onDismiss={this.closeDropdown}>
-            <CampaignContacts campaign={campaign} contacts={contacts} onStatusChange={({status, contact}) => console.log('ok ContactSelector got', {status, contact})} />
-          </DropdownMenu>
-        </Dropdown>
+      <div>
+        <div className='inline-block'>
+          <Dropdown>
+            <button className='btn bg-transparent border-gray80 mx2' onClick={this.openDropdown} disabled={!contacts || !contacts.length}>
+              { selectedContact ? <ContactButton contact={selectedContact} /> : 'Select a Contact' }
+            </button>
+            <DropdownMenu right style={dropdownStyle} open={this.state.open} onDismiss={this.closeDropdown}>
+              <CampaignContacts campaign={campaign} contacts={contacts} onSelectContact={onSelectContact} />
+            </DropdownMenu>
+          </Dropdown>
+        </div>
+        <StatusSelector status={selectedStatus} border onChange={onStatusChange} disabled={!selectedContact} />
       </div>
     )
   }

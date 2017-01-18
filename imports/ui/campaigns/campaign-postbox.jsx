@@ -59,10 +59,11 @@ const FeedbackInput = React.createClass({
     this.setState({message: evt.target.value})
   },
   onContactChange (contact) {
-    this.setState({contact: contact})
+    const status = this.props.campaign.contacts[contact.slug]
+    this.setState({contact, status})
   },
   onStatusChange (status) {
-    this.setState({status: status})
+    this.setState({status})
   },
   onSubmit () {
     this.setState({posting: true})
@@ -74,9 +75,9 @@ const FeedbackInput = React.createClass({
     return !!(this.state.status && this.state.contact)
   },
   render () {
-    const { onContactChange, onMessageChange } = this
+    const { onContactChange, onMessageChange, onStatusChange, isValid } = this
     const {focused, contacts, campaign} = this.props
-    const {message, posting, contact} = this.state
+    const {message, posting, contact, status} = this.state
     const className = focused ? '' : 'display-none'
     const rows = focused ? '3' : '1'
 
@@ -94,8 +95,14 @@ const FeedbackInput = React.createClass({
           <button
             onClick={() => this.onSubmit()}
             className={`btn bg-gray80 right active-bg-blue ${message.length > 0 ? 'active' : ''}`}
-            disabled={message.length < 1 || posting || this.isValid()}>Post</button>
-          <ContactSelector selectedContact={contact} campaign={campaign} contacts={contacts} onChange={onContactChange} />
+            disabled={message.length < 1 || posting || !isValid()}>Post</button>
+          <ContactSelector
+            selectedContact={contact}
+            selectedStatus={status}
+            campaign={campaign}
+            contacts={contacts}
+            onContactChange={onContactChange}
+            onStatusChange={onStatusChange} />
         </div>
       </div>
     )
