@@ -137,7 +137,7 @@ const ContactInfo = React.createClass({
             <InfoHeader name='Campaigns' />
             <div className='px2 py3'>
               {medialists.map((campaign) => {
-                return <SquareAvatar name={campaign} size={38} style={{marginRight: '2px', marginBottom: '2px'}} />
+                return <SquareAvatar name={campaign} size={38} style={{marginRight: '2px', marginBottom: '2px'}} key={campaign.slug} />
               })}
             </div>
           </section>

@@ -1,9 +1,9 @@
 import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
 import Modal from '../navigation/modal'
-import { SearchBlueIcon, AddIcon, SelectedIcon, RemoveIcon } from '../images/icons'
+import { SearchBlueIcon, AddIcon, SelectedIcon } from '../images/icons'
 import { CircleAvatar } from '../images/avatar'
-import StatusSelector from '../feedback/status-selector'
+import CampaignContacts from './campaign-contacts'
 
 function truncate (str, chars) {
   if (str.length <= chars) return str
@@ -186,42 +186,4 @@ const AllContacts = (props) => {
       })
       }
     </div>)
-}
-
-const CampaignContacts = (props) => {
-  const {
-    campaign,
-    onStatusChange,
-    onRemove,
-    contacts
-  } = props
-
-  return (
-    <div>
-      {contacts.map((contact) => {
-        const {
-          slug,
-          avatar,
-          name,
-          outlets
-        } = contact
-        const status = campaign.contacts[slug]
-        return (
-          <div className={`flex items-center pointer border-top border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger active-bg-green-light`} key={slug}>
-            <CircleAvatar avatar={avatar} />
-            <div className='inline-block pl4' style={{width: '24rem'}}>
-              <span className='f-xl gray40 py1'>{name}</span><br />
-              <span className='gray60 py1'>{(outlets && outlets.length) ? outlets[0].value : null}</span><br />
-              <span className='gray60 py1'>{truncate(outlets.map((o) => o.label).join(', '), 30)}</span>
-            </div>
-            <div className='flex-none px4'>
-              <StatusSelector status={status} onChange={(status) => onStatusChange({status, contact})} />
-            </div>
-            <div className='flex-auto mr2'>
-              <RemoveIcon className='right pr4' onClick={(evt) => onRemove(contact)} />
-            </div>
-          </div>)
-      })}
-    </div>
-  )
 }

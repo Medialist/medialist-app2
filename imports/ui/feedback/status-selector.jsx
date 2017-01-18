@@ -3,25 +3,18 @@ import values from 'lodash.values'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
 import { dropdownMenuStyle } from '../common-styles'
-import StatusDot from './status-dot'
+import StatusLabel from './status-label'
 
 const dropdownStyle = Object.assign({}, dropdownMenuStyle, { width: 223 })
 
 const items = values(window.Contacts.status)
 
-const Status = (props) => {
-  return (
-    <div>
-      <StatusDot name={props.name} />
-      <span className='ml2 uppercase f-xxs semibold gray20 letter-spacing-1'>{props.name}</span>
-    </div>
-  )
-}
-
 const StatusSelector = React.createClass({
   propTypes: {
     onChange: PropTypes.func.isRequired,
-    status: PropTypes.string
+    status: PropTypes.string,
+    border: PropTypes.bool,
+    disabled: PropTypes.bool
   },
   getInitialState () {
     return {open: false}
@@ -37,16 +30,16 @@ const StatusSelector = React.createClass({
     this.props.onChange(status)
   },
   render () {
-    const { status } = this.props
+    const { status, border, disabled } = this.props
     return (
       <div className='inline-block'>
         <Dropdown>
           { status ? (
-            <button className='btn bg-transparent' onClick={this.openDropdown}>
-              <Status name={status} />
+            <button className={`btn bg-transparent ${border ? 'border-gray80' : ''}`} onClick={this.openDropdown}>
+              <StatusLabel name={status} />
             </button>
         ) : (
-          <button className='btn bg-transparent border-gray80' onClick={this.openDropdown}>
+          <button className='btn bg-transparent border-gray80' onClick={this.openDropdown} disabled={disabled}>
             Select status
           </button>
         )}
@@ -54,7 +47,7 @@ const StatusSelector = React.createClass({
             <nav className='py3'>
               {items.map((item) => (
                 <div key={item} className='px3 py2 pointer hover-bg-gray90' onClick={() => this.onLinkClick(item)}>
-                  <Status name={item} />
+                  <StatusLabel name={item} />
                 </div>
               ))}
             </nav>

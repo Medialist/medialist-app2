@@ -5,7 +5,7 @@ import { createContainer } from 'meteor/react-meteor-data'
 import CampaignTopbar from './campaign-topbar'
 import CampaignInfo from './campaign-info'
 import CampaignContactList from './campaign-contact-list'
-import PostBox from '../contacts/post-box'
+import PostBox from './campaign-postbox'
 import ActivityFeed from '../dashboard/activity-feed'
 import EditCampaign from './edit-campaign'
 import Clients from '/imports/api/clients/clients'
@@ -15,11 +15,10 @@ import AddContact from './add-contact'
 const CampaignActivityPage = React.createClass({
   propTypes: {
     router: PropTypes.object,
-    loading: React.PropTypes.bool,
+    loading: PropTypes.bool,
     campaign: PropTypes.object,
     user: PropTypes.object,
     contacts: PropTypes.array,
-    contactsAll: PropTypes.array,
     contactsCount: PropTypes.number
   },
 
@@ -51,6 +50,7 @@ const CampaignActivityPage = React.createClass({
     const { toggleAddContact, toggleEditModal, onFeedback } = this
     const { campaign, contacts, contactsCount, clients, contactsAll, user } = this.props
     const { addContactOpen, editModalOpen } = this.state
+
     if (!campaign) return null
 
     return (
@@ -62,7 +62,7 @@ const CampaignActivityPage = React.createClass({
             <EditCampaign campaign={campaign} open={editModalOpen} onDismiss={toggleEditModal} clients={clients} />
           </div>
           <div className='flex-auto px2' >
-            <PostBox campaigns={[campaign]} onFeedback={onFeedback} />
+            <PostBox campaign={campaign} contacts={contacts} onFeedback={onFeedback} />
             <ActivityFeed campaign={campaign} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
