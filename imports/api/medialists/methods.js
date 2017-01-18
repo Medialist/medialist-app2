@@ -78,7 +78,7 @@ export const update = new ValidatedMethod({
 export const create = new ValidatedMethod({
   name: 'Medialists/create',
   validate: MedialistCreateSchema.validator(),
-  run ({ name, clientName, avatar, purpose, website }) {
+  run ({ name, clientName, avatar, purpose, links }) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
     const slug = createUniqueSlug(name, Medialists)
     const client = findOrCreateClientRef(clientName)
@@ -95,7 +95,7 @@ export const create = new ValidatedMethod({
       client,
       avatar,
       purpose,
-      website,
+      links,
       createdAt,
       createdBy,
       updatedAt: createdAt,
