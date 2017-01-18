@@ -1,17 +1,71 @@
 import React, { PropTypes } from 'react'
-import StatusSelector from '../feedback/status-selector'
-import CampaignSelector from '../feedback/campaign-selector'
+import ContactSelector from './contact-selector'
+import CampaignSelector from './campaign-selector'
 import { FeedFeedbackIcon, FeedCoverageIcon, FeedNeedToKnowIcon } from '../images/icons'
+
+const PostBox = React.createClass({
+  propTypes: {
+    location: PropTypes.object,
+    campaigns: PropTypes.array,
+    contact: PropTypes.object,
+    contacts: PropTypes.array,
+    onFeedback: PropTypes.func,
+    onCoverage: PropTypes.func,
+    onNeedToKnow: PropTypes.func
+  },
+
+  getInitialState () {
+    return { focused: false, selected: 'Feedback' }
+  },
+
+  getTabClassName (tab) {
+    const base = 'inline-block px4 py3 pointer f-sm semibold '
+    return base + (this.state.selected === tab ? 'bg-white shadow-2' : 'gray60')
+  },
+
+  render () {
+    const { contact, contacts, campaigns, onFeedback, onCoverage, onNeedToKnow } = this.props
+    const { selected, focused } = this.state
+    const page = this.props.location.pathname.indexOf('campaign') < 0 ? 'contact' : 'campaign'
+    const childProps = { focused, contact, contacts, page }
+
+    return (
+      <div className='mb2' onFocus={() => this.setState({focused: true})}>
+        <nav className='block' style={{padding: '2px 1px 0', height: 50, overflowY: 'hidden'}}>
+          <div className={this.getTabClassName('Feedback')} onClick={() => this.setState({ selected: 'Feedback' })} >
+            <FeedFeedbackIcon className={selected === 'Feedback' ? 'blue' : 'gray80'} /> Feedback
+          </div>
+          <div className={this.getTabClassName('Coverage')} onClick={() => this.setState({ selected: 'Coverage' })} >
+            <FeedCoverageIcon className={selected === 'Coverage' ? 'blue' : 'gray80'} /> Coverage
+          </div>
+          <div className={`${this.getTabClassName('Need to Know')} display-none`} onClick={() => this.setState({ selected: 'Need to Know' })} >
+            <FeedNeedToKnowIcon /> Need to Know
+          </div>
+        </nav>
+        <div style={{padding: '0 1px'}}>
+          <div className='bg-white shadow-2 p3 pb0'>
+            { selected === 'Feedback' ? <FeedbackInput {...childProps} campaigns={campaigns} onSubmit={onFeedback} /> : '' }
+            { selected === 'Coverage' ? <CoverarageInput {...childProps} campaigns={campaigns} onSubmit={onCoverage} /> : '' }
+            { selected === 'Need to Know' ? <NeedToKnowInput {...childProps} onSubmit={onNeedToKnow} /> : '' }
+          </div>
+        </div>
+      </div>
+    )
+  }
+})
 
 const FeedbackInput = React.createClass({
   propTypes: {
+    page: PropTypes.string.isRequired,
     contact: PropTypes.object,
-    campaigns: PropTypes.array.isRequired,
+    contacts: PropTypes.array,
+    campaigns: PropTypes.array,
     focused: PropTypes.bool.isRequired,
     onSubmit: PropTypes.func.isRequired
   },
   getInitialState () {
-    return {message: '', status: null, campaign: null, posting: false}
+    const campaign = this.props.campaigns && this.props.campaigns[0]
+    return {message: '', status: null, campaign, posting: false}
   },
   onMessageChange (evt) {
     this.setState({message: evt.target.value})
@@ -32,11 +86,13 @@ const FeedbackInput = React.createClass({
     return !!(this.state.status && this.state.campaign)
   },
   render () {
-    const {focused, contact, campaigns} = this.props
-    const {message, status, posting} = this.state
+    const { onCampaignChange, onMessageChange } = this
+    const {focused, contact, contacts, campaigns, page} = this.props
+    const {message, posting} = this.state
     const className = focused ? '' : 'display-none'
     const rows = focused ? '3' : '1'
     const name = contact && contact.name && contact.name.split(' ')[0]
+
     return (
       <div>
         <textarea
@@ -44,7 +100,7 @@ const FeedbackInput = React.createClass({
           className='textarea mb1'
           style={{border: '0 none', overflowY: 'scroll', resize: 'none'}}
           placeholder={contact ? `Any updates on ${name}'s work?` : `What's happening with this campaign?`}
-          onChange={this.onMessageChange}
+          onChange={onMessageChange}
           value={message}
           disabled={posting} />
         <div className={className}>
@@ -52,10 +108,8 @@ const FeedbackInput = React.createClass({
             onClick={() => this.onSubmit()}
             className={`btn bg-gray80 right active-bg-blue ${message.length > 0 ? 'active' : ''}`}
             disabled={message.length < 1 || posting || this.isValid()}>Post</button>
-          <CampaignSelector onChange={this.onCampaignChange} campaigns={campaigns} />
-          <div className='inline-block mx2'>
-            <StatusSelector status={status} onChange={this.onStatusChange} />
-          </div>
+          {page === 'campaign' && <ContactSelector campaign={campaigns[0]} contacts={contacts} />}
+          {page === 'contact' && <CampaignSelector onChange={onCampaignChange} campaigns={campaigns} />}
         </div>
       </div>
     )
@@ -119,53 +173,6 @@ const NeedToKnowInput = React.createClass({
           <button className='btn bg-transparent border-gray80 italic mx2'>i</button>
         </div>
       </div>)
-  }
-})
-
-const PostBox = React.createClass({
-  propTypes: {
-    campaigns: PropTypes.array.isRequired,
-    contact: PropTypes.object,
-    onFeedback: PropTypes.func.isRequired,
-    onCoverage: PropTypes.func.isRequired,
-    onNeedToKnow: PropTypes.func.isRequired
-  },
-
-  getInitialState () {
-    return { focused: false, selected: 'Feedback' }
-  },
-
-  getTabClassName (tab) {
-    const base = 'inline-block px4 py3 pointer f-sm semibold '
-    return base + (this.state.selected === tab ? 'bg-white shadow-2' : 'gray60')
-  },
-
-  render () {
-    const { contact, campaigns, onFeedback, onCoverage, onNeedToKnow } = this.props
-    const { selected, focused } = this.state
-    const childProps = { focused, contact }
-    return (
-      <div className='mb2' onFocus={() => this.setState({focused: true})}>
-        <nav className='block' style={{padding: '2px 1px 0', height: 50, overflowY: 'hidden'}}>
-          <div className={this.getTabClassName('Feedback')} onClick={() => this.setState({ selected: 'Feedback' })} >
-            <FeedFeedbackIcon className={selected === 'Feedback' ? 'blue' : 'gray80'} /> Feedback
-          </div>
-          <div className={this.getTabClassName('Coverage')} onClick={() => this.setState({ selected: 'Coverage' })} >
-            <FeedCoverageIcon className={selected === 'Coverage' ? 'blue' : 'gray80'} /> Coverage
-          </div>
-          <div className={`${this.getTabClassName('Need to Know')} display-none`} onClick={() => this.setState({ selected: 'Need to Know' })} >
-            <FeedNeedToKnowIcon /> Need to Know
-          </div>
-        </nav>
-        <div style={{padding: '0 1px'}}>
-          <div className='bg-white shadow-2 p3 pb0'>
-            { selected === 'Feedback' ? <FeedbackInput {...childProps} campaigns={campaigns} onSubmit={onFeedback} /> : '' }
-            { selected === 'Coverage' ? <CoverarageInput {...childProps} campaigns={campaigns} onSubmit={onCoverage} /> : '' }
-            { selected === 'Need to Know' ? <NeedToKnowInput {...childProps} onSubmit={onNeedToKnow} /> : '' }
-          </div>
-        </div>
-      </div>
-    )
   }
 })
 

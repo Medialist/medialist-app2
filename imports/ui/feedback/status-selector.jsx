@@ -22,7 +22,8 @@ const Status = (props) => {
 const StatusSelector = React.createClass({
   propTypes: {
     onChange: PropTypes.func.isRequired,
-    status: PropTypes.string
+    status: PropTypes.string,
+    border: PropTypes.bool
   },
   getInitialState () {
     return {open: false}
@@ -38,12 +39,12 @@ const StatusSelector = React.createClass({
     this.props.onChange(status)
   },
   render () {
-    const { status } = this.props
+    const { status, border } = this.props
     return (
       <div className='inline-block'>
         <Dropdown>
           { status ? (
-            <button className='btn bg-transparent' onClick={this.openDropdown}>
+            <button className={`btn bg-transparent ${border ? 'border-gray80' : ''}`} onClick={this.openDropdown}>
               <Status name={status} />
             </button>
         ) : (

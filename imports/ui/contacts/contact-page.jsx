@@ -5,12 +5,13 @@ import { createContainer } from 'meteor/react-meteor-data'
 import ContactTopbar from './contact-topbar'
 import ContactInfo from './contact-info'
 import ContactNeedToKnowList from './contact-need-to-know-list'
-import PostBox from './post-box'
+import PostBox from '../feedback/post-box'
 import ActivityFeed from '../dashboard/activity-feed'
 import EditContact from './edit-contact'
 
 const ContactPage = React.createClass({
   propTypes: {
+    router: PropTypes.object,
     campaigns: PropTypes.array,
     contact: PropTypes.object,
     user: PropTypes.object
@@ -48,12 +49,11 @@ const ContactPage = React.createClass({
       message,
       status
     }
-    console.log('onFeedBack', post)
     Meteor.call('posts/create', post)
   },
 
   render () {
-    const { contact, campaigns, user } = this.props
+    const { contact, campaigns, user, location } = this.props
     const { editContactOpen } = this.state
     if (!contact) return null
     return (
@@ -64,7 +64,7 @@ const ContactPage = React.createClass({
             <ContactInfo contact={contact} onEditClick={this.toggleEditContact} user={user} />
           </div>
           <div className='flex-auto px2' >
-            <PostBox contact={contact} campaigns={campaigns} onFeedback={this.onFeedback} />
+            <PostBox contact={contact} campaigns={campaigns} onFeedback={this.onFeedback} location={location} />
             <ActivityFeed contact={contact} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>

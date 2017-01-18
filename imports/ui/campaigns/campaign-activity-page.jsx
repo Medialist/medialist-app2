@@ -5,20 +5,18 @@ import { createContainer } from 'meteor/react-meteor-data'
 import CampaignTopbar from './campaign-topbar'
 import CampaignInfo from './campaign-info'
 import CampaignContactList from './campaign-contact-list'
-import PostBox from '../contacts/post-box'
+import PostBox from '../feedback/post-box'
 import ActivityFeed from '../dashboard/activity-feed'
 import EditCampaign from './edit-campaign'
 import Clients from '/imports/api/clients/clients'
-import Medialists from '/imports/api/medialists/medialists'
 
 const CampaignActivityPage = React.createClass({
   propTypes: {
     router: PropTypes.object,
-    loading: React.PropTypes.bool,
+    loading: PropTypes.bool,
     campaign: PropTypes.object,
     user: PropTypes.object,
     contacts: PropTypes.array,
-    contactsAll: PropTypes.array,
     contactsCount: PropTypes.number
   },
 
@@ -43,7 +41,7 @@ const CampaignActivityPage = React.createClass({
 
   render () {
     const { toggleEditModal, onFeedback } = this
-    const { campaign, contacts, contactsCount, clients, contactsAll, user } = this.props
+    const { campaign, contacts, contactsCount, clients, contactsAll, user, location } = this.props
     const { editModalOpen } = this.state
     if (!campaign) return null
 
@@ -56,7 +54,7 @@ const CampaignActivityPage = React.createClass({
             <EditCampaign campaign={campaign} open={editModalOpen} onDismiss={toggleEditModal} clients={clients} />
           </div>
           <div className='flex-auto px2' >
-            <PostBox campaigns={[campaign]} onFeedback={onFeedback} />
+            <PostBox campaigns={[campaign]} contacts={contacts} onFeedback={onFeedback} location={location} />
             <ActivityFeed campaign={campaign} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
@@ -81,7 +79,7 @@ export default createContainer((props) => {
   return {
     ...props,
     loading,
-    campaign: Medialists.findOne({ slug }),
+    campaign: window.Medialists.findOne({ slug }),
     // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
     contacts: window.Contacts.find({medialists: slug}, {limit: 7, sort: {updatedAt: -1}}).fetch(),
     contactsCount: window.Contacts.find({medialists: slug}).count(),
