@@ -77,7 +77,7 @@ export default React.createClass({
     const { onChange, onDismiss, onClick, onKeyDown, onActivate } = this
     const { open, activeInd } = this.state
     return (
-      <Dropdown style={{ display: 'inline-block', ...style }}>
+      <Dropdown style={style}>
         <input
           type='text'
           className={className}
@@ -90,7 +90,7 @@ export default React.createClass({
           onFocus={onFocus}
           onBlur={callAll([this.onBlur, onBlur])}
         />
-        <DropdownMenu open={open} onDismiss={onDismiss} style={dropdownStyle} menuClass='AutocompleteMenu'>
+        <DropdownMenu open={open} onDismiss={onDismiss} style={dropdownStyle} arrowPosition={false}>
           <ol className='list-reset'>{suggestions.map((s, ind) => {
             const activeClass = (activeInd === ind) ? 'bg-blue white' : ''
             return (
