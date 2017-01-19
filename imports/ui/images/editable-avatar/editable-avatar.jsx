@@ -56,9 +56,10 @@ const EditableAvatar = React.createClass({
       <div className={className} style={style} onClick={onAvatarClick}>
         {children}
         <DropdownMenu
-          style={{ left: '-50%', top: 'calc(50% + 2em)', width: 250 }}
+          style={{ left: '-50%', top: '5rem', width: 250 }}
           open={isDropdownOpen}
-          onDismiss={onDropdownDismiss}>
+          onDismiss={onDropdownDismiss}
+          arrowPosition={'25%'}>
           <Menu avatar={avatar} onChange={onImageChange} onError={onImageError} />
         </DropdownMenu>
       </div>

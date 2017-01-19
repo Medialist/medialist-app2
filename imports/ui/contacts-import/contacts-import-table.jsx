@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import Dropdown from 'rebass/dist/Dropdown'
-import DropdownMenu from 'rebass/dist/DropdownMenu'
+import DropdownMenu from '../lists/dropdown-menu'
 import { SelectedIcon, ChevronDown } from '../images/icons'
 import { allColumns } from './csv-to-contacts.js'
 
@@ -54,7 +54,7 @@ const ImportTable = React.createClass({
               {cols.map((col, columnIndex) => {
                 return (
                   <th key={columnIndex} className='pointer bg-white' style={{padding: '0px 80px 0 0', borderLeft: '0 none', borderRight: '0 none'}}>
-                    <Dropdown className='right'>
+                    <Dropdown>
                       <div className='p2 m2 rounded border border-gray80 left-align' style={{width: 180}} onClick={() => onColumnSelect(columnIndex)}>
                         <ChevronDown className='right' />
                         {col ? (
@@ -63,7 +63,7 @@ const ImportTable = React.createClass({
                           <span className='gray40'>Select a field</span>
                         )}
                       </div>
-                      <DropdownMenu open={open && open === columnIndex} onDismiss={onDismiss}>
+                      <DropdownMenu arrowPosition={false} open={open && open === columnIndex} onDismiss={onDismiss}>
                         <ul className='list-reset mt0'>
                           {allColumns.map((newCol, i) => {
                             return <li key={i} className='p2 left-align hover-bg-blue' onClick={(evt) => onColumnChange(newCol, columnIndex)}>{newCol.label}</li>

@@ -7,7 +7,7 @@ import { CircleAvatar } from '../images/avatar.jsx'
 import { SettingsIcon, ExitIcon } from '../images/icons'
 import { dropdownMenuStyle } from '../common-styles'
 
-const dropdownStyle = Object.assign({}, dropdownMenuStyle, { width: 223 })
+const dropdownStyle = Object.assign({}, dropdownMenuStyle, { width: 223, top: 65 })
 
 const UserInfo = React.createClass({
   propTypes: {
