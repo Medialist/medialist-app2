@@ -68,9 +68,11 @@ const CampaignActivityPage = React.createClass({
 
   render () {
     const { toggleAddContact, toggleEditModal, toggleEditTeamModal, onBackClick, onFeedback, onCoverage } = this
-    const { campaign, contacts, contactsCount, clients, contactsAll, user } = this.props
+    const { campaign, contacts, contactsCount, clients, contactsAll, teamMates, teamMatesAll, user } = this.props
     const { addContactOpen, editModalOpen, editTeamModalOpen } = this.state
     if (!campaign) return null
+
+    console.log(teamMates, teamMatesAll)
 
     return (
       <div>
@@ -79,7 +81,7 @@ const CampaignActivityPage = React.createClass({
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
             <CampaignInfo campaign={campaign} onEditClick={toggleEditModal} onEditTeamClick={toggleEditTeamModal} user={user} />
             <EditCampaign campaign={campaign} open={editModalOpen} onDismiss={toggleEditModal} clients={clients} />
-            <EditTeam campaign={campaign} open={editTeamModalOpen} onDismiss={toggleEditTeamModal} />
+            <EditTeam campaign={campaign} open={editTeamModalOpen} onDismiss={toggleEditTeamModal} teamMates={teamMates} teamMatesAll={teamMatesAll} />
           </div>
           <div className='flex-auto px2' >
             <PostBox campaign={campaign} contacts={contacts} onFeedback={onFeedback} onCoverage={onCoverage} />
@@ -101,19 +103,27 @@ export default createContainer((props) => {
   const subs = [
     Meteor.subscribe('medialist', campaignSlug),
     Meteor.subscribe('contacts'),
-    Meteor.subscribe('clients')
+    Meteor.subscribe('clients'),
+    Meteor.subscribe('teamMates')
   ]
   const loading = subs.some((s) => !s.ready())
+  const campaign = Medialists.findOne({ slug: campaignSlug })
 
   return {
     ...props,
     loading,
-    campaign: Medialists.findOne({ slug: campaignSlug }),
+    campaign,
     // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
     contacts: window.Contacts.find({medialists: campaignSlug}, {limit: 7, sort: {updatedAt: -1}}).fetch(),
     contactsCount: window.Contacts.find({medialists: campaignSlug}).count(),
     contactsAll: window.Contacts.find({}, {sort: {name: 1}}).fetch(),
+    teamMates: campaign && campaign.team,
+    teamMatesAll: window.Meteor.users.find({sort: {'profile.name': 1}}).fetch().map((u) => ({ _id: u._id, avatar: getAvatar(u), name: u.profile.name })),
     user: Meteor.user(),
     clients: Clients.find({}).fetch()
   }
 }, withRouter(CampaignActivityPage))
+
+function getAvatar (u) {
+  return u && u.services && u.services.twitter && u.services.twitter.profile_image_url_https
+}
