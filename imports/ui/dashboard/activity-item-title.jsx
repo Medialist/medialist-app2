@@ -50,6 +50,8 @@ const ActivityItemTitle = ({ item, currentUser }) => {
       </span>
     )
   }
+
+  return null
 }
 
 export default ActivityItemTitle
