@@ -8,8 +8,8 @@ const ActivityItemTitle = ({ item, currentUser }) => {
 
   if (type === 'need to know') {
     return (
-      <span>
-        <YouOrName currentUser={currentUser} user={createdBy} />
+      <span className='gray10'>
+        <YouOrName className='semibold' currentUser={currentUser} user={createdBy} />
         {'  '} for {contacts[0].name}
       </span>
     )
@@ -17,8 +17,8 @@ const ActivityItemTitle = ({ item, currentUser }) => {
 
   if (['details changed', 'medialists changed', 'campaign created'].includes(type)) {
     return (
-      <span>
-        <YouOrName currentUser={currentUser} user={createdBy} />
+      <span className='gray10'>
+        <YouOrName className='semibold' currentUser={currentUser} user={createdBy} />
         {'  '} {message}
       </span>
     )
@@ -27,7 +27,7 @@ const ActivityItemTitle = ({ item, currentUser }) => {
   if (item.type === 'feedback') {
     return (
       <span>
-        <YouOrName currentUser={currentUser} user={createdBy} />
+        <YouOrName className='semibold' currentUser={currentUser} user={createdBy} />
         <span className='gray10'> logged feedback </span>
         <span className='f-xxxs gray60 mx1'> ▶ </span>
         <Link className='semibold gray10' to={`/campaigns/${encodeURIComponent(medialists[0])}`}>{medialists[0]}</Link>

@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import fromNow from '../time/from-now'
+import Time from '../time/time'
 import { CircleAvatar } from '../images/avatar'
 import {
   FeedCampaignIcon,
@@ -23,7 +23,9 @@ export const Notification = React.createClass({
           <span>&nbsp;{note.notification}&nbsp;</span>
           <strong>{note.campaign}</strong>
         </div>
-        <div className={`flex-none mx2 ${note.read ? 'blue' : ''}`}>{fromNow({date: new Date(note.time)})}</div>
+        <div className={`flex-none mx2 ${note.read ? 'blue' : ''}`}>
+          <Time date={new Date(note.time)} />
+        </div>
       </div>
     )
   }
