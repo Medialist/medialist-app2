@@ -13,6 +13,7 @@ import ContactsImportProcessing from './contacts-import/contacts-import-3-proces
 import ContactPage from './contacts/contact-page'
 import SettingsPage from './users/settings/settings-page'
 import NotFoundPage from './errors/not-found-page'
+import LogoutPage from './users/logout-page'
 
 const Routes = ({ store, history }) => {
   return (
@@ -40,6 +41,7 @@ const Routes = ({ store, history }) => {
         <Route path='settings' component={SettingsPage}>
           <Route path=':selected' component={SettingsPage} />
         </Route>
+        <Route path='logout' component={LogoutPage} />
         <Route path='*' component={NotFoundPage} />
       </Route>
     </Router>

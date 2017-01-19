@@ -57,7 +57,7 @@ const UserInfo = React.createClass({
               <SettingsIcon />
               <span className='ml2'>Settings</span>
             </Link>
-            <Link to='/logout' className='block px3 py2 f-md normal gray20 hover-bg-blue' activeClassName='active' onClick={this.onLinkClick}>
+            <Link to='/logout' className='block px3 py2 f-md normal gray20 hover-bg-blue' activeClassName='active'>
               <ExitIcon />
               <span className='ml2'>Logout</span>
             </Link>
