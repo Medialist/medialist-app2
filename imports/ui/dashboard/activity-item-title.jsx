@@ -37,6 +37,19 @@ const ActivityItemTitle = ({ item, currentUser }) => {
       </span>
     )
   }
+
+  if (item.type === 'coverage') {
+    return (
+      <span>
+        <YouOrName currentUser={currentUser} user={createdBy} />
+        <span className='gray10'> logged coverage </span>
+        <span className='f-xxxs gray60 mx1'> ▶ </span>
+        <Link className='semibold gray10' to={`/campaigns/${encodeURIComponent(medialists[0])}`}>{medialists[0]}</Link>
+        <span className='f-xxxs gray60 mx1'> ▶ </span>
+        <span className='semibold gray10'>{contacts[0].name}</span>
+      </span>
+    )
+  }
 }
 
 export default ActivityItemTitle

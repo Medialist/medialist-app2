@@ -26,8 +26,12 @@ const ContactSelector = React.createClass({
     selectedStatus: PropTypes.string,
     campaign: PropTypes.object.isRequired,
     contacts: PropTypes.array.isRequired,
+    showStatus: PropTypes.bool.isRequired,
     onContactChange: PropTypes.func.isRequired,
     onStatusChange: PropTypes.func.isRequired
+  },
+  getDefaultProps () {
+    return { showStatus: true }
   },
   getInitialState () {
     return { open: false }
@@ -47,7 +51,7 @@ const ContactSelector = React.createClass({
   },
   render () {
     const { onSelectContact, onStatusChange } = this
-    const { selectedContact, selectedStatus, contacts, campaign } = this.props
+    const { selectedContact, selectedStatus, contacts, campaign, showStatus } = this.props
 
     return (
       <div>
@@ -61,12 +65,14 @@ const ContactSelector = React.createClass({
             </DropdownMenu>
           </Dropdown>
         </div>
-        <StatusSelector
-          status={selectedStatus}
-          border
-          chevron
-          onChange={onStatusChange}
-          disabled={!selectedContact} />
+        {showStatus
+          ? <StatusSelector
+            status={selectedStatus}
+            border
+            chevron
+            onChange={onStatusChange}
+            disabled={!selectedContact} />
+          : null}
       </div>
     )
   }

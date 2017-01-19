@@ -74,9 +74,10 @@ const FeedbackInput = React.createClass({
   },
   onSubmit () {
     this.setState({posting: true})
-    this.props.onSubmit(this.state)
-    // TOOD: wire in callback from server.
-    setTimeout(() => this.setState({message: '', posting: false}), 1000)
+    this.props.onSubmit(this.state, (err) => {
+      this.setState({message: '', posting: false})
+      if (err) console.error(err)
+    })
   },
   isValid () {
     return !!(this.state.status && this.state.campaign)
@@ -113,10 +114,10 @@ const FeedbackInput = React.createClass({
 
 const CoverarageInput = React.createClass({
   propTypes: {
-    contact: PropTypes.object,
+    contact: PropTypes.object.isRequired,
     focused: PropTypes.bool,
-    campaigns: PropTypes.array,
-    onSubmit: PropTypes.func
+    campaigns: PropTypes.array.isRequired,
+    onSubmit: PropTypes.func.isRequired
   },
   getInitialState () {
     return {message: ''}
@@ -124,10 +125,20 @@ const CoverarageInput = React.createClass({
   onMessageChange (evt) {
     this.setState({message: evt.target.value})
   },
+  onCampaignChange (campaign) {
+    this.setState({ campaign })
+  },
+  onSubmit () {
+    this.setState({posting: true})
+    this.props.onSubmit(this.state, (err) => {
+      this.setState({message: '', posting: false})
+      if (err) console.error(err)
+    })
+  },
   render () {
-    const {onMessageChange} = this
-    const {focused, contact} = this.props
-    const {message} = this.state
+    const {onMessageChange, onCampaignChange, onSubmit} = this
+    const {focused, contact, campaigns} = this.props
+    const {message, campaign, posting} = this.state
     const className = focused ? '' : 'display-none'
     const rows = focused ? '3' : '1'
     const name = contact && contact.name && contact.name.split(' ')[0] || 'you'
@@ -141,8 +152,9 @@ const CoverarageInput = React.createClass({
       <div className={className}>
         <button
           className={`btn bg-gray80 right active-bg-blue ${message.length > 0 ? 'active' : ''}`}
-          disabled={message.length < 1}>Post</button>
-        <button className='btn bg-transparent border-gray80'>Select a Campaign</button>
+          disabled={message.length < 1 || !campaign || posting}
+          onClick={onSubmit}>Post</button>
+        <CampaignSelector onChange={onCampaignChange} campaigns={campaigns} />
       </div>
     </div>)
   }

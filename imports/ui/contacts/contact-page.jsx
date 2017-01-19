@@ -42,14 +42,23 @@ const ContactPage = React.createClass({
     console.log('TODO: Add contact to campaign')
   },
 
-  onFeedback ({message, campaign, status}) {
+  onFeedback ({message, campaign, status}, cb) {
     const post = {
       contactSlug: this.props.contact.slug,
       medialistSlug: campaign.slug,
       message,
       status
     }
-    Meteor.call('posts/create', post)
+    Meteor.call('posts/create', post, cb)
+  },
+
+  onCoverage ({message, campaign}, cb) {
+    const post = {
+      contactSlug: this.props.contact.slug,
+      medialistSlug: campaign.slug,
+      message
+    }
+    Meteor.call('posts/createCoverage', post, cb)
   },
 
   render () {
@@ -64,7 +73,7 @@ const ContactPage = React.createClass({
             <ContactInfo contact={contact} onEditClick={this.toggleEditContact} user={user} />
           </div>
           <div className='flex-auto px2' >
-            <PostBox contact={contact} campaigns={campaigns} onFeedback={this.onFeedback} />
+            <PostBox contact={contact} campaigns={campaigns} onFeedback={this.onFeedback} onCoverage={this.onCoverage} />
             <ActivityFeed contact={contact} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
