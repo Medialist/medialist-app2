@@ -1,22 +1,14 @@
 import React from 'react'
-import { browserHistory } from 'react-router'
+import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
-import ValidationBanner from '../errors/validation-banner'
 
 const LogoutPage = React.createClass({
-  getInitialState () {
-    return {err: null}
-  },
   componentDidMount () {
-    Meteor.logout((err) => {
-      if (err) return this.setState({ err })
-      browserHistory.push('/')
-    })
+    Meteor.logout(() => this.props.router.push('/'))
   },
   render () {
-    const { err } = this.state
-    return err ? <ValidationBanner error={err.reason || 'error logging out'} /> : null
+    return null
   }
 })
 
-export default LogoutPage
+export default withRouter(LogoutPage)
