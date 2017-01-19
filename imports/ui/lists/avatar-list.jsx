@@ -47,13 +47,12 @@ const AvatarList = React.createClass({
                   }}>
                   <Avatar avatar={avatar} name={name} size={size} />
                   <RemoveIcon
-                    className='absolute hover-display-block'
+                    className='absolute display-none hover-display-block'
                     style={{
                       color: 'red',
                       top: '50%',
                       left: '50%',
-                      transform: 'translate(-50%, -50%)',
-                      display: 'none'
+                      transform: 'translate(-50%, -50%)'
                     }} />
                 </span>
               </Tooltip>
