@@ -46,8 +46,12 @@ const CampaignActivityPage = React.createClass({
     Meteor.call('posts/create', post)
   },
 
+  onCoverage ({message, contact, status}) {
+    console.log({message, contact, status})
+  },
+
   render () {
-    const { toggleAddContact, toggleEditModal, onFeedback } = this
+    const { toggleAddContact, toggleEditModal, onFeedback, onCoverage } = this
     const { campaign, contacts, contactsCount, clients, contactsAll, user } = this.props
     const { addContactOpen, editModalOpen } = this.state
 
@@ -62,7 +66,7 @@ const CampaignActivityPage = React.createClass({
             <EditCampaign campaign={campaign} open={editModalOpen} onDismiss={toggleEditModal} clients={clients} />
           </div>
           <div className='flex-auto px2' >
-            <PostBox campaign={campaign} contacts={contacts} onFeedback={onFeedback} />
+            <PostBox campaign={campaign} contacts={contacts} onFeedback={onFeedback} onCoverage={onCoverage} />
             <ActivityFeed campaign={campaign} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
