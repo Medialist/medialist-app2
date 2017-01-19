@@ -259,6 +259,7 @@ button {
 .bg-yellow-lighter { background-color: var(--yellow-lighter) !important }
 
 .border-transparent { border-color: transparent !important }
+.border-white { border-color: white !important }
 .border-gray10 { border-color:var(--gray10) !important }
 .border-gray20 { border-color:var(--gray20) !important }
 .border-gray60 { border-color:var(--gray60) !important }
@@ -465,6 +466,7 @@ button {
 .hover-border-gray80:hover {
   border-color: var(--gray80) !important;
 }
+.hover-border-trigger:hover .hover-border-red,
 .hover-border-red:hover {
   border-color: red !important;
 }

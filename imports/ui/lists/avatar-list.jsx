@@ -38,14 +38,13 @@ const AvatarList = React.createClass({
           return (
             <li key={item._id || i} className='inline-block mb1' onClick={(e) => onAvatarClick(e, item, i)}>
               <Tooltip title={name}>
-                <span
-                  className='circle relative inline-block border border-transparent hover-border-red hover-display-trigger hover-fill-trigger'
-                  style={{
-                    width: size + 4,
-                    height: size + 4,
-                    borderWidth: 2
-                  }}>
-                  <Avatar avatar={avatar} name={name} size={size} />
+                <span className='relative inline-block hover-border-trigger hover-display-trigger hover-fill-trigger'>
+                  <Avatar
+                    avatar={avatar}
+                    name={name}
+                    size={size}
+                    className='border border-white hover-border-red'
+                    style={{ boxSizing: 'content-box', borderWidth: 2 }} />
                   <RemoveIcon
                     className='absolute display-none hover-display-block'
                     style={{
