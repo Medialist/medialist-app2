@@ -3,7 +3,6 @@ import { Link } from 'react-router'
 import Arrow from 'rebass/dist/Arrow'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
-import { Meteor } from 'meteor/meteor'
 import { CircleAvatar } from '../images/avatar.jsx'
 import { SettingsIcon, ExitIcon } from '../images/icons'
 import { dropdownMenuStyle } from '../common-styles'
@@ -58,7 +57,7 @@ const UserInfo = React.createClass({
               <SettingsIcon />
               <span className='ml2'>Settings</span>
             </Link>
-            <Link to='/' className='block px3 py2 f-md normal gray20 hover-bg-blue' activeClassName='active' onClick={() => Meteor.logout()}>
+            <Link to='/logout' className='block px3 py2 f-md normal gray20 hover-bg-blue' activeClassName='active'>
               <ExitIcon />
               <span className='ml2'>Logout</span>
             </Link>
