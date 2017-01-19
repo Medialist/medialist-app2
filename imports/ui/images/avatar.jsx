@@ -16,6 +16,10 @@ const Avatar = React.createClass({
     return { imageLoadError: false }
   },
 
+  componentWillReceiveProps ({ avatar }) {
+    if (avatar !== this.props.avatar) this.setState({ imageLoadError: false })
+  },
+
   onError () {
     this.setState({ imageLoadError: true })
   },
