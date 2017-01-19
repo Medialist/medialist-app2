@@ -14,6 +14,7 @@ const StatusSelector = React.createClass({
     onChange: PropTypes.func.isRequired,
     status: PropTypes.string,
     border: PropTypes.bool,
+    chevron: PropTypes.bool,
     disabled: PropTypes.bool
   },
   getInitialState () {
@@ -30,16 +31,21 @@ const StatusSelector = React.createClass({
     this.props.onChange(status)
   },
   render () {
-    const { status, border, disabled } = this.props
+    const { status, border, chevron, disabled } = this.props
+    const style = {
+      height: 34,
+      borderRadius: 2,
+      paddingTop: 6
+    }
     return (
       <div className='inline-block'>
         <Dropdown>
           { status ? (
-            <button className={`btn bg-transparent ${border ? 'border-gray80' : ''}`} onClick={this.openDropdown}>
-              <StatusLabel name={status} />
+            <button className={`btn bg-transparent ${border ? 'border-gray80' : ''}`} onClick={this.openDropdown} style={style}>
+              <StatusLabel name={status} chevron={chevron} />
             </button>
         ) : (
-          <button className='btn bg-transparent border-gray80' onClick={this.openDropdown} disabled={disabled}>
+          <button className='btn bg-transparent border-gray80' onClick={this.openDropdown} disabled={disabled} style={style}>
             Select status
           </button>
         )}
