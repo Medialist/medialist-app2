@@ -1,7 +1,8 @@
 import React, { PropTypes } from 'react'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
-import { SquareAvatar } from '../images/avatar.jsx'
+import { CircleAvatar } from '../images/avatar.jsx'
+import { ChevronDown } from '../images/icons'
 import { dropdownMenuStyle } from '../common-styles'
 import CampaignContacts from '../campaigns/campaign-contacts'
 import StatusSelector from '../feedback/status-selector'
@@ -11,9 +12,10 @@ const dropdownStyle = Object.assign({}, dropdownMenuStyle, { width: 520 })
 const ContactButton = (props) => {
   const { name, avatar } = props.contact
   return (
-    <div style={{margin: '-1px 0 -1px -4px'}} className='align-left'>
-      <SquareAvatar size={20} avatar={avatar} name={name} />
+    <div style={{marginTop: '-1px'}} className='align-left'>
+      <CircleAvatar size={20} avatar={avatar} name={name} />
       <div className='inline-block ml2 align-middle f-sm normal gray10'>{name}</div>
+      <ChevronDown className='ml1 gray40' style={{verticalAlign: 'bottom'}} />
     </div>
   )
 }
@@ -51,7 +53,7 @@ const ContactSelector = React.createClass({
       <div>
         <div className='inline-block'>
           <Dropdown>
-            <button className='btn bg-transparent border-gray80 mx2' onClick={this.openDropdown} disabled={!contacts || !contacts.length}>
+            <button className='btn bg-transparent border-gray80 mx2' style={{height: 34, padding: '0 12px', borderRadius: 2}} onClick={this.openDropdown} disabled={!contacts || !contacts.length}>
               { selectedContact ? <ContactButton contact={selectedContact} /> : 'Select a Contact' }
             </button>
             <DropdownMenu style={dropdownStyle} open={this.state.open} onDismiss={this.closeDropdown}>
@@ -59,7 +61,12 @@ const ContactSelector = React.createClass({
             </DropdownMenu>
           </Dropdown>
         </div>
-        <StatusSelector status={selectedStatus} border onChange={onStatusChange} disabled={!selectedContact} />
+        <StatusSelector
+          status={selectedStatus}
+          border
+          chevron
+          onChange={onStatusChange}
+          disabled={!selectedContact} />
       </div>
     )
   }
