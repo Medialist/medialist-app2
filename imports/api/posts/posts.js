@@ -47,6 +47,7 @@ export const PostSchema = new SimpleSchema({
     type: String,
     allowedValues: [
       'feedback',
+      'coverage',
       'need to know',
       'details changed',
       'medialists changed',

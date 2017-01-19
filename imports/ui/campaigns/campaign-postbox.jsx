@@ -115,7 +115,7 @@ const CoverarageInput = React.createClass({
     focused: PropTypes.bool.isRequired
   },
   getInitialState () {
-    return {message: '', status: null, contact: null}
+    return {message: '', contact: null}
   },
   onMessageChange (evt) {
     this.setState({message: evt.target.value})
@@ -124,11 +124,8 @@ const CoverarageInput = React.createClass({
     const status = this.props.campaign.contacts[contact.slug]
     this.setState({contact, status})
   },
-  onStatusChange (status) {
-    this.setState({status})
-  },
   render () {
-    const {onMessageChange, onContactChange, onStatusChange} = this
+    const {onMessageChange, onContactChange} = this
     const {focused, contacts, campaign} = this.props
     const {message, contact, status} = this.state
     const className = focused ? '' : 'display-none'
@@ -146,14 +143,15 @@ const CoverarageInput = React.createClass({
         <div className={className}>
           <button
             className={`btn bg-gray80 right active-bg-blue ${message.length > 0 ? 'active' : ''}`}
-            disabled={message.length < 1}>Post</button>
+            disabled={message.length < 1 || !contact}
+            onClick={this.onSubmit}>Post</button>
           <ContactSelector
             selectedContact={contact}
             selectedStatus={status}
             campaign={campaign}
             contacts={contacts}
             onContactChange={onContactChange}
-            onStatusChange={onStatusChange} />
+            onStatusChange={null} />
         </div>
       </div>
     )

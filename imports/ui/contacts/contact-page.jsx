@@ -49,7 +49,26 @@ const ContactPage = React.createClass({
       message,
       status
     }
-    Meteor.call('posts/create', post)
+    return new Promise((resolve, reject) => {
+      Meteor.call('posts/create', post, (err) => {
+        if (err) return reject(err)
+        resolve()
+      })
+    })
+  },
+
+  onCoverage ({message, campaign}) {
+    const post = {
+      contactSlug: this.props.contact.slug,
+      medialistSlug: campaign.slug,
+      message
+    }
+    return new Promise((resolve, reject) => {
+      Meteor.call('posts/createCoverage', post, (err) => {
+        if (err) return reject(err)
+        resolve()
+      })
+    })
   },
 
   render () {
@@ -64,7 +83,7 @@ const ContactPage = React.createClass({
             <ContactInfo contact={contact} onEditClick={this.toggleEditContact} user={user} />
           </div>
           <div className='flex-auto px2' >
-            <PostBox contact={contact} campaigns={campaigns} onFeedback={this.onFeedback} />
+            <PostBox contact={contact} campaigns={campaigns} onFeedback={this.onFeedback} onCoverage={this.onCoverage} />
             <ActivityFeed contact={contact} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
