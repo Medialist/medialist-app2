@@ -95,15 +95,6 @@ const AddContactContainer = React.createClass({
     return activeContacts.some((c) => c._id === contact._id)
   },
 
-  onStatusChange ({ status, contact }) {
-    const post = {
-      contactSlug: contact.slug,
-      medialistSlug: this.props.campaign.slug,
-      status
-    }
-    Meteor.call('posts/create', post)
-  },
-
   onAdd (contact) {
     let { selectedContacts } = this.state
     selectedContacts = selectedContacts.concat(contact)
