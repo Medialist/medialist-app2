@@ -1,8 +1,12 @@
 import React, { PropTypes } from 'react'
-import { CameraIcon, BioIcon, WebsiteIcon } from '../images/icons'
-import { Meteor } from 'meteor/meteor'
+import { CameraIcon, BioIcon, WebsiteIcon, FilledCircle } from '../images/icons'
 import Modal from '../navigation/modal'
+import ValidationBanner from '../errors/validation-banner'
+import EditableAvatar from '../images/editable-avatar'
 import ClientAutocomplete from './client-autocomplete'
+import { create, update } from '/imports/api/medialists/methods'
+import { MedialistCreateSchema } from '/imports/api/medialists/medialists'
+import callAll from '/imports/lib/call-all'
 
 const EditCampaign = React.createClass({
   propTypes: {
@@ -14,109 +18,199 @@ const EditCampaign = React.createClass({
   getInitialState () {
     const { campaign } = this.props
     return {
-      campaign: {
-        name: campaign && campaign.name || '',
-        purpose: campaign && campaign.purpose || '',
-        client: campaign && campaign.client || {name: ''},
-        website: ''
-      }
+      avatar: null,
+      focus: null,
+      validated: false, // to intially disable the submit button
+      name: campaign && campaign.name || '',
+      purpose: campaign && campaign.purpose || '',
+      clientName: campaign && campaign.client && campaign.client.name || '',
+      links: campaign && campaign.links || [{ url: '' }],
+      validationErrors: {},
+      isValid: false
     }
   },
-  updateField (field, value) {
-    const newValues = Object.assign({}, this.state.campaign, {[field]: value})
-    this.setState({ campaign: newValues })
+  componentDidMount () {
+    this.nameInput.focus()
   },
-  onChange (evt) {
-    const { name, value } = evt.target
-    const { updateField } = this
-    updateField(name, value)
+  onAvatarChange ({url}) {
+    this.setState({avatar: url})
+  },
+  onAvatarError (err) {
+    console.error('Failed to change avatar', err)
+    console.log('TODO: toast error message')
+  },
+  onClientNameChange (clientName) {
+    this.setState({clientName})
+  },
+  onClientSelect (name) {
+    this.setState({clientName: name})
+  },
+  onChange (field) {
+    return ({ target: { value } }) => {
+      this.setState({ [field]: value }, () => this.validate(field))
+    }
+  },
+  onChangeLink (ind) {
+    return ({ target: { value } }) => {
+      const newLinks = Object.assign(this.state.links, { [ind]: { url: value } })
+      this.setState({ links: newLinks })
+    }
+  },
+  checkLinkEmpty (ind) {
+    return () => {
+      if (this.state.links[ind] && !this.state.links[ind].url && this.state.links.length > 1) {
+        const newLinks = [...this.state.links]
+        newLinks.splice(ind, 1)
+        this.setState({ links: newLinks })
+      }
+    }
   },
   onSubmit (evt) {
     evt.preventDefault()
-    const { name, purpose, clientName, clientId } = this.state.campaign
-    const payload = {
-      name,
-      purpose,
-      client: {
-        _id: clientId,
-        name: clientName
-      }
+    if (!this.validate()) return
+    const { campaign } = this.props
+    const { avatar, name, purpose, clientName, links } = this.state
+    const payload = { avatar, name, purpose, clientName, links }
+    const done = (err) => {
+      if (err) return console.error('Failed to edit campaign', err)
+      this.props.onDismiss()
     }
-    if (!payload.client.name || !payload.client._id || !payload.name) return
-    Meteor.call('medialists/create', payload)
-    this.props.onDismiss()
+
+    if (campaign) {
+      update.call({ _id: campaign._id, ...payload }, done)
+    } else {
+      create.call(payload, done)
+    }
   },
   onReset () {
     this.props.onDismiss()
   },
+  validate () {
+    const { avatar, name, purpose, clientName, links } = this.state
+    const validationContext = MedialistCreateSchema.newContext()
+    const campaign = { avatar, name, purpose, clientName, links: links.filter((l) => l.url) }
+    validationContext.validate(campaign)
+    let isValid = true
+    const validationErrors = validationContext.invalidKeys().reduce((validationErrors, error) => {
+      const field = error.name
+      validationErrors[field] = `Please add a ${MedialistCreateSchema.label(field)}`
+      if (field.substr(0, 5) === 'links') validationErrors.links = 'Please only use valid URLs'
+      isValid = false
+      return validationErrors
+    }, {})
+    this.setState({ validationErrors, isValid })
+    return validationContext.isValid()
+  },
+  addFocus (field) {
+    return () => this.setState({ focus: field })
+  },
+  removeFocus () {
+    this.setState({ focus: null })
+  },
+  focusState (field) {
+    return this.state.focus === field ? 'blue' : 'gray60'
+  },
+  addLink () {
+    if (this.state.links.some((l) => !l)) return
+    this.setState({ links: [...this.state.links, { url: '' }] })
+  },
   render () {
     if (!this.props.open) return null
-    const { onChange, onSubmit, onReset, updateField } = this
-    const { clients } = this.props
-    const { name, purpose, client, website } = this.state.campaign
-    const inputWidth = 270
-    const iconWidth = 30
-    const inputStyle = { width: inputWidth, resize: 'none' }
-    const iconStyle = { width: iconWidth }
-
+    const { onChange, onChangeLink, onSubmit, onReset, onClientNameChange, onClientSelect, onAvatarChange, onAvatarError, validate } = this
+    const { campaign, clients } = this.props
+    const { avatar, name, purpose, clientName, links, validationErrors, isValid } = this.state
+    const inputStyle = { resize: 'none' }
+    const iconStyle = { position: 'absolute', left: '-32px', top: '10px' }
     return (
-      <form onSubmit={onSubmit} onReset={onReset}>
+      <form onSubmit={onSubmit} onReset={onReset} className='relative'>
+        <ValidationBanner error={validationErrors.name || validationErrors.links} />
         <div className='px4 py6 center'>
-          <div className='bg-gray40 center rounded mx-auto' style={{height: '123px', width: '123px', lineHeight: '123px'}}>
-            <CameraIcon />
-          </div>
+          <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError}>
+            <div className='bg-gray40 center rounded mx-auto' style={{height: '123px', width: '123px', lineHeight: '123px'}}>
+              { avatar ? <img src={avatar} width='100%' height='100%' /> : <CameraIcon /> }
+            </div>
+          </EditableAvatar>
           <div>
             <input
-              className='center gray10 input-inline mt4 f-xxxl semibold'
+              ref={(input) => { this.nameInput = input }}
+              autoComplete='off'
+              className={`center gray10 input-inline mt4 f-xxxl semibold ${validationErrors.name ? 'error' : ''}`}
               type='text'
               name='name'
               value={name}
               placeholder='Campaign Name'
               size={name.length === 0 ? 15 : name.length + 2}
-              onChange={onChange}
+              onChange={onChange('name')}
+              onBlur={validate}
                />
+            {validationErrors.name ? <div className='absolute left-0 right-0 mt1 red'>{validationErrors.name}</div> : null}
           </div>
-          <ClientAutocomplete
-            clients={clients}
-            className='center input-inline mt1 f-lg gray10'
-            name='clientName'
-            clientName={client.name}
-            onSelect={updateField} />
         </div>
-        <div className='bg-gray90 border-top border-gray80'>
-          <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft: 70}}>Details</label>
-          <div className='mx-auto py2' style={{width: inputWidth + iconWidth}}>
-            <div className='pt3'>
-              <BioIcon style={iconStyle} className='inline-block align-top mt1' />
-              <div className='inline-block align-middle'>
+        <div className='bg-gray90 border-top border-gray80 py5 overflow-auto' style={{ maxHeight: '400px' }}>
+          <div style={{ padding: '0 100px' }}>
+            <div>
+              <label className='block gray40 f-m mb2'>Client</label>
+              <div className='relative'>
+                <div style={iconStyle}>
+                  <FilledCircle className={this.focusState('clientName')} />
+                </div>
+                <ClientAutocomplete
+                  onFocus={this.addFocus('clientName')}
+                  onBlur={this.removeFocus}
+                  clients={clients}
+                  className='input block'
+                  name='clientName'
+                  placeholder='Client'
+                  clientName={clientName}
+                  onSelect={onClientSelect}
+                  onChange={onClientNameChange} />
+              </div>
+            </div>
+            <div className='mt4'>
+              <label className='block gray40 f-m mb2'>Key Message</label>
+              <div className='relative'>
+                <div style={iconStyle}>
+                  <BioIcon className={this.focusState('purpose')} />
+                </div>
                 <textarea
-                  style={inputStyle}
-                  className='textarea'
+                  onFocus={this.addFocus('purpose')}
+                  onBlur={this.removeFocus}
+                  style={{ ...inputStyle, height: '70px' }}
+                  className='input block textarea'
                   type='text'
                   rows='5'
                   name='purpose'
                   value={purpose}
                   placeholder='Key Message'
-                  onChange={onChange} />
+                  onChange={onChange('purpose')} />
               </div>
             </div>
-            <div className='pt3'>
-              <WebsiteIcon style={iconStyle} className='inline-block' />
-              <div className='inline-block align-middle'>
-                <input
-                  style={inputStyle}
-                  className='input'
-                  type='text'
-                  name='website'
-                  value={website}
-                  placeholder='Website'
-                  onChange={onChange} />
-              </div>
+            <div className='mt4'>
+              <label className='block gray40 f-m mb2'>Links</label>
+              {links.map((link, ind) => (
+                <div key={ind} className='relative mt1 icon-blue-highlight'>
+                  <div style={iconStyle}>
+                    <WebsiteIcon className={this.focusState(`link-${ind}`)} />
+                  </div>
+                  <input
+                    onFocus={this.addFocus(`link-${ind}`)}
+                    onBlur={callAll([this.removeFocus, this.checkLinkEmpty(ind), validate])}
+                    style={inputStyle}
+                    className='input block'
+                    type='text'
+                    value={links[ind].url}
+                    placeholder='Links'
+                    onChange={onChangeLink(ind)} />
+                </div>
+              ))}
+              <div className='mt1'><a href='#' className='f-xs blue underline' onClick={this.addLink}>Add another link</a></div>
             </div>
           </div>
         </div>
         <div className='p4 right'>
-          <button className='btn bg-completed white right' type='submit'>Create Campaign</button>
+          <button className='btn bg-completed white right' type='submit' disabled={!isValid}>
+            {campaign ? 'Edit' : 'Create'} Campaign
+          </button>
           <button className='btn bg-transparent gray40 right mr2' type='reset'>Cancel</button>
         </div>
       </form>

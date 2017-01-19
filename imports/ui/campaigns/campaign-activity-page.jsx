@@ -5,15 +5,18 @@ import { createContainer } from 'meteor/react-meteor-data'
 import CampaignTopbar from './campaign-topbar'
 import CampaignInfo from './campaign-info'
 import CampaignContactList from './campaign-contact-list'
-import PostBox from '../contacts/post-box'
+import PostBox from './campaign-postbox'
 import ActivityFeed from '../dashboard/activity-feed'
 import EditCampaign from './edit-campaign'
+import Clients from '/imports/api/clients/clients'
+import Medialists from '/imports/api/medialists/medialists'
+import AddContact from './add-contact'
 import EditTeam from './edit-team'
 
 const CampaignActivityPage = React.createClass({
   propTypes: {
     router: PropTypes.object,
-    loading: React.PropTypes.bool,
+    loading: PropTypes.bool,
     campaign: PropTypes.object,
     user: PropTypes.object,
     contacts: PropTypes.array,
@@ -22,7 +25,12 @@ const CampaignActivityPage = React.createClass({
   },
 
   getInitialState () {
-    return { editModalOpen: false, editTeamModalOpen: false }
+    return { addContactOpen: false, editModalOpen: false, editTeamModalOpen: false }
+  },
+
+  toggleAddContact () {
+    const addContactOpen = !this.state.addContactOpen
+    this.setState({ addContactOpen })
   },
 
   toggleEditModal () {
@@ -39,25 +47,34 @@ const CampaignActivityPage = React.createClass({
     this.props.router.push(`/campaigns`)
   },
 
-  onFeedback ({message, contact, status}) {
+  onFeedback ({message, contact, status}, cb) {
     const post = {
       contactSlug: contact.slug,
       medialistSlug: this.props.campaign.slug,
       message,
       status
     }
-    Meteor.call('posts/create', post)
+    Meteor.call('posts/create', post, cb)
+  },
+
+  onCoverage ({message, contact}, cb) {
+    const post = {
+      medialistSlug: this.props.campaign.slug,
+      contactSlug: contact.slug,
+      message
+    }
+    Meteor.call('posts/createCoverage', post, cb)
   },
 
   render () {
-    const { toggleEditModal, toggleEditTeamModal, onBackClick, onFeedback } = this
+    const { toggleAddContact, toggleEditModal, toggleEditTeamModal, onBackClick, onFeedback, onCoverage } = this
     const { campaign, contacts, contactsCount, clients, contactsAll, user } = this.props
-    const { editModalOpen, editTeamModalOpen } = this.state
+    const { addContactOpen, editModalOpen, editTeamModalOpen } = this.state
     if (!campaign) return null
 
     return (
       <div>
-        <CampaignTopbar onBackClick={onBackClick} contactsAll={contactsAll} campaign={campaign} contacts={contacts} />
+        <CampaignTopbar onBackClick={onBackClick} contactsAll={contactsAll} campaign={campaign} contacts={contacts} onAddContactClick={toggleAddContact} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
             <CampaignInfo campaign={campaign} onEditClick={toggleEditModal} onEditTeamClick={toggleEditTeamModal} user={user} />
@@ -65,30 +82,38 @@ const CampaignActivityPage = React.createClass({
             <EditTeam campaign={campaign} open={editTeamModalOpen} onDismiss={toggleEditTeamModal} />
           </div>
           <div className='flex-auto px2' >
-            <PostBox campaigns={[campaign]} onFeedback={onFeedback} />
+            <PostBox campaign={campaign} contacts={contacts} onFeedback={onFeedback} onCoverage={onCoverage} />
             <ActivityFeed campaign={campaign} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
-            <CampaignContactList contacts={contacts} contactsCount={contactsCount} campaign={campaign} />
+            <CampaignContactList contacts={contacts} contactsAll={contactsAll} contactsCount={contactsCount} campaign={campaign} onAddContactClick={toggleAddContact} />
           </div>
         </div>
+        <AddContact onDismiss={toggleAddContact} open={addContactOpen} contacts={contacts} contactsAll={contactsAll} campaign={campaign} />
       </div>
     )
   }
 })
 
 export default createContainer((props) => {
-  const { slug } = props.params
+  const { campaignSlug } = props.params
+
   const subs = [
-    Meteor.subscribe('medialist', slug),
-    Meteor.subscribe('contacts')
+    Meteor.subscribe('medialist', campaignSlug),
+    Meteor.subscribe('contacts'),
+    Meteor.subscribe('clients')
   ]
   const loading = subs.some((s) => !s.ready())
-  const campaign = window.Medialists.findOne({ slug })
-  // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
-  const contacts = window.Contacts.find({medialists: slug}, {limit: 7, sort: {updatedAt: -1}}).fetch()
-  const contactsCount = window.Contacts.find({medialists: slug}).count()
-  const contactsAll = window.Contacts.find({}, {sort: {name: 1}}).fetch()
-  const user = Meteor.user()
-  return { ...props, campaign, contacts, contactsCount, loading, contactsAll, user }
+
+  return {
+    ...props,
+    loading,
+    campaign: Medialists.findOne({ slug: campaignSlug }),
+    // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
+    contacts: window.Contacts.find({medialists: campaignSlug}, {limit: 7, sort: {updatedAt: -1}}).fetch(),
+    contactsCount: window.Contacts.find({medialists: campaignSlug}).count(),
+    contactsAll: window.Contacts.find({}, {sort: {name: 1}}).fetch(),
+    user: Meteor.user(),
+    clients: Clients.find({}).fetch()
+  }
 }, withRouter(CampaignActivityPage))

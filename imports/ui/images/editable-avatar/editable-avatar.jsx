@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react'
 import classNames from 'classnames/dedupe'
-import DropdownMenu from 'rebass/dist/DropdownMenu'
-import { dropdownMenuStyle } from '../../common-styles'
+import DropdownMenu from '../../lists/dropdown-menu'
 import Menu from './menu'
 
 const EditableAvatar = React.createClass({
@@ -57,7 +56,7 @@ const EditableAvatar = React.createClass({
       <div className={className} style={style} onClick={onAvatarClick}>
         {children}
         <DropdownMenu
-          style={{ ...dropdownMenuStyle, width: 250 }}
+          style={{ left: '-50%', top: 'calc(50% + 2em)', width: 250 }}
           open={isDropdownOpen}
           onDismiss={onDropdownDismiss}>
           <Menu avatar={avatar} onChange={onImageChange} onError={onImageError} />

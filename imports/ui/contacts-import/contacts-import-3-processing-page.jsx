@@ -3,7 +3,7 @@ import { Link, withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
 import CsvToContacts from './csv-to-contacts'
 import Topbar from '../navigation/topbar'
-import Tag from '../navigation/tag'
+import Tag from '../tags/tag'
 import {
   FeedCampaignIcon,
   FavouritesIcon,

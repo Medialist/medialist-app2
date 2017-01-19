@@ -4,42 +4,35 @@ import Autocomplete from '../lists/autocomplete'
 export default React.createClass({
   propTypes: {
     clients: PropTypes.array.isRequired,
-    clientName: PropTypes.string.isRequired,
-    onSelect: PropTypes.func.isRequired
+    clientName: PropTypes.string,
+    onSelect: PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired
   },
   getInitialState () {
-    const clientName = this.props.clientName || ''
+    const { clientName } = this.props
     const { getSuggestions } = this
     return {
-      clientName,
       suggestions: getSuggestions(clientName)
     }
   },
-  componentWillReceiveProps (props) {
-    this.setState({
-      clientName: props.clientName
-    })
-  },
   getSuggestions (value) {
-    return this.props.clients.filter((client) => {
-      return client.name.toLowerCase().slice(0, value.length) === value.toLowerCase()
-    }).map((c) => c.name)
+    const regex = new RegExp(value, 'i')
+    return this.props.clients
+      .map((c) => c.name)
+      .filter((clientName) => {
+        return regex.test(clientName)
+      })
   },
   onChange (value) {
     this.setState({
-      clientName: value,
       suggestions: this.getSuggestions(value)
     })
-  },
-  onSelect (suggestion) {
-    const res = this.props.clients.filter((client) => suggestion === client.name)
-    const client = res[0]
-    if (!client) return
-    this.props.onSelect('client', client)
+    this.props.onChange(value)
   },
   render () {
-    const { onChange, onSelect } = this
-    const { suggestions, clientName } = this.state
+    const { onChange } = this
+    const { suggestions } = this.state
+    const { onSelect, clientName } = this.props
     return (
       <Autocomplete {...this.props} suggestions={suggestions} value={clientName} onSelect={onSelect} onChange={onChange} />
     )

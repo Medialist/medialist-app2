@@ -3,26 +3,19 @@ import values from 'lodash.values'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
 import { dropdownMenuStyle } from '../common-styles'
+import StatusLabel from './status-label'
 
 const dropdownStyle = Object.assign({}, dropdownMenuStyle, { width: 223 })
 
 const items = values(window.Contacts.status)
 
-const Status = (props) => {
-  const ref = props.name.toLowerCase().replace(' ', '-')
-  const className = `inline-block align-middle circle bg-${ref}`
-  return (
-    <div>
-      <span className={className} style={{width: 12, height: 12}} />
-      <span className='ml2 uppercase f-xxs semibold gray20 letter-spacing-1'>{props.name}</span>
-    </div>
-  )
-}
-
 const StatusSelector = React.createClass({
   propTypes: {
     onChange: PropTypes.func.isRequired,
-    status: PropTypes.string
+    status: PropTypes.string,
+    border: PropTypes.bool,
+    chevron: PropTypes.bool,
+    disabled: PropTypes.bool
   },
   getInitialState () {
     return {open: false}
@@ -38,16 +31,21 @@ const StatusSelector = React.createClass({
     this.props.onChange(status)
   },
   render () {
-    const { status } = this.props
+    const { status, border, chevron, disabled } = this.props
+    const style = {
+      height: 34,
+      borderRadius: 2,
+      paddingTop: 6
+    }
     return (
       <div className='inline-block'>
         <Dropdown>
           { status ? (
-            <button className='btn bg-transparent' onClick={this.openDropdown}>
-              <Status name={status} />
+            <button className={`btn bg-transparent ${border ? 'border-gray80' : ''}`} onClick={this.openDropdown} style={style}>
+              <StatusLabel name={status} chevron={chevron} />
             </button>
         ) : (
-          <button className='btn bg-transparent border-gray80' onClick={this.openDropdown}>
+          <button className='btn bg-transparent border-gray80' onClick={this.openDropdown} disabled={disabled} style={style}>
             Select status
           </button>
         )}
@@ -55,7 +53,7 @@ const StatusSelector = React.createClass({
             <nav className='py3'>
               {items.map((item) => (
                 <div key={item} className='px3 py2 pointer hover-bg-gray90' onClick={() => this.onLinkClick(item)}>
-                  <Status name={item} />
+                  <StatusLabel name={item} />
                 </div>
               ))}
             </nav>

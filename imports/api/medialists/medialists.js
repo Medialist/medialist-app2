@@ -105,6 +105,14 @@ export const MedialistSchema = new SimpleSchema({
   },
   team: {
     type: [UserRefSchema]
+  },
+  links: {
+    type: [Object],
+    optional: true
+  },
+  'links.$.url': {
+    type: String,
+    regEx: SimpleSchema.RegEx.Url
   }
 })
 
@@ -112,6 +120,56 @@ export const MedialistUpdateSchema = new SimpleSchema({
   '_id': {
     type: String,
     regEx: SimpleSchema.RegEx.Id
+  },
+  name: {
+    type: String,
+    min: 1,
+    optional: true
+  },
+  clientName: {
+    type: String,
+    min: 1,
+    optional: true
+  },
+  purpose: {
+    type: String,
+    optional: true
+  },
+  links: {
+    type: [Object],
+    optional: true
+  },
+  'links.$.url': {
+    type: String,
+    regEx: SimpleSchema.RegEx.Url
+  },
+  avatar: {
+    type: String,
+    optional: true
+  }
+})
+
+export const MedialistCreateSchema = new SimpleSchema({
+  name: {
+    type: String,
+    min: 1,
+    label: 'campaign name'
+  },
+  clientName: {
+    type: String,
+    optional: true
+  },
+  purpose: {
+    type: String,
+    optional: true
+  },
+  links: {
+    type: [Object],
+    optional: true
+  },
+  'links.$.url': {
+    type: String,
+    regEx: SimpleSchema.RegEx.Url
   },
   avatar: {
     type: String,
