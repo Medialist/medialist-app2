@@ -145,8 +145,8 @@ const CampaignInfo = React.createClass({
             <div>
               {(links || []).map((link) => (
                 <span className='mr2 hover-fill-trigger'>
-                  <Tooltip title={prettyUrl(link)} key={link}>
-                    <a href={link} target='_blank'>
+                  <Tooltip title={prettyUrl(link.url)} key={link.url}>
+                    <a href={link.url} target='_blank'>
                       <WebsiteIcon className='svg-icon-md' />
                     </a>
                   </Tooltip>

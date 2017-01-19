@@ -112,6 +112,9 @@ npm run watch
 	"masterLists": [
 		{ "_id": "123", "slug": "tech", "name": "Tech" }
 	],
+	"links": [
+		{ "url": "http://example.org" }
+	]
 }
 ```
 
