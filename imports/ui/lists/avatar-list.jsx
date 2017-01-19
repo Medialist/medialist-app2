@@ -21,14 +21,8 @@ const AvatarList = React.createClass({
     return { shape: 'circle', size: 30 }
   },
 
-  onAvatarClick (e, item, i) {
-    e.preventDefault()
-    this.props.onRemove(item, i)
-  },
-
   render () {
-    const { onAvatarClick } = this
-    const { items, size, shape, className, style } = this.props
+    const { items, size, shape, className, style, onRemove } = this.props
     const Avatar = shape === 'square' ? SquareAvatar : CircleAvatar
 
     return (
@@ -36,7 +30,7 @@ const AvatarList = React.createClass({
         {items.map((item, i) => {
           const { avatar, name } = item
           return (
-            <li key={item._id || i} className='inline-block mb1' onClick={(e) => onAvatarClick(e, item, i)}>
+            <li key={item._id || i} className='inline-block mb1' onClick={() => onRemove(item, i)}>
               <Tooltip title={name}>
                 <span className='relative inline-block hover-border-trigger hover-display-trigger hover-fill-trigger'>
                   <Avatar
