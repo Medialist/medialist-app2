@@ -166,6 +166,7 @@ button {
 .mx6 { margin-left:   var(--space-6); margin-right:  var(--space-6) }
 
 .mt8 { margin-top: 40px }
+.px8 { padding-left: 40px; padding-right: 40px; }
 
 .f-xxxl { font-size:25px }
 .f-xxl { font-size:20px }
@@ -443,7 +444,7 @@ button {
   color: var(--white) !important;
 }
 .hover-bg-blue:hover {
-  color: var(--white);
+  color: var(--white) !important;
   background-color: var(--blue);
 }
 .hover-bg-gray90:hover {
@@ -525,22 +526,7 @@ button {
 }
 
 /* ---- Rebass overrides ---------------------------------------------------- */
-
 .Menu {
   border: 0 none !important;
   box-shadow: 0px 1px 10px 0px rgba(0,0,0,0.20);
-}
-/* triangle pointy thing */
-.Menu::before {
-  content:'';
-  display: inline-block;
-  position: absolute;
-  top: -7px;
-  right: 11px;
-  width: 0;
-  height: 0;
-  border: 8px solid transparent;
-  border-bottom-color:var(--white);
-  border-top: 0 none;
-  border-radius: 2px;
 }

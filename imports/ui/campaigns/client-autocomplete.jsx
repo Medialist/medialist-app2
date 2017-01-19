@@ -16,9 +16,12 @@ export default React.createClass({
     }
   },
   getSuggestions (value) {
-    return this.props.clients.filter((client) => {
-      return client.name.toLowerCase().slice(0, value.length) === value.toLowerCase()
-    }).map((c) => c.name)
+    const regex = new RegExp(value, 'i')
+    return this.props.clients
+      .map((c) => c.name)
+      .filter((clientName) => {
+        return regex.test(clientName)
+      })
   },
   onChange (value) {
     this.setState({
