@@ -465,8 +465,11 @@ button {
 .hover-border-gray80:hover {
   border-color: var(--gray80) !important;
 }
-.hover-fill-trigger:hover .hover-fill-current svg,
-.hover-fill-current:hover svg{
+.hover-border-red:hover {
+  border-color: red !important;
+}
+.hover-fill-trigger:hover .hover-fill-current,
+.hover-fill-current:hover {
   fill: currentColor;
 }
 .hover-fill-trigger:hover .hover-fill-gray10,
