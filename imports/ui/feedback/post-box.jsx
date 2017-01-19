@@ -74,9 +74,10 @@ const FeedbackInput = React.createClass({
   },
   onSubmit () {
     this.setState({posting: true})
-    this.props.onSubmit(this.state)
-      .then(() => this.setState({message: '', posting: false}))
-      .catch((err) => console.error(err))
+    this.props.onSubmit(this.state, (err) => {
+      this.setState({message: '', posting: false})
+      if (err) console.error(err)
+    })
   },
   isValid () {
     return !!(this.state.status && this.state.campaign)
@@ -129,9 +130,10 @@ const CoverarageInput = React.createClass({
   },
   onSubmit () {
     this.setState({posting: true})
-    this.props.onSubmit(this.state)
-      .then(() => this.setState({message: '', posting: false}))
-      .catch((err) => console.error(err))
+    this.props.onSubmit(this.state, (err) => {
+      this.setState({message: '', posting: false})
+      if (err) console.error(err)
+    })
   },
   render () {
     const {onMessageChange, onCampaignChange, onSubmit} = this

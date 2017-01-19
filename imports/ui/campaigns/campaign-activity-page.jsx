@@ -36,28 +36,23 @@ const CampaignActivityPage = React.createClass({
     this.setState({ editModalOpen })
   },
 
-  onFeedback ({message, contact, status}) {
+  onFeedback ({message, contact, status}, cb) {
     const post = {
       contactSlug: contact.slug,
       medialistSlug: this.props.campaign.slug,
       message,
       status
     }
-    Meteor.call('posts/create', post)
+    Meteor.call('posts/create', post, cb)
   },
 
-  onCoverage ({message, contact}) {
+  onCoverage ({message, contact}, cb) {
     const post = {
       medialistSlug: this.props.campaign.slug,
       contactSlug: contact.slug,
       message
     }
-    return new Promise((resolve, reject) => {
-      Meteor.call('posts/createCoverage', post, (err) => {
-        if (err) return reject(err)
-        resolve()
-      })
-    })
+    Meteor.call('posts/createCoverage', post, cb)
   },
 
   render () {

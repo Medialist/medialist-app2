@@ -42,33 +42,23 @@ const ContactPage = React.createClass({
     console.log('TODO: Add contact to campaign')
   },
 
-  onFeedback ({message, campaign, status}) {
+  onFeedback ({message, campaign, status}, cb) {
     const post = {
       contactSlug: this.props.contact.slug,
       medialistSlug: campaign.slug,
       message,
       status
     }
-    return new Promise((resolve, reject) => {
-      Meteor.call('posts/create', post, (err) => {
-        if (err) return reject(err)
-        resolve()
-      })
-    })
+    Meteor.call('posts/create', post, cb)
   },
 
-  onCoverage ({message, campaign}) {
+  onCoverage ({message, campaign}, cb) {
     const post = {
       contactSlug: this.props.contact.slug,
       medialistSlug: campaign.slug,
       message
     }
-    return new Promise((resolve, reject) => {
-      Meteor.call('posts/createCoverage', post, (err) => {
-        if (err) return reject(err)
-        resolve()
-      })
-    })
+    Meteor.call('posts/createCoverage', post, cb)
   },
 
   render () {
