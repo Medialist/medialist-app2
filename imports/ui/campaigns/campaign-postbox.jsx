@@ -161,7 +161,7 @@ const CoverageInput = React.createClass({
             campaign={campaign}
             contacts={contacts}
             onContactChange={onContactChange}
-            onStatusChange={null} />
+            />
         </div>
       </div>
     )

@@ -30,8 +30,8 @@ const ContactSelector = React.createClass({
     onContactChange: PropTypes.func.isRequired,
     onStatusChange: PropTypes.func.isRequired
   },
-  defaultProps: {
-    showStatus: true
+  getDefaultProps () {
+    return { showStatus: true }
   },
   getInitialState () {
     return { open: false }
