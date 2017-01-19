@@ -13,7 +13,7 @@ function truncate (str, chars) {
 }
 
 const AddContact = React.createClass({
-  PropTypes: {
+  propTypes: {
     onSubmit: PropTypes.func.isRequired,
     onReset: PropTypes.func.isRequired,
     onAdd: PropTypes.func.isRequired,
@@ -27,17 +27,40 @@ const AddContact = React.createClass({
     selectedContacts: PropTypes.array.isRequired
   },
 
+  getInitialState () {
+    return { term: '' }
+  },
+
+  onChange (e) {
+    this.setState({ term: e.target.value })
+    this.props.onSearch(e.target.value)
+  },
+
+  onKeyPress (e) {
+    if (e.key !== 'Enter') return
+    if (!this.state.term) return
+
+    const { isActive, filteredContacts, onAdd } = this.props
+    const contact = filteredContacts[0]
+
+    if (!contact || isActive(contact)) return
+
+    onAdd(contact)
+    this.setState({ term: '' })
+  },
+
   render () {
     const {
       onReset,
       onSubmit,
       selectedContacts,
       filteredContacts,
-      onSearch,
       onAdd,
       onRemove,
       isActive
     } = this.props
+    const { term } = this.state
+    const { onChange, onKeyPress } = this
 
     const scrollableHeight = Math.max(window.innerHeight - 380, 80)
 
@@ -47,7 +70,7 @@ const AddContact = React.createClass({
         <AvatarList items={selectedContacts} onRemove={onRemove} className='my4 px4' />
         <div className='py3 pl4 flex border-top border-bottom border-gray80'>
           <SearchBlueIcon className='flex-none' />
-          <input className='flex-auto f-lg pa2 mx2' placeholder='Find a contact...' onChange={onSearch} style={{outline: 'none'}} />
+          <input className='flex-auto f-lg pa2 mx2' placeholder='Find a contact...' onChange={onChange} style={{outline: 'none'}} onKeyPress={onKeyPress} value={term} />
         </div>
         <div style={{height: scrollableHeight, overflowY: 'scroll'}}>
           <ContactsList
@@ -125,8 +148,7 @@ const AddContactContainer = React.createClass({
     this.deselectAll()
   },
 
-  onSearch (evt) {
-    const term = evt.target.value
+  onSearch (term) {
     const query = {name: {$regex: `^${term}`, $options: 'i'}}
     const filteredContacts = window.Contacts.find(query, {limit: 20, sort: {name: 1}}).fetch()
     this.setState({filteredContacts})
