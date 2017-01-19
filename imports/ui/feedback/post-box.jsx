@@ -75,8 +75,8 @@ const FeedbackInput = React.createClass({
   onSubmit () {
     this.setState({posting: true})
     this.props.onSubmit(this.state)
-    // TOOD: wire in callback from server.
-    setTimeout(() => this.setState({message: '', posting: false}), 1000)
+      .then(() => this.setState({message: '', posting: false}))
+      .catch((err) => console.error(err))
   },
   isValid () {
     return !!(this.state.status && this.state.campaign)
@@ -130,8 +130,8 @@ const CoverarageInput = React.createClass({
   onSubmit () {
     this.setState({posting: true})
     this.props.onSubmit(this.state)
-    // TOOD: wire in callback from server.
-    setTimeout(() => this.setState({message: '', posting: false}), 1000)
+      .then(() => this.setState({message: '', posting: false}))
+      .catch((err) => console.error(err))
   },
   render () {
     const {onMessageChange, onCampaignChange, onSubmit} = this
