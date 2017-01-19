@@ -6,7 +6,8 @@ const PostBox = React.createClass({
   propTypes: {
     campaign: PropTypes.object.isRequired,
     contacts: PropTypes.array.isRequired,
-    onFeedback: PropTypes.func.isRequired
+    onFeedback: PropTypes.func.isRequired,
+    onCoverage: PropTypes.func.isRequired
   },
 
   getInitialState () {
@@ -19,7 +20,7 @@ const PostBox = React.createClass({
   },
 
   render () {
-    const { contacts, onFeedback, campaign } = this.props
+    const { contacts, onFeedback, onCoverage, campaign } = this.props
     const { selected, focused } = this.state
     const childProps = { focused, contacts, campaign }
 
@@ -36,7 +37,7 @@ const PostBox = React.createClass({
         <div style={{padding: '0 1px'}}>
           <div className='bg-white shadow-2 p3 pb0'>
             { selected === 'Feedback' ? <FeedbackInput {...childProps} onSubmit={onFeedback} /> : '' }
-            { selected === 'Coverage' ? <CoverarageInput {...childProps} /> : '' }
+            { selected === 'Coverage' ? <CoverarageInput {...childProps} onSubmit={onCoverage} /> : '' }
           </div>
         </div>
       </div>
@@ -112,7 +113,8 @@ const CoverarageInput = React.createClass({
   propTypes: {
     campaign: PropTypes.object.isRequired,
     contacts: PropTypes.array.isRequired,
-    focused: PropTypes.bool.isRequired
+    focused: PropTypes.bool.isRequired,
+    onSubmit: PropTypes.func.isRequired
   },
   getInitialState () {
     return {message: '', status: null, contact: null}
@@ -126,6 +128,11 @@ const CoverarageInput = React.createClass({
   },
   onStatusChange (status) {
     this.setState({status})
+  },
+  onSubmit () {
+    this.props.onSubmit(this.state)
+    // TOOD: wire in callback from server.
+    setTimeout(() => this.setState({message: '', posting: false}), 1000)
   },
   render () {
     const {onMessageChange, onContactChange, onStatusChange} = this
