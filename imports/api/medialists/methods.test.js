@@ -63,15 +63,14 @@ describe('Medialist create method', function () {
   })
 
   it('should throw if required fields are missing', function () {
-    assert.throws(() => create.validate({ name: 'foo' }), /Client name is required/)
-    assert.throws(() => create.validate({ name: 123, clientName: 'boz' }), /Name must be a string/)
-    assert.throws(() => create.validate({ name: 'YES', purpose: 'Zoom' }), /Client name is required/)
+    assert.throws(() => create.validate({ clientName: 'foo' }), /campaign name is required/)
+    assert.throws(() => create.validate({ name: 123, clientName: 'boz' }), /campaign name must be a string/)
   })
 
   it('should create a medialist and client', function () {
-    const user = { profile: { name: 'O'}, services: { twitter: {profile_image_url_https: 'bar'} } }
+    const user = { profile: { name: 'O' }, services: { twitter: {profile_image_url_https: 'bar'} } }
     const userId = Meteor.users.insert(user)
-    const payload = { name: 'Foo', clientName: 'Bar', purpose: 'Better!'}
+    const payload = { name: 'Foo', clientName: 'Bar', purpose: 'Better!' }
     const slug = create.run.call({ userId }, payload)
     const doc = Medialists.findOne({ slug })
     assert.ok(doc)

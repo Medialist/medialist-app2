@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from '../lists/dropdown-menu'
 import isEqual from 'lodash.isequal'
-import callAll from '/imports/lib/call-all'
 
 const dropdownStyle = { maxWidth: 300 }
 
@@ -23,7 +22,7 @@ export default React.createClass({
     this.setState({open: suggestions.length > 0 && suggestions[0] !== value})
   },
   onBlur () {
-    this.setState({ open: false, activeInd: null })
+    this.setState({ open: false, activeInd: null }, this.props.onBlur)
   },
   onChange (evt) {
     this.props.onChange(evt.target.value)
@@ -71,8 +70,7 @@ export default React.createClass({
       value,
       placeholder,
       suggestions,
-      onFocus,
-      onBlur
+      onFocus
     } = this.props
     const { onChange, onDismiss, onClick, onKeyDown, onActivate } = this
     const { open, activeInd } = this.state
@@ -88,7 +86,7 @@ export default React.createClass({
           onChange={onChange}
           onKeyDown={onKeyDown}
           onFocus={onFocus}
-          onBlur={callAll([this.onBlur, onBlur])}
+          onBlur={this.onBlur}
         />
         <DropdownMenu open={open} onDismiss={onDismiss} style={dropdownStyle} arrowPosition={false}>
           <ol className='list-reset'>{suggestions.map((s, ind) => {

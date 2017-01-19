@@ -38,7 +38,7 @@ export default function (Component) {
           <Helmet htmlAttributes={{ style: htmlStyle }} />
           <div className='fixed top-0 right-0 left-0 bottom-0 flex items-center justify-center z100' style={{background: 'rgba(35, 54, 75, 0.8)'}} onClick={this.onDismiss}>
             <div className='bg-white fit' style={{width: 675}}>
-              <div className='inline-block right pointer f-xxxl mx2 gray60 hover-blue' onClick={onDismiss}>&times;</div>
+              <div className='inline-block right pointer f-xxxl mx2 my1 gray60 hover-blue relative' style={{zIndex: 2}} onClick={onDismiss}>&times;</div>
               <Component {...this.props} />
             </div>
           </div>

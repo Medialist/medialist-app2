@@ -102,9 +102,13 @@ export const MedialistSchema = new SimpleSchema({
   masterLists: {
     type: [MasterListRefSchema]
   },
-  website: {
-    type: String,
+  links: {
+    type: [Object],
     optional: true
+  },
+  'links.$.url': {
+    type: String,
+    regEx: SimpleSchema.RegEx.Url
   }
 })
 
@@ -127,9 +131,13 @@ export const MedialistUpdateSchema = new SimpleSchema({
     type: String,
     optional: true
   },
-  website: {
-    type: String,
+  links: {
+    type: [Object],
     optional: true
+  },
+  'links.$.url': {
+    type: String,
+    regEx: SimpleSchema.RegEx.Url
   },
   avatar: {
     type: String,
@@ -140,18 +148,24 @@ export const MedialistUpdateSchema = new SimpleSchema({
 export const MedialistCreateSchema = new SimpleSchema({
   name: {
     type: String,
-    min: 1
+    min: 1,
+    label: 'campaign name'
   },
   clientName: {
     type: String,
-    min: 1
+    optional: true
   },
   purpose: {
-    type: String
-  },
-  website: {
     type: String,
     optional: true
+  },
+  links: {
+    type: [Object],
+    optional: true
+  },
+  'links.$.url': {
+    type: String,
+    regEx: SimpleSchema.RegEx.Url
   },
   avatar: {
     type: String,

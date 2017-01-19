@@ -57,6 +57,7 @@
   --blue-light: #4299FF; /* bleu-de-france */
   --blue-lighter: #eaf1ff; /* notification-blue */
   --green-light: #EAF8F1; /* selected-green */
+  --yellow-lighter: #fffaed; /* background-wash */
 
   --orange: #FA862C;
   --orange-light: #FFFAEC;
@@ -227,6 +228,7 @@ button {
 .blue { color: var(--blue) !important }
 .blue-light { color: var(--blue-light) !important }
 .blue-lighter { color: var(--blue-lighter) !important }
+.red { color: #E41D1D !important }
 .not-contacted { color: var(--gray40) !important }
 .to-contact { color: var(--gray40) !important }
 .contacted { color: #28B6D7 !important }
@@ -254,6 +256,7 @@ button {
 .bg-not-interested { background-color: var(--status-red) !important }
 .bg-hot-lead { background-color: var(--status-orange) !important }
 .bg-completed { background-color: var(--status-green) !important }
+.bg-yellow-lighter { background-color: var(--yellow-lighter) !important }
 
 .border-transparent { border-color: transparent !important }
 .border-gray10 { border-color:var(--gray10) !important }
@@ -335,6 +338,9 @@ button {
 .input-inline:focus {
   border-bottom-color: var(--blue);
   outline: none;
+}
+.input-inline.error {
+  border-bottom-color: var(--status-red);
 }
 .select {
   font-family: inherit;

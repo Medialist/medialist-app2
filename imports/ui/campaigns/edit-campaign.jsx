@@ -1,9 +1,11 @@
 import React, { PropTypes } from 'react'
 import { CameraIcon, BioIcon, WebsiteIcon, FilledCircle } from '../images/icons'
 import Modal from '../navigation/modal'
+import ValidationBanner from '../errors/validation-banner'
 import EditableAvatar from '../images/editable-avatar'
 import ClientAutocomplete from './client-autocomplete'
 import { create, update } from '/imports/api/medialists/methods'
+import { MedialistCreateSchema } from '/imports/api/medialists/medialists'
 import callAll from '/imports/lib/call-all'
 
 const EditCampaign = React.createClass({
@@ -18,10 +20,13 @@ const EditCampaign = React.createClass({
     return {
       avatar: null,
       focus: null,
+      validated: false, // to intially disable the submit button
       name: campaign && campaign.name || '',
       purpose: campaign && campaign.purpose || '',
       clientName: campaign && campaign.client && campaign.client.name || '',
-      links: campaign && campaign.links || ['']
+      links: campaign && campaign.links || [{ url: '' }],
+      validationErrors: {},
+      isValid: false
     }
   },
   componentDidMount () {
@@ -42,18 +47,18 @@ const EditCampaign = React.createClass({
   },
   onChange (field) {
     return ({ target: { value } }) => {
-      this.setState({ [field]: value })
+      this.setState({ [field]: value }, () => this.validate(field))
     }
   },
   onChangeLink (ind) {
     return ({ target: { value } }) => {
-      const newLinks = Object.assign(this.state.links, { [ind]: value })
+      const newLinks = Object.assign(this.state.links, { [ind]: { url: value } })
       this.setState({ links: newLinks })
     }
   },
   checkLinkEmpty (ind) {
     return () => {
-      if (!this.state.links[ind] && this.state.links.length > 1) {
+      if (this.state.links[ind] && !this.state.links[ind].url && this.state.links.length > 1) {
         const newLinks = [...this.state.links]
         newLinks.splice(ind, 1)
         this.setState({ links: newLinks })
@@ -62,6 +67,7 @@ const EditCampaign = React.createClass({
   },
   onSubmit (evt) {
     evt.preventDefault()
+    if (!this.validate()) return
     const { campaign } = this.props
     const { avatar, name, purpose, clientName, links } = this.state
     const payload = { avatar, name, purpose, clientName, links }
@@ -79,6 +85,22 @@ const EditCampaign = React.createClass({
   onReset () {
     this.props.onDismiss()
   },
+  validate () {
+    const { avatar, name, purpose, clientName, links } = this.state
+    const validationContext = MedialistCreateSchema.newContext()
+    const campaign = { avatar, name, purpose, clientName, links: links.filter((l) => l.url) }
+    validationContext.validate(campaign)
+    let isValid = true
+    const validationErrors = validationContext.invalidKeys().reduce((validationErrors, error) => {
+      const field = error.name
+      validationErrors[field] = `Please add a ${MedialistCreateSchema.label(field)}`
+      if (field.substr(0, 5) === 'links') validationErrors.links = 'Please only use valid URLs'
+      isValid = false
+      return validationErrors
+    }, {})
+    this.setState({ validationErrors, isValid })
+    return validationContext.isValid()
+  },
   addFocus (field) {
     return () => this.setState({ focus: field })
   },
@@ -90,17 +112,18 @@ const EditCampaign = React.createClass({
   },
   addLink () {
     if (this.state.links.some((l) => !l)) return
-    this.setState({ links: [...this.state.links, ''] })
+    this.setState({ links: [...this.state.links, { url: '' }] })
   },
   render () {
     if (!this.props.open) return null
-    const { onChange, onChangeLink, onSubmit, onReset, onClientNameChange, onClientSelect, onAvatarChange, onAvatarError } = this
+    const { onChange, onChangeLink, onSubmit, onReset, onClientNameChange, onClientSelect, onAvatarChange, onAvatarError, validate } = this
     const { campaign, clients } = this.props
-    const { avatar, name, purpose, clientName, links } = this.state
+    const { avatar, name, purpose, clientName, links, validationErrors, isValid } = this.state
     const inputStyle = { resize: 'none' }
     const iconStyle = { position: 'absolute', left: '-32px', top: '10px' }
     return (
-      <form onSubmit={onSubmit} onReset={onReset}>
+      <form onSubmit={onSubmit} onReset={onReset} className='relative'>
+        <ValidationBanner error={validationErrors.name || validationErrors.links} />
         <div className='px4 py6 center'>
           <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError}>
             <div className='bg-gray40 center rounded mx-auto' style={{height: '123px', width: '123px', lineHeight: '123px'}}>
@@ -111,14 +134,16 @@ const EditCampaign = React.createClass({
             <input
               ref={(input) => { this.nameInput = input }}
               autoComplete='off'
-              className='center gray10 input-inline mt4 f-xxxl semibold'
+              className={`center gray10 input-inline mt4 f-xxxl semibold ${validationErrors.name ? 'error' : ''}`}
               type='text'
               name='name'
               value={name}
               placeholder='Campaign Name'
               size={name.length === 0 ? 15 : name.length + 2}
               onChange={onChange('name')}
+              onBlur={validate}
                />
+            {validationErrors.name ? <div className='absolute left-0 right-0 mt1 red'>{validationErrors.name}</div> : null}
           </div>
         </div>
         <div className='bg-gray90 border-top border-gray80 py5 overflow-auto' style={{ maxHeight: '400px' }}>
@@ -169,11 +194,11 @@ const EditCampaign = React.createClass({
                   </div>
                   <input
                     onFocus={this.addFocus(`link-${ind}`)}
-                    onBlur={callAll([this.removeFocus, this.checkLinkEmpty(ind)])}
+                    onBlur={callAll([this.removeFocus, this.checkLinkEmpty(ind), validate])}
                     style={inputStyle}
                     className='input block'
                     type='text'
-                    value={links[ind]}
+                    value={links[ind].url}
                     placeholder='Links'
                     onChange={onChangeLink(ind)} />
                 </div>
@@ -183,7 +208,7 @@ const EditCampaign = React.createClass({
           </div>
         </div>
         <div className='p4 right'>
-          <button className='btn bg-completed white right' type='submit'>
+          <button className='btn bg-completed white right' type='submit' disabled={!isValid}>
             {campaign ? 'Edit' : 'Create'} Campaign
           </button>
           <button className='btn bg-transparent gray40 right mr2' type='reset'>Cancel</button>
