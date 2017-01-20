@@ -55,6 +55,9 @@ export const update = new ValidatedMethod({
       Uploadcare.store(data.avatar)
     }
 
+    // Add this user to the updated campaign's team if required
+    Medialists.update({ _id, 'team._id': { $ne: this.userId } }, { $push: { team: data.updatedBy } })
+
     const updatedMedialist = Medialists.findOne({ _id })
 
     // Update existing users' favourite medialists with new denormalised data
@@ -120,6 +123,7 @@ export const create = new ValidatedMethod({
       updatedAt: createdAt,
       updatedBy: createdBy,
       contacts: {},
+      team: [createdBy],
       masterLists: []
     }
 
