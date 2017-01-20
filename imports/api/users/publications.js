@@ -39,32 +39,6 @@ Meteor.publish('users', function (opts = {}) {
       { 'services.twitter.screenName': regex }
     ] }
   }
-/*
-else {
-    // By default, show users in the same teams as me
-    const weightedUserIds = Medialists
-      .find(
-        { 'team._id': this.userId },
-        { fields: { team: 1 }, sort: { updatedAt: -1 }, limit: 10 }
-      )
-      .fetch()
-      .reduce((userIds, medialist) => {
-        (medialist.team || []).forEach((user) => {
-          userIds[user._id] = userIds[user._id] || 0
-          userIds[user._id]++
-        })
-        return userIds
-      }, {})
-
-    const $or = Object.keys(weightedUserIds)
-      .map((id) => ({ id, count: weightedUserIds[id] }))
-      .sort((a, b) => a.count - b.count)
-      .map(({ id }) => ({ 'team._id': id }))
-
-    query.$or.push({})
-    query.$or = $or
-  }
-*/
 
   return Meteor.users.find(query, options)
 })
