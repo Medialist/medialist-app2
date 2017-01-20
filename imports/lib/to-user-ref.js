@@ -1,6 +1,6 @@
 import getAvatar from './get-avatar'
 
-export default function transformUser (user) {
+export default function toUserRef (user) {
   return {
     _id: user._id,
     name: user.profile.name,

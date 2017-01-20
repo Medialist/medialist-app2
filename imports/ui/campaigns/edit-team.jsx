@@ -8,7 +8,7 @@ import AvatarList from '../lists/avatar-list'
 import { CircleAvatar } from '../images/avatar'
 import Tooltip from '../navigation/tooltip'
 import getAvatar from '/imports/lib/get-avatar'
-import transformUser from '/imports/lib/transform-user'
+import toUserRef from '/imports/lib/to-user-ref'
 
 const AddTeamMate = React.createClass({
   PropTypes: {
@@ -101,7 +101,7 @@ const AddTeamMateContainer = React.createClass({
 
   onAdd (contact) {
     let { selectedTeamMates } = this.state
-    selectedTeamMates = selectedTeamMates.concat(transformUser(contact))
+    selectedTeamMates = selectedTeamMates.concat(toUserRef(contact))
     this.setState({ selectedTeamMates })
   },
 
