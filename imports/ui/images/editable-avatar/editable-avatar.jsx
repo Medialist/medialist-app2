@@ -6,6 +6,7 @@ import Menu from './menu'
 const EditableAvatar = React.createClass({
   propTypes: {
     avatar: PropTypes.string,
+    arrowPosition: PropTypes.string,
     className: PropTypes.string,
     style: PropTypes.object,
     onChange: PropTypes.func.isRequired,
@@ -43,7 +44,7 @@ const EditableAvatar = React.createClass({
   },
 
   render () {
-    const { avatar, children, style } = this.props
+    const { avatar, children, style, arrowPosition } = this.props
     const { isDropdownOpen } = this.state
     const className = classNames(
       'relative inline-block',
@@ -56,7 +57,8 @@ const EditableAvatar = React.createClass({
       <div className={className} style={style} onClick={onAvatarClick}>
         {children}
         <DropdownMenu
-          style={{ left: '-50%', top: 'calc(50% + 2em)', width: 250 }}
+          style={{ left: '-50%', top: '5rem', width: 250 }}
+          arrowPosition={arrowPosition}
           open={isDropdownOpen}
           onDismiss={onDropdownDismiss}>
           <Menu avatar={avatar} onChange={onImageChange} onError={onImageError} />

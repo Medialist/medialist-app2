@@ -5,7 +5,7 @@ import { ReactMeteorData, createContainer } from 'meteor/react-meteor-data'
 import { Link, withRouter } from 'react-router'
 import Arrow from 'rebass/dist/Arrow'
 import Dropdown from 'rebass/dist/Dropdown'
-import DropdownMenu from 'rebass/dist/DropdownMenu'
+import DropdownMenu from '../lists/dropdown-menu'
 import ContactsTable from './contacts-table'
 import SearchBox from '../lists/search-box'
 import ContactsActionsToast from './contacts-actions-toast'
@@ -102,12 +102,12 @@ const ContactsPage = React.createClass({
             <SectorSelectorContainer selected={this.state.selectedSector} onSectorChange={onSectorChange} />
           </div>
           <Dropdown>
-            <div className='flex-none bg-white center px4'>
+            <div className='flex-none bg-white center px4' style={{width: 240}}>
               <button className='btn bg-completed white ml4 mr1' onClick={this.toggleAddContactModal}>New Contact</button>
               <button className='btn bg-completed white mr4' onClick={this.onDropdownArrowClick} >
                 <Arrow direction='down' style={{ marginLeft: 0 }} />
               </button>
-              <DropdownMenu right style={{ top: '2.8rem', right: '2.7rem' }} open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
+              <DropdownMenu right style={{ top: '2.8rem', right: '2.7rem' }} arrowPosition={'calc(100% - 27px)'} open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
                 <nav className='block border-top border-gray80 py1'>
                   <Link to='/contacts/import' className='block px3 py2 f-md normal gray20 hover-bg-gray90' activeClassName='active' onClick={this.onLinkClick}>
                     <FeedContactIcon />
