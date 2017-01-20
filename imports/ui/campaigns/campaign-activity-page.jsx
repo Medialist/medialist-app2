@@ -10,6 +10,7 @@ import ActivityFeed from '../dashboard/activity-feed'
 import EditCampaign from './edit-campaign'
 import Clients from '/imports/api/clients/clients'
 import Medialists from '/imports/api/medialists/medialists'
+import CreateContact from '../contacts/edit-contact'
 import AddContact from './add-contact'
 
 const CampaignActivityPage = React.createClass({
@@ -19,16 +20,36 @@ const CampaignActivityPage = React.createClass({
     campaign: PropTypes.object,
     user: PropTypes.object,
     contacts: PropTypes.array,
+    contactsAll: PropTypes.array,
     contactsCount: PropTypes.number
   },
 
   getInitialState () {
-    return { addContactOpen: false, editModalOpen: false }
+    return {
+      createContactModalOpen: false,
+      addContactModalOpen: false,
+      editModalOpen: false
+    }
   },
 
-  toggleAddContact () {
-    const addContactOpen = !this.state.addContactOpen
-    this.setState({ addContactOpen })
+  onAddContactClick () {
+    const { contactsAll } = this.props
+
+    if (contactsAll && contactsAll.length) {
+      const addContactModalOpen = !this.state.addContactModalOpen
+      this.setState({ addContactModalOpen })
+    } else {
+      const createContactModalOpen = !this.state.createContactModalOpen
+      this.setState({ createContactModalOpen })
+    }
+  },
+
+  onCreateContactModalDismiss () {
+    this.setState({ createContactModalOpen: false })
+  },
+
+  onAddContactModalDismiss () {
+    this.setState({ addContactModalOpen: false })
   },
 
   toggleEditModal () {
@@ -56,15 +77,26 @@ const CampaignActivityPage = React.createClass({
   },
 
   render () {
-    const { toggleAddContact, toggleEditModal, onFeedback, onCoverage } = this
+    const {
+      onAddContactClick,
+      onCreateContactModalDismiss,
+      onAddContactModalDismiss,
+      toggleEditModal,
+      onFeedback,
+      onCoverage
+    } = this
     const { campaign, contacts, contactsCount, clients, contactsAll, user } = this.props
-    const { addContactOpen, editModalOpen } = this.state
+    const {
+      createContactModalOpen,
+      addContactModalOpen,
+      editModalOpen
+    } = this.state
 
     if (!campaign) return null
 
     return (
       <div>
-        <CampaignTopbar campaign={campaign} onAddContactClick={toggleAddContact} />
+        <CampaignTopbar campaign={campaign} onAddContactClick={onAddContactClick} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
             <CampaignInfo campaign={campaign} onEditClick={toggleEditModal} user={user} />
@@ -75,10 +107,19 @@ const CampaignActivityPage = React.createClass({
             <ActivityFeed campaign={campaign} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
-            <CampaignContactList contacts={contacts} contactsAll={contactsAll} contactsCount={contactsCount} campaign={campaign} onAddContactClick={toggleAddContact} />
+            <CampaignContactList contacts={contacts} contactsAll={contactsAll} contactsCount={contactsCount} campaign={campaign} onAddContactClick={onAddContactClick} />
           </div>
         </div>
-        <AddContact onDismiss={toggleAddContact} open={addContactOpen} contacts={contacts} contactsAll={contactsAll} campaign={campaign} />
+        <CreateContact
+          open={createContactModalOpen}
+          onDismiss={onCreateContactModalDismiss}
+          campaign={campaign} />
+        <AddContact
+          open={addContactModalOpen}
+          onDismiss={onAddContactModalDismiss}
+          contacts={contacts}
+          contactsAll={contactsAll}
+          campaign={campaign} />
       </div>
     )
   }
