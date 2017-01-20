@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import { CircleAvatar } from '../images/avatar'
-import { FromNow } from '../time/time'
+import { TimeFromNow } from '../time/time'
 
 const ContactNeedToKnowList = React.createClass({
   propTypes: {
@@ -52,7 +52,7 @@ const NeedToKnowItem = ({ item }) => {
         </div>
         <div className='flex-auto'>
           <div>{message}</div>
-          <FromNow className='gray60 f-sm' date={createdAt} />
+          <TimeFromNow className='gray60 f-sm' date={createdAt} />
         </div>
       </div>
     </li>
