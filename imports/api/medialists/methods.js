@@ -3,10 +3,11 @@ import { check } from 'meteor/check'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import escapeRegExp from 'lodash.escaperegexp'
 import createUniqueSlug from '/imports/lib/slug'
-import Medialists, { MedialistSchema, MedialistUpdateSchema, MedialistCreateSchema } from './medialists'
+import Medialists, { MedialistSchema, MedialistUpdateSchema, MedialistCreateSchema, MedialistAddTeamMatesSchema, MedialistRemoveTeamMateSchema } from './medialists'
 import Clients from '/imports/api/clients/clients'
 import Uploadcare from '/imports/lib/uploadcare'
 import Posts from '/imports/api/posts/posts'
+import getAvatar from '/imports/lib/get-avatar'
 
 function findOrCreateClientRef (name) {
   const nameRegex = new RegExp('^' + escapeRegExp(name) + '$', 'i')
@@ -54,8 +55,12 @@ export const update = new ValidatedMethod({
       Uploadcare.store(data.avatar)
     }
 
+    // Add this user to the updated campaign's team if required
+    Medialists.update({ _id, 'team._id': { $ne: this.userId } }, { $push: { team: data.updatedBy } })
+
     const updatedMedialist = Medialists.findOne({ _id })
 
+    // Update existing users' favourite medialists with new denormalised data
     Meteor.users.update({
       'myMedialists._id': _id
     }, {
@@ -70,6 +75,22 @@ export const update = new ValidatedMethod({
       }
     }, {
       multi: true
+    })
+
+    // Add this medialist to the updating user's favourites if required
+    Meteor.users.update({
+      _id: this.userId,
+      'myMedialists._id': { $ne: _id }
+    }, {
+      $push: { myMedialists: {
+        name: updatedMedialist.name,
+        slug: updatedMedialist.slug,
+        avatar: updatedMedialist.avatar,
+        clientName: updatedMedialist.client
+          ? updatedMedialist.client.name
+          : null,
+        updatedAt: now
+      } }
     })
 
     return result
@@ -102,6 +123,7 @@ export const create = new ValidatedMethod({
       updatedAt: createdAt,
       updatedBy: createdBy,
       contacts: {},
+      team: [createdBy],
       masterLists: []
     }
 
@@ -128,5 +150,103 @@ export const create = new ValidatedMethod({
     Posts.createCampaignCreated({ campaign: doc, author: user })
 
     return slug
+  }
+})
+
+export const addTeamMates = new ValidatedMethod({
+  name: 'Medialists/addTeamMates',
+  validate: MedialistAddTeamMatesSchema.validator(),
+  run ({ _id, userIds }) {
+    if (!this.userId) throw new Meteor.Error('You must be logged in')
+
+    const campaign = Medialists.findOne(_id)
+    if (!campaign) {
+      throw new Meteor.Error('Medialist not found')
+    }
+
+    const user = Meteor.users.findOne({ _id: this.userId })
+    const now = new Date()
+
+    const $set = {
+      updatedAt: now,
+      updatedBy: {
+        _id: user._id,
+        name: user.profile.name,
+        avatar: user.services.twitter.profile_image_url_https
+      }
+    }
+    const pushIds = userIds.filter((_id) => !campaign.team.some((t) => t._id === _id))
+    const $push = {
+      team: { $each: Meteor.users.find({ _id: { $in: pushIds } }, { fields: { 'services.twitter.profile_image_url_https': 1, 'profile.name': 1 } })
+        .fetch()
+        .map((u) => ({ _id: u._id, name: u.profile.name, avatar: getAvatar(u) }))
+      }
+    }
+
+    const result = Medialists.update(campaign._id, { $set, $push })
+
+    // Add this medialist to the updating user's favourites if required
+    Meteor.users.update({
+      _id: this.userId,
+      'myMedialists._id': { $ne: campaign._id }
+    }, {
+      $push: { myMedialists: {
+        name: campaign.name,
+        slug: campaign.slug,
+        avatar: campaign.avatar,
+        clientName: campaign.client
+          ? campaign.client.name
+          : null,
+        updatedAt: now
+      } }
+    })
+
+    return result
+  }
+})
+
+export const removeTeamMate = new ValidatedMethod({
+  name: 'Medialists/removeTeamMate',
+  validate: MedialistRemoveTeamMateSchema.validator(),
+  run ({ _id, userId }) {
+    if (!this.userId) throw new Meteor.Error('You must be logged in')
+
+    const campaign = Medialists.findOne(_id)
+    if (!campaign) {
+      throw new Meteor.Error('Medialist not found')
+    }
+
+    const user = Meteor.users.findOne({ _id: this.userId })
+    const now = new Date()
+
+    const $set = {
+      updatedAt: now,
+      updatedBy: {
+        _id: user._id,
+        name: user.profile.name,
+        avatar: user.services.twitter.profile_image_url_https
+      }
+    }
+    const $pull = { team: { _id: userId } }
+
+    const result = Medialists.update(campaign._id, { $set, $pull })
+
+    // Add this medialist to the updating user's favourites if required
+    Meteor.users.update({
+      _id: this.userId,
+      'myMedialists._id': { $ne: campaign._id }
+    }, {
+      $push: { myMedialists: {
+        name: campaign.name,
+        slug: campaign.slug,
+        avatar: campaign.avatar,
+        clientName: campaign.client
+          ? campaign.client.name
+          : null,
+        updatedAt: now
+      } }
+    })
+
+    return result
   }
 })

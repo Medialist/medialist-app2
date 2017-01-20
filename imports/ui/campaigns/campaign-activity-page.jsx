@@ -12,6 +12,7 @@ import Clients from '/imports/api/clients/clients'
 import Medialists from '/imports/api/medialists/medialists'
 import CreateContact from '../contacts/edit-contact'
 import AddContact from './add-contact'
+import EditTeam from './edit-team'
 
 const CampaignActivityPage = React.createClass({
   propTypes: {
@@ -29,7 +30,8 @@ const CampaignActivityPage = React.createClass({
       createContactModalOpen: false,
       addContactModalOpen: false,
       editModalOpen: false,
-      contactPrefillData: null
+      contactPrefillData: null,
+      editTeamModalOpen: false
     }
   },
 
@@ -56,6 +58,11 @@ const CampaignActivityPage = React.createClass({
   toggleEditModal () {
     const editModalOpen = !this.state.editModalOpen
     this.setState({ editModalOpen })
+  },
+
+  toggleEditTeamModal () {
+    const editTeamModalOpen = !this.state.editTeamModalOpen
+    this.setState({ editTeamModalOpen })
   },
 
   onFeedback ({message, contact, status}, cb) {
@@ -91,15 +98,17 @@ const CampaignActivityPage = React.createClass({
       onCreateContactModalDismiss,
       onAddContactModalDismiss,
       toggleEditModal,
+      toggleEditTeamModal,
       onFeedback,
       onCoverage,
       onCreateContact
     } = this
-    const { campaign, contacts, contactsCount, clients, contactsAll, user } = this.props
+    const { campaign, contacts, contactsCount, clients, contactsAll, teamMates, loading, user } = this.props
     const {
       createContactModalOpen,
       addContactModalOpen,
       editModalOpen,
+      editTeamModalOpen,
       contactPrefillData
     } = this.state
 
@@ -110,8 +119,9 @@ const CampaignActivityPage = React.createClass({
         <CampaignTopbar campaign={campaign} onAddContactClick={onAddContactClick} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
-            <CampaignInfo campaign={campaign} onEditClick={toggleEditModal} user={user} />
+            <CampaignInfo campaign={campaign} onEditClick={toggleEditModal} onEditTeamClick={toggleEditTeamModal} user={user} />
             <EditCampaign campaign={campaign} open={editModalOpen} onDismiss={toggleEditModal} clients={clients} />
+            <EditTeam campaign={campaign} open={editTeamModalOpen} onDismiss={toggleEditTeamModal} teamMates={teamMates} loading={loading} />
           </div>
           <div className='flex-auto px2' >
             <PostBox campaign={campaign} contacts={contacts} onFeedback={onFeedback} onCoverage={onCoverage} />
@@ -147,15 +157,17 @@ export default createContainer((props) => {
     Meteor.subscribe('clients')
   ]
   const loading = subs.some((s) => !s.ready())
+  const campaign = Medialists.findOne({ slug: campaignSlug })
 
   return {
     ...props,
     loading,
-    campaign: Medialists.findOne({ slug: campaignSlug }),
+    campaign,
     // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
     contacts: window.Contacts.find({medialists: campaignSlug}, {limit: 7, sort: {updatedAt: -1}}).fetch(),
     contactsCount: window.Contacts.find({medialists: campaignSlug}).count(),
     contactsAll: window.Contacts.find({}, {sort: {name: 1}}).fetch(),
+    teamMates: campaign && campaign.team,
     user: Meteor.user(),
     clients: Clients.find({}).fetch()
   }
