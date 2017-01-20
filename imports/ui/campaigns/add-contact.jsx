@@ -10,22 +10,20 @@ import createSearchContainer from '../contacts/search-container'
 
 const AddContact = React.createClass({
   propTypes: {
+    term: PropTypes.string,
+    onTermChange: PropTypes.string.isRequired,
     onSubmit: PropTypes.func.isRequired,
     onReset: PropTypes.func.isRequired,
     onAdd: PropTypes.func.isRequired,
     onRemove: PropTypes.func.isRequired,
     onCreate: PropTypes.func.isRequired,
     isActive: PropTypes.func.isRequired,
-    selectedContacts: PropTypes.array.isRequired
-  },
-
-  getInitialState () {
-    return { term: '' }
+    selectedContacts: PropTypes.array.isRequired,
+    contacts: PropTypes.array.isRequired // Search results
   },
 
   onChange (e) {
-    this.setState({ term: e.target.value })
-    this.props.onSearch(e.target.value)
+    this.props.onTermChange(e.target.value)
   },
 
   onKeyPress (e) {
@@ -38,7 +36,7 @@ const AddContact = React.createClass({
     if (!contact || isActive(contact)) return
 
     onAdd(contact)
-    this.setState({ term: '' })
+    this.props.onTermChange('')
   },
 
   render () {
@@ -99,7 +97,7 @@ const AddContactContainer = React.createClass({
   },
 
   getInitialState () {
-    return { selectedContacts: [] }
+    return { selectedContacts: [], term: '' }
   },
 
   // Is the contact in the campaign or in selected contacts list?
