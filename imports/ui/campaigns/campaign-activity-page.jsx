@@ -68,7 +68,7 @@ const CampaignActivityPage = React.createClass({
 
   render () {
     const { toggleAddContact, toggleEditModal, toggleEditTeamModal, onBackClick, onFeedback, onCoverage } = this
-    const { campaign, contacts, contactsCount, clients, contactsAll, teamMates, teamMatesAll, user } = this.props
+    const { campaign, contacts, contactsCount, clients, contactsAll, teamMates, loading, user } = this.props
     const { addContactOpen, editModalOpen, editTeamModalOpen } = this.state
     if (!campaign) return null
 
@@ -79,7 +79,7 @@ const CampaignActivityPage = React.createClass({
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
             <CampaignInfo campaign={campaign} onEditClick={toggleEditModal} onEditTeamClick={toggleEditTeamModal} user={user} />
             <EditCampaign campaign={campaign} open={editModalOpen} onDismiss={toggleEditModal} clients={clients} />
-            <EditTeam campaign={campaign} open={editTeamModalOpen} onDismiss={toggleEditTeamModal} teamMates={teamMates} teamMatesAll={teamMatesAll} />
+            <EditTeam campaign={campaign} open={editTeamModalOpen} onDismiss={toggleEditTeamModal} teamMates={teamMates} loading={loading} />
           </div>
           <div className='flex-auto px2' >
             <PostBox campaign={campaign} contacts={contacts} onFeedback={onFeedback} onCoverage={onCoverage} />
@@ -101,8 +101,7 @@ export default createContainer((props) => {
   const subs = [
     Meteor.subscribe('medialist', campaignSlug),
     Meteor.subscribe('contacts'),
-    Meteor.subscribe('clients'),
-    Meteor.subscribe('users')
+    Meteor.subscribe('clients')
   ]
   const loading = subs.some((s) => !s.ready())
   const campaign = Medialists.findOne({ slug: campaignSlug })
@@ -116,7 +115,6 @@ export default createContainer((props) => {
     contactsCount: window.Contacts.find({medialists: campaignSlug}).count(),
     contactsAll: window.Contacts.find({}, {sort: {name: 1}}).fetch(),
     teamMates: campaign && campaign.team,
-    teamMatesAll: window.Meteor.users.find({}, {sort: {'profile.name': 1}}).fetch(),
     user: Meteor.user(),
     clients: Clients.find({}).fetch()
   }

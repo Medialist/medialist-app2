@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
+import { createContainer } from 'meteor/react-meteor-data'
 import { Link } from 'react-router'
 import Modal from '../navigation/modal'
 import { SearchBlueIcon, AddIcon, SelectedIcon, RemoveIcon } from '../images/icons'
@@ -91,6 +92,12 @@ const AddTeamMateContainer = React.createClass({
     }
   },
 
+  componentWillReceiveProps ({ loading, teamMatesAll }) {
+    if (!loading && this.props.loading) {
+      this.setState({ filteredTeamMates: teamMatesAll })
+    }
+  },
+
   // Is the contact in the campaign or in selected teamMates list?
   isActive (contact) {
     const { teamMates } = this.props
@@ -108,8 +115,8 @@ const AddTeamMateContainer = React.createClass({
   onSubmit (evt) {
     evt.preventDefault()
     const teamMateIds = this.state.selectedTeamMates.map((t) => t._id)
-    const campaignSlug = this.props.campaign.slug
-    if (teamMateIds.length > 0) Meteor.call('Medialists/addTeamMates', { _ids: teamMateIds, campaignSlug })
+    const _id = this.props.campaign._id
+    if (teamMateIds.length > 0) Meteor.call('Medialists/addTeamMates', { userIds: teamMateIds, _id })
     this.onReset()
   },
 
@@ -120,7 +127,7 @@ const AddTeamMateContainer = React.createClass({
       selectedTeamMates = selectedTeamMates.filter((t) => t._id !== teamMate._id)
       this.setState({ selectedTeamMates })
     } else {
-      Meteor.call('Medialists/removeTeamMate', { _id: teamMate._id, campaignSlug: this.props.campaign.slug })
+      Meteor.call('Medialists/removeTeamMate', { userId: teamMate._id, _id: this.props.campaign._id })
     }
   },
 
@@ -145,6 +152,17 @@ const AddTeamMateContainer = React.createClass({
     return <AddTeamMate{...props} />
   }
 })
+
+const AddTeamMateWrapper = createContainer((props) => {
+  const sub = Meteor.subscribe('users')
+  const loading = !sub.ready() || props.loading
+
+  return {
+    ...props,
+    loading,
+    teamMatesAll: Meteor.users.find({}, {sort: {'profile.name': 1}}).fetch()
+  }
+}, AddTeamMateContainer)
 
 const TeamMatesList = React.createClass({
   propTypes: {
@@ -191,4 +209,4 @@ const TeamMatesList = React.createClass({
   }
 })
 
-export default Modal(AddTeamMateContainer)
+export default Modal(AddTeamMateWrapper)
