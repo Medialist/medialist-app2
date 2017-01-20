@@ -29,7 +29,7 @@ const CampaignActivityPage = React.createClass({
       createContactModalOpen: false,
       addContactModalOpen: false,
       editModalOpen: false,
-      createContactData: null
+      contactPrefillData: null
     }
   },
 
@@ -78,11 +78,10 @@ const CampaignActivityPage = React.createClass({
   },
 
   onCreateContact (data) {
-    console.log('onCreateContact')
     this.setState({
-      addCampaignContactModalOpen: false,
-      addContactModalOpen: true,
-      createContactPrefillData: data
+      addContactModalOpen: false,
+      createContactModalOpen: true,
+      contactPrefillData: data
     })
   },
 
@@ -101,7 +100,7 @@ const CampaignActivityPage = React.createClass({
       createContactModalOpen,
       addContactModalOpen,
       editModalOpen,
-      createContactPrefillData
+      contactPrefillData
     } = this.state
 
     if (!campaign) return null
@@ -126,7 +125,7 @@ const CampaignActivityPage = React.createClass({
           open={createContactModalOpen}
           onDismiss={onCreateContactModalDismiss}
           campaign={campaign}
-          prefill={createContactPrefillData} />
+          prefill={contactPrefillData} />
         <AddContact
           open={addContactModalOpen}
           onDismiss={onAddContactModalDismiss}
