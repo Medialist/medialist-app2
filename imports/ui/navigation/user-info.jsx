@@ -2,12 +2,12 @@ import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import Arrow from 'rebass/dist/Arrow'
 import Dropdown from 'rebass/dist/Dropdown'
-import DropdownMenu from 'rebass/dist/DropdownMenu'
+import DropdownMenu from '../lists/dropdown-menu'
 import { CircleAvatar } from '../images/avatar.jsx'
 import { SettingsIcon, ExitIcon } from '../images/icons'
 import { dropdownMenuStyle } from '../common-styles'
 
-const dropdownStyle = Object.assign({}, dropdownMenuStyle, { width: 223, top: 65 })
+const dropdownStyle = Object.assign({}, dropdownMenuStyle, { width: 223, top: 'calc(100% - 2px)', right: '-5px' })
 
 const UserInfo = React.createClass({
   propTypes: {
@@ -44,7 +44,7 @@ const UserInfo = React.createClass({
             <Arrow direction='down' />
           </div>
         </div>
-        <DropdownMenu right style={dropdownStyle} open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
+        <DropdownMenu right arrowPosition='calc(100% - 32px)' style={dropdownStyle} open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
           <div className='px4 py3'>
             <CircleAvatar name={user.profile.name} />
             <div className='inline-block align-middle pl2'>

@@ -63,7 +63,7 @@ const ImportTable = React.createClass({
                           <span className='gray40'>Select a field</span>
                         )}
                       </div>
-                      <DropdownMenu arrowPosition={false} open={open && open === columnIndex} onDismiss={onDismiss}>
+                      <DropdownMenu arrowPosition={false} open={open && open === columnIndex} onDismiss={onDismiss} style={{left: '10px'}}>
                         <ul className='list-reset mt0'>
                           {allColumns.map((newCol, i) => {
                             return <li key={i} className='p2 left-align hover-bg-blue' onClick={(evt) => onColumnChange(newCol, columnIndex)}>{newCol.label}</li>
