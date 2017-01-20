@@ -8,14 +8,7 @@ import AvatarList from '../lists/avatar-list'
 import { CircleAvatar } from '../images/avatar'
 import Tooltip from '../navigation/tooltip'
 import getAvatar from '/imports/lib/get-avatar'
-
-function transformUser (user) {
-  return {
-    _id: user._id,
-    name: user.profile.name,
-    avatar: getAvatar(user)
-  }
-}
+import transformUser from '/imports/lib/transform-user'
 
 const AddTeamMate = React.createClass({
   PropTypes: {
