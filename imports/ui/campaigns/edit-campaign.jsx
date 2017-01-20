@@ -18,7 +18,7 @@ const EditCampaign = React.createClass({
   getInitialState () {
     const { campaign } = this.props
     return {
-      avatar: null,
+      avatar: campaign && campaign.avatar || '',
       focus: null,
       validated: false, // to intially disable the submit button
       name: campaign && campaign.name || '',
