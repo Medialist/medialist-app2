@@ -1,9 +1,9 @@
 import React, { PropTypes } from 'react'
 import Dropdown from 'rebass/dist/Dropdown'
-import DropdownMenu from 'rebass/dist/DropdownMenu'
+import DropdownMenu from '../lists/dropdown-menu'
 import { AllTypesIcon, FeedCoverageIcon, FeedNeedToKnowIcon, ChevronDown } from '../images/icons'
 
-const dropdownStyle = Object.assign({}, { width: 180 })
+const dropdownStyle = { width: 180 }
 
 const iconMap = {
   'Top Activity': AllTypesIcon,
@@ -54,7 +54,7 @@ const ActivityFilter = React.createClass({
               {selected}
               <ChevronDown />
             </span>
-            <DropdownMenu right style={dropdownStyle} open={open} onDismiss={toggleDropdown}>
+            <DropdownMenu arrowPosition={'30%'} style={dropdownStyle} open={open} onDismiss={toggleDropdown}>
               <nav className='py1'>
                 {filterNames.map((filterName) => (
                   <Filter key={filterName} name={filterName} selected={filterName === selected} onClick={() => this.onLinkClick(filterName)} />)

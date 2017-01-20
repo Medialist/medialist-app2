@@ -127,7 +127,7 @@ const CampaignInfo = React.createClass({
     return (
       <div>
         <div className='flex items-start mb1'>
-          <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError}>
+          <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError} arrowPosition={'25%'}>
             <SquareAvatar size={70} avatar={avatar} name={name} />
           </EditableAvatar>
           <div className='ml3 flex-auto'>

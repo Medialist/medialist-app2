@@ -24,6 +24,6 @@ export default ({ item }) => {
   }
 
   return (
-    <div className='border-gray80 border-top py3 f-md normal'>{item.message}</div>
+    <div className='border-gray80 border-top py3 f-md normal gray10'>{item.message}</div>
   )
 }

@@ -10,7 +10,11 @@ const EditContact = React.createClass({
     contact: PropTypes.object,
     onChange: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
-    onDismiss: PropTypes.func.isRequired
+    onDismiss: PropTypes.func.isRequired,
+    // Allow some prefill data to be passed in
+    prefill: PropTypes.shape({
+      name: PropTypes.string
+    })
   },
 
   getInitialState () {
@@ -25,7 +29,7 @@ const EditContact = React.createClass({
     state.jobTitles = state.outlets.map((o) => o.value).join(', ')
     state.primaryOutlets = state.outlets.map((o) => o.label).join(', ')
     delete state.outlets
-    return state
+    return Object.assign(state, this.props.prefill)
   },
 
   onProfileChange (evt) {

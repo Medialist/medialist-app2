@@ -12,11 +12,11 @@ const ActivityList = React.createClass({
     if (!items.length) return <p className='p4 mb2 f-xl semibold center'>No items yet</p>
 
     return (
-      <ul className='list-reset'>
+      <div>
         {items.map((item) => (
           <ActivityItem key={item._id} item={item} currentUser={currentUser} />
         ))}
-      </ul>
+      </div>
     )
   }
 })

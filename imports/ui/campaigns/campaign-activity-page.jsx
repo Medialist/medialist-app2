@@ -10,6 +10,7 @@ import ActivityFeed from '../dashboard/activity-feed'
 import EditCampaign from './edit-campaign'
 import Clients from '/imports/api/clients/clients'
 import Medialists from '/imports/api/medialists/medialists'
+import CreateContact from '../contacts/edit-contact'
 import AddContact from './add-contact'
 import EditTeam from './edit-team'
 
@@ -25,12 +26,33 @@ const CampaignActivityPage = React.createClass({
   },
 
   getInitialState () {
-    return { addContactOpen: false, editModalOpen: false, editTeamModalOpen: false }
+    return {
+      createContactModalOpen: false,
+      addContactModalOpen: false,
+      editModalOpen: false,
+      contactPrefillData: null,
+      editTeamModalOpen: false
+    }
   },
 
-  toggleAddContact () {
-    const addContactOpen = !this.state.addContactOpen
-    this.setState({ addContactOpen })
+  onAddContactClick () {
+    const { contactsAll } = this.props
+
+    if (contactsAll && contactsAll.length) {
+      const addContactModalOpen = !this.state.addContactModalOpen
+      this.setState({ addContactModalOpen })
+    } else {
+      const createContactModalOpen = !this.state.createContactModalOpen
+      this.setState({ createContactModalOpen })
+    }
+  },
+
+  onCreateContactModalDismiss () {
+    this.setState({ createContactModalOpen: false })
+  },
+
+  onAddContactModalDismiss () {
+    this.setState({ addContactModalOpen: false })
   },
 
   toggleEditModal () {
@@ -41,10 +63,6 @@ const CampaignActivityPage = React.createClass({
   toggleEditTeamModal () {
     const editTeamModalOpen = !this.state.editTeamModalOpen
     this.setState({ editTeamModalOpen })
-  },
-
-  onBackClick () {
-    this.props.router.push(`/campaigns`)
   },
 
   onFeedback ({message, contact, status}, cb) {
@@ -66,15 +84,39 @@ const CampaignActivityPage = React.createClass({
     Meteor.call('posts/createCoverage', post, cb)
   },
 
+  onCreateContact (data) {
+    this.setState({
+      addContactModalOpen: false,
+      createContactModalOpen: true,
+      contactPrefillData: data
+    })
+  },
+
   render () {
-    const { toggleAddContact, toggleEditModal, toggleEditTeamModal, onBackClick, onFeedback, onCoverage } = this
+    const {
+      onAddContactClick,
+      onCreateContactModalDismiss,
+      onAddContactModalDismiss,
+      toggleEditModal,
+      toggleEditTeamModal,
+      onFeedback,
+      onCoverage,
+      onCreateContact
+    } = this
     const { campaign, contacts, contactsCount, clients, contactsAll, teamMates, loading, user } = this.props
-    const { addContactOpen, editModalOpen, editTeamModalOpen } = this.state
+    const {
+      createContactModalOpen,
+      addContactModalOpen,
+      editModalOpen,
+      editTeamModalOpen,
+      contactPrefillData
+    } = this.state
+
     if (!campaign) return null
 
     return (
       <div>
-        <CampaignTopbar onBackClick={onBackClick} contactsAll={contactsAll} campaign={campaign} contacts={contacts} onAddContactClick={toggleAddContact} />
+        <CampaignTopbar campaign={campaign} onAddContactClick={onAddContactClick} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
             <CampaignInfo campaign={campaign} onEditClick={toggleEditModal} onEditTeamClick={toggleEditTeamModal} user={user} />
@@ -86,10 +128,21 @@ const CampaignActivityPage = React.createClass({
             <ActivityFeed campaign={campaign} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
-            <CampaignContactList contacts={contacts} contactsAll={contactsAll} contactsCount={contactsCount} campaign={campaign} onAddContactClick={toggleAddContact} />
+            <CampaignContactList contacts={contacts} contactsAll={contactsAll} contactsCount={contactsCount} campaign={campaign} onAddContactClick={onAddContactClick} />
           </div>
         </div>
-        <AddContact onDismiss={toggleAddContact} open={addContactOpen} contacts={contacts} contactsAll={contactsAll} campaign={campaign} />
+        <CreateContact
+          open={createContactModalOpen}
+          onDismiss={onCreateContactModalDismiss}
+          campaign={campaign}
+          prefill={contactPrefillData} />
+        <AddContact
+          open={addContactModalOpen}
+          onDismiss={onAddContactModalDismiss}
+          onCreate={onCreateContact}
+          contacts={contacts}
+          contactsAll={contactsAll}
+          campaign={campaign} />
       </div>
     )
   }

@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import { CircleAvatar } from '../images/avatar'
-import FromNow from '../time/from-now'
+import { FromNow } from '../time/time'
 
 const ContactNeedToKnowList = React.createClass({
   propTypes: {

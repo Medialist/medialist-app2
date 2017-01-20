@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import Dropdown from 'rebass/dist/Dropdown'
-import DropdownMenu from 'rebass/dist/DropdownMenu'
+import DropdownMenu from '../lists/dropdown-menu'
 import { SquareAvatar } from '../images/avatar.jsx'
 import { dropdownMenuStyle } from '../common-styles'
 
