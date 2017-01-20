@@ -156,10 +156,10 @@ export const create = new ValidatedMethod({
 export const addTeamMates = new ValidatedMethod({
   name: 'Medialists/addTeamMates',
   validate: MedialistAddTeamMatesSchema.validator(),
-  run ({ _ids, campaignSlug }) {
+  run ({ _id, userIds }) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
 
-    const campaign = Medialists.findOne({ slug: campaignSlug })
+    const campaign = Medialists.findOne(_id)
     if (!campaign) {
       throw new Meteor.Error('Medialist not found')
     }
@@ -175,7 +175,7 @@ export const addTeamMates = new ValidatedMethod({
         avatar: user.services.twitter.profile_image_url_https
       }
     }
-    const pushIds = _ids.filter((_id) => !campaign.team.some((t) => t._id === _id))
+    const pushIds = userIds.filter((_id) => !campaign.team.some((t) => t._id === _id))
     const $push = {
       team: { $each: Meteor.users.find({ _id: { $in: pushIds } }, { fields: { 'services.twitter.profile_image_url_https': 1, 'profile.name': 1 } })
         .fetch()
@@ -208,10 +208,10 @@ export const addTeamMates = new ValidatedMethod({
 export const removeTeamMate = new ValidatedMethod({
   name: 'Medialists/removeTeamMate',
   validate: MedialistRemoveTeamMateSchema.validator(),
-  run ({ _id, campaignSlug }) {
+  run ({ _id, userId }) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
 
-    const campaign = Medialists.findOne({ slug: campaignSlug })
+    const campaign = Medialists.findOne(_id)
     if (!campaign) {
       throw new Meteor.Error('Medialist not found')
     }
@@ -227,7 +227,7 @@ export const removeTeamMate = new ValidatedMethod({
         avatar: user.services.twitter.profile_image_url_https
       }
     }
-    const $pull = { team: { _id } }
+    const $pull = { team: { _id: userId } }
 
     const result = Medialists.update(campaign._id, { $set, $pull })
 

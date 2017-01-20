@@ -178,12 +178,13 @@ export const MedialistCreateSchema = new SimpleSchema({
 })
 
 export const MedialistAddTeamMatesSchema = new SimpleSchema({
-  _ids: {
-    type: [String],
+  _id: {
+    type: String,
     regEx: SimpleSchema.RegEx.Id
   },
-  campaignSlug: {
-    type: String
+  userIds: {
+    type: [String],
+    regEx: SimpleSchema.RegEx.Id
   }
 })
 
@@ -192,7 +193,8 @@ export const MedialistRemoveTeamMateSchema = new SimpleSchema({
     type: String,
     regEx: SimpleSchema.RegEx.Id
   },
-  campaignSlug: {
-    type: String
+  userId: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id
   }
 })
