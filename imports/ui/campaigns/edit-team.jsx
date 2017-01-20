@@ -146,8 +146,6 @@ const AddTeamMateContainer = React.createClass({
   }
 })
 
-export default Modal(AddTeamMateContainer)
-
 const TeamMatesList = React.createClass({
   propTypes: {
     isActive: PropTypes.func.isRequired,
@@ -192,3 +190,5 @@ const TeamMatesList = React.createClass({
     )
   }
 })
+
+export default Modal(AddTeamMateContainer)

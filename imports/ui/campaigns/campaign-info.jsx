@@ -67,10 +67,6 @@ const CampaignInfo = React.createClass({
     this.setState({addToMasterListOpen: true})
   },
 
-  onAddSectors (e) {
-    console.log('TODO: onAddSectors')
-  },
-
   dismissAddToMasterList () {
     this.setState({addToMasterListOpen: false})
   },
