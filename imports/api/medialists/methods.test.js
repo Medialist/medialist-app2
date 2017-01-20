@@ -106,48 +106,6 @@ describe('Medialist create method', function () {
   })
 })
 
-
-describe('Medialist update method', function () {
-  beforeEach(function () {
-    resetDatabase()
-  })
-
-  it('should not allow update if not logged in', function () {
-    const _id = Medialists.insert({})
-
-    assert.throws(() => {
-      update.run.call(
-        { userId: null },
-        { _id, avatar: 'http://example.org/image.jpg' }
-      )
-    }, /You must be logged in/)
-  })
-
-  it('should throw if no fields to update', function () {
-    const _id = Medialists.insert({})
-
-    assert.throws(() => {
-      update.run.call({ userId: '123' }, { _id })
-    }, /Missing fields to update/)
-  })
-
-  it('should update avatar', function () {
-    const userId = Meteor.users.insert({
-      profile: { name: 'TESTER' },
-      services: {
-        twitter: { profile_image_url_https: 'http://example.org/user.jpg' }
-      }
-    })
-    const _id = Medialists.insert({ avatar: 'http://example.org/image.jpg' })
-    const updatedAvatarUrl = 'http://example.org/new_image.jpg'
-
-    update.run.call({ userId }, { _id, avatar: updatedAvatarUrl })
-
-    const updatedMedialist = Medialists.findOne({ _id })
-    assert.equal(updatedMedialist.avatar, updatedAvatarUrl)
-  })
-})
-
 describe('Medialist add team members method', function () {
   beforeEach(function () {
     resetDatabase()
