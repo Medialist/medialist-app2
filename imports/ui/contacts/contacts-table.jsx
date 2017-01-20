@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import SortableHeader from '../tables/sortable-header'
 import SelectableRow from '../tables/selectable-row'
 import Checkbox from '../tables/checkbox'
-import FromNow from '../time/from-now'
+import { TimeFromNow } from '../time/time'
 import YouOrName from '../users/you-or-name'
 import { CircleAvatar } from '../images/avatar'
 import isSameItems from '../lists/is-same-items'
@@ -143,7 +143,7 @@ const ContactsTable = React.createClass({
                     <DisplayPhone phones={phones} />
                   </td>
                   <td className='left-align'>
-                    <FromNow className='semibold f-sm' date={updatedAt} />
+                    <TimeFromNow className='semibold f-sm' date={updatedAt} />
                     <div className='normal f-sm'>by <YouOrName user={updatedBy} /></div>
                   </td>
                   {campaign && (
