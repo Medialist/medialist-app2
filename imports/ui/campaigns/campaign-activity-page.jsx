@@ -10,8 +10,8 @@ import ActivityFeed from '../dashboard/activity-feed'
 import EditCampaign from './edit-campaign'
 import Clients from '/imports/api/clients/clients'
 import Medialists from '/imports/api/medialists/medialists'
-import AddContact from '../contacts/edit-contact'
-import AddCampaignContact from './add-contact'
+import CreateContact from '../contacts/edit-contact'
+import AddContact from './add-contact'
 
 const CampaignActivityPage = React.createClass({
   propTypes: {
@@ -26,8 +26,8 @@ const CampaignActivityPage = React.createClass({
 
   getInitialState () {
     return {
+      createContactModalOpen: false,
       addContactModalOpen: false,
-      addCampaignContactModalOpen: false,
       editModalOpen: false
     }
   },
@@ -36,20 +36,20 @@ const CampaignActivityPage = React.createClass({
     const { contactsAll } = this.props
 
     if (contactsAll && contactsAll.length) {
-      const addCampaignContactModalOpen = !this.state.addCampaignContactModalOpen
-      this.setState({ addCampaignContactModalOpen })
-    } else {
       const addContactModalOpen = !this.state.addContactModalOpen
       this.setState({ addContactModalOpen })
+    } else {
+      const createContactModalOpen = !this.state.createContactModalOpen
+      this.setState({ createContactModalOpen })
     }
+  },
+
+  onCreateContactModalDismiss () {
+    this.setState({ createContactModalOpen: false })
   },
 
   onAddContactModalDismiss () {
     this.setState({ addContactModalOpen: false })
-  },
-
-  onAddCampaignContactModalDismiss () {
-    this.setState({ addCampaignContactModalOpen: false })
   },
 
   toggleEditModal () {
@@ -79,16 +79,16 @@ const CampaignActivityPage = React.createClass({
   render () {
     const {
       onAddContactClick,
+      onCreateContactModalDismiss,
       onAddContactModalDismiss,
-      onAddCampaignContactModalDismiss,
       toggleEditModal,
       onFeedback,
       onCoverage
     } = this
     const { campaign, contacts, contactsCount, clients, contactsAll, user } = this.props
     const {
+      createContactModalOpen,
       addContactModalOpen,
-      addCampaignContactModalOpen,
       editModalOpen
     } = this.state
 
@@ -110,13 +110,13 @@ const CampaignActivityPage = React.createClass({
             <CampaignContactList contacts={contacts} contactsAll={contactsAll} contactsCount={contactsCount} campaign={campaign} onAddContactClick={onAddContactClick} />
           </div>
         </div>
+        <CreateContact
+          open={createContactModalOpen}
+          onDismiss={onCreateContactModalDismiss}
+          campaign={campaign} />
         <AddContact
           open={addContactModalOpen}
           onDismiss={onAddContactModalDismiss}
-          campaign={campaign} />
-        <AddCampaignContact
-          open={addCampaignContactModalOpen}
-          onDismiss={onAddCampaignContactModalDismiss}
           contacts={contacts}
           contactsAll={contactsAll}
           campaign={campaign} />

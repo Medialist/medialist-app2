@@ -8,6 +8,7 @@ import ContactsActionsToast from '../contacts/contacts-actions-toast'
 import CampaignTopbar from './campaign-topbar'
 import CampaignSummary from './campaign-summary'
 import Medialists from '/imports/api/medialists/medialists'
+import CreateContact from '../contacts/edit-contact'
 import AddContact from './add-contact'
 
 const CampaignContactsPage = React.createClass({
@@ -20,11 +21,32 @@ const CampaignContactsPage = React.createClass({
 
   getInitialState () {
     return {
-      addContactOpen: false,
+      createContactModalOpen: false,
+      addContactModalOpen: false,
       sort: { updatedAt: -1 },
       selections: [],
       term: ''
     }
+  },
+
+  onAddContactClick () {
+    const { contactsAll } = this.props
+
+    if (contactsAll && contactsAll.length) {
+      const addContactModalOpen = !this.state.addContactModalOpen
+      this.setState({ addContactModalOpen })
+    } else {
+      const createContactModalOpen = !this.state.createContactModalOpen
+      this.setState({ createContactModalOpen })
+    }
+  },
+
+  onCreateContactModalDismiss () {
+    this.setState({ createContactModalOpen: false })
+  },
+
+  onAddContactModalDismiss () {
+    this.setState({ addContactModalOpen: false })
   },
 
   onSectorChange (selectedSector) {
@@ -56,19 +78,29 @@ const CampaignContactsPage = React.createClass({
     Meteor.call('posts/create', post)
   },
 
-  toggleAddContact () {
-    const addContactOpen = !this.state.addContactOpen
-    this.setState({ addContactOpen })
-  },
-
   render () {
     const { campaign, contacts, contactsAll } = this.props
     if (!campaign) return null
-    const { onSortChange, onSelectionsChange, onStatusChange, toggleAddContact } = this
-    const { addContactOpen, sort, term, selections } = this.state
+
+    const {
+      onSortChange,
+      onSelectionsChange,
+      onStatusChange,
+      onAddContactClick,
+      onCreateContactModalDismiss,
+      onAddContactModalDismiss
+    } = this
+    const {
+      addContactModalOpen,
+      createContactModalOpen,
+      sort,
+      term,
+      selections
+    } = this.state
+
     return (
       <div>
-        <CampaignTopbar campaign={campaign} onAddContactClick={toggleAddContact} />
+        <CampaignTopbar campaign={campaign} onAddContactClick={onAddContactClick} />
         <CampaignSummary campaign={campaign} />
         <div className='bg-white shadow-2 m4'>
           <div className='p4 flex items-center'>
@@ -96,7 +128,16 @@ const CampaignContactsPage = React.createClass({
           onTagClick={() => console.log('TODO: add/edit tags')}
           onDeleteClick={() => console.log('TODO: delete contact(s)')}
           onDeselectAllClick={this.onDeselectAllClick} />
-        <AddContact onDismiss={toggleAddContact} open={addContactOpen} contacts={contacts} contactsAll={contactsAll} campaign={campaign} />
+        <CreateContact
+          open={createContactModalOpen}
+          onDismiss={onCreateContactModalDismiss}
+          campaign={campaign} />
+        <AddContact
+          onDismiss={onAddContactModalDismiss}
+          open={addContactModalOpen}
+          contacts={contacts}
+          contactsAll={contactsAll}
+          campaign={campaign} />
       </div>
     )
   }
