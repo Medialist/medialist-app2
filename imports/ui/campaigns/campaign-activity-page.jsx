@@ -72,8 +72,6 @@ const CampaignActivityPage = React.createClass({
     const { addContactOpen, editModalOpen, editTeamModalOpen } = this.state
     if (!campaign) return null
 
-    console.log(teamMates, teamMatesAll)
-
     return (
       <div>
         <CampaignTopbar onBackClick={onBackClick} contactsAll={contactsAll} campaign={campaign} contacts={contacts} onAddContactClick={toggleAddContact} />
@@ -118,12 +116,8 @@ export default createContainer((props) => {
     contactsCount: window.Contacts.find({medialists: campaignSlug}).count(),
     contactsAll: window.Contacts.find({}, {sort: {name: 1}}).fetch(),
     teamMates: campaign && campaign.team,
-    teamMatesAll: window.Meteor.users.find({sort: {'profile.name': 1}}).fetch().map((u) => ({ _id: u._id, avatar: getAvatar(u), name: u.profile.name })),
+    teamMatesAll: window.Meteor.users.find({}, {sort: {'profile.name': 1}}).fetch(),
     user: Meteor.user(),
     clients: Clients.find({}).fetch()
   }
 }, withRouter(CampaignActivityPage))
-
-function getAvatar (u) {
-  return u && u.services && u.services.twitter && u.services.twitter.profile_image_url_https
-}

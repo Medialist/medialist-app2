@@ -63,10 +63,6 @@ const CampaignInfo = React.createClass({
     this.setState({ showMore: !this.state.showMore })
   },
 
-  onAddTeamMembers (e) {
-    console.log('TODO: onAddTeamMembers')
-  },
-
   onAddToMasterList (e) {
     this.setState({addToMasterListOpen: true})
   },
@@ -116,7 +112,6 @@ const CampaignInfo = React.createClass({
   render () {
     if (!this.props.campaign) return null
     const {
-      onAddTeamMembers,
       onAddToMasterList,
       onAddTags,
       dismissAddToMasterList,
@@ -129,7 +124,7 @@ const CampaignInfo = React.createClass({
     } = this
     const { addToMasterListOpen, addTagsOpen } = this.state
     const { onEditClick, onEditTeamClick, user, campaign } = this.props
-    const { name, client, avatar, purpose, links } = this.props.campaign
+    const { name, client, avatar, purpose, links, team } = this.props.campaign
     const isFavourite = user.myMedialists.some((m) => m._id === campaign._id)
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
     const tooltip = isFavourite ? 'Remove from My Campaigns' : 'Add to My Campaigns'
@@ -170,8 +165,7 @@ const CampaignInfo = React.createClass({
         <section>
           <InfoHeader name='Team Members' onClick={onEditTeamClick} />
           <div className='px2 py3'>
-            <CircleAvatar style={{margin: '0 2px 2px 0'}} name={'fake one'} size={38} />
-            <CircleAvatar name={'other one'} size={38} />
+            {team.map((teamMember, ind) => <CircleAvatar {...teamMember} size={38} style={{marginLeft: '2px'}} />)}
           </div>
         </section>
         <AddToMasterList
@@ -197,18 +191,6 @@ const CampaignInfo = React.createClass({
     )
   }
 })
-
-const TeamList = ({ campaign }) => {
-  const { team } = campaign
-
-  if (!team || !team.length) {
-    return <p className='f-xs normal gray60 center'>No team members yet</p>
-  }
-
-  return team.map(({ _id, name, avatar }) => {
-    <CircleAvatar key={_id} avatar={avatar} style={{margin: '0 2px 2px 0'}} name={name} size={38} />
-  })
-}
 
 function prettyUrl (url) {
   url = url.replace(/^https?:\/\//i, '')
