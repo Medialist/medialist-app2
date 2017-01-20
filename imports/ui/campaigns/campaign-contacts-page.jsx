@@ -49,6 +49,14 @@ const CampaignContactsPage = React.createClass({
     this.setState({ addContactModalOpen: false })
   },
 
+  onCreateContact (data) {
+    this.setState({
+      addContactModalOpen: false,
+      createContactModalOpen: true,
+      contactPrefillData: data
+    })
+  },
+
   onSectorChange (selectedSector) {
     this.setState({ selectedSector })
   },
@@ -88,11 +96,14 @@ const CampaignContactsPage = React.createClass({
       onStatusChange,
       onAddContactClick,
       onCreateContactModalDismiss,
-      onAddContactModalDismiss
+      onAddContactModalDismiss,
+      onCreateContact
     } = this
+
     const {
       addContactModalOpen,
       createContactModalOpen,
+      contactPrefillData,
       sort,
       term,
       selections
@@ -131,10 +142,12 @@ const CampaignContactsPage = React.createClass({
         <CreateContact
           open={createContactModalOpen}
           onDismiss={onCreateContactModalDismiss}
-          campaign={campaign} />
+          campaign={campaign}
+          prefill={contactPrefillData} />
         <AddContact
-          onDismiss={onAddContactModalDismiss}
           open={addContactModalOpen}
+          onDismiss={onAddContactModalDismiss}
+          onCreate={onCreateContact}
           contacts={contacts}
           contactsAll={contactsAll}
           campaign={campaign} />
