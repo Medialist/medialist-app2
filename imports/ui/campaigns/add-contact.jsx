@@ -6,18 +6,16 @@ import { SearchBlueIcon, AddIcon, SelectedIcon, RemoveIcon } from '../images/ico
 import AvatarList from '../lists/avatar-list'
 import Tooltip from '../navigation/tooltip'
 import CampaignContact from './campaign-contact.jsx'
+import createSearchContainer from '../contacts/search-container'
 
 const AddContact = React.createClass({
   propTypes: {
     onSubmit: PropTypes.func.isRequired,
     onReset: PropTypes.func.isRequired,
-    onAdd: PropTypes.func.isRequired, // Add to campaign
-    onRemove: PropTypes.func.isRequired, // Remove from campaign/selection
-    onCreate: PropTypes.func.isRequired, // Create new contact
-    onSearch: PropTypes.func.isRequired,
+    onAdd: PropTypes.func.isRequired,
+    onRemove: PropTypes.func.isRequired,
+    onCreate: PropTypes.func.isRequired,
     isActive: PropTypes.func.isRequired,
-    contactsAll: PropTypes.array.isRequired,
-    filteredContacts: PropTypes.array,
     selectedContacts: PropTypes.array.isRequired
   },
 
@@ -92,19 +90,16 @@ const AddContact = React.createClass({
   }
 })
 
+const SearchableAddContact = createSearchContainer(AddContact)
+
 const AddContactContainer = React.createClass({
   propTypes: {
     onDismiss: PropTypes.func.isRequired,
-    campaign: PropTypes.object.isRequired,
-    contactsAll: PropTypes.array.isRequired,
-    contacts: PropTypes.array.isRequired // (Campaign contacts)
+    campaign: PropTypes.object.isRequired
   },
 
   getInitialState () {
-    return {
-      selectedContacts: [],
-      filteredContacts: this.props && this.props.contactsAll || []
-    }
+    return { selectedContacts: [] }
   },
 
   // Is the contact in the campaign or in selected contacts list?
@@ -145,19 +140,13 @@ const AddContactContainer = React.createClass({
     this.deselectAll()
   },
 
-  onSearch (term) {
-    const query = {name: {$regex: `^${term}`, $options: 'i'}}
-    const filteredContacts = window.Contacts.find(query, {limit: 20, sort: {name: 1}}).fetch()
-    this.setState({filteredContacts})
-  },
-
   deselectAll () {
-    this.setState({selectedContacts: []})
+    this.setState({ selectedContacts: [] })
   },
 
   render () {
     const props = Object.assign({}, this, this.state, this.props)
-    return <AddContact {...props} />
+    return <SearchableAddContact {...props} />
   }
 })
 
@@ -169,7 +158,8 @@ const ContactsList = React.createClass({
     onAdd: PropTypes.func.isRequired,
     onRemove: PropTypes.func.isRequired,
     onCreate: PropTypes.func.isRequired,
-    term: PropTypes.string
+    term: PropTypes.string,
+    contacts: PropTypes.array.isRequired
   },
 
   onContactClick (contact, isActive) {
