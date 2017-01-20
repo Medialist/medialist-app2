@@ -28,7 +28,8 @@ const CampaignActivityPage = React.createClass({
     return {
       createContactModalOpen: false,
       addContactModalOpen: false,
-      editModalOpen: false
+      editModalOpen: false,
+      contactPrefillData: null
     }
   },
 
@@ -76,6 +77,14 @@ const CampaignActivityPage = React.createClass({
     Meteor.call('posts/createCoverage', post, cb)
   },
 
+  onCreateContact (data) {
+    this.setState({
+      addContactModalOpen: false,
+      createContactModalOpen: true,
+      contactPrefillData: data
+    })
+  },
+
   render () {
     const {
       onAddContactClick,
@@ -83,13 +92,15 @@ const CampaignActivityPage = React.createClass({
       onAddContactModalDismiss,
       toggleEditModal,
       onFeedback,
-      onCoverage
+      onCoverage,
+      onCreateContact
     } = this
     const { campaign, contacts, contactsCount, clients, contactsAll, user } = this.props
     const {
       createContactModalOpen,
       addContactModalOpen,
-      editModalOpen
+      editModalOpen,
+      contactPrefillData
     } = this.state
 
     if (!campaign) return null
@@ -113,10 +124,12 @@ const CampaignActivityPage = React.createClass({
         <CreateContact
           open={createContactModalOpen}
           onDismiss={onCreateContactModalDismiss}
-          campaign={campaign} />
+          campaign={campaign}
+          prefill={contactPrefillData} />
         <AddContact
           open={addContactModalOpen}
           onDismiss={onAddContactModalDismiss}
+          onCreate={onCreateContact}
           contacts={contacts}
           contactsAll={contactsAll}
           campaign={campaign} />

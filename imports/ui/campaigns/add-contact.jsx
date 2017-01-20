@@ -16,13 +16,12 @@ const AddContact = React.createClass({
   propTypes: {
     onSubmit: PropTypes.func.isRequired,
     onReset: PropTypes.func.isRequired,
-    onAdd: PropTypes.func.isRequired,
-    onRemove: PropTypes.func.isRequired,
-    onStatusChange: PropTypes.func.isRequired,
-    onSelect: PropTypes.func.isRequired,
+    onAdd: PropTypes.func.isRequired, // Add to campaign
+    onRemove: PropTypes.func.isRequired, // Remove from campaign/selection
+    onCreate: PropTypes.func.isRequired, // Create new contact
     onSearch: PropTypes.func.isRequired,
     isActive: PropTypes.func.isRequired,
-    contactsAll: PropTypes.object.isRequired,
+    contactsAll: PropTypes.array.isRequired,
     filteredContacts: PropTypes.array,
     selectedContacts: PropTypes.array.isRequired
   },
@@ -57,6 +56,7 @@ const AddContact = React.createClass({
       filteredContacts,
       onAdd,
       onRemove,
+      onCreate,
       isActive
     } = this.props
     const { term } = this.state
@@ -77,7 +77,9 @@ const AddContact = React.createClass({
             isActive={isActive}
             onAdd={onAdd}
             onRemove={onRemove}
-            contacts={filteredContacts} />
+            onCreate={onCreate}
+            contacts={filteredContacts}
+            term={term} />
         </div>
         <form className='py4 border-top border-gray80 flex' onReset={onReset} onSubmit={onSubmit}>
           <div className='flex-auto'>
@@ -170,47 +172,60 @@ const ContactsList = React.createClass({
   propTypes: {
     isActive: PropTypes.func.isRequired,
     onAdd: PropTypes.func.isRequired,
-    onRemove: PropTypes.func.isRequired
+    onRemove: PropTypes.func.isRequired,
+    onCreate: PropTypes.func.isRequired,
+    term: PropTypes.string
   },
 
-  onClick (contact, isActive) {
+  onContactClick (contact, isActive) {
     const { onAdd, onRemove } = this.props
     return isActive ? onRemove(contact) : onAdd(contact)
   },
 
-  render () {
-    const { contacts } = this.props
+  onCreateClick () {
+    this.props.onCreate({ name: this.props.term })
+  },
 
-    return (
-      <div>
-        {contacts.map((contact) => {
-          const isActive = this.props.isActive(contact)
-          const {
-            slug,
-            avatar,
-            name,
-            outlets,
-            medialists
-          } = contact
-          return (
-            <div className={`flex items-center pointer border-bottom border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger ${isActive ? 'active' : ''}`} key={slug} onClick={() => this.onClick(contact, isActive)}>
-              <CircleAvatar avatar={avatar} name={name} />
-              <div className='inline-block pl4' style={{width: '24rem'}}>
-                <span className='f-xl gray40 py1'>{name}</span><br />
-                <span className='gray60 py1'>{(outlets && outlets.length) ? outlets[0].value : null}</span><br />
-                <span className='gray60 py1'>{truncate(outlets.map((o) => o.label).join(', '), 30)}</span>
-              </div>
-              <div className='flex-none px4'>{medialists.length} campaigns</div>
-              <div className={`flex-none pl4 pr2 ${isActive ? '' : 'opacity-0'} hover-opacity-100`}>
-                {isActive ? <SelectedIcon /> : <AddIcon />}
-              </div>
-              <div className={`flex-none pl2 pr4 ${isActive ? 'hover-opacity-100' : 'opacity-0'} gray20 hover-fill-trigger`}>
-                {isActive ? <Tooltip title='Remove'><RemoveIcon /></Tooltip> : <RemoveIcon />}
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    )
+  render () {
+    const { contacts, term } = this.props
+    const { onContactClick, onCreateClick } = this
+
+    let items = contacts.map((contact) => {
+      const isActive = this.props.isActive(contact)
+      const {
+        slug,
+        avatar,
+        name,
+        outlets,
+        medialists
+      } = contact
+      return (
+        <div className={`flex items-center pointer border-bottom border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger ${isActive ? 'active' : ''}`} key={slug} onClick={() => onContactClick(contact, isActive)}>
+          <CircleAvatar avatar={avatar} name={name} />
+          <div className='inline-block pl4' style={{width: '24rem'}}>
+            <span className='f-xl gray40 py1'>{name}</span><br />
+            <span className='gray60 py1'>{(outlets && outlets.length) ? outlets[0].value : null}</span><br />
+            <span className='gray60 py1'>{truncate(outlets.map((o) => o.label).join(', '), 30)}</span>
+          </div>
+          <div className='flex-none px4'>{medialists.length} campaigns</div>
+          <div className={`flex-none pl4 pr2 ${isActive ? '' : 'opacity-0'} hover-opacity-100`}>
+            {isActive ? <SelectedIcon /> : <AddIcon />}
+          </div>
+          <div className={`flex-none pl2 pr4 ${isActive ? 'hover-opacity-100' : 'opacity-0'} gray20 hover-fill-trigger`}>
+            {isActive ? <Tooltip title='Remove'><RemoveIcon /></Tooltip> : <RemoveIcon />}
+          </div>
+        </div>
+      )
+    })
+
+    if (term) {
+      items = items.concat(
+        <div key='createContact' className='p4 center'>
+          <button type='button' className='btn bg-blue white' onClick={onCreateClick}>Create new Contact "{term}"</button>
+        </div>
+      )
+    }
+
+    return <div>{items}</div>
   }
 })
