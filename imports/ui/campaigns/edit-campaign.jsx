@@ -215,7 +215,7 @@ const EditCampaign = React.createClass({
         </div>
         <div className='p4 right'>
           <button className='btn bg-completed white right' type='submit' disabled={!isValid}>
-            {campaign ? 'Edit' : 'Create'} Campaign
+            {campaign ? 'Save Changes' : 'Create Campaign'}
           </button>
           <button className='btn bg-transparent gray40 right mr2' type='reset'>Cancel</button>
         </div>
