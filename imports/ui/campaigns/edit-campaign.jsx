@@ -74,7 +74,6 @@ const EditCampaign = React.createClass({
     Object.keys(payload).forEach((k) => {
       if (payload[k] === '' || payload[k] === []) delete payload[k]
     })
-    console.log({payload})
     const done = (err) => {
       if (err) return console.error('Failed to edit campaign', err)
       this.props.onDismiss()
