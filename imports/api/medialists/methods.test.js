@@ -68,6 +68,16 @@ describe('Medialist create method', function () {
     assert.throws(() => create.validate({ name: 123, clientName: 'boz' }), /campaign name must be a string/)
   })
 
+  it('should create a medialist', function () {
+    const user = { profile: { name: 'O' }, services: { twitter: {profile_image_url_https: 'bar'} } }
+    const userId = Meteor.users.insert(user)
+    const payload = { name: 'Foo' }
+    const slug = create.run.call({ userId }, payload)
+    const doc = Medialists.findOne({ slug })
+    assert.ok(doc)
+    assert.equal(doc.name, payload.name)
+  })
+
   it('should create a medialist and client', function () {
     const user = { profile: { name: 'O' }, services: { twitter: {profile_image_url_https: 'bar'} } }
     const userId = Meteor.users.insert(user)

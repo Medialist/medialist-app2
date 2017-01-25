@@ -10,6 +10,7 @@ import Posts from '/imports/api/posts/posts'
 import getAvatar from '/imports/lib/get-avatar'
 
 function findOrCreateClientRef (name) {
+  if (!name) return null
   const nameRegex = new RegExp('^' + escapeRegExp(name) + '$', 'i')
   const client = Clients.findOne({ name: nameRegex })
   if (client) {
@@ -139,7 +140,7 @@ export const create = new ValidatedMethod({
       name: name,
       slug: slug,
       avatar: avatar,
-      clientName: client.name,
+      clientName: client && client.name || '',
       updatedAt: createdAt
     }
     Meteor.users.update(
