@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import { withRouter } from 'react-router'
 import { CameraIcon, BioIcon, WebsiteIcon, FilledCircle } from '../images/icons'
 import Modal from '../navigation/modal'
 import ValidationBanner from '../errors/validation-banner'
@@ -10,6 +11,7 @@ import callAll from '/imports/lib/call-all'
 
 const EditCampaign = React.createClass({
   propTypes: {
+    router: PropTypes.object.isRequired,
     open: PropTypes.bool.isRequired,
     onDismiss: PropTypes.func.isRequired,
     clients: PropTypes.array.isRequired,
@@ -68,21 +70,22 @@ const EditCampaign = React.createClass({
   onSubmit (evt) {
     evt.preventDefault()
     if (!this.validate()) return
-    const { campaign } = this.props
+    const { campaign, router, onDismiss } = this.props
     const { avatar, name, purpose, clientName, links } = this.state
     const payload = { avatar, name, purpose, clientName, links: links.filter((l) => l.url) }
     Object.keys(payload).forEach((k) => {
       if (payload[k] === '' || payload[k] === []) delete payload[k]
     })
-    const done = (err) => {
-      if (err) return console.error('Failed to edit campaign', err)
-      this.props.onDismiss()
-    }
-
     if (campaign) {
-      update.call({ _id: campaign._id, ...payload }, done)
+      update.call({ _id: campaign._id, ...payload }, (err, res) => {
+        if (err) return console.error('Failed to edit campaign', err)
+        onDismiss()
+      })
     } else {
-      create.call(payload, done)
+      create.call(payload, (err, slug) => {
+        if (err) return console.error('Failed to create campaign', err)
+        router.push(`/campaign/${slug || campaign.slug}`)
+      })
     }
   },
   onReset () {
@@ -212,7 +215,7 @@ const EditCampaign = React.createClass({
         </div>
         <div className='p4 right'>
           <button className='btn bg-completed white right' type='submit' disabled={!isValid}>
-            {campaign ? 'Edit' : 'Create'} Campaign
+            {campaign ? 'Save Changes' : 'Create Campaign'}
           </button>
           <button className='btn bg-transparent gray40 right mr2' type='reset'>Cancel</button>
         </div>
@@ -221,4 +224,4 @@ const EditCampaign = React.createClass({
   }
 })
 
-export default Modal(EditCampaign)
+export default Modal(withRouter(EditCampaign))
