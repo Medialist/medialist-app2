@@ -48,6 +48,7 @@
   --gray10: #24364C;   /* charcoal */
   --gray20: #4F5E6F;   /* cadet */
   --gray40: #99A3B2;   /* cadet-gray */
+  --gray50: #B0B9C6;   /* lavender-gray:hover */
   --gray60: #BFC8D7;   /* lavender-gray */
   --gray80: #E3E8F0;   /* glitter */
   --gray90: #F4F6FA;   /* white-smoke */
@@ -219,6 +220,7 @@ button {
 .gray10 { color: var(--gray10) !important }
 .gray20 { color: var(--gray20) !important }
 .gray40 { color: var(--gray40) !important }
+.gray50 { color: var(--gray50) !important }
 .gray60 { color: var(--gray60) !important }
 .gray80 { color: var(--gray80) !important }
 .gray90 { color: var(--gray90) !important }
@@ -449,6 +451,10 @@ button {
 .hover-white:hover,
 .hover-color-trigger:hover .hover-white {
   color: var(--white) !important;
+}
+.hover-gray50:hover,
+.hover-color-trigger:hover .hover-gray50{
+  color: var(--gray50) !important;
 }
 .hover-bg-blue:hover {
   color: var(--white) !important;
