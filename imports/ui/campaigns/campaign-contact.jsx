@@ -12,7 +12,7 @@ const CampaignContact = ({ contact, campaign }) => {
         <div className='inline-block align-top pl3' style={{width: 220, height: 55}}>
           <div className='f-md semibold gray10 truncate'>
             {contact.name}
-            <StatusDot name={status} className='ml1' />
+            <StatusDot size={10} name={status} style={{marginLeft: 7}} />
           </div>
           <div className='f-sm normal gray20 truncate'>{(contact.outlets && contact.outlets.length) ? contact.outlets[0].value : null}</div>
           <div className='f-sm normal gray40 truncate'>{contact.outlets.map((o) => o.label).join(', ')}</div>

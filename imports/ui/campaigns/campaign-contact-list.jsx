@@ -18,37 +18,40 @@ const CampaignContactList = React.createClass({
       <aside className='bg-white mb4 shadow-2'>
         <header className='border-gray80 border-bottom'>
           <Link className='block pt5 pb4 px4' to={`/campaign/${campaign.slug}/contacts`}>
-            <span className='pill f-xs bg-blue'>{contactsCount}</span>
-            <span className='f-md semibold gray20 ml2'>Contacts</span>
+            <span className='f-sm blue right'>Manage</span>
+            <span className='pill semibold f-xs bg-blue' style={{paddingTop: 1}}>{contactsCount}</span>
+            <span className='f-md semibold gray20 ml1'>Contacts</span>
           </Link>
         </header>
-        <List contacts={contacts} campaign={campaign} onAddContactClick={onAddContactClick} />
-        <footer className='center border-gray80 border-top p4'>
-          <Link to={`/campaign/${campaign.slug}/contacts`} className='block blue'>Show all</Link>
-        </footer>
+        { contacts.length ? (
+          <ContactsList contacts={contacts} campaign={campaign} />
+        ) : (
+          <EmptyContactsList onAddContactClick={onAddContactClick} />
+        )}
       </aside>
     )
   }
 })
 
-const List = ({ contacts, campaign, onAddContactClick }) => {
-  if (!contacts.length) {
-    return (
-      <div className='px4'>
-        <a href='#' onClick={onAddContactClick} className='block py3 bg-white blue bold'>
-          Add Contacts to this Campaign
-        </a>
-      </div>
-    )
-  }
+const EmptyContactsList = ({onAddContactClick}) => (
+  <div className='px4'>
+    <a href='#' onClick={onAddContactClick} className='block py5 bg-white blue semibold underline'>
+      Add Contacts to this Campaign
+    </a>
+  </div>
+)
 
-  return (
+const ContactsList = ({contacts, campaign}) => (
+  <div>
     <div className='px4 pb3'>
       {contacts.map((contact) => (
         <CampaignContact key={contact.slug} contact={contact} campaign={campaign} />
       ))}
     </div>
-  )
-}
+    <footer className='center border-gray80 border-top p4'>
+      <Link to={`/campaign/${campaign.slug}/contacts`} className='block blue'>Show all</Link>
+    </footer>
+  </div>
+)
 
 export default CampaignContactList
