@@ -140,9 +140,9 @@ const CampaignInfo = React.createClass({
             <div className='f-sm gray10 mb2'>{client && client.name}</div>
             <div>
               {(links || []).map((link) => (
-                <span className='mr2 hover-fill-trigger'>
+                <span className='mr2'>
                   <Tooltip title={prettyUrl(link.url)} key={link.url}>
-                    <a href={link.url} target='_blank'>
+                    <a href={link.url} target='_blank' className='gray60 hover-gray50'>
                       <WebsiteIcon className='svg-icon-md' />
                     </a>
                   </Tooltip>
@@ -154,7 +154,7 @@ const CampaignInfo = React.createClass({
         <section>
           <InfoHeader name='Key Message' linkText='Edit campaign' onClick={onEditClick} />
           <div className='px2 py3 flex'>
-            <BioIcon className='inline-block' />
+            <BioIcon className='inline-block flex-none gray60' />
             <div className='inline-block pl3 f-sm gray10 flex-auto'>{purpose}</div>
           </div>
         </section>
