@@ -70,7 +70,10 @@ const EditCampaign = React.createClass({
     if (!this.validate()) return
     const { campaign } = this.props
     const { avatar, name, purpose, clientName, links } = this.state
-    const payload = { avatar, name, purpose, clientName, links }
+    const payload = { avatar, name, purpose, clientName, links: links.filter((l) => l.url) }
+    Object.keys(payload).forEach((k) => {
+      if (payload[k] === '' || payload[k] === []) delete payload[k]
+    })
     const done = (err) => {
       if (err) return console.error('Failed to edit campaign', err)
       this.props.onDismiss()

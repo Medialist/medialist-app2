@@ -101,7 +101,7 @@ const CampaignsTable = React.createClass({
                     <span className='ml3 semibold'>{name}</span>
                   </Link>
                 </td>
-                <td className='left-align'>{client.name}</td>
+                <td className='left-align'>{client && client.name}</td>
                 <td className='left-align'>{purpose}</td>
                 <td className='left-align'>
                   <span className='semibold'><TimeFromNow date={updatedAt} /></span>

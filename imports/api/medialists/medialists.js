@@ -79,7 +79,8 @@ export const MedialistSchema = new SimpleSchema({
   },
   purpose: {
     type: String,
-    min: 1
+    min: 1,
+    optional: true
   },
   slug: {
     type: String
@@ -90,11 +91,13 @@ export const MedialistSchema = new SimpleSchema({
   },
   'client._id': {
     type: String,
-    regEx: SimpleSchema.RegEx.Id
+    regEx: SimpleSchema.RegEx.Id,
+    optional: true
   },
   'client.name': {
     type: String,
-    min: 1
+    min: 1,
+    optional: true
   },
   topics: {
     type: [String],

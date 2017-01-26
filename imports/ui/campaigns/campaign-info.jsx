@@ -137,7 +137,7 @@ const CampaignInfo = React.createClass({
                 <Icon className='mx1 pointer svg-icon-lg align-bottom' onClick={onToggleFavourite} />
               </Tooltip>
             </div>
-            <div className='f-sm gray10 mb2'>{client.name}</div>
+            <div className='f-sm gray10 mb2'>{client && client.name}</div>
             <div>
               {(links || []).map((link) => (
                 <span className='mr2 hover-fill-trigger'>
