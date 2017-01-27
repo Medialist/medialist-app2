@@ -4,13 +4,8 @@ import { Link } from 'react-router'
 import Modal from '../navigation/modal'
 import { SearchBlueIcon, AddIcon, SelectedIcon, RemoveIcon } from '../images/icons'
 import AvatarList from '../lists/avatar-list'
-import { CircleAvatar } from '../images/avatar'
 import Tooltip from '../navigation/tooltip'
-
-function truncate (str, chars) {
-  if (str.length <= chars) return str
-  return str.substring(0, chars) + '...'
-}
+import CampaignContact from './campaign-contact.jsx'
 
 const AddContact = React.createClass({
   propTypes: {
@@ -192,22 +187,18 @@ const ContactsList = React.createClass({
 
     let items = contacts.map((contact) => {
       const isActive = this.props.isActive(contact)
-      const {
-        slug,
-        avatar,
-        name,
-        outlets,
-        medialists
-      } = contact
+      const {slug, medialists} = contact
       return (
-        <div className={`flex items-center pointer border-bottom border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger ${isActive ? 'active' : ''}`} key={slug} onClick={() => onContactClick(contact, isActive)}>
-          <CircleAvatar avatar={avatar} name={name} />
-          <div className='inline-block pl4' style={{width: '24rem'}}>
-            <span className='f-xl gray40 py1'>{name}</span><br />
-            <span className='gray60 py1'>{(outlets && outlets.length) ? outlets[0].value : null}</span><br />
-            <span className='gray60 py1'>{truncate(outlets.map((o) => o.label).join(', '), 30)}</span>
+        <div
+          className={`flex items-center pointer border-bottom border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger hover-color-trigger ${isActive ? 'active' : ''}`}
+          key={slug}
+          onClick={() => onContactClick(contact, isActive)}>
+          <div className='flex-auto'>
+            <CampaignContact contact={contact} />
           </div>
-          <div className='flex-none px4'>{medialists.length} campaigns</div>
+          <div className='flex-none px4 f-sm gray40 hover-gray20'>
+            {medialists.length} {medialists.length === 1 ? 'campaign' : 'campaigns'}
+          </div>
           <div className={`flex-none pl4 pr2 ${isActive ? '' : 'opacity-0'} hover-opacity-100`}>
             {isActive ? <SelectedIcon /> : <AddIcon />}
           </div>
