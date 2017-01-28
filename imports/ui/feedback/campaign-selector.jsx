@@ -13,7 +13,7 @@ const Campaign = (props) => {
       <SquareAvatar avatar={avatar} name={name} />
       <div className='inline-block ml3 align-middle'>
         <div className='semibold f-md gray10'>{name}</div>
-        <div className='normal f-sm gray20'>{client.name}</div>
+        <div className='normal f-sm gray20'>{client && client.name}</div>
       </div>
     </div>
   )
