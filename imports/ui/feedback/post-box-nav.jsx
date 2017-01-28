@@ -32,3 +32,9 @@ export const NeedToKnowTab = ({selected, onClick}) => (
     <span style={style}>Need to Know</span>
   </Tab>
 )
+
+export const PostBoxTabs = ({children}) => (
+  <nav style={{display: 'block', padding: '2px 1px 0', height: 50, overflowY: 'hidden'}}>
+    {children}
+  </nav>
+)

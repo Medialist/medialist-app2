@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import CampaignSelector from './campaign-selector'
-import { FeedbackTab, CoverageTab, NeedToKnowTab } from '../feedback/post-box-nav'
+import { FeedbackTab, CoverageTab, NeedToKnowTab, PostBoxTabs } from '../feedback/post-box-nav'
 
 const PostBox = React.createClass({
   propTypes: {
@@ -23,11 +23,11 @@ const PostBox = React.createClass({
 
     return (
       <div className='mb2' onFocus={() => this.setState({focused: true})}>
-        <nav className='block' style={{padding: '2px 1px 0', height: 50, overflowY: 'hidden'}}>
+        <PostBoxTabs>
           <FeedbackTab onClick={() => this.setState({selected: 'Feedback'})} selected={selected === 'Feedback'} />
           <CoverageTab onClick={() => this.setState({selected: 'Coverage'})} selected={selected === 'Coverage'} />
           <NeedToKnowTab onClick={() => this.setState({selected: 'Need to Know'})} selected={selected === 'Need to Know'} />
-        </nav>
+        </PostBoxTabs>
         <div style={{padding: '0 1px'}}>
           <div className='bg-white shadow-2 p3 pb0'>
             { selected === 'Feedback' && <FeedbackInput {...childProps} campaigns={campaigns} onSubmit={onFeedback} /> }
