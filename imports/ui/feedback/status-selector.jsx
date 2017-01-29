@@ -1,11 +1,7 @@
 import React, { PropTypes } from 'react'
 import values from 'lodash.values'
-import Dropdown from 'rebass/dist/Dropdown'
-import DropdownMenu from 'rebass/dist/DropdownMenu'
-import { dropdownMenuStyle } from '../common-styles'
+import { Dropdown, DropdownMenu } from '../navigation/dropdown'
 import StatusLabel from './status-label'
-
-const dropdownStyle = Object.assign({}, dropdownMenuStyle, { width: 223 })
 
 const items = values(window.Contacts.status)
 
@@ -49,7 +45,7 @@ const StatusSelector = React.createClass({
             Select status
           </button>
         )}
-          <DropdownMenu right style={dropdownStyle} open={this.state.open} onDismiss={this.closeDropdown}>
+          <DropdownMenu width={223} open={this.state.open} onDismiss={this.closeDropdown}>
             <nav className='py3'>
               {items.map((item) => (
                 <div key={item} className='px3 py2 pointer hover-bg-gray90' onClick={() => this.onLinkClick(item)}>
