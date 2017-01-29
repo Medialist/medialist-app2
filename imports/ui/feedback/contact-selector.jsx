@@ -1,13 +1,9 @@
 import React, { PropTypes } from 'react'
-import Dropdown from 'rebass/dist/Dropdown'
-import DropdownMenu from 'rebass/dist/DropdownMenu'
+import { Dropdown, DropdownMenu } from '../navigation/dropdown'
 import { CircleAvatar } from '../images/avatar.jsx'
 import { ChevronDown } from '../images/icons'
-import { dropdownMenuStyle } from '../common-styles'
 import CampaignContacts from '../campaigns/campaign-contacts'
 import StatusSelector from '../feedback/status-selector'
-
-const dropdownStyle = Object.assign({}, dropdownMenuStyle, { width: 520 })
 
 const ContactButton = (props) => {
   const { name, avatar } = props.contact
@@ -60,7 +56,7 @@ const ContactSelector = React.createClass({
             <button className='btn bg-transparent border-gray80 mx2' style={{height: 34, padding: '0 12px', borderRadius: 2}} onClick={this.openDropdown} disabled={!contacts || !contacts.length}>
               { selectedContact ? <ContactButton contact={selectedContact} /> : 'Select a Contact' }
             </button>
-            <DropdownMenu style={dropdownStyle} open={this.state.open} onDismiss={this.closeDropdown}>
+            <DropdownMenu width={520} left={-50} open={this.state.open} onDismiss={this.closeDropdown}>
               <CampaignContacts campaign={campaign} contacts={contacts} onSelectContact={onSelectContact} />
             </DropdownMenu>
           </Dropdown>

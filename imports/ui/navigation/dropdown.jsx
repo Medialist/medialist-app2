@@ -6,7 +6,7 @@ import React, { PropTypes } from 'react'
  * Usage:
  *   <Dropdown>
  *     <button onClick={() => this.setState({open: true})}>Fire!</button>
- *     <DropdownMenu width={200}>
+ *     <DropdownMenu width={200} open={this.state.open}>
  *      <div>Option 1</div>
  *      <div>Option 2</div>
  *     </DropdownMenu>
