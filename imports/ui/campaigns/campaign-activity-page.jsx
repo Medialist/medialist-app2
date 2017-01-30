@@ -104,7 +104,7 @@ const CampaignActivityPage = React.createClass({
       onCoverage,
       onCreateContact
     } = this
-    const { campaign, contacts, contactsCount, clients, contactsAll, teamMates, loading, user } = this.props
+    const { campaign, contacts, contactsCount, clients, teamMates, loading, user } = this.props
     const {
       createContactModalOpen,
       addContactModalOpen,
@@ -141,7 +141,8 @@ const CampaignActivityPage = React.createClass({
           open={addContactModalOpen}
           onDismiss={onAddContactModalDismiss}
           onCreate={onCreateContact}
-          campaign={campaign} />
+          campaign={campaign}
+          campaignContacts={contacts} />
       </div>
     )
   }

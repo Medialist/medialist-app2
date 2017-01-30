@@ -3,14 +3,29 @@ import { Meteor } from 'meteor/meteor'
 import { ReactMeteorData } from 'meteor/react-meteor-data'
 import Contacts from '../../api/contacts/contacts'
 
-export default (Component, opts) => {
-  opts = opts || {}
+/**
+* Wrap your component in me to gain contact searching powers.
+*
+* You pass the search `term` and the results `sort` props.
+*
+* The container provides you with these props:
+* `contacts` - search results
+* `contactsCount` - count of all contacts available
+* `loading` - search subscription is loading
+* `searching` - true if the term is long enough to trigger a search subscription
+*/
+export default (Component, opts = {}) => {
   opts.minSearchLength = opts.minSearchLength || 3
 
   return React.createClass({
     propTypes: {
       term: PropTypes.string.isRequired,
-      sort: PropTypes.string
+      // http://docs.meteor.com/api/collections.html#sortspecifiers
+      sort: PropTypes.oneOfType([ PropTypes.object, PropTypes.array ])
+    },
+
+    getDefaultProps () {
+      return { sort: { updatedAt: -1 } }
     },
 
     mixins: [ReactMeteorData],
@@ -29,13 +44,15 @@ export default (Component, opts) => {
           { 'outlets.value': filterRegExp },
           { 'outlets.label': filterRegExp }
         ]
-        subs.push(Meteor.subscribe('contacts', {regex: term.substring(0, opts.minSearchLength)}))
+        subs.push(
+          Meteor.subscribe('contacts', { regex: term.substr(0, opts.minSearchLength) })
+        )
       }
 
       const contacts = Contacts.find(query, { sort }).fetch()
       const loading = !subs.every((sub) => sub.ready())
 
-      return { contacts, contactsCount, loading, searching, sort, term }
+      return { contacts, contactsCount, loading, searching }
     },
 
     render () {
