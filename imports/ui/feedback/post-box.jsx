@@ -40,7 +40,7 @@ const PostBox = React.createClass({
   }
 })
 
-export const PostBoxtTextArea = ({placeholder, value, disabled, focused, onChange}) => (
+export const PostBoxtTextArea = ({placeholder, value, focused, disabled, onChange}) => (
   <textarea
     rows={focused ? '3' : '1'}
     className='textarea mb1'
@@ -51,10 +51,10 @@ export const PostBoxtTextArea = ({placeholder, value, disabled, focused, onChang
     disabled={disabled} />
 )
 
-export const PostBoxButtons = ({focused, disabled, children, onPost}) => (
+export const PostBoxButtons = ({focused, disabled, onPost, children}) => (
   <div style={{display: focused ? null : 'none'}}>
     <button
-      onClick={() => { if (!disabled) onPost() }}
+      onClick={onPost}
       className={`btn bg-gray80 right active-bg-blue ${disabled ? '' : 'active'}`}
       disabled={disabled}>
       Post
