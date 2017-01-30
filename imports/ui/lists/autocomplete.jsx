@@ -44,12 +44,14 @@ export default React.createClass({
         if (activeInd > 0) this.setState({ activeInd: activeInd - 1 })
         break
 
+      case 'Tab':
       case 'Enter':
         if (open) evt.preventDefault()
         if (activeInd !== null) {
           this.props.onSelect(suggestions[activeInd])
           this.setState({ open: false, activeInd: null })
         }
+
     }
   },
   onDismiss () {
