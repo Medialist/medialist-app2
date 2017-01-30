@@ -40,6 +40,29 @@ const PostBox = React.createClass({
   }
 })
 
+export const PostBoxtTextArea = ({placeholder, value, focused, disabled, onChange}) => (
+  <textarea
+    rows={focused ? '3' : '1'}
+    className='textarea mb1'
+    style={{border: '0 none', overflowY: 'scroll', resize: 'none', paddingLeft: '3px'}}
+    placeholder={placeholder}
+    onChange={onChange}
+    value={value}
+    disabled={disabled} />
+)
+
+export const PostBoxButtons = ({focused, disabled, onPost, children}) => (
+  <div style={{display: focused ? null : 'none'}}>
+    <button
+      onClick={onPost}
+      className={`btn bg-gray80 right active-bg-blue ${disabled ? '' : 'active'}`}
+      disabled={disabled}>
+      Post
+    </button>
+    {children}
+  </div>
+)
+
 const FeedbackInput = React.createClass({
   propTypes: {
     contact: PropTypes.object,
@@ -71,30 +94,24 @@ const FeedbackInput = React.createClass({
     return !!(this.state.status && this.state.campaign)
   },
   render () {
-    const { onCampaignChange, onMessageChange } = this
+    const {onCampaignChange, onMessageChange, onSubmit} = this
     const {focused, contact, campaigns} = this.props
-    const {message, posting} = this.state
-    const className = focused ? '' : 'display-none'
-    const rows = focused ? '3' : '1'
+    const {message, posting, status, campaign} = this.state
     const name = contact && contact.name && contact.name.split(' ')[0]
-
     return (
       <div>
-        <textarea
-          rows={rows}
-          className='textarea mb1'
-          style={{border: '0 none', overflowY: 'scroll', resize: 'none'}}
+        <PostBoxtTextArea
           placeholder={contact ? `Any updates on ${name}'s work?` : `What's happening with this campaign?`}
-          onChange={onMessageChange}
           value={message}
-          disabled={posting} />
-        <div className={className}>
-          <button
-            onClick={() => this.onSubmit()}
-            className={`btn bg-gray80 right active-bg-blue ${message.length > 0 ? 'active' : ''}`}
-            disabled={message.length < 1 || posting || this.isValid()}>Post</button>
+          focused={focused}
+          disabled={posting}
+          onChange={onMessageChange} />
+        <PostBoxButtons
+          focused={focused}
+          disabled={!message || posting || !status || !campaign}
+          onPost={onSubmit} >
           <CampaignSelector onChange={onCampaignChange} campaigns={campaigns} />
-        </div>
+        </PostBoxButtons>
       </div>
     )
   }
@@ -108,7 +125,7 @@ const CoverarageInput = React.createClass({
     onSubmit: PropTypes.func.isRequired
   },
   getInitialState () {
-    return {message: ''}
+    return {message: '', posting: false}
   },
   onMessageChange (evt) {
     this.setState({message: evt.target.value})
@@ -127,24 +144,23 @@ const CoverarageInput = React.createClass({
     const {onMessageChange, onCampaignChange, onSubmit} = this
     const {focused, contact, campaigns} = this.props
     const {message, campaign, posting} = this.state
-    const className = focused ? '' : 'display-none'
-    const rows = focused ? '3' : '1'
     const name = contact && contact.name && contact.name.split(' ')[0] || 'you'
-    return (<div>
-      <textarea
-        rows={rows}
-        className='textarea mb1' style={{border: '0 none', overflowY: 'scroll', resize: 'none'}}
-        placeholder={`Did ${name} post any coverage?`}
-        value={message}
-        onChange={onMessageChange} />
-      <div className={className}>
-        <button
-          className={`btn bg-gray80 right active-bg-blue ${message.length > 0 ? 'active' : ''}`}
-          disabled={message.length < 1 || !campaign || posting}
-          onClick={onSubmit}>Post</button>
-        <CampaignSelector onChange={onCampaignChange} campaigns={campaigns} />
+    return (
+      <div>
+        <PostBoxtTextArea
+          placeholder={`Did ${name} post any coverage?`}
+          value={message}
+          focused={focused}
+          disabled={posting}
+          onChange={onMessageChange} />
+        <PostBoxButtons
+          focused={focused}
+          disabled={!message || posting || !campaign}
+          onPost={onSubmit} >
+          <CampaignSelector onChange={onCampaignChange} campaigns={campaigns} />
+        </PostBoxButtons>
       </div>
-    </div>)
+    )
   }
 })
 
@@ -154,19 +170,37 @@ const NeedToKnowInput = React.createClass({
     focused: PropTypes.bool.isRequired,
     onSubmit: PropTypes.func.isRequired
   },
+  getInitialState () {
+    return {message: '', posting: false}
+  },
+  onMessageChange (evt) {
+    this.setState({message: evt.target.value})
+  },
+  onSubmit () {
+    const {message} = this.state
+    console.log('TODO: Posting "Need to Know"')
+    console.log({message})
+  },
   render () {
+    const {onSubmit, onMessageChange} = this
+    const {message, posting} = this.state
     const {focused, contact} = this.props
-    const className = focused ? '' : 'display-none'
-    const rows = focused ? '3' : '1'
     const name = contact && contact.name && contact.name.split(' ')[0]
     return (
       <div>
-        <textarea rows={rows} className='textarea mb1' style={{border: '0 none'}} placeholder={`Share something important to know about ${name}`} />
-        <div className={className}>
-          <button className='btn bg-gray80 right'>Post</button>
+        <PostBoxtTextArea
+          placeholder={`Share something important to know about ${name}`}
+          value={message}
+          focused={focused}
+          disabled={posting}
+          onChange={onMessageChange} />
+        <PostBoxButtons
+          focused={focused}
+          disabled={!message || posting}
+          onPost={onSubmit} >
           <button className='btn bg-transparent border-gray80 bold'>B</button>
-          <button className='btn bg-transparent border-gray80 italic mx2'>i</button>
-        </div>
+          <button className='btn bg-transparent border-gray80 italic ml3'>i</button>
+        </PostBoxButtons>
       </div>)
   }
 })
