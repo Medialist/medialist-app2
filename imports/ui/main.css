@@ -456,6 +456,10 @@ button {
 .hover-color-trigger:hover .hover-gray50{
   color: var(--gray50) !important;
 }
+.hover-gray20:hover,
+.hover-color-trigger:hover .hover-gray20{
+  color: var(--gray20) !important;
+}
 .hover-bg-blue:hover {
   color: var(--white) !important;
   background-color: var(--blue);

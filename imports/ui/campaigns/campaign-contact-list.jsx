@@ -45,7 +45,9 @@ const ContactsList = ({contacts, campaign}) => (
   <div>
     <div className='px4 pb3'>
       {contacts.map((contact) => (
-        <CampaignContact key={contact.slug} contact={contact} campaign={campaign} />
+        <Link to={`/campaign/${campaign.slug}/contact/${contact.slug}`} className='block pt3'>
+          <CampaignContact key={contact.slug} contact={contact} campaign={campaign} />
+        </Link>
       ))}
     </div>
     <footer className='center border-gray80 border-top p4'>
