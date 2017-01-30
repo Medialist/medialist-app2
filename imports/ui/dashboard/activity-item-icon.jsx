@@ -1,16 +1,25 @@
 import React from 'react'
-import { FeedFeedbackIcon, FeedCoverageIcon, FeedNeedToKnowIcon } from '../images/icons'
+import {
+  FeedCampaignIcon,
+  FeedContactIcon,
+  FeedCoverageIcon,
+  FeedFeedbackIcon,
+  FeedNeedToKnowIcon
+} from '../images/icons'
 
 const iconDir = {
-  'feedback': FeedFeedbackIcon,
+  'campaign created': FeedCampaignIcon,
   'coverage': FeedCoverageIcon,
-  'need-to-knows': FeedNeedToKnowIcon
+  'feedback': FeedFeedbackIcon,
+  'need-to-knows': FeedNeedToKnowIcon,
+  'medialists changed': FeedContactIcon
 }
 
 const ActivityIcon = ({ type }) => {
+  console.log({ type })
   const Icon = iconDir[type]
   if (!Icon) return null
-  return <span className='blue' style={{margin: '0 13px'}}><Icon /></span>
+  return <span className='blue' style={{marginRight: 13}}><Icon /></span>
 }
 
 export default ActivityIcon
