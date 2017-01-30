@@ -53,7 +53,7 @@ const ContactSelector = React.createClass({
       <div>
         <div className='inline-block'>
           <Dropdown>
-            <button className='btn bg-transparent border-gray80 mx2' style={{height: 34, padding: '0 12px', borderRadius: 2}} onClick={this.openDropdown} disabled={!contacts || !contacts.length}>
+            <button className='btn bg-transparent border-gray80' style={{height: 34, padding: '0 12px', borderRadius: 2}} onClick={this.openDropdown} disabled={!contacts || !contacts.length}>
               { selectedContact ? <ContactButton contact={selectedContact} /> : 'Select a Contact' }
             </button>
             <DropdownMenu width={520} left={-50} open={this.state.open} onDismiss={this.closeDropdown}>

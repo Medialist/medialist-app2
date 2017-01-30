@@ -37,11 +37,11 @@ const StatusSelector = React.createClass({
       <div className='inline-block'>
         <Dropdown>
           { status ? (
-            <button className={`btn bg-transparent ${border ? 'border-gray80' : ''}`} onClick={this.openDropdown} style={style}>
+            <button className={`btn ml3 bg-transparent ${border ? 'border-gray80' : ''}`} onClick={this.openDropdown} style={style}>
               <StatusLabel name={status} chevron={chevron} />
             </button>
         ) : (
-          <button className='btn bg-transparent border-gray80' onClick={this.openDropdown} disabled={disabled} style={style}>
+          <button className='btn ml3 bg-transparent border-gray80' onClick={this.openDropdown} disabled={disabled} style={style}>
             Select status
           </button>
         )}
