@@ -1,11 +1,14 @@
 import React from 'react'
-import { FeedFeedbackIcon, FeedCoverageIcon } from '../images/icons'
+import { FeedFeedbackIcon, FeedCoverageIcon, FeedNeedToKnowIcon } from '../images/icons'
+
+const iconDir = {
+  'feedback': FeedFeedbackIcon,
+  'coverage': FeedCoverageIcon,
+  'need-to-knows': FeedNeedToKnowIcon
+}
 
 const ActivityIcon = ({ type }) => {
-  let Icon
-  if (type === 'feedback') Icon = FeedFeedbackIcon
-  if (type === 'coverage') Icon = FeedCoverageIcon
-  if (!type) Icon = FeedFeedbackIcon
+  const Icon = iconDir[type]
   if (!Icon) return null
   return <span className='ml2 blue'><Icon /></span>
 }
