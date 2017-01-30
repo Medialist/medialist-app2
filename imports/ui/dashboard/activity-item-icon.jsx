@@ -16,7 +16,6 @@ const iconDir = {
 }
 
 const ActivityIcon = ({ type }) => {
-  console.log({ type })
   const Icon = iconDir[type]
   if (!Icon) return null
   return <span className='blue' style={{marginRight: 13}}><Icon /></span>
