@@ -1,35 +1,21 @@
 import React, { PropTypes } from 'react'
-import { CircleAvatar } from '../images/avatar'
+import CampaignContact from './campaign-contact'
 import StatusLabel from '../feedback/status-label'
 
-function truncate (str, chars) {
-  if (str.length <= chars) return str
-  return str.substring(0, chars) + '...'
-}
-
-const CampaignContacts = (props) => {
-  const {
-    campaign,
-    contacts,
-    onSelectContact
-  } = props
+const CampaignContacts = ({campaign, contacts, onSelectContact}) => {
+  if (!contacts) return null
   return (
     <div>
       {contacts.map((contact) => {
-        const {
-          slug,
-          avatar,
-          name,
-          outlets
-        } = contact
+        const { slug } = contact
         const status = campaign.contacts[slug]
         return (
-          <div onClick={() => onSelectContact(contact)} className={`flex items-center pointer border-bottom border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger active-bg-green-light`} key={slug}>
-            <CircleAvatar size={40} avatar={avatar} className='flex-none' />
-            <div className='inline-block pl4' style={{width: '24rem'}}>
-              <span className='f-xl gray40 py1'>{name}</span><br />
-              <span className='gray60 py1'>{(outlets && outlets.length) ? outlets[0].value : null}</span><br />
-              <span className='gray60 py1'>{truncate(outlets.map((o) => o.label).join(', '), 30)}</span>
+          <div
+            className={'flex items-center pointer border-bottom border-top border-transparent hover-border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger active-bg-green-light'}
+            onClick={() => onSelectContact(contact)}
+            key={slug} >
+            <div className='flex-auto'>
+              <CampaignContact contact={contact} />
             </div>
             <div className='flex-none right px4'>
               <StatusLabel name={status} />
