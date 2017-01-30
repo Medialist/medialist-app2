@@ -10,7 +10,6 @@ const ActivityList = React.createClass({
   render () {
     const { items, currentUser } = this.props
     if (!items.length) return <p className='p4 mb2 f-xl semibold center'>No items yet</p>
-
     return (
       <div>
         {items.map((item) => (
