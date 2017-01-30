@@ -1,10 +1,9 @@
 import React, { PropTypes } from 'react'
 import CampaignSelector from './campaign-selector'
-import { FeedFeedbackIcon, FeedCoverageIcon, FeedNeedToKnowIcon } from '../images/icons'
+import { FeedbackTab, CoverageTab, NeedToKnowTab, PostBoxTabs } from '../feedback/post-box-nav'
 
 const PostBox = React.createClass({
   propTypes: {
-    location: PropTypes.object,
     campaigns: PropTypes.array,
     contact: PropTypes.object,
     contacts: PropTypes.array,
@@ -17,11 +16,6 @@ const PostBox = React.createClass({
     return { focused: false, selected: 'Feedback' }
   },
 
-  getTabClassName (tab) {
-    const base = 'inline-block px4 py3 pointer f-sm semibold '
-    return base + (this.state.selected === tab ? 'bg-white shadow-2' : 'gray60')
-  },
-
   render () {
     const { contact, contacts, campaigns, onFeedback, onCoverage, onNeedToKnow } = this.props
     const { selected, focused } = this.state
@@ -29,22 +23,16 @@ const PostBox = React.createClass({
 
     return (
       <div className='mb2' onFocus={() => this.setState({focused: true})}>
-        <nav className='block' style={{padding: '2px 1px 0', height: 50, overflowY: 'hidden'}}>
-          <div className={this.getTabClassName('Feedback')} onClick={() => this.setState({ selected: 'Feedback' })} >
-            <FeedFeedbackIcon className={selected === 'Feedback' ? 'blue' : 'gray80'} /> Feedback
-          </div>
-          <div className={this.getTabClassName('Coverage')} onClick={() => this.setState({ selected: 'Coverage' })} >
-            <FeedCoverageIcon className={selected === 'Coverage' ? 'blue' : 'gray80'} /> Coverage
-          </div>
-          <div className={`${this.getTabClassName('Need to Know')} display-none`} onClick={() => this.setState({ selected: 'Need to Know' })} >
-            <FeedNeedToKnowIcon /> Need to Know
-          </div>
-        </nav>
+        <PostBoxTabs>
+          <FeedbackTab onClick={() => this.setState({selected: 'Feedback'})} selected={selected === 'Feedback'} />
+          <CoverageTab onClick={() => this.setState({selected: 'Coverage'})} selected={selected === 'Coverage'} />
+          <NeedToKnowTab onClick={() => this.setState({selected: 'Need to Know'})} selected={selected === 'Need to Know'} />
+        </PostBoxTabs>
         <div style={{padding: '0 1px'}}>
           <div className='bg-white shadow-2 p3 pb0'>
-            { selected === 'Feedback' ? <FeedbackInput {...childProps} campaigns={campaigns} onSubmit={onFeedback} /> : '' }
-            { selected === 'Coverage' ? <CoverarageInput {...childProps} campaigns={campaigns} onSubmit={onCoverage} /> : '' }
-            { selected === 'Need to Know' ? <NeedToKnowInput {...childProps} onSubmit={onNeedToKnow} /> : '' }
+            { selected === 'Feedback' && <FeedbackInput {...childProps} campaigns={campaigns} onSubmit={onFeedback} /> }
+            { selected === 'Coverage' && <CoverarageInput {...childProps} campaigns={campaigns} onSubmit={onCoverage} /> }
+            { selected === 'Need to Know' && <NeedToKnowInput {...childProps} onSubmit={onNeedToKnow} /> }
           </div>
         </div>
       </div>

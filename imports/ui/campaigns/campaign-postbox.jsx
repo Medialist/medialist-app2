@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import ContactSelector from '../feedback/contact-selector'
-import { FeedFeedbackIcon, FeedCoverageIcon } from '../images/icons'
+import { FeedbackTab, CoverageTab, PostBoxTabs } from '../feedback/post-box-nav'
 
 const PostBox = React.createClass({
   propTypes: {
@@ -14,11 +14,6 @@ const PostBox = React.createClass({
     return { focused: false, selected: 'Feedback' }
   },
 
-  getTabClassName (tab) {
-    const base = 'inline-block px4 py3 pointer f-sm semibold '
-    return base + (this.state.selected === tab ? 'bg-white shadow-2' : 'gray60')
-  },
-
   render () {
     const { contacts, onFeedback, onCoverage, campaign } = this.props
     const { selected, focused } = this.state
@@ -26,18 +21,14 @@ const PostBox = React.createClass({
 
     return (
       <div className='mb2' onFocus={() => this.setState({focused: true})}>
-        <nav className='block' style={{padding: '2px 1px 0', height: 50, overflowY: 'hidden'}}>
-          <div className={this.getTabClassName('Feedback')} onClick={() => this.setState({ selected: 'Feedback' })} >
-            <FeedFeedbackIcon className={selected === 'Feedback' ? 'blue' : 'gray80'} /> Feedback
-          </div>
-          <div className={this.getTabClassName('Coverage')} onClick={() => this.setState({ selected: 'Coverage' })} >
-            <FeedCoverageIcon className={selected === 'Coverage' ? 'blue' : 'gray80'} /> Coverage
-          </div>
-        </nav>
+        <PostBoxTabs>
+          <FeedbackTab onClick={() => this.setState({selected: 'Feedback'})} selected={selected === 'Feedback'} />
+          <CoverageTab onClick={() => this.setState({selected: 'Coverage'})} selected={selected === 'Coverage'} />
+        </PostBoxTabs>
         <div style={{padding: '0 1px'}}>
           <div className='bg-white shadow-2 p3 pb0'>
-            { selected === 'Feedback' ? <FeedbackInput {...childProps} onSubmit={onFeedback} /> : '' }
-            { selected === 'Coverage' ? <CoverageInput {...childProps} onSubmit={onCoverage} /> : '' }
+            { selected === 'Feedback' && <FeedbackInput {...childProps} onSubmit={onFeedback} /> }
+            { selected === 'Coverage' && <CoverageInput {...childProps} onSubmit={onCoverage} /> }
           </div>
         </div>
       </div>
