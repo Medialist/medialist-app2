@@ -31,9 +31,9 @@ const ActivityItemTitle = ({ item, currentUser }) => {
         <YouOrName className='semibold flex-none' currentUser={currentUser} user={createdBy} />
         <span className='flex-auto truncate'>
           <span className='gray10 ml1'>logged feedback </span>
-          <span className='f-xxxs gray60 mx1'><ChevronRight className='gray60' /></span>
+          <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
           <Link className='semibold gray10' to={`/campaigns/${encodeURIComponent(medialists[0])}`}>{medialists[0]}</Link>
-          <span className='f-xxxs gray60 mx1'><ChevronRight className='gray60' /></span>
+          <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
           <span className='semibold gray10'>{contacts[0].name}</span>
         </span>
         <span className='flex-none self-end'><Status status={status} /></span>
@@ -46,9 +46,9 @@ const ActivityItemTitle = ({ item, currentUser }) => {
       <span>
         <YouOrName currentUser={currentUser} user={createdBy} />
         <span className='gray10'> logged coverage </span>
-        <span className='f-xxxs gray60 mx1'><ChevronRight className='gray60' /></span>
+        <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
         <Link className='semibold gray10' to={`/campaigns/${encodeURIComponent(medialists[0])}`}>{medialists[0]}</Link>
-        <span className='f-xxxs gray60 mx1'><ChevronRight className='gray60' /></span>
+        <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
         <span className='semibold gray10'>{contacts[0].name}</span>
       </span>
     )
