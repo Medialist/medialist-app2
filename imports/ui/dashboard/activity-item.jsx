@@ -7,7 +7,7 @@ import ActivityItemContent from './activity-item-content'
 
 export default ({ item, currentUser }) => (
   <article className='flex rounded bg-white px4 py2 mb2 shadow-2'>
-    <div className='flex-none pr2'>
+    <div className='flex-none'>
       <CircleAvatar avatar={item.createdBy.avatar} name={item.createdBy.name} />
       <ActivityIcon type={item.type} />
     </div>
