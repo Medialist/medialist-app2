@@ -1,16 +1,24 @@
 import React, { PropTypes } from 'react'
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 import { Close } from '../images/icons'
 
-const SnackbarItem = ({show, onDismiss, children, style}) => (
-  <div className='shadow-1 table bg-gray10' style={{height: 52, transition: 'transform 300ms ease-in', ...style}}>
-    <div className='table-cell align-middle white pl4'>
-      {children}
-    </div>
-    <div className='table-cell align-middle px4'>
-      <Close className='gray20' onClick={onDismiss} />
-    </div>
-  </div>
-)
+const SnackbarItem = React.createClass({
+  render () {
+    const { onDismiss, children, style } = this.props
+    return (
+      <div className='inline-block p4 left-align shadow-1 bg-gray10' style={{...style}}>
+        <div className='white inline-block align-middle'>
+          {children}
+        </div>
+        <div className='inline-block pl4 align-middle'>
+          <span onClick={onDismiss}>
+            <Close className='gray20' />
+          </span>
+        </div>
+      </div>
+    )
+  }
+})
 
 // Place me high up in the tree. I make a space for snackbars to play.
 const Snackbar = React.createClass({
@@ -19,43 +27,65 @@ const Snackbar = React.createClass({
   },
   getInitialState () {
     return {
-      messages: ['hello']
+      items: [
+        {id: 1, message: 'hello'},
+        {id: 2, message: 'world world world'},
+        {id: 3, message: 'glooorb'}
+      ]
     }
   },
   childContextTypes: {
     snackbar: PropTypes.object.isRequired
   },
   show (message) {
+    const id = Math.random() // woteva
+    const item = { id, message: message }
     this.setState((s) => {
       // message is possibly an array o nodes that should be treated as 1 item.
-      return s.messages.slice().push(message)
+      const items = s.items.concat([item])
+      return { items }
+    })
+  },
+  remove (id) {
+    this.setState((s) => {
+      const items = s.items.filter((item) => item.id !== id)
+      return { items }
     })
   },
   getChildContext () {
     return {
       snackbar: {
-        show: this.show.bind(this)
+        show: this.show
       }
     }
   },
   render () {
     const { children } = this.props
-    const { messages } = this.state
+    const { items } = this.state
     return (
-      <div onClick={() => this.show('Hello')}>
+      <div onClick={() => this.show(Math.random())}>
         {children}
         <div className='snackbars' style={{
           position: 'fixed',
           bottom: 0,
           right: 20
         }}>
-          {messages.map((msg, index) => (
-            <div className='mb4'>
-              <SnackbarItem>
-                {msg}
-              </SnackbarItem>
-            </div>
-          ))}
+          <ReactCSSTransitionGroup
+            transitionName='snackbar'
+            transitionAppear
+            transitionEnterTimeout={350}
+            transitionLeaveTimeout={350}>
+            {items.map((item, index) => (
+              <div className='mb4 right-align' key={item.id}>
+                <SnackbarItem id={item.id} onDismiss={() => {
+                  console.log('dismiss', {item, index})
+                  this.remove(item.id)
+                }}>
+                  {item.message}
+                </SnackbarItem>
+              </div>
+            ))}
+          </ReactCSSTransitionGroup>
         </div>
       </div>
     )

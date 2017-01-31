@@ -546,6 +546,33 @@ button {
   animation: lolo 1.5s cubic-bezier(0.25,0.1,0.25,1) infinite;
 }
 
+.snackbar-appear {
+  transform: translateX(100%)
+}
+
+.snackbar-appear.snackbar-appear-active {
+  transform: translateX(0);
+  transition: transform 300ms ease-in-out;
+}
+
+.snackbar-enter {
+  transform: translateX(100%)
+}
+
+.snackbar-enter.snackbar-enter-active {
+  transform: translateX(0);
+  transition: transform 300ms ease-in-out;
+}
+
+.snackbar-leave {
+  opacity: 1;
+}
+
+.snackbar-leave.snackbar-leave-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
+}
+
 /* ---- Rebass overrides ---------------------------------------------------- */
 .Menu {
   border: 0 none !important;
