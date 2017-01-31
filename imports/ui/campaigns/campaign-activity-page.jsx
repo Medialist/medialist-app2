@@ -10,6 +10,7 @@ import ActivityFeed from '../dashboard/activity-feed'
 import EditCampaign from './edit-campaign'
 import Clients from '/imports/api/clients/clients'
 import Medialists from '/imports/api/medialists/medialists'
+import Contacts from '/imports/api/contacts/contacts'
 import CreateContact from '../contacts/edit-contact'
 import AddContact from './add-contact'
 import EditTeam from './edit-team'
@@ -21,8 +22,8 @@ const CampaignActivityPage = React.createClass({
     campaign: PropTypes.object,
     user: PropTypes.object,
     contacts: PropTypes.array,
-    contactsAll: PropTypes.array,
-    contactsCount: PropTypes.number
+    contactsCount: PropTypes.number,
+    contactsAllCount: PropTypes.number
   },
 
   getInitialState () {
@@ -36,9 +37,9 @@ const CampaignActivityPage = React.createClass({
   },
 
   onAddContactClick () {
-    const { contactsAll } = this.props
+    const { contactsAllCount } = this.props
 
-    if (contactsAll && contactsAll.length) {
+    if (contactsAllCount) {
       const addContactModalOpen = !this.state.addContactModalOpen
       this.setState({ addContactModalOpen })
     } else {
@@ -103,7 +104,7 @@ const CampaignActivityPage = React.createClass({
       onCoverage,
       onCreateContact
     } = this
-    const { campaign, contacts, contactsCount, clients, contactsAll, teamMates, loading, user } = this.props
+    const { campaign, contacts, contactsCount, clients, teamMates, loading, user } = this.props
     const {
       createContactModalOpen,
       addContactModalOpen,
@@ -128,7 +129,7 @@ const CampaignActivityPage = React.createClass({
             <ActivityFeed campaign={campaign} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
-            <CampaignContactList contacts={contacts} contactsAll={contactsAll} contactsCount={contactsCount} campaign={campaign} onAddContactClick={onAddContactClick} />
+            <CampaignContactList contacts={contacts.slice(0, 7)} contactsCount={contactsCount} campaign={campaign} onAddContactClick={onAddContactClick} />
           </div>
         </div>
         <CreateContact
@@ -140,9 +141,8 @@ const CampaignActivityPage = React.createClass({
           open={addContactModalOpen}
           onDismiss={onAddContactModalDismiss}
           onCreate={onCreateContact}
-          contacts={contacts}
-          contactsAll={contactsAll}
-          campaign={campaign} />
+          campaign={campaign}
+          campaignContacts={contacts} />
       </div>
     )
   }
@@ -153,7 +153,8 @@ export default createContainer((props) => {
 
   const subs = [
     Meteor.subscribe('medialist', campaignSlug),
-    Meteor.subscribe('contacts'),
+    Meteor.subscribe('contacts-by-campaign', campaignSlug),
+    Meteor.subscribe('contactCount'),
     Meteor.subscribe('clients')
   ]
   const loading = subs.some((s) => !s.ready())
@@ -164,9 +165,9 @@ export default createContainer((props) => {
     loading,
     campaign,
     // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
-    contacts: window.Contacts.find({medialists: campaignSlug}, {limit: 7, sort: {updatedAt: -1}}).fetch(),
-    contactsCount: window.Contacts.find({medialists: campaignSlug}).count(),
-    contactsAll: window.Contacts.find({}, {sort: {name: 1}}).fetch(),
+    contacts: Contacts.find({medialists: campaignSlug}, {sort: {updatedAt: -1}}).fetch(),
+    contactsCount: Contacts.find({medialists: campaignSlug}).count(),
+    contactsAllCount: window.Counter.get('contactCount'),
     teamMates: campaign && campaign.team,
     user: Meteor.user(),
     clients: Clients.find({}).fetch()

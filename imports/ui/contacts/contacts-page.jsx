@@ -1,7 +1,7 @@
 import querystring from 'querystring'
 import React from 'react'
 import { Meteor } from 'meteor/meteor'
-import { ReactMeteorData, createContainer } from 'meteor/react-meteor-data'
+import { createContainer } from 'meteor/react-meteor-data'
 import { Link, withRouter } from 'react-router'
 import Arrow from 'rebass/dist/Arrow'
 import Dropdown from 'rebass/dist/Dropdown'
@@ -13,6 +13,7 @@ import SectorSelector from '../campaigns/sector-selector.jsx'
 import EditContact from './edit-contact.jsx'
 import ContactListEmpty from './contacts-list-empty'
 import { FeedContactIcon } from '../images/icons'
+import createSearchContainer from './search-container'
 
 /*
  * ContactPage and ContactsPageContainer
@@ -165,11 +166,11 @@ const ContactsTotal = ({ searching, results, total }) => {
   return <div>{num} contact{num === 1 ? '' : 's'} {label}</div>
 }
 
+const SearchableContactsPage = createSearchContainer(ContactsPage)
+
 // I decode and encode the search options from the query string
 // and set up the subscriptions and collecton queries from those options.
 const ContactsPageContainer = withRouter(React.createClass({
-  mixins: [ReactMeteorData],
-
   // API is like setState..
   // Pass an obj with the new params you want to set on the query string.
   setQuery (opts) {
@@ -191,29 +192,16 @@ const ContactsPageContainer = withRouter(React.createClass({
     return { sort, term }
   },
 
-  getMeteorData () {
-    const { sort, term } = this.parseQuery(this.props.location)
-    const subs = [ Meteor.subscribe('contactCount') ]
-    const contactsCount = window.Counter.get('contactCount')
-    const query = {}
-    const minSearchLength = 3
-    const searching = term.length >= minSearchLength
-    if (searching) {
-      const filterRegExp = new RegExp(term, 'gi')
-      query.$or = [
-        { name: filterRegExp },
-        { 'outlets.value': filterRegExp },
-        { 'outlets.label': filterRegExp }
-      ]
-      subs.push(Meteor.subscribe('contacts', {regex: term.substring(0, minSearchLength)}))
-    }
-    const contacts = window.Contacts.find(query, { sort }).fetch()
-    const loading = !subs.every((sub) => sub.ready())
-    return { contacts, contactsCount, loading, searching, sort, term }
-  },
-
   render () {
-    return <ContactsPage {...this.props} {...this.data} setQuery={this.setQuery} />
+    const { sort, term } = this.parseQuery(this.props.location)
+    return (
+      <SearchableContactsPage
+        {...this.props}
+        {...this.data}
+        sort={sort}
+        term={term}
+        setQuery={this.setQuery} />
+    )
   }
 }))
 

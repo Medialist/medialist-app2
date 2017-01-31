@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react'
-import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
 import ContactsTable from '../contacts/contacts-table'
@@ -8,15 +7,15 @@ import ContactsActionsToast from '../contacts/contacts-actions-toast'
 import CampaignTopbar from './campaign-topbar'
 import CampaignSummary from './campaign-summary'
 import Medialists from '/imports/api/medialists/medialists'
+import Contacts from '/imports/api/contacts/contacts'
 import CreateContact from '../contacts/edit-contact'
 import AddContact from './add-contact'
 
 const CampaignContactsPage = React.createClass({
   propTypes: {
-    campaign: PropTypes.object,
-    contacts: PropTypes.array,
-    contactsAll: PropTypes.array,
-    router: PropTypes.object
+    campaign: PropTypes.object.isRequired,
+    contacts: PropTypes.array.isRequired,
+    contactsAllCount: PropTypes.number.isRequired
   },
 
   getInitialState () {
@@ -30,9 +29,9 @@ const CampaignContactsPage = React.createClass({
   },
 
   onAddContactClick () {
-    const { contactsAll } = this.props
+    const { contactsAllCount } = this.props
 
-    if (contactsAll && contactsAll.length) {
+    if (contactsAllCount) {
       const addContactModalOpen = !this.state.addContactModalOpen
       this.setState({ addContactModalOpen })
     } else {
@@ -87,7 +86,7 @@ const CampaignContactsPage = React.createClass({
   },
 
   render () {
-    const { campaign, contacts, contactsAll } = this.props
+    const { campaign, contacts } = this.props
     if (!campaign) return null
 
     const {
@@ -148,9 +147,8 @@ const CampaignContactsPage = React.createClass({
           open={addContactModalOpen}
           onDismiss={onAddContactModalDismiss}
           onCreate={onCreateContact}
-          contacts={contacts}
-          contactsAll={contactsAll}
-          campaign={campaign} />
+          campaign={campaign}
+          campaignContacts={contacts} />
       </div>
     )
   }
@@ -177,7 +175,7 @@ const ContactsTableContainer = createContainer((props) => {
       ]
     }
   }
-  const contacts = window.Contacts.find(query, { sort }).fetch()
+  const contacts = Contacts.find(query, { sort }).fetch()
   return { ...props, contacts }
 }, ContactsTable)
 
@@ -186,7 +184,8 @@ export default createContainer((props) => {
 
   const subs = [
     Meteor.subscribe('medialist', campaignSlug),
-    Meteor.subscribe('contacts')
+    Meteor.subscribe('contacts-by-campaign', campaignSlug),
+    Meteor.subscribe('contactCount')
   ]
   const loading = subs.some((s) => !s.ready())
 
@@ -195,8 +194,8 @@ export default createContainer((props) => {
     loading,
     campaign: Medialists.findOne({ slug: campaignSlug }),
     // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
-    contacts: window.Contacts.find({medialists: campaignSlug}, {sort: {updatedAt: -1}}).fetch(),
-    contactsAll: window.Contacts.find({}, {sort: {name: 1}}).fetch(),
+    contacts: Contacts.find({medialists: campaignSlug}, {sort: {updatedAt: -1}}).fetch(),
+    contactsAllCount: window.Counter.get('contactCount'),
     user: Meteor.user()
   }
-}, withRouter(CampaignContactsPage))
+}, CampaignContactsPage)
