@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
 import Authenticator from './users/authenticator'
 import NavBar from './navigation/navbar'
+import Snackbar from './snackbar/snackbar'
 
 const Layout = React.createClass({
   propTypes: {
@@ -13,10 +14,12 @@ const Layout = React.createClass({
     const { children, user, notifications } = this.props
     return (
       <Authenticator user={user}>
-        <div>
-          <NavBar user={user} notifications={notifications} />
-          {children}
-        </div>
+        <Snackbar>
+          <div>
+            <NavBar user={user} notifications={notifications} />
+            {children}
+          </div>
+        </Snackbar>
       </Authenticator>
     )
   }
