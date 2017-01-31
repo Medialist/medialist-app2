@@ -1,7 +1,8 @@
 import assert from 'assert'
 import Faker from 'faker'
+import isEqual from 'lodash.isequal'
 import { Random } from 'meteor/random'
-import { create, del } from './methods'
+import { create, del, itemCount, typeCount } from './methods'
 import MasterLists from './master-lists'
 import Contacts from '../contacts/contacts'
 import Medialists from '../medialists/medialists'
@@ -53,7 +54,7 @@ describe('master-lists-create', function () {
   })
 })
 
-describe('master-lists-remove', function () {
+describe('master-lists-delete', function () {
   let masterListId
 
   beforeEach(function () {
@@ -70,7 +71,7 @@ describe('master-lists-remove', function () {
   })
 
   it('should not allow the deletion of an existing MasterList unless logged in', function () {
-    assert.throws(() => del.run.call(masterListId))
+    assert.throws(() => del.run(masterListId))
   })
 
   it('should not allow the deletion of a non-existent MasterList', function () {
@@ -89,5 +90,58 @@ describe('master-lists-remove', function () {
     assert.ok(masterList.deleted)
     assert.strictEqual(Contacts.findOne({ 'masterLists._id': masterListId }), undefined)
     assert.strictEqual(Medialists.findOne({ 'masterLists._id': masterListId }), undefined)
+  })
+})
+
+describe('master-lists-itemCount', function () {
+  let masterListId
+
+  beforeEach(function () {
+    resetDatabase()
+    masterListId = MasterLists.insert({
+      type: Faker.random.arrayElement(['Contacts', 'Campaigns']),
+      name: Faker.company.companyName(),
+      slug: Faker.commerce.productMaterial(),
+      items: Array(3).fill(0).map(() => Random.id()),
+      order: 0
+    })
+  })
+
+  it('should not allow the retrieval of a MasterList item count unless logged in', function () {
+    assert.throws(() => itemCount.run.call({}, masterListId))
+  })
+
+  it('should not allow the retrieval of an item count for a non-existent MasterList', function () {
+    assert.throws(() => itemCount.run.call({ userId: 123 }, Random.id()))
+  })
+
+  it('should correctly retrive the item count for an existing MasterList', function () {
+    const count = itemCount.run.call({ userId: 123 }, masterListId)
+    assert.equal(count, 3)
+  })
+})
+
+describe('master-lists-typeCount', function () {
+  beforeEach(function () {
+    resetDatabase()
+    ;['Campaigns', 'Campaigns', 'Contacts'].forEach((type) => MasterLists.insert({
+      type,
+      name: Faker.company.companyName(),
+      slug: Faker.commerce.productMaterial(),
+      items: Array(3).fill(0).map(() => Random.id()),
+      order: 0
+    }))
+  })
+
+  it('should not allow the retrieval of MasterList type count unless logged in', function () {
+    assert.throws(() => typeCount.run.call())
+  })
+
+  it('should correctly retrive the type count for a logged-in user', function () {
+    const typeCounts = typeCount.run.call({ userId: 123 })
+    assert(isEqual(typeCounts, [
+      { _id: 'Campaigns', count: 2 },
+      { _id: 'Contacts', count: 1 }
+    ]))
   })
 })

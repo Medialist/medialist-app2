@@ -39,3 +39,29 @@ export const del = new ValidatedMethod({
     return true
   }
 })
+
+export const itemCount = new ValidatedMethod({
+  name: 'MasterLists/itemCount',
+  validate: (masterListId) => check(masterListId, SimpleSchema.RegEx.Id),
+  run (masterListId) {
+    if (!this.userId) throw new Meteor.Error('You must be logged in')
+    const masterList = MasterLists.findOne({ _id: masterListId, deleted: null })
+    if (!masterList) throw new Meteor.Error('MasterList not found')
+    return masterList.items.length
+  }
+})
+
+export const typeCount = new ValidatedMethod({
+  name: 'MasterLists/typeCount',
+  validate: null,
+  run () {
+    if (!this.userId) throw new Meteor.Error('You must be logged in')
+    const rawMasterLists = MasterLists.rawCollection()
+    rawMasterLists.aggregateSync = Meteor.wrapAsync(rawMasterLists.aggregate)
+    return rawMasterLists.aggregateSync([
+      { $match: { deleted: null } },
+      { $group: { _id: '$type', count: { $sum: 1 } } },
+      { $sort: { _id: 1 } }
+    ])
+  }
+})
