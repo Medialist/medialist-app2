@@ -1,30 +1,23 @@
 import React, { PropTypes } from 'react'
 import { SectorIcon, MenuCampaignIcon, DeleteIcon, FeedEditIcon } from '../../images/icons'
 import Tooltip from '../../navigation/tooltip'
-import insertRuler from './insert-ruler'
 
-const SettingsMasterLists = ({ masterlists }) => {
+const CampaignMasterLists = (props) => {
   return (
     <section className='pt4'>
       <div className='flex justify-center my4'>
         <SectorIcon className='blue svg-icon-lg' />
       </div>
       <div className='flex justify-center my4 bold f-xl'>Campaign Lists</div>
-      <div className='flex justify-center my4'>
+      <div className='flex justify-center my4 border border-bottom border-gray80'>
         <p className='max-width-2 center'>Campaign Lists help keep your Campaigns organised. Look for them across the top of the Campaigns page.</p>
       </div>
-      {insertRuler()}
-      <MasterLists masterlists={masterlists} />
+      <MasterLists {...props} />
     </section>
   )
 }
 
-SettingsMasterLists.propTypes = {
-  user: PropTypes.object,
-  masterlists: PropTypes.array
-}
-
-export default SettingsMasterLists
+export default CampaignMasterLists
 
 const EmptyMasterLists = ({creating, onCreate}) => {
   return (
@@ -75,7 +68,10 @@ const CreateMasterListInput = React.createClass({
 
 const MasterLists = React.createClass({
   propTypes: {
-    masterlists: PropTypes.array.isRequired
+    masterlists: PropTypes.array.isRequired,
+    onAddMasterList: PropTypes.func.isRequired,
+    onUpdateMasterList: PropTypes.func.isRequired,
+    onDeleteMasterList: PropTypes.func.isRequired
   },
   getInitialState () {
     return {
@@ -90,7 +86,7 @@ const MasterLists = React.createClass({
   onCreate (name) {
     this.setState({creating: true})
     if (!name) return
-    console.log({ name })
+    this.props.onAddMasterList({ type: 'Campaigns', name })
     this.setState({creating: false})
   },
   onChange (slug, value) {
@@ -98,7 +94,7 @@ const MasterLists = React.createClass({
   },
   onUpdate (slug) {
     this.setState({ editing: null })
-    console.log({ name: this.state.masterlists[slug] })
+    this.props.onUpdateMasterList({ type: 'Campaigns', name: this.state.masterlists[slug] })
   },
   onKeyDown (slug, key) {
     if (key === 'Enter' || key === 'Tab') this.onUpdate(slug)
@@ -107,7 +103,7 @@ const MasterLists = React.createClass({
     this.setState({ editing: slug })
   },
   removeMasterList (slug) {
-    console.log('remove', slug)
+    this.props.onDeleteMasterList({ type: 'Campaigns', slug })
   },
   componentDidUpdate () {
     if (!this.state.editing) return
@@ -123,7 +119,7 @@ const MasterLists = React.createClass({
     } else {
       return (
         <div className='mx3 pb3'>
-          <div className='flex justify-start align-middle p2 mb1'>
+          <div className='flex justify-start align-middle p2 mb2'>
             <div className='bold flex-none'>Campaign Lists ({masterlists.length})</div>
             <div className='flex-auto blue underline right-align pointer' onClick={(e) => onCreate()}>Add new Campaign List</div>
           </div>
@@ -149,12 +145,16 @@ const MasterLists = React.createClass({
                         <button className='btn bg-completed white' onClick={() => onUpdate(slug)}>Save Changes</button>
                       </div>
                     ) : (
-                      <div className='flex-auto right-align'>
+                      <div className='flex-auto right-align mr2'>
                         <Tooltip title='Edit List'>
-                          <FeedEditIcon className='mr2 gray60 hover-gray40' onClick={() => isEditing(slug)} />
+                          <div className='inline-block mx-auto'>
+                            <FeedEditIcon className='mx2 gray60 hover-gray40' onClick={() => isEditing(slug)} />
+                          </div>
                         </Tooltip>
                         <Tooltip title='Delete List'>
-                          <DeleteIcon className='mr4 gray60 hover-gray40' onClick={() => removeMasterList(slug)} />
+                          <div className='inline-block mx-auto'>
+                            <DeleteIcon className='mx2 gray60 hover-gray40' onClick={() => removeMasterList(slug)} />
+                          </div>
                         </Tooltip>
                       </div>
                     )

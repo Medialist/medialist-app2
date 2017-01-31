@@ -7,13 +7,13 @@ import { CircleAvatar } from '../../images/avatar'
 import SettingsProfile from './profile'
 import SettingsPassword from './password'
 import SettingsTeam from './team'
-import SettingsMasterLists from './master-lists'
+import CampaignMasterLists from './campaign-master-lists'
 
 const menuItems = [
   {label: 'Profile', slug: 'profile'},
   {label: 'Change Password', slug: 'password'},
   {label: 'Team', slug: 'team'},
-  {label: 'Campaign Lists', slug: 'campaign-lists'}
+  {label: 'Campaign Lists', slug: 'campaign-master-lists'}
 ]
 
 const SettingsPage = React.createClass({
@@ -30,12 +30,21 @@ const SettingsPage = React.createClass({
   componentWillReceiveProps (props) {
     this.setState({selectedMenuItem: props.params.selected})
   },
+  onAddMasterList ({type, name}) {
+    console.log({type, name})
+  },
+  onUpdateMasterList ({type, name}) {
+    console.log({type, name})
+  },
+  onDeleteMasterList ({type, slug}) {
+    console.log({type, slug})
+  },
   render () {
     const settingsPanel = {
       profile: <SettingsProfile user={this.props.user} />,
       password: <SettingsPassword />,
       team: <SettingsTeam />,
-      'campaign-lists': <SettingsMasterLists masterlists={this.props.masterlists} />
+      'campaign-master-lists': <CampaignMasterLists masterlists={this.props.masterlists} {...this} />
     }
     return (
       <div className='flex max-width-4 mx-auto my4 pt4'>
