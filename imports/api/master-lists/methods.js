@@ -104,7 +104,7 @@ export const removeItem = new ValidatedMethod({
   run ({ _id, item }) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
 
-    const masterList = MasterLists.findOne({ 
+    const masterList = MasterLists.findOne({
       _id,
       items: item,
       deleted: null
