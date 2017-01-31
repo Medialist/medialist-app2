@@ -7,18 +7,19 @@ import { CircleAvatar } from '../../images/avatar'
 import SettingsProfile from './profile'
 import SettingsPassword from './password'
 import SettingsTeam from './team'
-import SettingsSector from './sectors'
+import SettingsMasterLists from './master-lists'
 
 const menuItems = [
   {label: 'Profile', slug: 'profile'},
   {label: 'Change Password', slug: 'password'},
   {label: 'Team', slug: 'team'},
-  {label: 'Sectors', slug: 'sector'}
+  {label: 'Campaign Lists', slug: 'campaign-lists'}
 ]
 
 const SettingsPage = React.createClass({
   propTypes: {
     user: PropTypes.object.isRequired,
+    masterlists: PropTypes.array,
     params: PropTypes.object
   },
   getInitialState () {
@@ -34,10 +35,10 @@ const SettingsPage = React.createClass({
       profile: <SettingsProfile user={this.props.user} />,
       password: <SettingsPassword />,
       team: <SettingsTeam />,
-      sector: <SettingsSector />
+      'campaign-lists': <SettingsMasterLists masterlists={this.props.masterlists} />
     }
     return (
-      <div className='flex max-width-lg mx-auto my4 pt4'>
+      <div className='flex max-width-4 mx-auto my4 pt4'>
         <div className='flex-none mr4 xs-hide sm-hide' style={{width: 250}}>
           <article>
             <label className='gray40'><SettingsIcon /> Settings / <span className='gray'>{this.state.selectedMenuItem}</span></label>
@@ -55,7 +56,11 @@ const SettingsPage = React.createClass({
 })
 
 export default createContainer(() => {
-  return { user: Meteor.user() }
+  return {
+    user: Meteor.user(),
+    masterlists: [{type: 'Campaigns', slug: 'healthcare', name: 'Healthcare', items: 423, order: 1}, {type: 'Campaigns', slug: 'drone-nationals', name: 'Drone Nationals', items: 12, order: 2}]
+    // masterlists: []
+  }
 }, SettingsPage)
 
 function userInfo (user) {
