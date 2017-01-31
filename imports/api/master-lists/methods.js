@@ -126,15 +126,15 @@ export const removeItem = new ValidatedMethod({
 })
 
 export const itemCount = new ValidatedMethod({
-  name: 'MasterLists/itemCount',
-  validate: (masterListId) => check(masterListId, SimpleSchema.RegEx.Id),
-  run (masterListId) {
+  name: 'MasterLists/itemCounts',
+  validate: (masterListIds) => check(masterListIds, [SimpleSchema.RegEx.Id]),
+  run (masterListIds) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
 
-    const masterList = MasterLists.findOne({ _id: masterListId, deleted: null })
-    if (!masterList) throw new Meteor.Error('MasterList not found')
-
-    return masterList.items.length
+    return MasterLists.find({ _id: { $in: masterListIds }, deleted: null }).fetch().reduce((memo, ml) => {
+      memo[ml._id] = ml.items.length
+      return memo
+    }, {})
   }
 })
 

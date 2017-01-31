@@ -70,16 +70,16 @@ describe('master-lists-delete', function () {
   })
 
   it('should not allow the deletion of an existing MasterList unless logged in', function () {
-    assert.throws(() => del.run(masterListId))
+    assert.throws(() => del.run(masterListId), /You must be logged in/)
   })
 
   it('should not allow the deletion of a non-existent MasterList', function () {
-    assert.throws(() => del.run.call({ userId: 123 }, Random.id()))
+    assert.throws(() => del.run.call({ userId: 123 }, Random.id()), /MasterList not found/)
   })
 
   it('should not allow the deletion of an already deleted MasterList', function () {
     MasterLists.update({}, { $set: { deleted: new Date() } })
-    assert.throws(() => del.run.call({ userId: 123 }, masterListId))
+    assert.throws(() => del.run.call({ userId: 123 }, masterListId), /MasterList not found/)
   })
 
   it('should allow the deletion of an existing MasterList', function () {
@@ -107,15 +107,15 @@ describe('master-lists-update', function () {
   })
 
   it('should not allow a MasterList update unless logged in', function () {
-    assert.throws(() => update.run.call({}, { _id: masterListId, name: Faker.company.companyName() }))
+    assert.throws(() => update.run.call({}, { _id: masterListId, name: Faker.company.companyName() }), /You must be logged in/)
   })
 
   it('should not allow an update to a non-existent MasterList', function () {
-    assert.throws(() => update.run.call({ userId: 123 }, { _id: Random.Id(), name: Faker.company.companyName() }))
+    assert.throws(() => update.run.call({ userId: 123 }, { _id: Random.id(), name: Faker.company.companyName() }), /MasterList not found/)
   })
 
   it('should not allow an update to a MasterList field other than name', function () {
-    assert.throws(() => update.run.call({ userId: 123 }, { _id: Random.Id(), slug: Faker.commerce.productMaterial() }))
+    assert.throws(() => update.validate.call({ userId: 123 }, { _id: masterListId, slug: Faker.commerce.productMaterial() }), /slug is not allowed by the schema/)
   })
 
   it('should correctly update an existing MasterList', function () {
@@ -151,15 +151,15 @@ describe('master-lists-addItems', function () {
   })
 
   it('should not allow items to be added to a MasterList unless logged in', function () {
-    assert.throws(() => addItems.run.call({}, { _id: masterListId, items: campaigns.map((c) => c._id) }))
+    assert.throws(() => addItems.run.call({}, { _id: masterListId, items: campaigns.map((c) => c._id) }), /You must be logged in/)
   })
 
   it('should not allow items to be added to a non-existent MasterList', function () {
-    assert.throws(() => addItems.run.call({ userId: 123 }, { _id: Random.id(), items: campaigns.map((c) => c._id) }))
+    assert.throws(() => addItems.run.call({ userId: 123 }, { _id: Random.id(), items: campaigns.map((c) => c._id) }), /MasterList not found/)
   })
 
   it('should not allow items of the wrong type to be added to a MasterList', function () {
-    assert.throws(() => addItems.run.call({ userId: 123 }, { _id: masterListId, items: [contact._id] }))
+    assert.throws(() => addItems.run.call({ userId: 123 }, { _id: masterListId, items: [contact._id] }), /One or more items does not exist in the correct collection for this masterlist/)
   })
 
   it('should correctly add items to an existing MasterList without duplication', function () {
@@ -181,6 +181,9 @@ describe('master-lists-removeItem', function () {
       const _id = Medialists.insert({ name: Faker.company.companyName(), slug: Faker.commerce.productMaterial(), masterLists: [] })
       return { _id, ...campaign }
     })
+    contact = { name: Faker.name.findName(), slug: Faker.commerce.productMaterial(), masterLists: [] }
+    const contactId = Contacts.insert(contact)
+    Object.assign(contact, { _id: contactId })
     masterListId = MasterLists.insert({
       type: 'Campaigns',
       name: Faker.company.companyName(),
@@ -192,15 +195,15 @@ describe('master-lists-removeItem', function () {
   })
 
   it('should not allow an item to be removed from a MasterList unless logged in', function () {
-    assert.throws(() => removeItem.run.call({}, { _id: masterListId, item: campaigns[0]._id }))
+    assert.throws(() => removeItem.run.call({}, { _id: masterListId, item: campaigns[0]._id }), /You must be logged in/)
   })
 
   it('should not allow item to be removed from a non-existent MasterList', function () {
-    assert.throws(() => removeItem.run.call({ userId: 123 }, { _id: Random.id(), item: campaigns[0]._id }))
+    assert.throws(() => removeItem.run.call({ userId: 123 }, { _id: Random.id(), item: campaigns[0]._id }), /MasterList not found/)
   })
 
-  it('should not allow items of the wrong type to be added to a MasterList', function () {
-    assert.throws(() => removeItem.run.call({ userId: 123 }, { _id: masterListId, items: [contact._id] }))
+  it('should not allow item of the wrong type to be removed from a MasterList', function () {
+    assert.throws(() => removeItem.run.call({ userId: 123 }, { _id: masterListId, items: [contact._id] }), /MasterList not found/)
   })
 
   it('should correctly remove item from an existing MasterList', function () {
@@ -227,16 +230,17 @@ describe('master-lists-itemCount', function () {
   })
 
   it('should not allow the retrieval of a MasterList item count unless logged in', function () {
-    assert.throws(() => itemCount.run.call({}, masterListId))
+    assert.throws(() => itemCount.run.call({}, [masterListId]), /You must be logged in/)
   })
 
-  it('should not allow the retrieval of an item count for a non-existent MasterList', function () {
-    assert.throws(() => itemCount.run.call({ userId: 123 }, Random.id()))
+  it('should return no results for a non-existent MasterList', function () {
+    const res = itemCount.run.call({ userId: 123 }, [Random.id()])
+    assert(isEqual(res, {}))
   })
 
   it('should correctly retrive the item count for an existing MasterList', function () {
-    const count = itemCount.run.call({ userId: 123 }, masterListId)
-    assert.equal(count, 3)
+    const res = itemCount.run.call({ userId: 123 }, [masterListId])
+    assert(isEqual(res, { [masterListId]: 3 }))
   })
 })
 
@@ -253,7 +257,7 @@ describe('master-lists-typeCount', function () {
   })
 
   it('should not allow the retrieval of MasterList type count unless logged in', function () {
-    assert.throws(() => typeCount.run.call())
+    assert.throws(() => typeCount.run.call(), /You must be logged in/)
   })
 
   it('should correctly retrive the type count for a logged-in user', function () {
