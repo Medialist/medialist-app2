@@ -1,16 +1,12 @@
 import React, { PropTypes } from 'react'
-import { MenuCampaignIcon, DeleteIcon } from '../../images/icons'
+import { SectorIcon, MenuCampaignIcon, DeleteIcon } from '../../images/icons'
 import insertRuler from './insert-ruler'
 
 const SettingsMasterLists = ({ masterlists }) => {
   return (
     <article className='pt4'>
       <div className='flex justify-center my4'>
-        <div className='svg-icon blue'>
-          <svg width='21' height='21' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'>
-            <path d='M14.929 9A7.012 7.012 0 0 1 9 14.929V9h5.929zm0-2C14.443 3.613 11.526 1 8 1 4.142 1 1 4.134 1 8a7.008 7.008 0 0 0 6 6.929V8c0-.552.446-1 .998-1h6.93z' />
-          </svg>
-        </div>
+        <SectorIcon className='blue svg-icon-lg' />
       </div>
       <div className='flex justify-center my4 bold f-xl'>Campaign Lists</div>
       <div className='flex justify-center my4'>
@@ -25,13 +21,7 @@ const SettingsMasterLists = ({ masterlists }) => {
 const EmptyMasterLists = (creating, onCreate) => {
   return (
     <div className='flex flex-column justify-start items-center' style={{height: 200}}>
-      <div className='svg-icon blue mt4 mb3'>
-        <svg width='21' height='21' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'>
-          <g fill-rule='evenodd'>
-            <path d='M3.775 5h-1.78C1.455 5 1 5.446 1 5.995v8.01c0 .54.446.995.995.995h8.01c.529 0 .977-.428.994-.963l-8.037-2.154a.995.995 0 0 1-.704-1.22L3.775 5z' /><rect transform='rotate(15 9.611 6.911)' x='5.111' y='2.411' width='9' height='9' rx='1' />
-          </g>
-        </svg>
-      </div>
+      <MenuCampaignIcon className='blue svg-icon-lg mt4 mb3' />
       <div className='mt3 mb1 center'>You have not created any Campaign Lists yet</div>
       <div className='mb3 center blue underlined pointer' onClick={onCreate}>Create a Campaign List</div>
     </div>
