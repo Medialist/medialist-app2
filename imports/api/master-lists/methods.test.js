@@ -2,7 +2,7 @@ import assert from 'assert'
 import Faker from 'faker'
 import isEqual from 'lodash.isequal'
 import { Random } from 'meteor/random'
-import { create, del, update, addItems, itemCount, typeCount } from './methods'
+import { create, del, update, addItems, removeItem, itemCount, typeCount } from './methods'
 import MasterLists from './master-lists'
 import Contacts from '../contacts/contacts'
 import Medialists from '../medialists/medialists'
@@ -150,7 +150,7 @@ describe('master-lists-addItems', function () {
     })
   })
 
-  it('should not allow a items to be added to a MasterList unless logged in', function () {
+  it('should not allow items to be added to a MasterList unless logged in', function () {
     assert.throws(() => addItems.run.call({}, { _id: masterListId, items: campaigns.map((c) => c._id) }))
   })
 
@@ -168,6 +168,47 @@ describe('master-lists-addItems', function () {
     assert.equal(masterList.items.length, 3)
     const addedCampaign = Medialists.findOne()
     assert.equal(addedCampaign.masterLists[0]._id, masterListId)
+  })
+})
+
+describe('master-lists-removeItem', function () {
+  let masterListId, campaigns, contact
+
+  beforeEach(function () {
+    resetDatabase()
+    campaigns = Array(3).fill(0).map(() => {
+      const campaign = { name: Faker.company.companyName(), slug: Faker.commerce.productMaterial(), masterLists: [] }
+      const _id = Medialists.insert({ name: Faker.company.companyName(), slug: Faker.commerce.productMaterial(), masterLists: [] })
+      return { _id, ...campaign }
+    })
+    masterListId = MasterLists.insert({
+      type: 'Campaigns',
+      name: Faker.company.companyName(),
+      slug: Faker.commerce.productMaterial(),
+      items: campaigns.map((c) => c._id),
+      order: 0
+    })
+    Medialists.update({ _id: campaigns[0]._id }, { $set: { masterLists: [{ _id: masterListId }] } })
+  })
+
+  it('should not allow an item to be removed from a MasterList unless logged in', function () {
+    assert.throws(() => removeItem.run.call({}, { _id: masterListId, item: campaigns[0]._id }))
+  })
+
+  it('should not allow item to be removed from a non-existent MasterList', function () {
+    assert.throws(() => removeItem.run.call({ userId: 123 }, { _id: Random.id(), item: campaigns[0]._id }))
+  })
+
+  it('should not allow items of the wrong type to be added to a MasterList', function () {
+    assert.throws(() => removeItem.run.call({ userId: 123 }, { _id: masterListId, items: [contact._id] }))
+  })
+
+  it('should correctly remove item from an existing MasterList', function () {
+    removeItem.run.call({ userId: 123 }, { _id: masterListId, item: campaigns[0]._id })
+    const masterList = MasterLists.findOne({ _id: masterListId })
+    assert.equal(masterList.items.length, 2)
+    const removedCampaign = Medialists.findOne({ _id: campaigns[0]._id })
+    assert.equal(removedCampaign.masterLists.length, 0)
   })
 })
 

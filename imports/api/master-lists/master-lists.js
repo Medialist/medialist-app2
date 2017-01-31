@@ -74,6 +74,17 @@ export const MasterListAddItemsSchema = new SimpleSchema({
   }
 })
 
+export const MasterListRemoveItemSchema = new SimpleSchema({
+  _id: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id
+  },
+  item: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id
+  }
+})
+
 export const MasterListRefSchema = new SimpleSchema({
   _id: {
     type: String,
