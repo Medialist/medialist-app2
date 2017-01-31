@@ -35,7 +35,7 @@ const EmptyMasterLists = ({creating, onCreate}) => {
         <div className='flex flex-column justify-start items-center'>
           <MenuCampaignIcon className='blue svg-icon-lg mt4 mb3' />
           <div className='mt3 mb1 center'>You have not created any Campaign Lists yet</div>
-          <div className='mb3 center blue underlined pointer' onClick={onCreate}>Create a Campaign List</div>
+          <div className='mb3 center blue underlined pointer' onClick={() => onCreate(null)}>Create a Campaign List</div>
         </div>
       )}
     </div>
@@ -151,9 +151,11 @@ const MasterLists = React.createClass({
                     ) : (
                       <div className='flex-auto right-align'>
                         <Tooltip title='Edit List'>
-                          <FeedEditIcon className='mr2 gray60 hover-gray40' onClick={(e) => isEditing(slug)} />
+                          <FeedEditIcon className='mr2 gray60 hover-gray40' onClick={() => isEditing(slug)} />
                         </Tooltip>
-                        <DeleteIcon className='mr4 gray60' onClick={() => removeMasterList(slug)} />
+                        <Tooltip title='Delete List'>
+                          <DeleteIcon className='mr4 gray60 hover-gray40' onClick={() => removeMasterList(slug)} />
+                        </Tooltip>
                       </div>
                     )
                   }
