@@ -2,10 +2,9 @@ import assert from 'assert'
 import Faker from 'faker'
 import isEqual from 'lodash.isequal'
 import { Random } from 'meteor/random'
-import { create, del, itemCount, typeCount } from './methods'
+import { create, del, update, itemCount, typeCount } from './methods'
 import MasterLists from './master-lists'
 import Contacts from '../contacts/contacts'
-import Medialists from '../medialists/medialists'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
 
 describe('master-lists-create', function () {
@@ -60,14 +59,13 @@ describe('master-lists-delete', function () {
   beforeEach(function () {
     resetDatabase()
     masterListId = MasterLists.insert({
-      type: Faker.random.arrayElement(['Contacts', 'Campaigns']),
+      type: 'Contacts',
       name: Faker.company.companyName(),
       slug: Faker.commerce.productMaterial(),
       items: [],
       order: 0
     })
     Contacts.insert({ masterLists: [{ _id: masterListId }] })
-    Medialists.insert({ masterLists: [{ _id: masterListId }] })
   })
 
   it('should not allow the deletion of an existing MasterList unless logged in', function () {
@@ -89,7 +87,40 @@ describe('master-lists-delete', function () {
     assert.ok(masterList)
     assert.ok(masterList.deleted)
     assert.strictEqual(Contacts.findOne({ 'masterLists._id': masterListId }), undefined)
-    assert.strictEqual(Medialists.findOne({ 'masterLists._id': masterListId }), undefined)
+  })
+})
+
+describe('master-lists-update', function () {
+  let masterListId
+
+  beforeEach(function () {
+    resetDatabase()
+    masterListId = MasterLists.insert({
+      type: Faker.random.arrayElement(['Contacts', 'Campaigns']),
+      name: Faker.company.companyName(),
+      slug: Faker.commerce.productMaterial(),
+      items: Array(3).fill(0).map(() => Random.id()),
+      order: 0
+    })
+  })
+
+  it('should not allow a MasterList update unless logged in', function () {
+    assert.throws(() => update.run.call({}, { _id: masterListId, name: Faker.company.companyName() }))
+  })
+
+  it('should not allow an update to a non-existent MasterList', function () {
+    assert.throws(() => update.run.call({ userId: 123 }, { _id: Random.Id(), name: Faker.company.companyName() }))
+  })
+
+  it('should not allow an update to a MasterList field other than name', function () {
+    assert.throws(() => update.run.call({ userId: 123 }, { _id: Random.Id(), slug: Faker.commerce.productMaterial() }))
+  })
+
+  it('should correctly update an existing MasterList', function () {
+    const newName = Faker.company.companyName()
+    update.run.call({ userId: 123 }, { _id: masterListId, name: newName })
+    const masterList = MasterLists.findOne({ _id: masterListId })
+    assert.equal(masterList.name, newName)
   })
 })
 

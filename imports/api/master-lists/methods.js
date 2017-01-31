@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { check } from 'meteor/check'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
-import MasterLists, { MasterListSchema, MasterListCreationSchema } from './master-lists'
+import MasterLists, { MasterListSchema, MasterListCreationSchema, MasterListUpdateSchema } from './master-lists'
 import Contacts from '../contacts/contacts'
 import Medialists from '../medialists/medialists'
 import findUniqueSlug from '/imports/lib/slug'
@@ -31,12 +31,36 @@ export const del = new ValidatedMethod({
   validate: (masterListId) => check(masterListId, SimpleSchema.RegEx.Id),
   run (masterListId) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
-    const res = MasterLists.update({ _id: masterListId, deleted: null }, { $set: { deleted: new Date() } })
-    if (!res) throw new Meteor.Error('MasterList not found')
-    const removeArgs = [{ 'masterLists._id': masterListId }, { $pull: { masterLists: { _id: masterListId } } }, { multi: true }]
-    Contacts.update(...removeArgs)
-    Medialists.update(...removeArgs)
-    return true
+    const masterList = MasterLists.findOne({ _id: masterListId, deleted: null })
+    if (!masterList) throw new Meteor.Error('MasterList not found')
+    MasterLists.update({ _id: masterListId }, { $set: { deleted: new Date() } })
+    const refCollection = (masterList.type === 'Contacts') ? Contacts : Medialists
+    return refCollection.update({
+      'masterLists._id': masterListId
+    }, {
+      $pull: {
+        masterLists: { _id: masterListId }
+      }
+    }, { multi: true })
+  }
+})
+
+export const update = new ValidatedMethod({
+  name: 'MasterLists/update',
+  validate: MasterListUpdateSchema.validator(),
+  run ({ _id, name }) {
+    if (!this.userId) throw new Meteor.Error('You must be logged in')
+    const masterList = MasterLists.findOne({ _id, deleted: null })
+    if (!masterList) throw new Meteor.Error('MasterList not found')
+    MasterLists.update({ _id }, { $set: { name } })
+    const refCollection = (masterList.type === 'Contacts') ? Contacts : Medialists
+    return refCollection.update({
+      'masterLists._id': _id
+    }, {
+      $set: {
+        'masterLists.$.name': name
+      }
+    }, { multi: true })
   }
 })
 

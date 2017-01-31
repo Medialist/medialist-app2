@@ -52,6 +52,19 @@ export const MasterListCreationSchema = new SimpleSchema([
   }
 ])
 
+export const MasterListUpdateSchema = new SimpleSchema([
+  {
+    _id: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    },
+    name: {
+      type: String,
+      min: 1
+    }
+  }
+])
+
 export const MasterListRefSchema = new SimpleSchema({
   _id: {
     type: String,
