@@ -14,7 +14,7 @@ export default React.createClass({
     suggestions: PropTypes.array.isRequired
   },
   getInitialState () {
-    return { open: false, activeInd: null }
+    return { open: false, activeInd: 0 }
   },
   componentWillReceiveProps (props) {
     const { suggestions, value } = props
@@ -22,7 +22,7 @@ export default React.createClass({
     this.setState({open: suggestions.length > 0 && suggestions[0] !== value})
   },
   onBlur () {
-    this.setState({ open: false, activeInd: null }, this.props.onBlur)
+    this.setState({ open: false, activeInd: 0 }, this.props.onBlur)
   },
   onChange (evt) {
     this.props.onChange(evt.target.value)
@@ -47,19 +47,16 @@ export default React.createClass({
       case 'Tab':
       case 'Enter':
         if (open) evt.preventDefault()
-        if (activeInd !== null) {
-          this.props.onSelect(suggestions[activeInd])
-          this.setState({ open: false, activeInd: null })
-        }
-
+        this.props.onSelect(suggestions[activeInd])
+        this.setState({ open: false, activeInd: 0 })
     }
   },
   onDismiss () {
-    this.setState({ open: false, activeInd: null })
+    this.setState({ open: false, activeInd: 0 })
   },
   onClick (suggestion) {
     this.props.onSelect(suggestion)
-    this.setState({ open: false, activeInd: null })
+    this.setState({ open: false, activeInd: 0 })
   },
   onActivate (ind) {
     this.setState({ activeInd: ind })
@@ -98,7 +95,7 @@ export default React.createClass({
                 key={s}
                 className={`block px3 py2 pointer left-align f-sm normal gray20 ${activeClass}`}
                 onMouseOver={() => onActivate(ind)}
-                onMouseOut={() => onActivate(null)}
+                onMouseOut={() => onActivate(0)}
                 onMouseDown={() => onClick(s)}>
                 {s}
               </li>
