@@ -34,6 +34,10 @@ export const MasterListSchema = new SimpleSchema([
     },
     order: {
       type: Number
+    },
+    deleted: {
+      type: Date,
+      optional: true
     }
   }
 ])

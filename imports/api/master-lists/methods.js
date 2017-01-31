@@ -1,7 +1,10 @@
 import { Meteor } from 'meteor/meteor'
 import { check } from 'meteor/check'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
+import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import MasterLists, { MasterListSchema, MasterListCreationSchema } from './master-lists'
+import Contacts from '../contacts/contacts'
+import Medialists from '../medialists/medialists'
 import findUniqueSlug from '/imports/lib/slug'
 
 export const create = new ValidatedMethod({
@@ -20,5 +23,19 @@ export const create = new ValidatedMethod({
     doc.slug = findUniqueSlug(doc.name, MasterLists)
     check(doc, MasterListSchema)
     return MasterLists.insert(doc)
+  }
+})
+
+export const del = new ValidatedMethod({
+  name: 'MasterLists/delete',
+  validate: (masterListId) => check(masterListId, SimpleSchema.RegEx.Id),
+  run (masterListId) {
+    if (!this.userId) throw new Meteor.Error('You must be logged in')
+    const res = MasterLists.update({ _id: masterListId, deleted: null }, { $set: { deleted: new Date() } })
+    if (!res) throw new Meteor.Error('MasterList not found')
+    const removeArgs = [{ 'masterLists._id': masterListId }, { $pull: { masterLists: { _id: masterListId } } }, { multi: true }]
+    Contacts.update(...removeArgs)
+    Medialists.update(...removeArgs)
+    return true
   }
 })
