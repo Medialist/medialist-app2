@@ -44,20 +44,31 @@ const Container = ({open, top = 0, children}) => (
 )
 
 // An arrow tip that appears at the top middle of the dropdown menu
-const MenuArrow = ({size = 10}) => (
-  <div style={{
-    zIndex: 600,
-    position: 'absolute',
-    top: `-${size}px`,
-    left: `calc(50% - ${size}px)`,
-    width: '0',
-    height: '0',
-    border: `${size}px solid transparent`,
-    borderBottomColor: 'white',
-    borderTop: '0 none',
-    borderRadius: '2px'
-  }} />
-)
+const MenuArrow = ({height}) => {
+  const side = Math.sqrt(2) * height
+  return (
+    <div style={{
+      zIndex: 600,
+      position: 'absolute',
+      width: '100%',
+      height: `${height}px`,
+      top: `-${height}px`,
+      overflow: 'hidden'
+    }}>
+      <div style={{
+        display: 'inline-block',
+        position: 'relative',
+        left: `calc(50% - ${side / 2}px)`,
+        width: `${side}px`,
+        height: `${side}px`,
+        transform: `translate(0, ${height / 2}px) rotate(45deg)`,
+        borderRadius: '2px 0 0 0',
+        background: 'white',
+        boxShadow: '0px 1px 10px 0px rgba(0,0,0,0.20)'
+      }} />
+    </div>
+  )
+}
 
 // `width` forces the width of the Menu.
 //         width is required to make other calculaitons possible.
@@ -87,11 +98,11 @@ const Menu = ({children}) => (
   </div>
 )
 
-export const DropdownMenu = ({open, width, left, top = 0, arrowSize = 10, onDismiss, children}) => {
+export const DropdownMenu = ({open, width, left, top = 0, arrowHeight = 12, onDismiss, children}) => {
   return (
-    <Container open={open} top={top + arrowSize}>
+    <Container open={open} top={top + arrowHeight}>
       <Overlay onClick={onDismiss} />
-      <MenuArrow size={arrowSize} />
+      <MenuArrow height={arrowHeight} />
       <MenuPosition width={width} left={left}>
         <Menu>
           {children}
@@ -106,7 +117,7 @@ DropdownMenu.propTypes = {
   width: PropTypes.number.isRequired,
   left: PropTypes.number,
   top: PropTypes.number,
-  arrowSize: PropTypes.number,
+  arrowHeight: PropTypes.number,
   onDismiss: PropTypes.func,
   children: PropTypes.node
 }
