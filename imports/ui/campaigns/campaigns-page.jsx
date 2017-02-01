@@ -9,6 +9,7 @@ import SectorSelector from './sector-selector.jsx'
 import CampaignsActionsToast from './campaigns-actions-toast'
 import EditCampaign from './edit-campaign'
 import CampaignListEmpty from './campaign-list-empty'
+import withSnackbar from '../snackbar/with-snackbar.jsx'
 
 const CampaignsPage = React.createClass({
   propTypes: {
@@ -18,7 +19,8 @@ const CampaignsPage = React.createClass({
     searching: PropTypes.bool,
     sort: PropTypes.object,
     term: PropTypes.string,
-    setQuery: PropTypes.func
+    setQuery: PropTypes.func,
+    snackbar: PropTypes.object
   },
 
   getInitialState () {
@@ -65,7 +67,7 @@ const CampaignsPage = React.createClass({
   },
 
   render () {
-    const { campaignCount, campaigns, loading, total, sort, term } = this.props
+    const { campaignCount, campaigns, loading, total, sort, term, snackbar } = this.props
     const { onSortChange, onSelectionsChange, onSectorChange } = this
     const { selections, selectedSector, editCampaignOpen } = this.state
 
@@ -109,7 +111,7 @@ const CampaignsPage = React.createClass({
             onSectorClick={() => console.log('TODO: add/edit sectors')}
             onFavouriteClick={() => console.log('TODO: toggle favourite')}
             onTagClick={() => console.log('TODO: add/edit tags')}
-            onDeleteClick={() => console.log('TODO: delete campaign(s)')}
+            onDeleteClick={() => snackbar.show('TODO: delete campaigns')}
             onDeselectAllClick={this.onDeselectAllClick} />
         </div>
       </div>
@@ -142,7 +144,7 @@ const SectorSelectorContainer = createContainer((props) => {
   return { ...props, items, selected: props.selected || items[0] }
 }, SectorSelector)
 
-const CampaignsPageContainer = withRouter(createContainer(({ location, router }) => {
+const CampaignsPageContainer = withSnackbar(withRouter(createContainer(({ location, router }) => {
   const { sort, term } = parseQuery(location)
   const subs = [ Meteor.subscribe('campaignCount') ]
   const campaignCount = window.Counter.get('campaignCount')
@@ -163,7 +165,7 @@ const CampaignsPageContainer = withRouter(createContainer(({ location, router })
   const loading = !subs.every((sub) => sub.ready())
   const boundSetQuery = setQuery.bind(null, location, router)
   return { campaigns, campaignCount, total, loading, searching, sort, term, setQuery: boundSetQuery }
-}, CampaignsPage))
+}, CampaignsPage)))
 
 function parseQuery ({query}) {
   const sort = query.sort ? JSON.parse(query.sort) : { updatedAt: -1 }

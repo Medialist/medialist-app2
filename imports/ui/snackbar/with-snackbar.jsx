@@ -15,7 +15,7 @@ const withSnackbar = (component) => {
     render () {
       return React.createElement(component, {
         ...this.props,
-        ...this.context.snackbar
+        ...this.context
       })
     }
   })
