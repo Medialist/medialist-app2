@@ -20,16 +20,24 @@ const CampaignMasterLists = (props) => {
 
 export default CampaignMasterLists
 
-const EmptyMasterLists = ({creating, onCreate}) => {
+const EmptyMasterLists = ({creating, onCreate, showCreateMasterListInput}) => {
   return (
     <div style={{height: 200}}>
       {creating ? (
-        <CreateMasterListInput onCreate={onCreate} />
+        <div className='mx3'>
+          <div className='flex justify-start align-middle p2 mb2'>
+            <div className='bold flex-none'>Campaign Lists 0</div>
+            <div className='flex-auto blue underline right-align'>
+              <span className='pointer' onClick={showCreateMasterListInput}>Add new Campaign List</span>
+            </div>
+          </div>
+          <CreateMasterListInput onCreate={onCreate} />
+        </div>
       ) : (
         <div className='flex flex-column justify-start items-center'>
           <MenuCampaignIcon className='blue svg-icon-lg mt4 mb3' />
           <div className='mt3 mb1 center'>You have not created any Campaign Lists yet</div>
-          <div className='mb3 center blue underlined pointer' onClick={() => onCreate(null)}>Create a Campaign List</div>
+          <div className='mb3 center blue underlined pointer' onClick={showCreateMasterListInput}>Create a Campaign List</div>
         </div>
       )}
     </div>
@@ -47,16 +55,34 @@ const CreateMasterListInput = React.createClass({
     const { value } = e.target
     this.setState({ value })
   },
+  onBlur () {
+    this.props.onCreate(this.state.value)
+    this.setState({ value: '' })
+  },
+  onKeyDown (e) {
+    if (e.key === 'Enter' || e.key === 'Tab') {
+      e.preventDefault()
+      this.props.onCreate(this.state.value)
+      this.setState({ value: '' })
+      this.refs.input.focus()
+    }
+  },
   componentDidMount () {
     this.refs.input.focus()
   },
   render () {
-    const { onChange } = this
+    const { onChange, onBlur, onKeyDown } = this
     const { value } = this.state
     const { onCreate } = this.props
     return (
       <div className='flex justify-start items-center p2 my1 border border-gray80 bg-gray90 gray60'>
-        <input ref='input' className='input max-width-sm ml2' value={value} onChange={onChange} />
+        <input
+          ref='input'
+          className='input max-width-sm ml2'
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          onKeyDown={onKeyDown} />
         <div className='flex-none ml4 right-align' style={{width: 20}}>0</div>
         <MenuCampaignIcon className='flex-none ml2' />
         <div className='flex-auto right-align'>
@@ -92,11 +118,12 @@ const MasterLists = React.createClass({
       return state
     }, {})
   },
-  onCreate (name) {
+  showCreateMasterListInput () {
     this.setState({creating: true})
-    if (!name) return
+  },
+  onCreate (name) {
+    if (!name) return this.setState({creating: false})
     this.props.onAddMasterList({ type: 'Campaigns', name })
-    this.setState({creating: false})
   },
   onChange (_id, value) {
     this.setState({masterlists: { [_id]: value }})
@@ -116,17 +143,19 @@ const MasterLists = React.createClass({
     this.refs[this.state.editing].focus()
   },
   render () {
-    const { onChange, onUpdate, onKeyDown, isEditing, onCreate } = this
+    const { onChange, onUpdate, onKeyDown, isEditing, onCreate, showCreateMasterListInput } = this
     const { editing, creating } = this.state
     const { masterlists, onDeleteMasterList } = this.props
     if (masterlists.length < 1) {
-      return <EmptyMasterLists creating={creating} onCreate={onCreate} />
+      return <EmptyMasterLists creating={creating} onCreate={onCreate} showCreateMasterListInput={showCreateMasterListInput} />
     } else {
       return (
         <div className='mx3 pb3'>
           <div className='flex justify-start align-middle p2 mb2'>
             <div className='bold flex-none'>Campaign Lists ({masterlists.length})</div>
-            <div className='flex-auto blue underline right-align pointer' onClick={(e) => onCreate()}>Add new Campaign List</div>
+            <div className='flex-auto blue underline right-align'>
+              <span className='pointer' onClick={showCreateMasterListInput}>Add new Campaign List</span>
+            </div>
           </div>
           {creating && <CreateMasterListInput onCreate={onCreate} />}
           {
@@ -137,7 +166,7 @@ const MasterLists = React.createClass({
                   <input
                     ref={_id}
                     className='input max-width-sm ml2'
-                    defaultValue={this.state.masterlists[_id]}
+                    value={this.state.masterlists[_id]}
                     disabled={_id !== editing}
                     onChange={(e) => onChange(_id, e.target.value)}
                     onBlur={() => onUpdate(_id)}
