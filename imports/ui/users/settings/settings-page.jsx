@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor'
+import MasterLists from '../../../api/master-lists/master-lists'
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import { createContainer } from 'meteor/react-meteor-data'
@@ -31,14 +32,13 @@ const SettingsPage = React.createClass({
     this.setState({selectedMenuItem: props.params.selected})
   },
   onAddMasterList ({type, name}) {
-    console.log('calling with', {type, name})
     Meteor.call('MasterLists/create', {type, name})
   },
-  onUpdateMasterList ({type, name}) {
-    console.log({type, name})
+  onUpdateMasterList ({_id, name}) {
+    Meteor.call('MasterLists/update', {_id, name})
   },
-  onDeleteMasterList ({type, _id}) {
-    Meteor.call('MasterLists/delete', _id)
+  onDeleteMasterList (_id) {
+    Meteor.call('MasterLists/delete', {_id})
   },
   render () {
     const settingsPanel = {
@@ -66,12 +66,10 @@ const SettingsPage = React.createClass({
 })
 
 export default createContainer(() => {
+  Meteor.subscribe('master-lists')
   return {
     user: Meteor.user(),
-    masterlists: [
-      {_id: 123, type: 'Campaigns', slug: 'healthcare', name: 'Healthcare', items: 423, order: 1},
-      {_id: 456, type: 'Campaigns', slug: 'drone-nationals', name: 'Drone Nationals', items: 12, order: 2}
-    ]
+    masterlists: MasterLists.find().fetch()
   }
 }, SettingsPage)
 

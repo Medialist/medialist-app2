@@ -9,9 +9,10 @@ const CampaignMasterLists = (props) => {
         <SectorIcon className='blue svg-icon-lg' />
       </div>
       <div className='flex justify-center my4 bold f-xl'>Campaign Lists</div>
-      <div className='flex justify-center my4 border border-bottom border-gray80'>
-        <p className='max-width-2 center'>Campaign Lists help keep your Campaigns organised. Look for them across the top of the Campaigns page.</p>
+      <div className='flex justify-center my4'>
+        <p className='max-width-2 center my4'>Campaign Lists help keep your Campaigns organised. Look for them across the top of the Campaigns page.</p>
       </div>
+      <hr className='flex-auto my4' style={{height: 1, marginRight: '-0.6rem', marginLeft: '-0.6rem'}} />
       <MasterLists {...props} />
     </section>
   )
@@ -77,11 +78,19 @@ const MasterLists = React.createClass({
     return {
       creating: false,
       editing: null,
-      masterlists: this.props.masterlists.reduce((keyValues, listItem) => {
-        keyValues[listItem.slug] = listItem.name
-        return keyValues
-      }, {})
+      masterlists: this.setMasterlists(this.props.masterlists)
     }
+  },
+  componentWillReceiveProps (props) {
+    this.setState({
+      masterlists: this.setMasterlists(props.masterlists)
+    })
+  },
+  setMasterlists (masterlists) {
+    return masterlists.reduce((state, item) => {
+      state[item._id] = item.name
+      return state
+    }, {})
   },
   onCreate (name) {
     this.setState({creating: true})
@@ -89,31 +98,27 @@ const MasterLists = React.createClass({
     this.props.onAddMasterList({ type: 'Campaigns', name })
     this.setState({creating: false})
   },
-  onChange (slug, value) {
-    this.setState({masterlists: { [slug]: value }})
+  onChange (_id, value) {
+    this.setState({masterlists: { [_id]: value }})
   },
-  onUpdate (slug) {
+  onUpdate (_id) {
     this.setState({ editing: null })
-    this.props.onUpdateMasterList({ type: 'Campaigns', name: this.state.masterlists[slug] })
+    this.props.onUpdateMasterList({ _id, name: this.state.masterlists[_id] })
   },
-  onKeyDown (slug, key) {
-    if (key === 'Enter' || key === 'Tab') this.onUpdate(slug)
+  onKeyDown (_id, key) {
+    if (key === 'Enter' || key === 'Tab') this.onUpdate(_id)
   },
-  isEditing (slug) {
-    this.setState({ editing: slug })
-  },
-  removeMasterList (slug) {
-    this.props.onDeleteMasterList({ type: 'Campaigns', slug })
+  isEditing (_id) {
+    this.setState({ editing: _id })
   },
   componentDidUpdate () {
     if (!this.state.editing) return
     this.refs[this.state.editing].focus()
   },
   render () {
-    const { removeMasterList, onChange, onUpdate, onKeyDown, isEditing, onCreate } = this
+    const { onChange, onUpdate, onKeyDown, isEditing, onCreate } = this
     const { editing, creating } = this.state
-    const { masterlists } = this.props
-
+    const { masterlists, onDeleteMasterList } = this.props
     if (masterlists.length < 1) {
       return <EmptyMasterLists creating={creating} onCreate={onCreate} />
     } else {
@@ -126,34 +131,34 @@ const MasterLists = React.createClass({
           {creating && <CreateMasterListInput onCreate={onCreate} />}
           {
             masterlists.map((masterlist) => {
-              const { _id, name, slug, items } = masterlist
+              const { _id, name, items } = masterlist
               return (
                 <div className='flex justify-start items-center p2 my1 border border-gray80 bg-gray90 gray60' key={name}>
                   <input
-                    ref={slug}
+                    ref={_id}
                     className='input max-width-sm ml2'
-                    defaultValue={this.state.masterlists[slug]}
-                    disabled={slug !== editing}
-                    onChange={(e) => onChange(slug, e.target.value)}
-                    onBlur={() => onUpdate(slug)}
-                    onKeyDown={(e) => onKeyDown(slug, e.key)} />
-                  <div className='flex-none ml4 right-align gray40' style={{width: 20}}>{items}</div>
+                    defaultValue={this.state.masterlists[_id]}
+                    disabled={_id !== editing}
+                    onChange={(e) => onChange(_id, e.target.value)}
+                    onBlur={() => onUpdate(_id)}
+                    onKeyDown={(e) => onKeyDown(_id, e.key)} />
+                  <div className='flex-none ml4 right-align gray40' style={{width: 20}}>{items.length}</div>
                   <MenuCampaignIcon className='ml2 flex-none gray60' />
                   {
-                    editing === slug ? (
+                    editing === _id ? (
                       <div className='flex-auto right-align'>
-                        <button className='btn bg-completed white' onClick={() => onUpdate(slug)}>Save Changes</button>
+                        <button className='btn bg-completed white' onClick={() => onUpdate(_id)}>Save Changes</button>
                       </div>
                     ) : (
                       <div className='flex-auto right-align mr2'>
                         <Tooltip title='Edit List'>
                           <div className='inline-block mx-auto'>
-                            <FeedEditIcon className='mx2 gray60 hover-gray40' onClick={() => isEditing(slug)} />
+                            <FeedEditIcon className='mx2 gray60 hover-gray40' onClick={() => isEditing(_id)} />
                           </div>
                         </Tooltip>
                         <Tooltip title='Delete List'>
                           <div className='inline-block mx-auto'>
-                            <DeleteIcon className='mx2 gray60 hover-gray40' onClick={() => removeMasterList(_id)} />
+                            <DeleteIcon className='mx2 gray60 hover-gray40' onClick={() => onDeleteMasterList(_id)} />
                           </div>
                         </Tooltip>
                       </div>

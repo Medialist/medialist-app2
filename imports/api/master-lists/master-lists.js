@@ -100,3 +100,9 @@ export const MasterListRefSchema = new SimpleSchema({
   }
 })
 
+export const MasterListDelSchema = new SimpleSchema({
+  _id: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id
+  }
+})
