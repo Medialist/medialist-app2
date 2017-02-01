@@ -2,7 +2,14 @@ import { Meteor } from 'meteor/meteor'
 import { check } from 'meteor/check'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
-import MasterLists, { MasterListSchema, MasterListCreationSchema, MasterListUpdateSchema, MasterListAddItemsSchema, MasterListRemoveItemSchema } from './master-lists'
+import MasterLists, {
+  MasterListSchema,
+  MasterListCreationSchema,
+  MasterListUpdateSchema,
+  MasterListAddItemsSchema,
+  MasterListRemoveItemSchema,
+  MasterListDelSchema
+} from './master-lists'
 import Contacts from '../contacts/contacts'
 import Medialists from '../medialists/medialists'
 import findUniqueSlug from '/imports/lib/slug'
@@ -28,21 +35,21 @@ export const create = new ValidatedMethod({
 
 export const del = new ValidatedMethod({
   name: 'MasterLists/delete',
-  validate: (masterListId) => check(masterListId, SimpleSchema.RegEx.Id),
-  run (masterListId) {
+  validate: MasterListDelSchema.validator(),
+  run ({_id}) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
 
-    const masterList = MasterLists.findOne({ _id: masterListId, deleted: null })
+    const masterList = MasterLists.findOne({ _id: _id, deleted: null })
     if (!masterList) throw new Meteor.Error('MasterList not found')
 
-    MasterLists.update({ _id: masterListId }, { $set: { deleted: new Date() } })
+    MasterLists.update({ _id: _id }, { $set: { deleted: new Date() } })
 
     const refCollection = (masterList.type === 'Contacts') ? Contacts : Medialists
     return refCollection.update({
-      'masterLists._id': masterListId
+      'masterLists._id': _id
     }, {
       $pull: {
-        masterLists: { _id: masterListId }
+        masterLists: { _id: _id }
       }
     }, { multi: true })
   }

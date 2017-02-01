@@ -452,6 +452,10 @@ button {
 .hover-color-trigger:hover .hover-white {
   color: var(--white) !important;
 }
+.hover-gray40:hover,
+.hover-color-trigger:hover .hover-gray50{
+  color: var(--gray40) !important;
+}
 .hover-gray50:hover,
 .hover-color-trigger:hover .hover-gray50{
   color: var(--gray50) !important;
