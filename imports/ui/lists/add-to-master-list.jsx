@@ -52,7 +52,7 @@ const AddCampaignToMasterList = React.createClass({
           <span className='f-lg'>Add {title} to a Master List</span>
         </div>
         <div className='bg-gray90 border-top border-gray80 p2 flex flex-wrap'>
-          {selectableList.map((item) => <MasterListBtn item={item} key={item._id} title={title} onSelect={onSelect} />)}
+          {selectableList.map((item) => <MasterListBtn item={item} title={title} onSelect={onSelect} />)}
         </div>
         <div className='p4 bg-white'>
           <div className='clearfix'>
@@ -72,21 +72,18 @@ const MasterListBtn = React.createClass({
     onSelect: PropTypes.func.isRequired
   },
   render () {
+    if (!this.props.item) return null
     const { item, title, onSelect } = this.props
-    const { name, items, selected } = item
+    const { selected } = item
+    const { name, items } = item.item
     const selectedClasses = selected ? 'border-blue bg-blue white shadow-1' : 'border-gray80 bg-white gray20'
     return (
-      <div className='p2' style={{width: '25%'}}>
+      <div className='p2' style={{width: '25%'}} key={name}>
         <div className={`width-100 relative border ${selectedClasses} hover-border-blue hover-display-trigger`} style={{borderRadius: 8}}>
           {selected && <Check className='absolute top-0 right-0' style={{marginRight: 6}} />}
-          <div className='table center' style={{height: 80}}>
-            <div className='table-cell align-middle normal f-lg pointer px1' style={{overflowX: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}} onClick={() => onSelect(item)}>
-              <label className='block mb1 pointer'>{name}</label>
-              {items.length > 0 &&
-                <label className={`display-none f-xxs pointer ${selected ? 'white opacity-50' : 'blue'} hover-display-block`}>
-                  {items.length} {title.toLowerCase()}s
-                </label>
-              }
+          <div className='center overflow-hidden' style={{height: 80}}>
+            <div className='flex flex-column justify-center normal f-lg pointer px1' onClick={() => onSelect(item)}>
+              <label className='block mb1 pointer nowrap truncate'>{name}</label>
             </div>
           </div>
         </div>
