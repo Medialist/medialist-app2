@@ -33,7 +33,7 @@ const ContactsActionsToast = React.createClass({
     return (
       <Toast>
         { contacts.length && (
-          <div className='bg-white shadow-1 p4 flex items-center'>
+          <div className='bg-white shadow-1 p4 flex items-center' key='ContactsActionsToast'>
             <div className='flex-none'>
               <span className='badge f-sm bg-blue mr2'>{contacts.length}</span>
               <span className='gray20'>contact{contacts.length === 1 ? '' : 's'} selected</span>

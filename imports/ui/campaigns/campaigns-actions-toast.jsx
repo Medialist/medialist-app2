@@ -33,7 +33,7 @@ const CampaignsActionsToast = React.createClass({
     return (
       <Toast>
         { campaigns.length && (
-          <div className='bg-white shadow-1 p4 flex items-center'>
+          <div className='bg-white shadow-1 p4 flex items-center' key='CampaignsActionsToast'>
             <div className='flex-none'>
               <span className='badge f-sm bg-blue mr2'>{campaigns.length}</span>
               <span className='gray20'>campaign{campaigns.length === 1 ? '' : 's'} selected</span>
