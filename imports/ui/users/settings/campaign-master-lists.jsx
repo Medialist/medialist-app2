@@ -160,9 +160,9 @@ const MasterLists = React.createClass({
           {creating && <CreateMasterListInput onCreate={onCreate} />}
           {
             masterlists.map((masterlist) => {
-              const { _id, name, items } = masterlist
+              const { _id, items } = masterlist
               return (
-                <div className='flex justify-start items-center p2 my1 border border-gray80 bg-gray90 gray60' key={name}>
+                <div className='flex justify-start items-center p2 my1 border border-gray80 bg-gray90 gray60' key={_id}>
                   <input
                     ref={_id}
                     className='input max-width-sm ml2'
