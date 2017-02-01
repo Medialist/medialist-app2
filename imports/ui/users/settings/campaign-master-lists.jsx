@@ -5,12 +5,12 @@ import Tooltip from '../../navigation/tooltip'
 const CampaignMasterLists = (props) => {
   return (
     <section className='pt4'>
-      <div className='flex justify-center my4'>
+      <div className='center my4'>
         <SectorIcon className='blue svg-icon-lg' />
       </div>
-      <div className='flex justify-center my4 bold f-xl'>Campaign Lists</div>
-      <div className='flex justify-center my4'>
-        <p className='max-width-2 center my4'>Campaign Lists help keep your Campaigns organised. Look for them across the top of the Campaigns page.</p>
+      <div className='center my4 bold f-xl'>Campaign Lists</div>
+      <div className='center my4'>
+        <p className='mx-auto max-width-2 center mt4 mb6'>Campaign Lists help keep your Campaigns organised. Look for them across the top of the Campaigns page.</p>
       </div>
       <hr className='flex-auto my4' style={{height: 1, marginRight: '-0.6rem', marginLeft: '-0.6rem'}} />
       <MasterLists {...props} />
