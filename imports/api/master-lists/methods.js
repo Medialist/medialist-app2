@@ -11,6 +11,7 @@ export const create = new ValidatedMethod({
   name: 'MasterLists/create',
   validate: MasterListCreationSchema.validator(),
   run ({ type, name }) {
+    console.log('got', type, name)
     if (!this.userId) throw new Meteor.Error('You must be logged in')
     const lists = MasterLists.find(
       {type: type},

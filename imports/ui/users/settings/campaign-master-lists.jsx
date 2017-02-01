@@ -126,7 +126,7 @@ const MasterLists = React.createClass({
           {creating && <CreateMasterListInput onCreate={onCreate} />}
           {
             masterlists.map((masterlist) => {
-              const { name, slug, items } = masterlist
+              const { _id, name, slug, items } = masterlist
               return (
                 <div className='flex justify-start items-center p2 my1 border border-gray80 bg-gray90 gray60' key={name}>
                   <input
@@ -153,7 +153,7 @@ const MasterLists = React.createClass({
                         </Tooltip>
                         <Tooltip title='Delete List'>
                           <div className='inline-block mx-auto'>
-                            <DeleteIcon className='mx2 gray60 hover-gray40' onClick={() => removeMasterList(slug)} />
+                            <DeleteIcon className='mx2 gray60 hover-gray40' onClick={() => removeMasterList(_id)} />
                           </div>
                         </Tooltip>
                       </div>

@@ -31,13 +31,14 @@ const SettingsPage = React.createClass({
     this.setState({selectedMenuItem: props.params.selected})
   },
   onAddMasterList ({type, name}) {
-    console.log({type, name})
+    console.log('calling with', {type, name})
+    Meteor.call('MasterLists/create', {type, name})
   },
   onUpdateMasterList ({type, name}) {
     console.log({type, name})
   },
-  onDeleteMasterList ({type, slug}) {
-    console.log({type, slug})
+  onDeleteMasterList ({type, _id}) {
+    Meteor.call('MasterLists/delete', _id)
   },
   render () {
     const settingsPanel = {
@@ -67,8 +68,10 @@ const SettingsPage = React.createClass({
 export default createContainer(() => {
   return {
     user: Meteor.user(),
-    masterlists: [{type: 'Campaigns', slug: 'healthcare', name: 'Healthcare', items: 423, order: 1}, {type: 'Campaigns', slug: 'drone-nationals', name: 'Drone Nationals', items: 12, order: 2}]
-    // masterlists: []
+    masterlists: [
+      {_id: 123, type: 'Campaigns', slug: 'healthcare', name: 'Healthcare', items: 423, order: 1},
+      {_id: 456, type: 'Campaigns', slug: 'drone-nationals', name: 'Drone Nationals', items: 12, order: 2}
+    ]
   }
 }, SettingsPage)
 
