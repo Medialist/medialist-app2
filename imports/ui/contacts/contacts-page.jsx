@@ -9,7 +9,7 @@ import DropdownMenu from '../lists/dropdown-menu'
 import ContactsTable from './contacts-table'
 import SearchBox from '../lists/search-box'
 import ContactsActionsToast from './contacts-actions-toast'
-import SectorSelector from '../campaigns/sector-selector.jsx'
+import MasterListsSelector from '../campaigns/masterlists-selector.jsx'
 import EditContact from './edit-contact.jsx'
 import ContactListEmpty from './contacts-list-empty'
 import { FeedContactIcon } from '../images/icons'
@@ -100,7 +100,7 @@ const ContactsPage = React.createClass({
       <div>
         <div className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
           <div className='flex-auto border-right border-gray80'>
-            <SectorSelectorContainer selected={this.state.selectedSector} onSectorChange={onSectorChange} />
+            <MasterListsSelectorContainer selected={this.state.selectedSector} onSectorChange={onSectorChange} />
           </div>
           <Dropdown>
             <div className='flex-none bg-white center px4' style={{width: 240}}>
@@ -156,9 +156,9 @@ const ContactsPage = React.createClass({
   }
 })
 
-const SectorSelectorContainer = createContainer((props) => {
+const MasterListsSelectorContainer = createContainer((props) => {
   return { ...props, items, selected: props.selected || items[0] }
-}, SectorSelector)
+}, MasterListsSelector)
 
 const ContactsTotal = ({ searching, results, total }) => {
   const num = searching ? results.length : total

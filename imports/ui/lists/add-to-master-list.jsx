@@ -11,21 +11,25 @@ const AddCampaignToMasterList = React.createClass({
     onDismiss: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
     selectedMasterLists: PropTypes.array,
-    allMasterLists: PropTypes.array.isRequired,
+    allMasterLists: PropTypes.array,
     title: PropTypes.string.isRequired
   },
   getInitialState () {
-    const { allMasterLists, selectedMasterLists } = this.props
-    const selectableList = allMasterLists.map((item) => {
-      const selected = !!find(selectedMasterLists, {slug: item.slug})
+    return { selectableList: this.setSelectableList(this.props) }
+  },
+  componentWillReceiveProps (props) {
+    this.setState({ selectableList: this.setSelectableList(props) })
+  },
+  setSelectableList ({ allMasterLists, selectedMasterLists }) {
+    return allMasterLists.map((item) => {
+      const selected = !!find(selectedMasterLists, {name: item.name})
       return { item, selected }
     })
-    return { selectableList }
   },
   onSelect (item) {
     item.selected = !item.selected
     const selectableList = this.state.selectableList.slice(0)
-    const index = findIndex(selectableList, {item: {slug: item.item.slug}})
+    const index = findIndex(selectableList, {item: {name: item.item.name}})
     selectableList[index] = item
     this.setState({ selectableList })
   },
@@ -48,7 +52,7 @@ const AddCampaignToMasterList = React.createClass({
           <span className='f-lg'>Add {title} to a Master List</span>
         </div>
         <div className='bg-gray90 border-top border-gray80 p2 flex flex-wrap'>
-          {selectableList.map((item) => <MasterListBtn item={item} key={item.slug} title={title} onSelect={onSelect} />)}
+          {selectableList.map((item) => <MasterListBtn item={item} key={item._id} title={title} onSelect={onSelect} />)}
         </div>
         <div className='p4 bg-white'>
           <div className='clearfix'>
@@ -69,18 +73,18 @@ const MasterListBtn = React.createClass({
   },
   render () {
     const { item, title, onSelect } = this.props
-    const selectedClasses = item.selected ? 'border-blue bg-blue white shadow-1' : 'border-gray80 bg-white gray20'
-
+    const { name, items, selected } = item
+    const selectedClasses = selected ? 'border-blue bg-blue white shadow-1' : 'border-gray80 bg-white gray20'
     return (
       <div className='p2' style={{width: '25%'}}>
         <div className={`width-100 relative border ${selectedClasses} hover-border-blue hover-display-trigger`} style={{borderRadius: 8}}>
-          {item.selected && <Check className='absolute top-0 right-0' style={{marginRight: 6}} />}
+          {selected && <Check className='absolute top-0 right-0' style={{marginRight: 6}} />}
           <div className='table center' style={{height: 80}}>
-            <div className='table-cell align-middle normal f-lg pointer' onClick={() => onSelect(item)}>
-              <label className='block mb1 pointer'>{item.item.label}</label>
-              {item.item.count &&
-                <label className={`display-none f-xxs pointer ${item.selected ? 'white opacity-50' : 'blue'} hover-display-block`}>
-                  {item.item.count} {title.toLowerCase()}s
+            <div className='table-cell align-middle normal f-lg pointer px1' style={{overflowX: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}} onClick={() => onSelect(item)}>
+              <label className='block mb1 pointer'>{name}</label>
+              {items.length > 0 &&
+                <label className={`display-none f-xxs pointer ${selected ? 'white opacity-50' : 'blue'} hover-display-block`}>
+                  {items.length} {title.toLowerCase()}s
                 </label>
               }
             </div>

@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 
-const SectorSelector = React.createClass({
+const MasterListsSelector = React.createClass({
   propTypes: {
     items: PropTypes.array.isRequired,
     selected: PropTypes.object.isRequired,
@@ -19,7 +19,7 @@ const SectorSelector = React.createClass({
     return (
       <div key={item._id} className='inline-block pointer p4 semibold shadow-inset-blue'>
         <div className='inline-block f-sm mr1 blue'>{item.name}</div>
-        <div className='inline-block f-xs rounded white bg-blue px1 py-2px'>{item.count}</div>
+        <div className='inline-block f-xs rounded white bg-blue px1 py-2px'>{item.items.length}</div>
       </div>
     )
   },
@@ -28,7 +28,7 @@ const SectorSelector = React.createClass({
     return (
       <div key={item._id} className='inline-block pointer p4 semibold' onClick={this.onClick.bind(this, item)}>
         <div className='inline-block f-sm mr1 gray40'>{item.name}</div>
-        <div className='inline-block f-xs rounded gray60 bg-gray90 px1 py-2px'>{item.count}</div>
+        <div className='inline-block f-xs rounded gray60 bg-gray90 px1 py-2px'>{item.items.length}</div>
       </div>
     )
   },
@@ -44,4 +44,4 @@ const SectorSelector = React.createClass({
   }
 })
 
-export default SectorSelector
+export default MasterListsSelector

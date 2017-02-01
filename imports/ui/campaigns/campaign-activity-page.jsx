@@ -11,6 +11,7 @@ import EditCampaign from './edit-campaign'
 import Clients from '/imports/api/clients/clients'
 import Medialists from '/imports/api/medialists/medialists'
 import Contacts from '/imports/api/contacts/contacts'
+import MasterLists from '/imports/api/master-lists/master-lists'
 import CreateContact from '../contacts/edit-contact'
 import AddContact from './add-contact'
 import EditTeam from './edit-team'
@@ -104,7 +105,7 @@ const CampaignActivityPage = React.createClass({
       onCoverage,
       onCreateContact
     } = this
-    const { campaign, contacts, contactsCount, clients, teamMates, loading, user } = this.props
+    const { campaign, contacts, contactsCount, clients, teamMates, loading, user, masterlists } = this.props
     const {
       createContactModalOpen,
       addContactModalOpen,
@@ -120,7 +121,7 @@ const CampaignActivityPage = React.createClass({
         <CampaignTopbar campaign={campaign} onAddContactClick={onAddContactClick} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
-            <CampaignInfo campaign={campaign} onEditClick={toggleEditModal} onEditTeamClick={toggleEditTeamModal} user={user} />
+            <CampaignInfo campaign={campaign} onEditClick={toggleEditModal} onEditTeamClick={toggleEditTeamModal} user={user} masterlists={masterlists} />
             <EditCampaign campaign={campaign} open={editModalOpen} onDismiss={toggleEditModal} clients={clients} />
             <EditTeam campaign={campaign} open={editTeamModalOpen} onDismiss={toggleEditTeamModal} teamMates={teamMates} loading={loading} />
           </div>
@@ -155,7 +156,8 @@ export default createContainer((props) => {
     Meteor.subscribe('medialist', campaignSlug),
     Meteor.subscribe('contacts-by-campaign', campaignSlug),
     Meteor.subscribe('contactCount'),
-    Meteor.subscribe('clients')
+    Meteor.subscribe('clients'),
+    Meteor.subscribe('master-lists')
   ]
   const loading = subs.some((s) => !s.ready())
   const campaign = Medialists.findOne({ slug: campaignSlug })
@@ -170,6 +172,7 @@ export default createContainer((props) => {
     contactsAllCount: window.Counter.get('contactCount'),
     teamMates: campaign && campaign.team,
     user: Meteor.user(),
-    clients: Clients.find({}).fetch()
+    clients: Clients.find({}).fetch(),
+    masterlists: MasterLists.find().fetch()
   }
 }, withRouter(CampaignActivityPage))
