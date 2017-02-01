@@ -34,6 +34,10 @@ export const MasterListSchema = new SimpleSchema([
     },
     order: {
       type: Number
+    },
+    deleted: {
+      type: Date,
+      optional: true
     }
   }
 ])
@@ -47,6 +51,39 @@ export const MasterListCreationSchema = new SimpleSchema([
     }
   }
 ])
+
+export const MasterListUpdateSchema = new SimpleSchema({
+  _id: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id
+  },
+  name: {
+    type: String,
+    min: 1
+  }
+})
+
+export const MasterListAddItemsSchema = new SimpleSchema({
+  _id: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id
+  },
+  items: {
+    type: [String],
+    regEx: SimpleSchema.RegEx.Id
+  }
+})
+
+export const MasterListRemoveItemSchema = new SimpleSchema({
+  _id: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id
+  },
+  item: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id
+  }
+})
 
 export const MasterListRefSchema = new SimpleSchema({
   _id: {
@@ -63,3 +100,9 @@ export const MasterListRefSchema = new SimpleSchema({
   }
 })
 
+export const MasterListDelSchema = new SimpleSchema({
+  _id: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id
+  }
+})

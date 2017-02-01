@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor'
+import MasterLists from '../../../api/master-lists/master-lists'
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import { createContainer } from 'meteor/react-meteor-data'
@@ -7,18 +8,19 @@ import { CircleAvatar } from '../../images/avatar'
 import SettingsProfile from './profile'
 import SettingsPassword from './password'
 import SettingsTeam from './team'
-import SettingsSector from './sectors'
+import CampaignMasterLists from './campaign-master-lists'
 
 const menuItems = [
   {label: 'Profile', slug: 'profile'},
   {label: 'Change Password', slug: 'password'},
   {label: 'Team', slug: 'team'},
-  {label: 'Sectors', slug: 'sector'}
+  {label: 'Campaign Lists', slug: 'campaign-master-lists'}
 ]
 
 const SettingsPage = React.createClass({
   propTypes: {
     user: PropTypes.object.isRequired,
+    masterlists: PropTypes.array,
     params: PropTypes.object
   },
   getInitialState () {
@@ -29,15 +31,24 @@ const SettingsPage = React.createClass({
   componentWillReceiveProps (props) {
     this.setState({selectedMenuItem: props.params.selected})
   },
+  onAddMasterList ({type, name}) {
+    Meteor.call('MasterLists/create', {type, name})
+  },
+  onUpdateMasterList ({_id, name}) {
+    Meteor.call('MasterLists/update', {_id, name})
+  },
+  onDeleteMasterList (_id) {
+    Meteor.call('MasterLists/delete', {_id})
+  },
   render () {
     const settingsPanel = {
       profile: <SettingsProfile user={this.props.user} />,
       password: <SettingsPassword />,
       team: <SettingsTeam />,
-      sector: <SettingsSector />
+      'campaign-master-lists': <CampaignMasterLists masterlists={this.props.masterlists} {...this} />
     }
     return (
-      <div className='flex max-width-lg mx-auto my4 pt4'>
+      <div className='flex max-width-4 mx-auto my4 pt4'>
         <div className='flex-none mr4 xs-hide sm-hide' style={{width: 250}}>
           <article>
             <label className='gray40'><SettingsIcon /> Settings / <span className='gray'>{this.state.selectedMenuItem}</span></label>
@@ -55,7 +66,11 @@ const SettingsPage = React.createClass({
 })
 
 export default createContainer(() => {
-  return { user: Meteor.user() }
+  Meteor.subscribe('master-lists')
+  return {
+    user: Meteor.user(),
+    masterlists: MasterLists.find().fetch()
+  }
 }, SettingsPage)
 
 function userInfo (user) {
