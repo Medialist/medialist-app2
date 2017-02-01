@@ -31,20 +31,30 @@ const sx = {
     paddingRight: scale,
     color: '#fff',
     backgroundColor: '#25364b',
-    borderRadius: '2px',
-    transform: 'translate(-50%, -8px)'
+    borderRadius: '2px'
+  },
+  boxBottom: {
+    bottom: 'inherit',
+    top: '100%'
   },
   arrow: {
     position: 'absolute',
     top: '100%',
-    left: '50%',
     border: '6px solid transparent',
     borderTopColor: '#25364B',
     transform: 'translate(-50%, 0)'
+  },
+  arrowBottom: {
+    top: '-12px',
+    borderTopColor: 'transparent',
+    borderBottomColor: '#25364B'
   }
 }
 
-const Tooltip = ({ title, children, ...props }) => {
+const Tooltip = ({ title, children, position = 'top', arrowPosition = '50%', ...props }) => {
+  const yOffset = (position === 'top') ? '-8px' : '8px'
+  const boxStyle = Object.assign({ transform: `translate(-${arrowPosition}, ${yOffset})` }, sx.box, position === 'bottom' ? sx.boxBottom : {})
+  const arrowStyle = Object.assign({ left: arrowPosition }, sx.arrow, position === 'bottom' ? sx.arrowBottom : {})
   return (
     <span
       className='Tooltip'
@@ -52,10 +62,10 @@ const Tooltip = ({ title, children, ...props }) => {
       style={sx.root}>
       <style dangerouslySetInnerHTML={{ __html: css }} />
       <div {...props}
-        style={sx.box}
+        style={boxStyle}
         className='Tooltip Tooltip_box'>
         {title}
-        <div className='Tooltip_arrow' style={sx.arrow} />
+        <div className='Tooltip_arrow' style={arrowStyle} />
       </div>
       {children}
     </span>
