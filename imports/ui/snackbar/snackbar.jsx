@@ -3,11 +3,16 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 import { Close } from '../images/icons'
 
 /*
- * SnackbarItem - a self-dismissing notificaiton.
+ * SnackbarItem - a self-dismissing notification.
  * `dismissTimer` is stopped when user hovers mouse over the item.
  * It's restarted when they move the mouse away
  */
 const SnackbarItem = React.createClass({
+  propTypes: {
+    onDismiss: PropTypes.func.isRequired,
+    children: PropTypes.node,
+    style: PropTypes.object
+  },
   getInitialState () {
     return this.startDismissTimer({})
   },
@@ -31,7 +36,7 @@ const SnackbarItem = React.createClass({
           {children}
         </div>
         <div className='inline-block pl4 align-middle'>
-          <span onClick={onDismiss}>
+          <span className='pointer' onClick={onDismiss}>
             <Close className='gray20' />
           </span>
         </div>
@@ -40,9 +45,9 @@ const SnackbarItem = React.createClass({
   }
 })
 
-// Place me high up in the tree. I make a space for snackbars to play.
-// Controls placement and animation of snackbarItems and provides an api
-// via `context.snackbar.show` to add new items.
+// Place Snacbar near the root.
+// Controls placement and animation of snackbarItems
+// provides an api via `context.snackbar.show` to add new items.
 const Snackbar = React.createClass({
   propTypes: {
     children: PropTypes.node
@@ -74,7 +79,7 @@ const Snackbar = React.createClass({
   },
   getChildContext () {
     return {
-      // This provides the api for calling snackbar from other conponents
+      // This provides the api for calling snackbar from other components
       // Usage:  snackbar.show(node)
       snackbar: {
         show: this.show
