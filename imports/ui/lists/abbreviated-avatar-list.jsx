@@ -33,7 +33,7 @@ const AbbreviatedAvatarList = React.createClass({
 
   renderExcess ({ avatarExcess, tooltipExcess, tooltipItems }) {
     const { size, shape } = this.props
-    const className = 'inline-block overflow-hidden bg-blue normal align-middle center'
+    const className = 'inline-block overflow-hidden bg-blue border border-white normal align-middle center'
     const fontSize = ((size / defaultSize) * 100) + '%' // a size of 40px gives a fontSize of 100% which matches the body fontSize.
     const style = { minWidth: size * 1.3, height: size, lineHeight: size + 'px', fontSize, boxSizing: 'content-box', borderWidth: 2 }
     if (shape === 'circle') style.borderRadius = '99999px'
