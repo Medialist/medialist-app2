@@ -9,7 +9,8 @@ const Tag = (props) => {
       style={{padding: 1, lineHeight: 1.5, ...style}}
       onClick={onClick}>
       <div
-        className='inline-block px2 py1 gray40 f-xxs bold'
+        style={{fontWeight: 800, transform: 'scale(1.5)'}}
+        className='inline-block px2 py1 gray40 f-xxs'
         onClick={() => onRemove(props)}>
         &times;
       </div>
@@ -41,7 +42,7 @@ export const AvatarTag = (props) => {
   return (
     <Tag {...tagProps}>
       <SquareAvatar size={28} name={name} avatar={avatar} />
-      <div className='inline-block px2 py1 white f-xxs'>{name}</div>
+      <div className='inline-block px2 py1 white f-xxs semibold'>{name}</div>
     </Tag>
   )
 }
