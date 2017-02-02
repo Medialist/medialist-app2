@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
 import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
+import MasterLists from '../../api/master-lists/master-lists'
 import { createContainer } from 'meteor/react-meteor-data'
 import ContactTopbar from './contact-topbar'
 import ContactInfo from './contact-info'
@@ -14,7 +15,8 @@ const ContactPage = React.createClass({
     router: PropTypes.object,
     campaigns: PropTypes.array,
     contact: PropTypes.object,
-    user: PropTypes.object
+    user: PropTypes.object,
+    masterlists: PropTypes.array
   },
 
   getInitialState () {
@@ -62,7 +64,7 @@ const ContactPage = React.createClass({
   },
 
   render () {
-    const { contact, campaigns, user } = this.props
+    const { contact, campaigns, user, masterlists } = this.props
     const { editContactOpen } = this.state
     if (!contact) return null
     return (
@@ -70,7 +72,7 @@ const ContactPage = React.createClass({
         <ContactTopbar contact={contact} onAddClick={this.onAddClick} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
-            <ContactInfo contact={contact} onEditClick={this.toggleEditContact} user={user} />
+            <ContactInfo masterlists={masterlists} contact={contact} onEditClick={this.toggleEditContact} user={user} />
           </div>
           <div className='flex-auto px2' >
             <PostBox contact={contact} campaigns={campaigns} onFeedback={this.onFeedback} onCoverage={this.onCoverage} />
@@ -90,10 +92,12 @@ export default createContainer((props) => {
   const { contactSlug } = props.params
   Meteor.subscribe('contact', contactSlug)
   Meteor.subscribe('medialists')
+  Meteor.subscribe('master-lists')
   const contact = window.Contacts.findOne({ slug: contactSlug })
   const campaigns = contact ? window.Medialists.find({ slug: { $in: contact.medialists } }).fetch() : []
   const user = Meteor.user()
-  return { ...props, contact, campaigns, user }
+  const masterlists = MasterLists.find().fetch()
+  return { ...props, contact, campaigns, user, masterlists }
 }, withRouter(ContactPage))
 
 const needToKnows = [

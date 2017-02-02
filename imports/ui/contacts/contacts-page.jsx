@@ -1,6 +1,7 @@
 import querystring from 'querystring'
 import React from 'react'
 import { Meteor } from 'meteor/meteor'
+import MasterLists from '../../api/master-lists/master-lists'
 import { createContainer } from 'meteor/react-meteor-data'
 import { Link, withRouter } from 'react-router'
 import Arrow from 'rebass/dist/Arrow'
@@ -157,6 +158,8 @@ const ContactsPage = React.createClass({
 })
 
 const MasterListsSelectorContainer = createContainer((props) => {
+  Meteor.subscribe('master-lists')
+  const items = MasterLists.find().fetch()
   return { ...props, items, selected: props.selected || items[0] }
 }, MasterListsSelector)
 
@@ -206,15 +209,3 @@ const ContactsPageContainer = withRouter(React.createClass({
 }))
 
 export default ContactsPageContainer
-
-// Fake data
-const items = [
-  { _id: 0, name: 'All', count: 10 },
-  { _id: 1, name: 'My campaigns', count: 5 },
-  { _id: 2, name: 'Corporate', count: 97 },
-  { _id: 3, name: 'Energy', count: 18 },
-  { _id: 4, name: 'Consumer', count: 120 },
-  { _id: 5, name: 'Healthcare', count: 55 },
-  { _id: 6, name: 'Public Affairs', count: 37 },
-  { _id: 7, name: 'Technology', count: 201 }
-]
