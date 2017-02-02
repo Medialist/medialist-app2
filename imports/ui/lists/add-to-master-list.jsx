@@ -51,14 +51,15 @@ const AddCampaignToMasterList = React.createClass({
         <div className='py6 center'>
           <span className='f-lg'>Add {title} to a Master List</span>
         </div>
-        <div className='bg-gray90 border-top border-gray80 p2 flex flex-wrap'>
+        <div className='bg-gray90 shadow-inset border-top border-gray80 p2 flex flex-wrap'>
+          {selectableList.length === 0 && <EmptyMasterLists title={title} />}
           {selectableList.map((item) => <MasterListBtn item={item} title={title} onSelect={onSelect} />)}
         </div>
         <div className='p4 bg-white'>
           <div className='clearfix'>
             <button className='btn bg-completed white right' onClick={onSave}>Save Changes</button>
             <button className='btn bg-transparent gray40 right mr2' onClick={onDismiss}>Cancel</button>
-            <Link to='/settings/sector' className='btn bg-transparent blue'>Manage Master Lists</Link>
+            <Link to={`/settings/${title.toLowerCase()}-master-lists`} className='btn bg-transparent blue'>Manage Master Lists</Link>
           </div>
         </div>
       </div>
@@ -94,5 +95,16 @@ const MasterListBtn = React.createClass({
     )
   }
 })
+
+const EmptyMasterLists = ({title}) => {
+  return (
+    <div className='mx-auto bg-gray90 shadow-inset' style={{height: 321, paddingTop: 90}}>
+      <div className='center'>Looks like we haven’t created a Campaigns Master List yet…</div>
+      <div className='center mt4'>
+        <Link className='btn bg-blue-dark white' to={`/settings/${title.toLowerCase()}-master-lists`}>Create a Master List</Link>
+      </div>
+    </div>
+  )
+}
 
 export default Modal(AddCampaignToMasterList)
