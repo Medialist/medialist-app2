@@ -5,7 +5,8 @@ import debounce from 'lodash.debounce'
 const SearchBox = React.createClass({
   propTypes: {
     placeholder: PropTypes.string,
-    onTermChange: PropTypes.func.isRequired
+    onTermChange: PropTypes.func.isRequired,
+    children: PropTypes.node
   },
 
   getDefaultProps () {
@@ -27,15 +28,20 @@ const SearchBox = React.createClass({
   },
 
   render () {
+    const { placeholder, children } = this.props
+    const { term } = this.state
     return (
       <div className='flex items-center border border-gray80 p2'>
         <SearchDarkIcon className='flex-none f-lg ml1 mr2' />
+        <div className='flex-none'>
+          {children}
+        </div>
         <input
           type='search'
           className='flex-auto pl1 mb0 f-lg normal gray20'
           onChange={this.onChange}
-          value={this.state.term}
-          placeholder={this.props.placeholder}
+          value={term}
+          placeholder={placeholder}
           style={{outline: 'none'}} />
       </div>
     )
