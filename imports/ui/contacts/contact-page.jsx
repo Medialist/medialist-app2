@@ -72,7 +72,7 @@ const ContactPage = React.createClass({
         <ContactTopbar contact={contact} onAddClick={this.onAddClick} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
-            <ContactInfo masterlists={masterlists} contact={contact} onEditClick={this.toggleEditContact} user={user} />
+            <ContactInfo contact={contact} onEditClick={this.toggleEditContact} user={user} masterlists={masterlists} />
           </div>
           <div className='flex-auto px2' >
             <PostBox contact={contact} campaigns={campaigns} onFeedback={this.onFeedback} onCoverage={this.onCoverage} />

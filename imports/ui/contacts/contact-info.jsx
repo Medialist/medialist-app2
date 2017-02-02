@@ -14,16 +14,7 @@ const selectedMasterLists = [
   {_id: 0, name: 'Healthcare', items: []},
   {_id: 0, name: 'Personal Fitness', items: []}
 ]
-// const allMasterLists = [
-//   {_id: 0, label: 'Energy', slug: 'energy', count: 12},
-//   {_id: 0, label: 'Healthcare', slug: 'healthcare', count: 3},
-//   {_id: 0, label: 'Personal Fitness', slug: 'personal-fitness', count: 1},
-//   {_id: 0, label: 'Robotics', slug: 'robotics', count: 15},
-//   {_id: 0, label: 'Technology', slug: 'technology', count: 8},
-//   {_id: 0, label: 'Money and Glory', slug: 'money-and-glory', count: 1},
-//   {_id: 0, label: 'Quietness', slug: 'quietness', count: 1},
-//   {_id: 0, label: 'Fashion Bloggers', slug: 'fashion-bloggers', count: 7}
-// ]
+
 const selectedTags = [
   {_id: 0, name: 'Appropsal', slug: 'appropsal', count: 3},
   {_id: 0, name: 'Attract', slug: 'attract', count: 8},
