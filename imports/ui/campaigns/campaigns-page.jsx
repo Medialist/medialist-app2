@@ -66,9 +66,20 @@ const CampaignsPage = React.createClass({
     this.setState({ selections: [] })
   },
 
+  onViewSelection () {
+    const { router } = this.props
+    const { selections } = this.state
+    router.push({
+      pathname: '/contacts',
+      query: {
+        campaign: selections.map((s) => s.slug)
+      }
+    })
+  },
+
   render () {
     const { campaignCount, campaigns, loading, total, sort, term, snackbar } = this.props
-    const { onSortChange, onSelectionsChange, onSectorChange } = this
+    const { onSortChange, onSelectionsChange, onSectorChange, onViewSelection } = this
     const { selections, selectedSector, editCampaignOpen } = this.state
 
     if (!loading && campaignCount === 0) {
@@ -107,7 +118,7 @@ const CampaignsPage = React.createClass({
             onSelectionsChange={onSelectionsChange} />
           <CampaignsActionsToast
             campaigns={selections}
-            onViewClick={() => console.log('TODO: view selection')}
+            onViewClick={onViewSelection}
             onSectorClick={() => console.log('TODO: add/edit sectors')}
             onFavouriteClick={() => console.log('TODO: toggle favourite')}
             onTagClick={() => console.log('TODO: add/edit tags')}
