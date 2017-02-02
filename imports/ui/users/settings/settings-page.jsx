@@ -8,13 +8,15 @@ import { CircleAvatar } from '../../images/avatar'
 import SettingsProfile from './profile'
 import SettingsPassword from './password'
 import SettingsTeam from './team'
-import CampaignMasterLists from './campaign-master-lists'
+import CampaignsMasterLists from './campaigns-master-lists'
+import ContactsMasterLists from './contacts-master-lists'
 
 const menuItems = [
   {label: 'Profile', slug: 'profile'},
   {label: 'Change Password', slug: 'password'},
   {label: 'Team', slug: 'team'},
-  {label: 'Campaign Lists', slug: 'campaign-master-lists'}
+  {label: 'Campaign Lists', slug: 'campaigns-master-lists'},
+  {label: 'Contact Lists', slug: 'contacts-master-lists'}
 ]
 
 const SettingsPage = React.createClass({
@@ -25,7 +27,7 @@ const SettingsPage = React.createClass({
   },
   getInitialState () {
     return {
-      selectedMenuItem: this.props.params.selected
+      selectedMenuItem: this.props.params.selected || 'profile'
     }
   },
   componentWillReceiveProps (props) {
@@ -41,24 +43,36 @@ const SettingsPage = React.createClass({
     Meteor.call('MasterLists/delete', {_id})
   },
   render () {
+    const { user, masterlists } = this.props
     const settingsPanel = {
-      profile: <SettingsProfile user={this.props.user} />,
+      profile: <SettingsProfile user={user} />,
       password: <SettingsPassword />,
       team: <SettingsTeam />,
-      'campaign-master-lists': <CampaignMasterLists masterlists={this.props.masterlists} {...this} />
+      'campaigns-master-lists': <CampaignsMasterLists masterlists={masterlists} {...this} />,
+      'contacts-master-lists': <ContactsMasterLists masterlists={masterlists} {...this} />
     }
+    const { selectedMenuItem } = this.state
     return (
       <div className='flex max-width-4 mx-auto my4 pt4'>
         <div className='flex-none mr4 xs-hide sm-hide' style={{width: 250}}>
           <article>
-            <label className='gray40'><SettingsIcon /> Settings / <span className='gray'>{this.state.selectedMenuItem}</span></label>
+            <label className='gray40'><SettingsIcon /> Profile Settings / </label>
             <hr className='flex-auto mx2 py2' style={{height: 1}} />
-            {userInfo(this.props.user)}
-            {sideNav(this.state.selectedMenuItem)}
+            {userInfo(user)}
+            <nav className='mt2 bg-white border-top border-left border-right border-gray80'>
+              <SideMenuItem selected={selectedMenuItem} item={menuItems[0]} />
+              <SideMenuItem selected={selectedMenuItem} item={menuItems[1]} />
+              <SideMenuItem selected={selectedMenuItem} item={menuItems[2]} />
+            </nav>
+            <label className='inline-block gray40 mt5 mb4'><SettingsIcon /> App Settings / </label>
+            <nav className='mt2 bg-white border-top border-left border-right border-gray80'>
+              <SideMenuItem selected={selectedMenuItem} item={menuItems[3]} />
+              <SideMenuItem selected={selectedMenuItem} item={menuItems[4]} />
+            </nav>
           </article>
         </div>
         <div className='flex-auto px2 bg-white'>
-          {settingsPanel[this.state.selectedMenuItem || 'profile']}
+          {settingsPanel[selectedMenuItem]}
         </div>
       </div>
     )
@@ -85,17 +99,13 @@ function userInfo (user) {
   )
 }
 
-function sideNav (selected) {
-  selected = selected || 'profile'
+function SideMenuItem ({selected, item}) {
+  const { slug, label } = item
+  const activeClass = slug === selected ? 'active' : ''
+  const activeIcon = slug === selected ? <span className='right pr1'><ChevronRight /></span> : ''
   return (
-    <nav className='mt2 bg-white border-top border-left border-right border-gray80'>
-      {menuItems.map((navItem) => {
-        const activeClass = navItem.slug === selected ? 'active' : ''
-        const activeIcon = navItem.slug === selected ? <span className='right pr1'><ChevronRight /></span> : ''
-        return (<Link to={`/settings/${navItem.slug}`} key={navItem.slug}>
-          <div className={`py4 pl3 pr2 border-bottom border-gray80 active-border-left-blue active-blue ${activeClass}`}>{navItem.label}{activeIcon}</div>
-        </Link>)
-      })}
-    </nav>
+    <Link to={`/settings/${slug}`} key={slug}>
+      <div className={`py4 pl3 pr2 border-bottom border-gray80 active-border-left-blue active-blue ${activeClass}`}>{label}{activeIcon}</div>
+    </Link>
   )
 }

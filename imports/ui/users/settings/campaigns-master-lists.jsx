@@ -1,24 +1,19 @@
 import React, { PropTypes } from 'react'
-import { SectorIcon, MenuCampaignIcon, DeleteIcon, FeedEditIcon } from '../../images/icons'
+import SettingsMasterList from './settings-master-lists'
+import { MenuCampaignIcon, DeleteIcon, FeedEditIcon } from '../../images/icons'
 import Tooltip from '../../navigation/tooltip'
 
-const CampaignMasterLists = (props) => {
+const copy = 'Campaign Lists help keep your Campaigns organised. Look for them across the top of the Campaigns page.'
+
+const CampaignsMasterLists = (props) => {
   return (
-    <section className='pt4'>
-      <div className='center my4'>
-        <SectorIcon className='blue svg-icon-lg' />
-      </div>
-      <div className='center my4 bold f-xl'>Campaign Lists</div>
-      <div className='center my4'>
-        <p className='mx-auto max-width-2 center mt4 mb6'>Campaign Lists help keep your Campaigns organised. Look for them across the top of the Campaigns page.</p>
-      </div>
-      <hr className='flex-auto my4' style={{height: 1, marginRight: '-0.6rem', marginLeft: '-0.6rem'}} />
+    <SettingsMasterList title='Campaign' copy={copy}>
       <MasterLists {...props} />
-    </section>
+    </SettingsMasterList>
   )
 }
 
-export default CampaignMasterLists
+export default CampaignsMasterLists
 
 const EmptyMasterLists = ({creating, onCreate, showCreateMasterListInput}) => {
   return (
