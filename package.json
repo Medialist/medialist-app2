@@ -51,6 +51,7 @@
     "postcss-functions": "^2.1.1",
     "postcss-import": "^8.1.2",
     "react": "^15.3.2",
+    "react-addons-css-transition-group": "^15.4.2",
     "react-addons-pure-render-mixin": "^15.3.2",
     "react-dom": "^15.3.2",
     "react-helmet": "^3.1.0",
