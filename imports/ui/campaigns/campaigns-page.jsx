@@ -130,7 +130,6 @@ const EditCampaignContainer = createContainer((props) => {
 }, EditCampaign)
 
 const MasterListsSelectorContainer = createContainer((props) => {
-  Meteor.subscribe('master-lists')
   const items = MasterLists.find().fetch()
   return { ...props, items, selected: props.selected || items[0] }
 }, MasterListsSelector)

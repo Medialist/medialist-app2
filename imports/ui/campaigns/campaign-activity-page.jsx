@@ -156,8 +156,7 @@ export default createContainer((props) => {
     Meteor.subscribe('medialist', campaignSlug),
     Meteor.subscribe('contacts-by-campaign', campaignSlug),
     Meteor.subscribe('contactCount'),
-    Meteor.subscribe('clients'),
-    Meteor.subscribe('master-lists')
+    Meteor.subscribe('clients')
   ]
   const loading = subs.some((s) => !s.ready())
   const campaign = Medialists.findOne({ slug: campaignSlug })

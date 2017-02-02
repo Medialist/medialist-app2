@@ -12,7 +12,7 @@ const AddCampaignToMasterList = React.createClass({
     onSave: PropTypes.func.isRequired,
     selectedMasterLists: PropTypes.array,
     allMasterLists: PropTypes.array,
-    title: PropTypes.string.isRequired
+    title: PropTypes.oneOf(['Campaigns', 'Contacts'])
   },
   getInitialState () {
     return { selectableList: this.setSelectableList(this.props) }
