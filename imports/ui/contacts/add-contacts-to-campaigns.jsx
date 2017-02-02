@@ -13,7 +13,6 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
     term: PropTypes.string,
     onTermChange: PropTypes.func.isRequired,
     onAdd: PropTypes.func.isRequired,
-    onCreate: PropTypes.func.isRequired,
     onReset: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
     isActive: PropTypes.func.isRequired,
@@ -48,7 +47,6 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
       campaigns,
       onAdd,
       onRemove,
-      onCreate,
       isActive
     } = this.props
 
@@ -58,7 +56,7 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
     return (
       <div>
         <h1 className='f-xl regular center mt6'>Add these Contacts to a Campaign</h1>
-        <AbbreviatedAvatarList items={contacts} className='my4 px4' />
+        <AbbreviatedAvatarList size={30} items={contacts} className='mx-auto my4 px4' />
         <div className='py3 pl4 flex border-top border-bottom border-gray80'>
           <SearchBlueIcon className='flex-none' />
           <input className='flex-auto f-lg pa2 mx2' placeholder='Find a campaign...' onChange={onChange} style={{outline: 'none'}} onKeyPress={onKeyPress} value={term} />
@@ -69,7 +67,6 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
             onAdd={onAdd}
             onRemove={onRemove}
             results={campaigns} />
-          <CreateContactButton term={term} onCreate={onCreate} />
         </div>
         <form className='py4 border-top border-gray80 flex' onReset={onReset} onSubmit={onSubmit}>
           <div className='flex-auto right-align'>
@@ -84,7 +81,6 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
 
 const AddContactsToCampaignsContainer = withSnackbar(React.createClass({
   propTypes: {
-    onCreate: PropTypes.func.isRequired,
     onDismiss: PropTypes.func.isRequired,
     contacts: PropTypes.array.isRequired,
     snackbar: PropTypes.object.isRequired
@@ -165,7 +161,7 @@ const CampaignResult = (props) => {
   return (
     <div style={{lineHeight: 1.3, ...style}} {...props}>
       <SquareAvatar size={38} avatar={avatar} name={name} />
-      <div className='inline-block align-top pl3' style={{width: 220, height: 55}}>
+      <div className='inline-block align-top pl3' style={{width: 220}}>
         <div className='f-md semibold gray10 truncate'>{name}</div>
         <div className='f-sm normal nowrap'>
           {client && (
@@ -228,15 +224,3 @@ const ResultList = React.createClass({
     )
   }
 })
-
-const CreateContactButton = ({ term, onCreate }) => {
-  if (!term) return null
-  const onCreateClick = () => onCreate({ name: term })
-  return (
-    <div key='createContact' className='p4 center'>
-      <button type='button' className='btn bg-blue white' onClick={onCreateClick}>
-        Create new Contact "{term}"
-      </button>
-    </div>
-  )
-}
