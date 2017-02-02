@@ -14,7 +14,7 @@ const menuItems = [
   {label: 'Profile', slug: 'profile'},
   {label: 'Change Password', slug: 'password'},
   {label: 'Team', slug: 'team'},
-  {label: 'Campaign Lists', slug: 'campaign-master-lists'}
+  {label: 'Campaigns Lists', slug: 'campaigns-master-lists'}
 ]
 
 const SettingsPage = React.createClass({
@@ -45,7 +45,7 @@ const SettingsPage = React.createClass({
       profile: <SettingsProfile user={this.props.user} />,
       password: <SettingsPassword />,
       team: <SettingsTeam />,
-      'campaign-master-lists': <CampaignMasterLists masterlists={this.props.masterlists} {...this} />
+      'campaigns-master-lists': <CampaignMasterLists masterlists={this.props.masterlists} {...this} />
     }
     return (
       <div className='flex max-width-4 mx-auto my4 pt4'>

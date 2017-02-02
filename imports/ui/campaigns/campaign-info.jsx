@@ -128,8 +128,8 @@ const CampaignInfo = React.createClass({
             </div>
             <div className='f-sm gray10 mb2'>{client && client.name}</div>
             <div>
-              {(links || []).map((link) => (
-                <span className='mr2'>
+              {(links || []).map((link, ind) => (
+                <span className='mr2' key={ind}>
                   <Tooltip title={prettyUrl(link.url)} key={link.url}>
                     <a href={link.url} target='_blank' className='gray60 hover-gray50'>
                       <WebsiteIcon className='svg-icon-md' />
@@ -150,7 +150,7 @@ const CampaignInfo = React.createClass({
         <section>
           <InfoHeader name='Team Members' onClick={onEditTeamClick} />
           <div className='px2 py3'>
-            {team.map((teamMember, ind) => <CircleAvatar {...teamMember} size={38} style={{marginLeft: '2px'}} />)}
+            {team.map((teamMember, ind) => <CircleAvatar {...teamMember} size={38} style={{marginLeft: '2px'}} key={ind} />)}
           </div>
         </section>
         <AddToMasterList
@@ -159,7 +159,7 @@ const CampaignInfo = React.createClass({
           onSave={onUpdateMasterList}
           selectedMasterLists={selectedMasterLists}
           allMasterLists={masterlists}
-          title='Campaign' />
+          type='Campaigns' />
         <AddTags
           open={addTagsOpen}
           onDismiss={dismissAddTags}

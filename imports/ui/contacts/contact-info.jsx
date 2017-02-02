@@ -140,7 +140,7 @@ const ContactInfo = React.createClass({
           onSave={onUpdateMasterList}
           selectedMasterLists={selectedMasterLists}
           allMasterLists={masterlists}
-          title='Contact' />
+          type='Contacts' />
         <AddTags
           open={addTagsOpen}
           onDismiss={dismissAddTags}
