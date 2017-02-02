@@ -5,7 +5,7 @@ const Tag = (props) => {
   const {onClick, onRemove, style, children} = props
   return (
     <div
-      className='inline-block bg-gray10 pointer rounded mr1 mb1'
+      className='inline-block bg-gray10 pointer rounded mr1 mb1 select-none'
       style={{lineHeight: 1.5, ...style}}
       onClick={onClick}>
       <div
