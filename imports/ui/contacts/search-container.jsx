@@ -36,7 +36,7 @@ export default (Component, opts = {}) => {
       const subs = [ Meteor.subscribe('contactCount') ]
       const contactsCount = window.Counter.get('contactCount')
       const query = {}
-      if (campaignSlugs.length) {
+      if (campaignSlugs && campaignSlugs.length) {
         query.medialists = { $in: campaignSlugs }
       }
 
@@ -52,7 +52,6 @@ export default (Component, opts = {}) => {
           Meteor.subscribe('contacts', { regex: term.substr(0, opts.minSearchLength) })
         )
       }
-      console.log({query})
       const contacts = Contacts.find(query, { sort }).fetch()
       const loading = !subs.every((sub) => sub.ready())
 
