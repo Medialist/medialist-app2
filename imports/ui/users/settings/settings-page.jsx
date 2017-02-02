@@ -22,7 +22,8 @@ const menuItems = [
 const SettingsPage = React.createClass({
   propTypes: {
     user: PropTypes.object.isRequired,
-    masterlists: PropTypes.array,
+    campaignsMasterLists: PropTypes.array,
+    contactsMasterLists: PropTypes.array,
     params: PropTypes.object
   },
   getInitialState () {
@@ -43,13 +44,13 @@ const SettingsPage = React.createClass({
     Meteor.call('MasterLists/delete', {_id})
   },
   render () {
-    const { user, masterlists } = this.props
+    const { user, campaignsMasterLists, contactsMasterLists } = this.props
     const settingsPanel = {
       profile: <SettingsProfile user={user} />,
       password: <SettingsPassword />,
       team: <SettingsTeam />,
-      'campaigns-master-lists': <CampaignsMasterLists masterlists={masterlists} {...this} />,
-      'contacts-master-lists': <ContactsMasterLists masterlists={masterlists} {...this} />
+      'campaigns-master-lists': <CampaignsMasterLists masterlists={campaignsMasterLists} {...this} />,
+      'contacts-master-lists': <ContactsMasterLists masterlists={contactsMasterLists} {...this} />
     }
     const { selectedMenuItem } = this.state
     return (
@@ -83,7 +84,8 @@ export default createContainer(() => {
   Meteor.subscribe('master-lists')
   return {
     user: Meteor.user(),
-    masterlists: MasterLists.find().fetch()
+    contactsMasterLists: MasterLists.find({type: 'Contacts'}).fetch(),
+    campaignsMasterLists: MasterLists.find({type: 'Campaigns'}).fetch()
   }
 }, SettingsPage)
 
