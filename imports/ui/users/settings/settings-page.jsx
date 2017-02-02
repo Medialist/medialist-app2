@@ -81,7 +81,6 @@ const SettingsPage = React.createClass({
 })
 
 export default createContainer(() => {
-  Meteor.subscribe('master-lists')
   return {
     user: Meteor.user(),
     contactsMasterLists: MasterLists.find({type: 'Contacts'}).fetch(),
