@@ -53,12 +53,12 @@ const MenuArrow = ({height}) => {
       width: '100%',
       height: `${height}px`,
       top: `-${height}px`,
+      textAlign: 'center',
       overflow: 'hidden'
     }}>
       <div style={{
         display: 'inline-block',
         position: 'relative',
-        left: `calc(50% - ${side / 2}px)`,
         width: `${side}px`,
         height: `${side}px`,
         transform: `translate(0, ${height / 2}px) rotate(45deg)`,
@@ -90,6 +90,7 @@ const MenuPosition = ({width, left = `calc(50% - ${width / 2}px)`, children}) =>
 const Menu = ({children}) => (
   <div style={{
     position: 'relative',
+    textAlign: 'left',
     zIndex: 500,
     background: 'white',
     boxShadow: '0px 1px 10px 0px rgba(0,0,0,0.20)'
