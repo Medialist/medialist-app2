@@ -79,11 +79,14 @@ const MasterListBtn = React.createClass({
     const selectedClasses = selected ? 'border-blue bg-blue white shadow-1' : 'border-gray80 bg-white gray20'
     return (
       <div className='p2' style={{width: '25%'}} key={name}>
-        <div className={`width-100 relative border ${selectedClasses} hover-border-blue hover-display-trigger`} style={{borderRadius: 8}}>
+        <div className={`width-100 relative border ${selectedClasses} hover-border-blue`} style={{borderRadius: 8}}>
           {selected && <Check className='absolute top-0 right-0' style={{marginRight: 6}} />}
           <div className='center overflow-hidden' style={{height: 80}}>
-            <div className='flex flex-column justify-center normal f-lg pointer px1' onClick={() => onSelect(item)}>
+            <div className='flex flex-column justify-center normal f-lg pointer px1 hover-display-trigger' style={{height: '100%'}} onClick={() => onSelect(item)}>
               <label className='block mb1 pointer nowrap truncate'>{name}</label>
+              <label className={`display-none f-xxs pointer ${item.selected ? 'white opacity-50' : 'blue'} hover-display-block`}>
+                {`${items.length} ${title.toLowerCase()}${items.length === 1 ? '' : 's'}`}
+              </label>
             </div>
           </div>
         </div>
