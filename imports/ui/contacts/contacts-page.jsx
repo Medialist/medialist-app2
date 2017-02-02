@@ -14,6 +14,7 @@ import EditContact from './edit-contact.jsx'
 import ContactListEmpty from './contacts-list-empty'
 import { FeedContactIcon } from '../images/icons'
 import createSearchContainer from './search-container'
+import AddContactsToCampaigns from './add-contacts-to-campaigns'
 
 /*
  * ContactPage and ContactsPageContainer
@@ -34,7 +35,8 @@ const ContactsPage = React.createClass({
       selections: [],
       selectedSector: null,
       isDropdownOpen: false,
-      addContactModalOpen: false
+      addContactModalOpen: false,
+      addContactsToCampaignsModalOpen: false
     }
   },
 
@@ -140,7 +142,7 @@ const ContactsPage = React.createClass({
         </div>
         <ContactsActionsToast
           contacts={selections}
-          onCampaignClick={() => console.log('TODO: add contacts to campaign')}
+          onCampaignClick={() => this.setState({addContactsToCampaignsModalOpen: true})}
           onSectorClick={() => console.log('TODO: add/edit sectors')}
           onFavouriteClick={() => console.log('TODO: toggle favourite')}
           onTagClick={() => console.log('TODO: add/edit tags')}
@@ -151,6 +153,11 @@ const ContactsPage = React.createClass({
           onChange={this.onAddContactChange}
           onSubmit={this.onAddContactSubmit}
           open={this.state.addContactModalOpen} />
+        <AddContactsToCampaigns
+          contacts={selections}
+          onDismiss={() => this.setState({addContactsToCampaignsModalOpen: false})}
+          onSubmit={() => this.setState({addContactsToCampaignsModalOpen: false})}
+          open={this.state.addContactsToCampaignsModalOpen} />
       </div>
     )
   }
