@@ -136,7 +136,7 @@ const ContactsPage = React.createClass({
                     key={c.slug}
                     name={c.name}
                     avatar={c.avatar}
-                    style={{marginBottom: 0}}
+                    style={{marginTop: -4, marginBottom: -4}}
                     onRemove={() => onCampaignRemove(c)}
                   />
                 ))}

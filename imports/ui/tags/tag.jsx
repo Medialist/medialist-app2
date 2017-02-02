@@ -6,7 +6,7 @@ const Tag = (props) => {
   return (
     <div
       className='inline-block bg-gray10 pointer rounded mr1 mb1'
-      style={{padding: 1, lineHeight: 1.5, ...style}}
+      style={{lineHeight: 1.5, ...style}}
       onClick={onClick}>
       <div
         style={{fontWeight: 800, transform: 'scale(1.5)'}}
@@ -41,7 +41,7 @@ export const AvatarTag = (props) => {
   const {avatar, name, ...tagProps} = props
   return (
     <Tag {...tagProps}>
-      <SquareAvatar size={28} name={name} avatar={avatar} />
+      <SquareAvatar size={28} name={name} avatar={avatar} style={{borderRadius: 0}} />
       <div className='inline-block px2 py1 white f-xxs semibold'>{name}</div>
     </Tag>
   )
