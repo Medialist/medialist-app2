@@ -43,15 +43,12 @@ const EditMasterLists = React.createClass({
     this.setState({ editing: null })
     this.props.onUpdateMasterList({ _id, name: this.state.masterlists[_id] })
   },
-  onKeyDown (_id, key) {
-    if (key === 'Enter' || key === 'Tab') this.onUpdate(_id)
-  },
   isEditing (_id) {
     this.setState({ editing: _id })
   },
   render () {
-    const { onCreate, showCreateMasterListInput, isEditing, onUpdate, onChange, onKeyDown, state } = this
-    const masterListItemProps = { isEditing, onUpdate, onChange, onKeyDown, state }
+    const { onCreate, showCreateMasterListInput, isEditing, onUpdate, onChange, state } = this
+    const masterListItemProps = { isEditing, onUpdate, onChange, state }
     const { editing, creating } = this.state
     const { masterlists, onDeleteMasterList, type } = this.props
     const typeAsSingular = type.substring(0, type.length - 1)
@@ -142,8 +139,10 @@ const EmptyMasterLists = ({type, creating, onCreate, showCreateMasterListInput})
 }
 
 const MasterListsItem = (props) => {
-  const {masterlist, isEditing, onDeleteMasterList, onUpdate, onChange, onKeyDown, editing, state} = props
+  const {masterlist, isEditing, onDeleteMasterList, onUpdate, onChange, editing, state} = props
   const { _id, items } = masterlist
+  const triggerUpdate = (_id, key) => { key === 'Enter' || key === 'Tab' ? onUpdate(_id) : null }
+  const disabled = _id !== editing
 
   return (
     <div className='flex justify-start items-center p2 my1 border border-gray80 bg-gray90 gray60'>
@@ -151,13 +150,13 @@ const MasterListsItem = (props) => {
         ref={(input) => input && editing === _id && input.focus()}
         className='input max-width-sm ml2'
         defaultValue={state.masterlists[_id]}
-        disabled={_id !== editing}
+        disabled={disabled}
         onChange={(e) => onChange(_id, e.target.value)}
         onBlur={() => onUpdate(_id)}
-        onKeyDown={(e) => onKeyDown(_id, e.key)} />
+        onKeyDown={(e) => triggerUpdate(_id, e.key)} />
       <div className='flex-none ml4 right-align gray40' style={{width: 20}}>{items.length}</div>
       <MenuCampaignIcon className='ml2 flex-none gray60' />
-      {editing === _id ? <SaveBtn _id={_id} onUpdate={onUpdate} /> : <EditDeleteBtns _id={_id} isEditing={isEditing} onDeleteMasterList={onDeleteMasterList} />}
+      {!disabled ? <SaveBtn _id={_id} onUpdate={onUpdate} /> : <EditDeleteBtns _id={_id} isEditing={isEditing} onDeleteMasterList={onDeleteMasterList} />}
     </div>
   )
 }

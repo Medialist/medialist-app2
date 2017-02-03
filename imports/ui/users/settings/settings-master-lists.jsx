@@ -1,19 +1,15 @@
 import React, { PropTypes } from 'react'
 import { SectorIcon, FeedContactIcon } from '../../images/icons'
 
-const icons = {
-  'Campaign': <SectorIcon className='svg-icon-lg blue' />,
-  'Contact': <FeedContactIcon className='svg-icon-lg blue' />
-}
-
 const SettingsPanelMasterLists = (props) => {
-  const { title, copy, children } = props
+  const { type, copy, children } = props
+  const Icon = type === 'Contacts' ? FeedContactIcon : SectorIcon
   return (
     <section className='pt4'>
       <div className='center my4'>
-        {icons[title]}
+        <Icon className='svg-icon-lg blue' />
       </div>
-      <div className='center my4 bold f-xl'>{title} Lists</div>
+      <div className='center my4 bold f-xl'>{type.substring(0, type.length - 1)} Lists</div>
       <div className='center my4'>
         <p className='mx-auto max-width-2 center mt4 mb6'>{copy}</p>
       </div>
@@ -24,7 +20,7 @@ const SettingsPanelMasterLists = (props) => {
 }
 
 SettingsPanelMasterLists.PropTypes = {
-  title: PropTypes.string.isRequired,
+  type: PropTypes.oneOf(['Contacts', 'Campaigns']).isRequired,
   copy: PropTypes.string,
   children: PropTypes.node.isRequired
 }
