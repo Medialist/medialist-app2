@@ -114,7 +114,7 @@ export const MasterListsSetMasterLists = new SimpleSchema([
       type: String,
       regEx: SimpleSchema.RegEx.Id
     },
-    mastersLists: {
+    masterLists: {
       type: [String],
       regEx: SimpleSchema.RegEx.Id
     }

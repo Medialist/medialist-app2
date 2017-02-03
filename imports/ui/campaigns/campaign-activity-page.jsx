@@ -12,7 +12,7 @@ import Clients from '/imports/api/clients/clients'
 import Medialists from '/imports/api/medialists/medialists'
 import Contacts from '/imports/api/contacts/contacts'
 import MasterLists from '/imports/api/master-lists/master-lists'
-import { addItems as addCampaignToMasterLists } from '/imports/api/master-lists/methods'
+import { setMasterLists } from '/imports/api/master-lists/methods'
 import CreateContact from '../contacts/edit-contact'
 import AddContact from './add-contact'
 import EditTeam from './edit-team'
@@ -58,9 +58,9 @@ const CampaignActivityPage = React.createClass({
     this.setState({ addContactModalOpen: false })
   },
 
-  onAddCampaignToMasterLists (payload) {
-    console.log('SAVE THIS', payload)
-    addCampaignToMasterLists(payload)
+  onAddCampaignToMasterLists ({item, masterLists}) {
+    console.log({ type: 'Campaigns', item, masterLists })
+    setMasterLists.call({ type: 'Campaigns', item, masterLists })
   },
 
   toggleEditModal () {

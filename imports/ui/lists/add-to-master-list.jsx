@@ -34,11 +34,11 @@ const AddToMasterList = React.createClass({
     this.setState({ selectableList })
   },
   onSave () {
-    const _id = this.props.document._id
-    const items = this.state.selectableList
+    const item = this.props.document._id
+    const masterLists = this.state.selectableList
       .filter((item) => item.selected)
-      .map((item) => item.item)
-    this.props.onSave({ _id, items })
+      .map((item) => item.item._id)
+    this.props.onSave({ item, masterLists })
     this.props.onDismiss()
   },
   render () {

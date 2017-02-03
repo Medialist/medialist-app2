@@ -269,7 +269,7 @@ describe('master-lists-typeCount', function () {
   })
 })
 
-describe.only('master-lists-set-masterlists', function () {
+describe('master-lists-set-masterlists', function () {
   let masterListIds, masterlists, campaigns, contact
 
   beforeEach(function () {
