@@ -10,7 +10,8 @@ import MasterListsSelector from './masterlists-selector.jsx'
 import CampaignsActionsToast from './campaigns-actions-toast'
 import EditCampaign from './edit-campaign'
 import CampaignListEmpty from './campaign-list-empty'
-import withSnackbar from '../snackbar/with-snackbar.jsx'
+import withSnackbar from '../snackbar/with-snackbar'
+import createSearchContainer from './campaign-search-container'
 
 const CampaignsPage = React.createClass({
   propTypes: {
@@ -145,45 +146,41 @@ const MasterListsSelectorContainer = createContainer((props) => {
   return { ...props, items, selected: props.selected || items[0] }
 }, MasterListsSelector)
 
-const CampaignsPageContainer = withSnackbar(withRouter(createContainer(({ location, router }) => {
-  const { sort, term } = parseQuery(location)
-  const subs = [ Meteor.subscribe('campaignCount') ]
-  const campaignCount = window.Counter.get('campaignCount')
-  const query = {}
-  const minSearchLength = 3
-  const searching = !!term && term.length >= minSearchLength
-  if (searching) {
-    const filterRegExp = new RegExp(term, 'gi')
-    query.$or = [
-      { name: filterRegExp },
-      { purpose: filterRegExp },
-      { 'client.name': filterRegExp }
-    ]
-    subs.push(Meteor.subscribe('medialists', {regex: term}))
-  }
-  const campaigns = window.Medialists.find(query, { sort }).fetch()
-  const total = window.Medialists.find().count()
-  const loading = !subs.every((sub) => sub.ready())
-  const boundSetQuery = setQuery.bind(null, location, router)
-  return { campaigns, campaignCount, total, loading, searching, sort, term, setQuery: boundSetQuery }
-}, CampaignsPage)))
+const SearchableCampaignsPage = createSearchContainer(CampaignsPage)
 
-function parseQuery ({query}) {
-  const sort = query.sort ? JSON.parse(query.sort) : { updatedAt: -1 }
-  const term = query.q || ''
-  return { sort, term }
-}
+const CampaignsPageContainer = withSnackbar(withRouter(React.createClass({
 
-function setQuery (location, router, opts) {
-  const newQuery = {}
-  if (opts.sort) newQuery.sort = JSON.stringify(opts.sort)
-  if (opts.hasOwnProperty('term')) {
-    newQuery.q = opts.term
+  parseQuery ({query}) {
+    const sort = query.sort ? JSON.parse(query.sort) : { updatedAt: -1 }
+    const term = query.q || ''
+    return { sort, term }
+  },
+
+  setQuery (opts) {
+    const { location, router } = this.props
+    const newQuery = {}
+    if (opts.sort) newQuery.sort = JSON.stringify(opts.sort)
+    if (opts.hasOwnProperty('term')) {
+      newQuery.q = opts.term
+    }
+    const query = Object.assign({}, location.query, newQuery)
+    if (query.q === '') delete query.q
+    const qs = querystring.stringify(query)
+    router.replace('/campaigns?' + qs)
+  },
+
+  render () {
+    const { sort, term } = this.parseQuery(this.props.location)
+    return (
+      <SearchableCampaignsPage
+        {...this.props}
+        {...this.data}
+        sort={sort}
+        term={term}
+        setQuery={this.setQuery} />
+    )
   }
-  const query = Object.assign({}, location.query, newQuery)
-  if (query.q === '') delete query.q
-  const qs = querystring.stringify(query)
-  router.replace('/campaigns?' + qs)
-}
+
+})))
 
 export default CampaignsPageContainer
