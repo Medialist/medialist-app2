@@ -5,8 +5,7 @@ import MasterLists from '../../api/master-lists/master-lists'
 import { createContainer } from 'meteor/react-meteor-data'
 import { Link, withRouter } from 'react-router'
 import Arrow from 'rebass/dist/Arrow'
-import Dropdown from 'rebass/dist/Dropdown'
-import DropdownMenu from '../lists/dropdown-menu'
+import { Dropdown, DropdownMenu } from '../navigation/dropdown'
 import ContactsTable from './contacts-table'
 import SearchBox from '../lists/search-box'
 import ContactsActionsToast from './contacts-actions-toast'
@@ -15,6 +14,8 @@ import EditContact from './edit-contact.jsx'
 import ContactListEmpty from './contacts-list-empty'
 import { FeedContactIcon } from '../images/icons'
 import createSearchContainer from './search-container'
+import Medialists from '/imports/api/medialists/medialists'
+import { AvatarTag } from '../tags/tag'
 
 /*
  * ContactPage and ContactsPageContainer
@@ -92,9 +93,16 @@ const ContactsPage = React.createClass({
     console.log('submit', contact)
   },
 
+  onCampaignRemove (campaign) {
+    const { setQuery, campaignSlugs } = this.props
+    setQuery({
+      campaignSlugs: campaignSlugs.filter((str) => str !== campaign.slug)
+    })
+  },
+
   render () {
-    const { contactsCount, loading, searching, contacts, term, sort } = this.props
-    const { onSortChange, onSelectionsChange, onSectorChange, onTermChange } = this
+    const { contactsCount, loading, searching, contacts, term, sort, campaigns } = this.props
+    const { onSortChange, onSelectionsChange, onSectorChange, onTermChange, onCampaignRemove } = this
     const { selections } = this.state
     if (!loading && contactsCount === 0) return <ContactListEmpty />
     return (
@@ -103,27 +111,37 @@ const ContactsPage = React.createClass({
           <div className='flex-auto border-right border-gray80'>
             <MasterListsSelectorContainer selected={this.state.selectedSector} onSectorChange={onSectorChange} />
           </div>
-          <Dropdown>
-            <div className='flex-none bg-white center px4' style={{width: 240}}>
-              <button className='btn bg-completed white ml4 mr1' onClick={this.toggleAddContactModal}>New Contact</button>
-              <button className='btn bg-completed white mr4' onClick={this.onDropdownArrowClick} >
+          <div className='flex-none bg-white center px4' style={{width: 240}}>
+            <button className='btn bg-completed white mr1' onClick={this.toggleAddContactModal}>New Contact</button>
+            <Dropdown>
+              <button className='btn bg-completed white' onClick={this.onDropdownArrowClick} >
                 <Arrow direction='down' style={{ marginLeft: 0 }} />
               </button>
-              <DropdownMenu right style={{ top: '2.8rem', right: '2.7rem' }} arrowPosition={'calc(100% - 27px)'} open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
-                <nav className='block border-top border-gray80 py1'>
+              <DropdownMenu width={210} left={-165} top={0} open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
+                <nav className='block py1'>
                   <Link to='/contacts/import' className='block px3 py2 f-md normal gray20 hover-bg-gray90' activeClassName='active' onClick={this.onLinkClick}>
                     <FeedContactIcon />
                     <span className='ml2'>Import Contacts</span>
                   </Link>
                 </nav>
               </DropdownMenu>
-            </div>
-          </Dropdown>
+            </Dropdown>
+          </div>
         </div>
         <div className='bg-white shadow-2 m4 mt8'>
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
-              <SearchBox onTermChange={onTermChange} placeholder='Search contacts...' />
+              <SearchBox onTermChange={onTermChange} placeholder='Search contacts...'>
+                {campaigns && campaigns.map((c) => (
+                  <AvatarTag
+                    key={c.slug}
+                    name={c.name}
+                    avatar={c.avatar}
+                    style={{marginTop: -4, marginBottom: -4}}
+                    onRemove={() => onCampaignRemove(c)}
+                  />
+                ))}
+              </SearchBox>
             </div>
             <div className='flex-none pl4 f-xs'>
               <ContactsTotal searching={searching} results={contacts} total={contactsCount} />
@@ -182,6 +200,7 @@ const ContactsPageContainer = withRouter(React.createClass({
     if (opts.hasOwnProperty('term')) {
       newQuery.q = opts.term
     }
+    if (opts.campaignSlugs) newQuery.campaign = opts.campaignSlugs
     const query = Object.assign({}, location.query, newQuery)
     if (query.q === '') delete query.q
     const qs = querystring.stringify(query)
@@ -191,17 +210,21 @@ const ContactsPageContainer = withRouter(React.createClass({
   parseQuery ({query}) {
     const sort = query.sort ? JSON.parse(query.sort) : { updatedAt: -1 }
     const term = query.q || ''
-    return { sort, term }
+    const { campaign } = query
+    if (!campaign) return { sort, term, campaignSlugs: [], campaigns: [] }
+
+    const campaignSlugs = Array.isArray(campaign) ? campaign : [campaign]
+    const campaigns = Medialists.find({slug: {$in: campaignSlugs}}).fetch()
+    return { sort, term, campaignSlugs, campaigns }
   },
 
   render () {
-    const { sort, term } = this.parseQuery(this.props.location)
+    const { location } = this.props
     return (
       <SearchableContactsPage
         {...this.props}
         {...this.data}
-        sort={sort}
-        term={term}
+        {...this.parseQuery(location)}
         setQuery={this.setQuery} />
     )
   }
