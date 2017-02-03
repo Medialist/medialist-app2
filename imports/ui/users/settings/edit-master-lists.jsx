@@ -50,7 +50,8 @@ const EditMasterLists = React.createClass({
     this.setState({ editing: _id })
   },
   render () {
-    const { onCreate, showCreateMasterListInput } = this
+    const { onCreate, showCreateMasterListInput, isEditing, onUpdate, onChange, onKeyDown, state } = this
+    const masterListItemProps = { isEditing, onUpdate, onChange, onKeyDown, state }
     const { editing, creating } = this.state
     const { masterlists, onDeleteMasterList, type } = this.props
     const typeAsSingular = type.substring(0, type.length - 1)
@@ -76,7 +77,7 @@ const EditMasterLists = React.createClass({
             return (
               <MasterListsItem
                 key={masterlist._id}
-                {...this}
+                {...masterListItemProps}
                 masterlist={masterlist}
                 onDeleteMasterList={onDeleteMasterList}
                 editing={editing} />
