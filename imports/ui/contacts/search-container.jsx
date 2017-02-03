@@ -36,8 +36,10 @@ export default (Component, opts = {}) => {
       const subs = [ Meteor.subscribe('contactCount') ]
       const contactsCount = window.Counter.get('contactCount')
       const query = {}
+
       if (campaignSlugs && campaignSlugs.length) {
         query.medialists = { $in: campaignSlugs }
+        subs.push(Meteor.subscribe('contacts', {campaignSlugs}))
       }
 
       const searching = term.length >= opts.minSearchLength
