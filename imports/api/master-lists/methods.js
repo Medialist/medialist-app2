@@ -8,7 +8,8 @@ import MasterLists, {
   MasterListUpdateSchema,
   MasterListAddItemsSchema,
   MasterListRemoveItemSchema,
-  MasterListDelSchema
+  MasterListDelSchema,
+  MasterListsSetMasterLists
 } from './master-lists'
 import Contacts from '../contacts/contacts'
 import Medialists from '../medialists/medialists'
@@ -102,6 +103,26 @@ export const addItems = new ValidatedMethod({
         }
       }
     }, { multi: true })
+  }
+})
+
+export const setMasterLists = new ValidatedMethod({
+  name: 'MasterLists/setMasterLists',
+  validate: MasterListsSetMasterLists.validator(),
+  run ({type, item, masterLists}) {
+    if (!this.userId) throw new Meteor.Error('You must be logged in')
+
+    const refCollection = (type === 'Contacts') ? Contacts : Medialists
+    const itemDocument = refCollection.findOne({_id: item})
+    if (!itemDocument) throw new Meteor.Error(`${type.substring(0, type.length - 1)} not found`)
+
+    const removeItemsFromMasterListsIds = itemDocument.masterLists.filter((oldListItem) => masterLists.indexOf(oldListItem) === -1)
+
+    MasterLists.update({_id: {$in: masterLists}}, {$addToSet: {items: item}}, {multi: true})
+
+    removeItemsFromMasterListsIds.forEach((_id) => MasterLists.update({ _id }, {$pull: {items: item}}, {multi: true}))
+
+    return refCollection.update({_id: item}, {masterLists})
   }
 })
 

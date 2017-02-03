@@ -21,7 +21,8 @@ export default (Component, opts = {}) => {
     propTypes: {
       term: PropTypes.string.isRequired,
       // http://docs.meteor.com/api/collections.html#sortspecifiers
-      sort: PropTypes.oneOfType([ PropTypes.object, PropTypes.array ])
+      sort: PropTypes.oneOfType([ PropTypes.object, PropTypes.array ]),
+      campaignSlugs: PropTypes.arrayOf(PropTypes.string)
     },
 
     getDefaultProps () {
@@ -31,12 +32,17 @@ export default (Component, opts = {}) => {
     mixins: [ReactMeteorData],
 
     getMeteorData () {
-      const { sort, term } = this.props
+      const { sort, term, campaignSlugs } = this.props
       const subs = [ Meteor.subscribe('contactCount') ]
       const contactsCount = window.Counter.get('contactCount')
       const query = {}
-      const searching = term.length >= opts.minSearchLength
 
+      if (campaignSlugs && campaignSlugs.length) {
+        query.medialists = { $in: campaignSlugs }
+        subs.push(Meteor.subscribe('contacts', {campaignSlugs}))
+      }
+
+      const searching = term.length >= opts.minSearchLength
       if (searching) {
         const filterRegExp = new RegExp(term, 'gi')
         query.$or = [
@@ -48,7 +54,6 @@ export default (Component, opts = {}) => {
           Meteor.subscribe('contacts', { regex: term.substr(0, opts.minSearchLength) })
         )
       }
-
       const contacts = Contacts.find(query, { sort }).fetch()
       const loading = !subs.every((sub) => sub.ready())
 

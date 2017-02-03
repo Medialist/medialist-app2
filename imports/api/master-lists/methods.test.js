@@ -2,7 +2,7 @@ import assert from 'assert'
 import Faker from 'faker'
 import isEqual from 'lodash.isequal'
 import { Random } from 'meteor/random'
-import { create, del, update, addItems, removeItem, itemCount, typeCount } from './methods'
+import { create, del, update, addItems, removeItem, itemCount, typeCount, setMasterLists } from './methods'
 import MasterLists from './master-lists'
 import Contacts from '../contacts/contacts'
 import Medialists from '../medialists/medialists'
@@ -267,4 +267,66 @@ describe('master-lists-typeCount', function () {
       { _id: 'Contacts', count: 1 }
     ]))
   })
+})
+
+describe.only('master-lists-set-masterlists', function () {
+  let masterListIds, masterlists, campaigns, contact
+
+  beforeEach(function () {
+    resetDatabase()
+    masterlists = Array(3).fill(0).map(() => {
+      const masterlist = {
+        type: 'Campaigns',
+        name: Faker.company.companyName(),
+        slug: Faker.commerce.productMaterial(),
+        items: [],
+        order: 0
+      }
+      const _id = MasterLists.insert(masterlist)
+      return { _id, ...masterlists }
+    })
+    masterListIds = masterlists.map((m) => m._id)
+    campaigns = Array(1).fill(0).map(() => {
+      const campaign = { name: Faker.company.companyName(), slug: Faker.commerce.productMaterial(), masterLists: [] }
+      const _id = Medialists.insert({ name: Faker.company.companyName(), slug: Faker.commerce.productMaterial(), masterLists: [] })
+      return { _id, ...campaign }
+    })
+  })
+
+  it('should require a logged in user', function () {
+    assert.throws(() => setMasterLists.run.call({}, { type: 'Campaigns', item: campaigns[0]._id, masterLists: masterListIds }, /You must be logged in/))
+  })
+
+  it('should validate its parameters', function () {
+    assert.ok(setMasterLists.run.call({userId: 123}, { type: 'Campaigns', item: campaigns[0]._id, masterLists: masterListIds }))
+    assert.throws(() => {
+      setMasterLists.validate({ type: 'Test', item: campaigns[0]._id, masterLists: masterListIds }, /Test is not an allowed value/)
+    })
+  })
+
+  it('should set a new masterlist on a campaign', function () {
+    const itemId = campaigns[0]._id
+    setMasterLists.run.call({userId: 123}, { type: 'Campaigns', item: itemId, masterLists: masterListIds })
+    const upatedCampaign = Medialists.findOne({_id: itemId})
+    assert.equal(upatedCampaign.masterLists.length, 3, 'campaign has 3 masterlists')
+    const updatedMasterLists = MasterLists.find({items: {$in: [itemId]}})
+    assert.equal(updatedMasterLists.count(), 3, '3 masterlists have been updated')
+  })
+
+  it('should update masterlists removing and adding as approprate', function () {
+    const campaignId = campaigns[0]._id
+    // add item to two masterlists
+    setMasterLists.run.call({userId: 123}, { type: 'Campaigns', item: campaignId, masterLists: [masterListIds[0], masterListIds[1]] })
+    const campaign = Medialists.findOne({_id: campaignId})
+    assert.equal(campaign.masterLists.indexOf(masterListIds[2]), -1, 'masterLists are added to campaign')
+    const masterLists = MasterLists.find({items: {$size: 1}}).fetch()
+    assert.equal(masterLists.length, 2, '2 masterLists records have an the same item inserted')
+    // update the item removing from one masterlist and adding to another
+    setMasterLists.run.call({userId: 123}, { type: 'Campaigns', item: campaignId, masterLists: [masterListIds[0], masterListIds[2]] })
+    const removedMasterList = MasterLists.findOne({_id: masterListIds[1]})
+    assert.equal(removedMasterList.items.length, 0, 'itemId has been removed successfully')
+    const addedMasterList = MasterLists.findOne({_id: masterListIds[2]})
+    assert.equal(addedMasterList.items[0], campaignId, 'item has been added successfully')
+  })
+
 })
