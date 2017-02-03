@@ -1,6 +1,7 @@
 import querystring from 'querystring'
 import React from 'react'
 import { Meteor } from 'meteor/meteor'
+import MasterLists from '../../api/master-lists/master-lists'
 import { createContainer } from 'meteor/react-meteor-data'
 import { Link, withRouter } from 'react-router'
 import Arrow from 'rebass/dist/Arrow'
@@ -9,7 +10,7 @@ import DropdownMenu from '../lists/dropdown-menu'
 import ContactsTable from './contacts-table'
 import SearchBox from '../lists/search-box'
 import ContactsActionsToast from './contacts-actions-toast'
-import SectorSelector from '../campaigns/sector-selector.jsx'
+import MasterListsSelector from '../campaigns/masterlists-selector.jsx'
 import EditContact from './edit-contact.jsx'
 import ContactListEmpty from './contacts-list-empty'
 import { FeedContactIcon } from '../images/icons'
@@ -100,7 +101,7 @@ const ContactsPage = React.createClass({
       <div>
         <div className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
           <div className='flex-auto border-right border-gray80'>
-            <SectorSelectorContainer selected={this.state.selectedSector} onSectorChange={onSectorChange} />
+            <MasterListsSelectorContainer selected={this.state.selectedSector} onSectorChange={onSectorChange} />
           </div>
           <Dropdown>
             <div className='flex-none bg-white center px4' style={{width: 240}}>
@@ -156,9 +157,10 @@ const ContactsPage = React.createClass({
   }
 })
 
-const SectorSelectorContainer = createContainer((props) => {
+const MasterListsSelectorContainer = createContainer((props) => {
+  const items = MasterLists.find().fetch()
   return { ...props, items, selected: props.selected || items[0] }
-}, SectorSelector)
+}, MasterListsSelector)
 
 const ContactsTotal = ({ searching, results, total }) => {
   const num = searching ? results.length : total
@@ -206,15 +208,3 @@ const ContactsPageContainer = withRouter(React.createClass({
 }))
 
 export default ContactsPageContainer
-
-// Fake data
-const items = [
-  { _id: 0, name: 'All', count: 10 },
-  { _id: 1, name: 'My campaigns', count: 5 },
-  { _id: 2, name: 'Corporate', count: 97 },
-  { _id: 3, name: 'Energy', count: 18 },
-  { _id: 4, name: 'Consumer', count: 120 },
-  { _id: 5, name: 'Healthcare', count: 55 },
-  { _id: 6, name: 'Public Affairs', count: 37 },
-  { _id: 7, name: 'Technology', count: 201 }
-]

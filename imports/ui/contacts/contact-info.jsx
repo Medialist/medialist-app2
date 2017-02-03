@@ -10,20 +10,11 @@ import Tooltip from '../navigation/tooltip'
 
 // Dummy data to be replaced with subscription data
 const selectedMasterLists = [
-  {_id: 0, label: 'Energy', slug: 'energy'},
-  {_id: 0, label: 'Healthcare', slug: 'healthcare'},
-  {_id: 0, label: 'Personal Fitness', slug: 'personal-fitness'}
+  {_id: 0, name: 'Energy', items: []},
+  {_id: 0, name: 'Healthcare', items: []},
+  {_id: 0, name: 'Personal Fitness', items: []}
 ]
-const allMasterLists = [
-  {_id: 0, label: 'Energy', slug: 'energy', count: 12},
-  {_id: 0, label: 'Healthcare', slug: 'healthcare', count: 3},
-  {_id: 0, label: 'Personal Fitness', slug: 'personal-fitness', count: 1},
-  {_id: 0, label: 'Robotics', slug: 'robotics', count: 15},
-  {_id: 0, label: 'Technology', slug: 'technology', count: 8},
-  {_id: 0, label: 'Money and Glory', slug: 'money-and-glory', count: 1},
-  {_id: 0, label: 'Quietness', slug: 'quietness', count: 1},
-  {_id: 0, label: 'Fashion Bloggers', slug: 'fashion-bloggers', count: 7}
-]
+
 const selectedTags = [
   {_id: 0, name: 'Appropsal', slug: 'appropsal', count: 3},
   {_id: 0, name: 'Attract', slug: 'attract', count: 8},
@@ -46,7 +37,8 @@ const ContactInfo = React.createClass({
   propTypes: {
     contact: PropTypes.object,
     user: PropTypes.object,
-    onEditClick: PropTypes.func
+    onEditClick: PropTypes.func,
+    masterlists: PropTypes.array
   },
 
   getInitialState () {
@@ -103,7 +95,7 @@ const ContactInfo = React.createClass({
       onUpdateTags
     } = this
     const { addToMasterListOpen, addTagsOpen, showMore } = this.state
-    const { user: { myContacts }, contact: { _id, name, avatar, emails, outlets, medialists } } = this.props
+    const { user: { myContacts }, contact: { _id, name, avatar, emails, outlets, medialists }, masterlists } = this.props
     const isFavourite = myContacts.some((c) => c._id === _id)
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
     const tooltip = isFavourite ? 'Remove from My Contacts' : 'Add to My Contacts'
@@ -147,8 +139,8 @@ const ContactInfo = React.createClass({
           onDismiss={dismissAddToMasterList}
           onSave={onUpdateMasterList}
           selectedMasterLists={selectedMasterLists}
-          allMasterLists={allMasterLists}
-          title='Contact' />
+          allMasterLists={masterlists}
+          type='Contacts' />
         <AddTags
           open={addTagsOpen}
           onDismiss={dismissAddTags}
