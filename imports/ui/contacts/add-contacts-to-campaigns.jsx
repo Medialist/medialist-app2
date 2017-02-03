@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import { Link } from 'react-router'
 import Modal from '../navigation/modal'
 import { SearchBlueIcon, AddIcon, SelectedIcon, RemoveIcon } from '../images/icons'
 import AbbreviatedAvatarList from '../lists/abbreviated-avatar-list'
@@ -7,6 +8,7 @@ import createSearchContainer from '../campaigns/campaign-search-container'
 import { SquareAvatar } from '../images/avatar'
 import { TimeFromNow } from '../time/time'
 import withSnackbar from '../snackbar/with-snackbar'
+import { batchAddContactsToCampaigns } from '/imports/api/contacts/methods'
 
 const AddContactsToCampaigns = createSearchContainer(React.createClass({
   propTypes: {
@@ -68,12 +70,12 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
             onRemove={onRemove}
             results={campaigns} />
         </div>
-        <form className='py4 border-top border-gray80 flex' onReset={onReset} onSubmit={onSubmit}>
+        <div className='py4 border-top border-gray80 flex'>
           <div className='flex-auto right-align'>
-            <button className='btn bg-transparent gray40 mr2' type='reset'>Cancel</button>
-            <button className='btn bg-completed white px3 mr4' type='submit'>Save Changes</button>
+            <button className='btn bg-transparent gray40 mr2' onClick={onReset}>Cancel</button>
+            <button className='btn bg-completed white px3 mr4' onClick={onSubmit}>Save Changes</button>
           </div>
-        </form>
+        </div>
       </div>
     )
   }
@@ -109,10 +111,32 @@ const AddContactsToCampaignsContainer = withSnackbar(React.createClass({
   },
 
   onSubmit (evt) {
+    console.log({evt})
     evt.preventDefault()
-    const {snackbar} = this.props
+    evt.stopPropagation()
+    const {contacts, snackbar} = this.props
+    const {selected} = this.state
+    const contactSlugs = contacts.map((c) => c.slug)
+    const campaignSlugs = selected.map((c) => c.slug)
+    batchAddContactsToCampaigns.call({contactSlugs, campaignSlugs}, (err, res) => {
+      if (err) {
+        console.log(err)
+        return snackbar.show(`Sorry, that didn't work`)
+      }
+      const msg = selected.length > 1 ? `${selected.length} campaigns` : (
+        <Link to={`/campaign/${selected[0].slug}`} className='underline semibold'>
+          {selected[0].name}
+        </Link>
+      )
+      return snackbar.show((
+        <div>
+          <span>Added {contacts.length} contacts to </span>
+          {msg}
+        </div>
+      ))
+    })
     // const campaignSlugs = this.state.selected.map((c) => c.slug)
-    snackbar.show('TODO: Add contacts to campaigns api')
+
     this.onReset()
   },
 
@@ -141,6 +165,7 @@ const AddContactsToCampaignsContainer = withSnackbar(React.createClass({
     const { term, selected } = this.state
     return (
       <AddContactsToCampaigns
+        {...this.props}
         term={term}
         onTermChange={onTermChange}
         isActive={isActive}
@@ -148,8 +173,7 @@ const AddContactsToCampaignsContainer = withSnackbar(React.createClass({
         onRemove={onRemove}
         onReset={onReset}
         onSubmit={onSubmit}
-        selected={selected}
-        {...this.props} />
+        selected={selected} />
     )
   }
 }))

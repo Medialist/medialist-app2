@@ -26,24 +26,26 @@ export const batchAddContactsToCampaigns = new ValidatedMethod({
     // Set all new contacts on campaigns
     // Create the { slug: status } map for new contcts
     // For each campaign, merge it with the existing map, and save the result.
-    const campaigns = Campaigns.find(
-      {slug: {$in: campaignSlugs}},
-      {_id: 1, contacts: 1}
-    )
-    const newContacts = contactSlugs.reduce((ref, slug) => {
-      ref[slug] = Contacts.status.toContact
-      return ref
-    }, {})
-    const bulkCampaigns = Campaigns.rawCollection().initializeUnorderedBulkOp()
-    bulkCampaigns.executeAsync = Meteor.wrapAsync(bulkCampaigns.execute)
-    campaigns.forEach(({_id, contacts}) => {
-      bulkCampaigns.find({_id}).update({
-        $set: {
-          contacts: Object.assign({}, newContacts, contacts)
-        }
+    if (!this.isSimulation) {
+      const campaigns = Campaigns.find(
+        {slug: {$in: campaignSlugs}},
+        {_id: 1, contacts: 1}
+      )
+      const newContacts = contactSlugs.reduce((ref, slug) => {
+        ref[slug] = Contacts.status.toContact
+        return ref
+      }, {})
+      const bulkCampaigns = Campaigns.rawCollection().initializeUnorderedBulkOp()
+      bulkCampaigns.executeAsync = Meteor.wrapAsync(bulkCampaigns.execute)
+      campaigns.forEach(({_id, contacts}) => {
+        bulkCampaigns.find({_id}).update({
+          $set: {
+            contacts: Object.assign({}, newContacts, contacts)
+          }
+        })
       })
-    })
-    bulkCampaigns.executeAsync()
+      bulkCampaigns.executeAsync()
+    }
 
     // Set all new campaigns on contacts
     Contacts.update(
