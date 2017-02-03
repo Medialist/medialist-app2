@@ -155,7 +155,8 @@ const CampaignsPageContainer = withSnackbar(withRouter(React.createClass({
     return { sort, term }
   },
 
-  setQuery (location, router, opts) {
+  setQuery (opts) {
+    const { location, router } = this.props
     const newQuery = {}
     if (opts.sort) newQuery.sort = JSON.stringify(opts.sort)
     if (opts.hasOwnProperty('term')) {
