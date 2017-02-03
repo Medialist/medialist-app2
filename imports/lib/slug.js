@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor'
+
 export const cleanSlug = function (name) {
   return name.toLowerCase().replace(/[^a-z0-9_-]/g, '')
 }
@@ -20,4 +22,10 @@ export const uniqueSlug = function (slug, collection) {
 export default function (name, collection) {
   const slug = cleanSlug(name)
   return uniqueSlug(slug, collection)
+}
+
+export function checkAllSlugsExist (slugs, Collection) {
+  const count = Collection.find({deleted: null, slug: {$in: slugs}}).count()
+  if (count === slugs.length) return
+  throw new Meteor.Error(`Some ${Collection._name}'s could not be found'`)
 }
