@@ -53,7 +53,7 @@ const EditMasterLists = React.createClass({
     const { onCreate, showCreateMasterListInput } = this
     const { editing, creating } = this.state
     const { masterlists, onDeleteMasterList, type } = this.props
-    const signularType = type.substring(0, type.length - 1)
+    const typeAsSingular = type.substring(0, type.length - 1)
     if (!masterlists || masterlists.length < 1) {
       return (
         <EmptyMasterLists
@@ -66,15 +66,16 @@ const EditMasterLists = React.createClass({
       return (
         <div className='mx3 pb3'>
           <div className='flex justify-start align-middle p2 mb2'>
-            <div className='bold flex-none'>{signularType} Lists ({masterlists.length})</div>
+            <div className='bold flex-none'>{typeAsSingular} Lists ({masterlists.length})</div>
             <div className='flex-auto blue underline right-align'>
-              <span className='pointer' onClick={showCreateMasterListInput}>Add new {signularType} List</span>
+              <span className='pointer' onClick={showCreateMasterListInput}>Add new {typeAsSingular} List</span>
             </div>
           </div>
           {creating && <CreateMasterListInput onCreate={onCreate} />}
           {masterlists.map((masterlist) => {
             return (
               <MasterListsItem
+                key={masterlist._id}
                 {...this}
                 masterlist={masterlist}
                 onDeleteMasterList={onDeleteMasterList}
@@ -115,15 +116,15 @@ const EditDeleteBtns = ({_id, isEditing, onDeleteMasterList}) => {
 }
 
 const EmptyMasterLists = ({type, creating, onCreate, showCreateMasterListInput}) => {
-  const signularType = type.substring(0, type.length - 1)
+  const typeAsSingular = type.substring(0, type.length - 1)
   return (
     <div style={{height: 200}}>
       {creating ? (
         <div className='mx3'>
           <div className='flex justify-start align-middle p2 mb2'>
-            <div className='bold flex-none'>{signularType} Lists 0</div>
+            <div className='bold flex-none'>{typeAsSingular} Lists 0</div>
             <div className='flex-auto blue underline right-align'>
-              <span className='pointer' onClick={showCreateMasterListInput}>Add new {signularType} List</span>
+              <span className='pointer' onClick={showCreateMasterListInput}>Add new {typeAsSingular} List</span>
             </div>
           </div>
           <CreateMasterListInput onCreate={onCreate} />
@@ -131,8 +132,8 @@ const EmptyMasterLists = ({type, creating, onCreate, showCreateMasterListInput})
       ) : (
         <div className='flex flex-column justify-start items-center'>
           <MenuCampaignIcon className='blue svg-icon-lg mt4 mb3' />
-          <div className='mt3 mb1 center'>You have not created any {signularType} Lists yet</div>
-          <div className='mb3 center blue underlined pointer' onClick={showCreateMasterListInput}>Create a {signularType} List</div>
+          <div className='mt3 mb1 center'>You have not created any {typeAsSingular} Lists yet</div>
+          <div className='mb3 center blue underlined pointer' onClick={showCreateMasterListInput}>Create a {typeAsSingular} List</div>
         </div>
       )}
     </div>
@@ -144,7 +145,7 @@ const MasterListsItem = (props) => {
   const { _id, items } = masterlist
 
   return (
-    <div className='flex justify-start items-center p2 my1 border border-gray80 bg-gray90 gray60' key={_id}>
+    <div className='flex justify-start items-center p2 my1 border border-gray80 bg-gray90 gray60'>
       <input
         ref={(input) => input && editing === _id && input.focus()}
         className='input max-width-sm ml2'
