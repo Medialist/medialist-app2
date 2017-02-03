@@ -11,10 +11,6 @@ import Tooltip from '../navigation/tooltip'
 import { update } from '../../api/medialists/methods'
 
 // Dummy data to be replaced with subscription data
-const selectedMasterLists = [
-  {_id: 0, name: 'Healthcare', items: []},
-  {_id: 0, name: 'Energy', items: []}
-]
 const selectedTags = [
   {_id: 0, name: 'Appropsal', slug: 'appropsal', count: 3},
   {_id: 0, name: 'Attract', slug: 'attract', count: 8}
@@ -37,7 +33,8 @@ const CampaignInfo = React.createClass({
     user: PropTypes.object,
     onEditClick: PropTypes.func,
     onEditTeamClick: PropTypes.func,
-    masterlists: PropTypes.array
+    masterlists: PropTypes.array,
+    onAddCampaignToMasterLists: PropTypes.func
   },
 
   getInitialState () {
@@ -58,10 +55,6 @@ const CampaignInfo = React.createClass({
 
   dismissAddToMasterList () {
     this.setState({addToMasterListOpen: false})
-  },
-
-  onUpdateMasterList (payload) {
-    console.log(payload)
   },
 
   onAddTags () {
@@ -100,7 +93,6 @@ const CampaignInfo = React.createClass({
       onAddToMasterList,
       onAddTags,
       dismissAddToMasterList,
-      onUpdateMasterList,
       onAvatarChange,
       onAvatarError,
       onToggleFavourite,
@@ -108,7 +100,7 @@ const CampaignInfo = React.createClass({
       onUpdateTags
     } = this
     const { addToMasterListOpen, addTagsOpen } = this.state
-    const { onEditClick, onEditTeamClick, user, campaign, masterlists } = this.props
+    const { onEditClick, onEditTeamClick, user, campaign, masterlists, onAddCampaignToMasterLists } = this.props
     const { name, client, avatar, purpose, links, team } = this.props.campaign
     const isFavourite = user.myMedialists.some((m) => m._id === campaign._id)
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
@@ -156,9 +148,9 @@ const CampaignInfo = React.createClass({
         <AddToMasterList
           open={addToMasterListOpen}
           onDismiss={dismissAddToMasterList}
-          onSave={onUpdateMasterList}
-          selectedMasterLists={selectedMasterLists}
-          allMasterLists={masterlists}
+          onSave={onAddCampaignToMasterLists}
+          document={campaign}
+          masterlists={masterlists}
           type='Campaigns' />
         <AddTags
           open={addTagsOpen}
@@ -168,7 +160,7 @@ const CampaignInfo = React.createClass({
           allTags={allTags}
           onUpdateTags={onUpdateTags} />
         <QuickAdd
-          selectedMasterLists={selectedMasterLists}
+          selectedMasterLists={[]}
           tags={selectedTags}
           onAddToMasterList={onAddToMasterList}
           onAddTags={onAddTags} />
