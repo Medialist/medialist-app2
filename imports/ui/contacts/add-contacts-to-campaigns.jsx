@@ -111,7 +111,6 @@ const AddContactsToCampaignsContainer = withSnackbar(React.createClass({
   },
 
   onSubmit (evt) {
-    console.log({evt})
     evt.preventDefault()
     evt.stopPropagation()
     const {contacts, snackbar} = this.props
@@ -130,13 +129,11 @@ const AddContactsToCampaignsContainer = withSnackbar(React.createClass({
       )
       return snackbar.show((
         <div>
-          <span>Added {contacts.length} contacts to </span>
+          <span>Added {contacts.length} {contacts.length === 1 ? 'contact' : 'contacts'} to </span>
           {msg}
         </div>
       ))
     })
-    // const campaignSlugs = this.state.selected.map((c) => c.slug)
-
     this.onReset()
   },
 
