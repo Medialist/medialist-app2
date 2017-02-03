@@ -12,24 +12,12 @@ import { update } from '../../api/medialists/methods'
 
 // Dummy data to be replaced with subscription data
 const selectedMasterLists = [
-  {_id: 0, label: 'Healthcare', slug: 'healthcare'},
-  {_id: 0, label: 'Energy', slug: 'energy'}
-]
-const allMasterLists = [
-  {_id: 0, label: 'Energy', slug: 'energy', count: 12},
-  {_id: 0, label: 'Healthcare', slug: 'healthcare', count: 3},
-  {_id: 0, label: 'Personal Fitness', slug: 'personal-fitness', count: 1},
-  {_id: 0, label: 'Robotics', slug: 'robotics', count: 15},
-  {_id: 0, label: 'Technology', slug: 'technology', count: 8},
-  {_id: 0, label: 'Money and Glory', slug: 'money-and-glory'},
-  {_id: 0, label: 'Quietness', slug: 'quietness'},
-  {_id: 0, label: 'Fashion Bloggers', slug: 'fashion-bloggers', count: 7}
+  {_id: 0, name: 'Healthcare', items: []},
+  {_id: 0, name: 'Energy', items: []}
 ]
 const selectedTags = [
   {_id: 0, name: 'Appropsal', slug: 'appropsal', count: 3},
-  {_id: 0, name: 'Attract', slug: 'attract', count: 8},
-  {_id: 0, name: 'Bees', slug: 'bees', count: 1},
-  {_id: 0, name: 'Burner', slug: 'burner', count: 1}
+  {_id: 0, name: 'Attract', slug: 'attract', count: 8}
 ]
 const allTags = [
   {_id: 0, name: 'Apples', slug: 'apples', count: 12},
@@ -48,7 +36,8 @@ const CampaignInfo = React.createClass({
     campaign: PropTypes.object,
     user: PropTypes.object,
     onEditClick: PropTypes.func,
-    onEditTeamClick: PropTypes.func
+    onEditTeamClick: PropTypes.func,
+    masterlists: PropTypes.array
   },
 
   getInitialState () {
@@ -119,7 +108,7 @@ const CampaignInfo = React.createClass({
       onUpdateTags
     } = this
     const { addToMasterListOpen, addTagsOpen } = this.state
-    const { onEditClick, onEditTeamClick, user, campaign } = this.props
+    const { onEditClick, onEditTeamClick, user, campaign, masterlists } = this.props
     const { name, client, avatar, purpose, links, team } = this.props.campaign
     const isFavourite = user.myMedialists.some((m) => m._id === campaign._id)
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
@@ -139,8 +128,8 @@ const CampaignInfo = React.createClass({
             </div>
             <div className='f-sm gray10 mb2'>{client && client.name}</div>
             <div>
-              {(links || []).map((link) => (
-                <span className='mr2'>
+              {(links || []).map((link, ind) => (
+                <span className='mr2' key={ind}>
                   <Tooltip title={prettyUrl(link.url)} key={link.url}>
                     <a href={link.url} target='_blank' className='gray60 hover-gray50'>
                       <WebsiteIcon className='svg-icon-md' />
@@ -161,7 +150,7 @@ const CampaignInfo = React.createClass({
         <section>
           <InfoHeader name='Team Members' onClick={onEditTeamClick} />
           <div className='px2 py3'>
-            {team.map((teamMember, ind) => <CircleAvatar {...teamMember} size={38} style={{marginLeft: '2px'}} />)}
+            {team.map((teamMember, ind) => <CircleAvatar {...teamMember} size={38} style={{marginLeft: '2px'}} key={ind} />)}
           </div>
         </section>
         <AddToMasterList
@@ -169,8 +158,8 @@ const CampaignInfo = React.createClass({
           onDismiss={dismissAddToMasterList}
           onSave={onUpdateMasterList}
           selectedMasterLists={selectedMasterLists}
-          allMasterLists={allMasterLists}
-          title='Campaign' />
+          allMasterLists={masterlists}
+          type='Campaigns' />
         <AddTags
           open={addTagsOpen}
           onDismiss={dismissAddTags}

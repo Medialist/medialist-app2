@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react'
 import { MenuCampaignIcon, DeleteIcon, FeedEditIcon } from '../../images/icons'
 import Tooltip from '../../navigation/tooltip'
-import capitalize from 'lodash.capitalize'
 
 const EditMasterLists = React.createClass({
   propTypes: {
@@ -34,7 +33,7 @@ const EditMasterLists = React.createClass({
     this.setState({creating: true})
   },
   onCreate (name) {
-    if (!name) return this.setState({creating: false})
+    if (!name) return
     this.props.onAddMasterList({ type: this.props.type, name })
   },
   onChange (_id, value) {
@@ -54,11 +53,11 @@ const EditMasterLists = React.createClass({
     const { onCreate, showCreateMasterListInput } = this
     const { editing, creating } = this.state
     const { masterlists, onDeleteMasterList, type } = this.props
-    const title = capitalize(type.substring(0, type.length - 1))
+    const signularType = type.substring(0, type.length - 1)
     if (!masterlists || masterlists.length < 1) {
       return (
         <EmptyMasterLists
-          title={title}
+          type={type}
           creating={creating}
           onCreate={onCreate}
           showCreateMasterListInput={showCreateMasterListInput} />
@@ -67,9 +66,9 @@ const EditMasterLists = React.createClass({
       return (
         <div className='mx3 pb3'>
           <div className='flex justify-start align-middle p2 mb2'>
-            <div className='bold flex-none'>{title} Lists ({masterlists.length})</div>
+            <div className='bold flex-none'>{signularType} Lists ({masterlists.length})</div>
             <div className='flex-auto blue underline right-align'>
-              <span className='pointer' onClick={showCreateMasterListInput}>Add new {title} List</span>
+              <span className='pointer' onClick={showCreateMasterListInput}>Add new {signularType} List</span>
             </div>
           </div>
           {creating && <CreateMasterListInput onCreate={onCreate} />}
@@ -115,15 +114,16 @@ const EditDeleteBtns = ({_id, isEditing, onDeleteMasterList}) => {
   )
 }
 
-const EmptyMasterLists = ({title, creating, onCreate, showCreateMasterListInput}) => {
+const EmptyMasterLists = ({type, creating, onCreate, showCreateMasterListInput}) => {
+  const signularType = type.substring(0, type.length - 1)
   return (
     <div style={{height: 200}}>
       {creating ? (
         <div className='mx3'>
           <div className='flex justify-start align-middle p2 mb2'>
-            <div className='bold flex-none'>{title} Lists 0</div>
+            <div className='bold flex-none'>{signularType} Lists 0</div>
             <div className='flex-auto blue underline right-align'>
-              <span className='pointer' onClick={showCreateMasterListInput}>Add new {title} List</span>
+              <span className='pointer' onClick={showCreateMasterListInput}>Add new {signularType} List</span>
             </div>
           </div>
           <CreateMasterListInput onCreate={onCreate} />
@@ -131,8 +131,8 @@ const EmptyMasterLists = ({title, creating, onCreate, showCreateMasterListInput}
       ) : (
         <div className='flex flex-column justify-start items-center'>
           <MenuCampaignIcon className='blue svg-icon-lg mt4 mb3' />
-          <div className='mt3 mb1 center'>You have not created any {title} Lists yet</div>
-          <div className='mb3 center blue underlined pointer' onClick={showCreateMasterListInput}>Create a {title} List</div>
+          <div className='mt3 mb1 center'>You have not created any {signularType} Lists yet</div>
+          <div className='mb3 center blue underlined pointer' onClick={showCreateMasterListInput}>Create a {signularType} List</div>
         </div>
       )}
     </div>
