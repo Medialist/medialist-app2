@@ -1,11 +1,12 @@
 import React, { PropTypes } from 'react'
 import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
+import MasterLists from '../../api/master-lists/master-lists'
 import { createContainer } from 'meteor/react-meteor-data'
 import querystring from 'querystring'
 import CampaignsTable from './campaigns-table'
 import SearchBox from '../lists/search-box'
-import SectorSelector from './sector-selector.jsx'
+import MasterListsSelector from './masterlists-selector.jsx'
 import CampaignsActionsToast from './campaigns-actions-toast'
 import EditCampaign from './edit-campaign'
 import CampaignListEmpty from './campaign-list-empty'
@@ -67,9 +68,20 @@ const CampaignsPage = React.createClass({
     this.setState({ selections: [] })
   },
 
+  onViewSelection () {
+    const { router } = this.props
+    const { selections } = this.state
+    router.push({
+      pathname: '/contacts',
+      query: {
+        campaign: selections.map((s) => s.slug)
+      }
+    })
+  },
+
   render () {
     const { campaignCount, campaigns, loading, total, sort, term, snackbar } = this.props
-    const { onSortChange, onSelectionsChange, onSectorChange } = this
+    const { onSortChange, onSelectionsChange, onSectorChange, onViewSelection } = this
     const { selections, selectedSector, editCampaignOpen } = this.state
 
     if (!loading && campaignCount === 0) {
@@ -83,7 +95,7 @@ const CampaignsPage = React.createClass({
       <div>
         <div className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
           <div className='flex-auto border-right border-gray80'>
-            <SectorSelectorContainer selected={selectedSector} onSectorChange={onSectorChange} />
+            <MasterListsSelectorContainer selected={selectedSector} onSectorChange={onSectorChange} />
           </div>
           <div className='flex-none bg-white center px4'>
             <button className='btn bg-completed white mx4' onClick={this.toggleEditCampaign}>New Campaign</button>
@@ -108,7 +120,7 @@ const CampaignsPage = React.createClass({
             onSelectionsChange={onSelectionsChange} />
           <CampaignsActionsToast
             campaigns={selections}
-            onViewClick={() => console.log('TODO: view selection')}
+            onViewClick={onViewSelection}
             onSectorClick={() => console.log('TODO: add/edit sectors')}
             onFavouriteClick={() => console.log('TODO: toggle favourite')}
             onTagClick={() => console.log('TODO: add/edit tags')}
@@ -129,21 +141,10 @@ const EditCampaignContainer = createContainer((props) => {
   return { ...props, clients: window.Clients.find().fetch() }
 }, EditCampaign)
 
-const SectorSelectorContainer = createContainer((props) => {
-  // TODO: wire in sectors
-  const items = [
-    { _id: 0, name: 'All', count: 10 },
-    { _id: 1, name: 'My campaigns', count: 5 },
-    { _id: 2, name: 'Corporate', count: 97 },
-    { _id: 3, name: 'Energy', count: 18 },
-    { _id: 4, name: 'Consumer', count: 120 },
-    { _id: 5, name: 'Healthcare', count: 55 },
-    { _id: 6, name: 'Public Affairs', count: 37 },
-    { _id: 7, name: 'Technology', count: 201 }
-
-  ]
+const MasterListsSelectorContainer = createContainer((props) => {
+  const items = MasterLists.find().fetch()
   return { ...props, items, selected: props.selected || items[0] }
-}, SectorSelector)
+}, MasterListsSelector)
 
 const SearchableCampaignsPage = createSearchContainer(CampaignsPage)
 
@@ -155,7 +156,8 @@ const CampaignsPageContainer = withSnackbar(withRouter(React.createClass({
     return { sort, term }
   },
 
-  setQuery (location, router, opts) {
+  setQuery (opts) {
+    const { location, router } = this.props
     const newQuery = {}
     if (opts.sort) newQuery.sort = JSON.stringify(opts.sort)
     if (opts.hasOwnProperty('term')) {
@@ -182,4 +184,3 @@ const CampaignsPageContainer = withSnackbar(withRouter(React.createClass({
 })))
 
 export default CampaignsPageContainer
-

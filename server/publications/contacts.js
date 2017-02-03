@@ -18,10 +18,18 @@ Meteor.publish('contacts', function (opts) {
   opts = opts || {}
   check(opts, {
     regex: Match.Optional(String),
+    campaignSlugs: Match.Optional(Array),
     limit: Match.Optional(Number)
   })
 
   var query = {}
+
+  if (opts.campaignSlugs) {
+    query.medialists = {
+      $in: opts.campaignSlugs
+    }
+  }
+
   if (opts.regex) {
     var regex = new RegExp(opts.regex, 'gi')
     query = { $or: [
@@ -35,6 +43,7 @@ Meteor.publish('contacts', function (opts) {
     sort: { createdAt: -1 },
     fields: { importedData: 0 }
   }
+
   if (opts.limit)
   options.limit = opts.limit
 
