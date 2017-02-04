@@ -1,10 +1,56 @@
+import { Meteor } from 'meteor/meteor'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
 import assert from 'assert'
 import Contacts from './contacts'
 import Campaigns from '../medialists/medialists'
-import { batchAddContactsToCampaigns } from './methods'
+import {
+  batchAddContactsToCampaigns,
+  batchFavouriteContacts
+} from './methods'
 
-describe.only('Contacts/batchAddContactsToCampaigns', function () {
+describe('Contacts/batchFavouriteContacts', function () {
+  beforeEach(function () {
+    resetDatabase()
+  })
+
+  it('should require the user to be logged in', function () {
+    assert.throws(() => batchFavouriteContacts.run.call({}, {}), /You must be logged in/)
+  })
+
+  it('should validated the parameters', function () {
+    assert.throws(() => batchFavouriteContacts.validate({}), /Contact slugs is required/)
+    assert.throws(() => batchFavouriteContacts.validate({contactSlugs: [1]}), /must be a string/)
+    assert.doesNotThrow(() => batchFavouriteContacts.validate({contactSlugs: ['a']}))
+  })
+
+  it('should add all contacts to favourites', function () {
+    const contacts = Array(3).fill(0).map((_, index) => ({
+      _id: `${index}`,
+      slug: `${index}`,
+      name: `${index}`,
+      slug: `${index}`,
+      avatar: `${index}`,
+      outlets: `${index}`,
+      medialists: []
+    }))
+    contacts.forEach((c) => Contacts.insert(c))
+    Meteor.users.insert({_id: '1', myContacts: [{slug: 'oldie'}]})
+    const contactSlugs = ['0', '1']
+    batchFavouriteContacts.run.call({userId: '1'}, {contactSlugs})
+    const user = Meteor.users.findOne('1')
+    assert.equal(user.myContacts.length, 3)
+    delete user.myContacts[1].updatedAt
+    assert.deepEqual(user.myContacts[1], {
+      _id: '0',
+      name: '0',
+      slug: '0',
+      avatar: '0',
+      outlets: '0'
+    })
+  })
+})
+
+describe('Contacts/batchAddContactsToCampaigns', function () {
   beforeEach(function () {
     resetDatabase()
     const contacts = Array(3).fill(0).map((_, index) => ({
@@ -12,12 +58,12 @@ describe.only('Contacts/batchAddContactsToCampaigns', function () {
       slug: `${index}`,
       medialists: []
     }))
+    contacts.forEach((c) => Contacts.insert(c))
     const campaigns = Array(3).fill(0).map((_, index) => ({
       _id: `${index}`,
       slug: `${index}`,
       contacts: {}
     }))
-    contacts.forEach((c) => Contacts.insert(c))
     campaigns.forEach((c) => Campaigns.insert(c))
   })
 
