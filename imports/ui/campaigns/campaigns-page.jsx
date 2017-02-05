@@ -142,7 +142,7 @@ const EditCampaignContainer = createContainer((props) => {
 }, EditCampaign)
 
 const MasterListsSelectorContainer = createContainer((props) => {
-  const items = MasterLists.find().fetch()
+  const items = MasterLists.find({type: 'Campaigns'}).fetch()
   return { ...props, items, selected: props.selected || items[0] }
 }, MasterListsSelector)
 

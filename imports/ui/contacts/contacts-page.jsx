@@ -176,7 +176,7 @@ const ContactsPage = React.createClass({
 })
 
 const MasterListsSelectorContainer = createContainer((props) => {
-  const items = MasterLists.find().fetch()
+  const items = MasterLists.find({type: 'Contacts'}).fetch()
   return { ...props, items, selected: props.selected || items[0] }
 }, MasterListsSelector)
 
