@@ -1,7 +1,9 @@
 import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
+import find from 'lodash.find'
 import { CircleAvatar, SquareAvatar } from '../images/avatar'
 import { EmailIcon, FavouritesIconGold, FavouritesIcon } from '../images/icons'
+import { setMasterLists } from '/imports/api/master-lists/methods'
 import QuickAdd from '../lists/quick-add'
 import InfoHeader from '../lists/info-header'
 import AddToMasterList from '../lists/add-to-master-list'
@@ -9,12 +11,6 @@ import AddTags from '../tags/add-tags'
 import Tooltip from '../navigation/tooltip'
 
 // Dummy data to be replaced with subscription data
-const selectedMasterLists = [
-  {_id: 0, name: 'Energy', items: []},
-  {_id: 0, name: 'Healthcare', items: []},
-  {_id: 0, name: 'Personal Fitness', items: []}
-]
-
 const selectedTags = [
   {_id: 0, name: 'Appropsal', slug: 'appropsal', count: 3},
   {_id: 0, name: 'Attract', slug: 'attract', count: 8},
@@ -62,8 +58,8 @@ const ContactInfo = React.createClass({
     this.setState({addToMasterListOpen: false})
   },
 
-  onUpdateMasterList (selectedMasterLists) {
-    console.log(selectedMasterLists)
+  onAddContactToMasterLists ({item, masterLists}) {
+    setMasterLists.call({type: 'Contacts', item, masterLists})
   },
 
   onAddTags () {
@@ -89,14 +85,16 @@ const ContactInfo = React.createClass({
     const {
       onAddToMasterList,
       dismissAddToMasterList,
-      onUpdateMasterList,
+      onAddContactToMasterLists,
       onAddTags,
       dismissAddTags,
       onUpdateTags
     } = this
     const { addToMasterListOpen, addTagsOpen, showMore } = this.state
-    const { user: { myContacts }, contact: { _id, name, avatar, emails, outlets, medialists }, masterlists } = this.props
+    const { user: { myContacts }, contact, masterlists } = this.props
+    const { _id, name, avatar, emails, outlets, medialists } = contact
     const isFavourite = myContacts.some((c) => c._id === _id)
+    const selectedMasterLists = contact.masterLists.map((listId) => find(masterlists, {_id: listId}))
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
     const tooltip = isFavourite ? 'Remove from My Contacts' : 'Add to My Contacts'
     return (
@@ -137,9 +135,9 @@ const ContactInfo = React.createClass({
         <AddToMasterList
           open={addToMasterListOpen}
           onDismiss={dismissAddToMasterList}
-          onSave={onUpdateMasterList}
-          selectedMasterLists={selectedMasterLists}
-          allMasterLists={masterlists}
+          onSave={onAddContactToMasterLists}
+          document={contact}
+          masterlists={masterlists}
           type='Contacts' />
         <AddTags
           open={addTagsOpen}
