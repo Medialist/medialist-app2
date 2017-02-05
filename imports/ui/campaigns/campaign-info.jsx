@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
+import find from 'lodash.find'
 import EditableAvatar from '../images/editable-avatar'
 import { SquareAvatar, CircleAvatar } from '../images/avatar'
 import { BioIcon, FavouritesIcon, FavouritesIconGold, WebsiteIcon } from '../images/icons'
@@ -103,6 +104,7 @@ const CampaignInfo = React.createClass({
     const { onEditClick, onEditTeamClick, user, campaign, masterlists, onAddCampaignToMasterLists } = this.props
     const { name, client, avatar, purpose, links, team } = this.props.campaign
     const isFavourite = user.myMedialists.some((m) => m._id === campaign._id)
+    const selectedMasterLists = campaign.masterLists.map((listId) => find(masterlists, {_id: listId}))
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
     const tooltip = isFavourite ? 'Remove from My Campaigns' : 'Add to My Campaigns'
     return (
@@ -160,7 +162,7 @@ const CampaignInfo = React.createClass({
           allTags={allTags}
           onUpdateTags={onUpdateTags} />
         <QuickAdd
-          selectedMasterLists={[]}
+          selectedMasterLists={selectedMasterLists}
           tags={selectedTags}
           onAddToMasterList={onAddToMasterList}
           onAddTags={onAddTags} />

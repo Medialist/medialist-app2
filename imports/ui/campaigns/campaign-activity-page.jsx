@@ -59,7 +59,6 @@ const CampaignActivityPage = React.createClass({
   },
 
   onAddCampaignToMasterLists ({item, masterLists}) {
-    console.log({ type: 'Campaigns', item, masterLists })
     setMasterLists.call({ type: 'Campaigns', item, masterLists })
   },
 

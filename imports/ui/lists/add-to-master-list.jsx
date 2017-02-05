@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react'
 import { Link } from 'react-router'
 import Modal from '../navigation/modal'
-import find from 'lodash.find'
 import findIndex from 'lodash.findindex'
 import { Check } from '../images/icons'
 
@@ -22,7 +21,7 @@ const AddToMasterList = React.createClass({
   },
   setSelectableList ({ masterlists, document }) {
     return masterlists.map((item) => {
-      const selected = !!find(document, item._id)
+      const selected = document.masterLists.indexOf(item._id) !== -1
       return { item, selected }
     })
   },
