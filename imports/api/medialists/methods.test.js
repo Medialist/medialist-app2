@@ -3,8 +3,48 @@ import assert from 'assert'
 import Faker from 'faker'
 import { create, update, addTeamMates, removeTeamMate } from './methods'
 import Medialists from './medialists'
+import { batchFavouriteCampaigns } from './methods'
 import Clients from '/imports/api/clients/clients'
-import { resetDatabase } from 'meteor/xolvio:cleaner';
+import { resetDatabase } from 'meteor/xolvio:cleaner'
+
+describe.only('Contacts/batchFavouriteCampaigns', function () {
+  beforeEach(function () {
+    resetDatabase()
+  })
+
+  it('should require the user to be logged in', function () {
+    assert.throws(() => batchFavouriteCampaigns.run.call({}, {}), /You must be logged in/)
+  })
+
+  it('should validated the parameters', function () {
+    assert.throws(() => batchFavouriteCampaigns.validate({}), /Campaign slugs is required/)
+    assert.throws(() => batchFavouriteCampaigns.validate({campaignSlugs: [1]}), /must be a string/)
+    assert.doesNotThrow(() => batchFavouriteCampaigns.validate({campaignSlugs: ['a']}))
+  })
+
+  it('should add all campaigns to favourites', function () {
+    const campaigns = Array(3).fill(0).map((_, index) => ({
+      _id: `${index}`,
+      slug: `${index}`,
+      name: `${index}`,
+      avatar: `${index}`
+    }))
+    campaigns.forEach((c) => Medialists.insert(c))
+    Meteor.users.insert({_id: '1', myMedialists: [{slug: 'oldie'}]})
+    const campaignSlugs = ['0', '1']
+    batchFavouriteCampaigns.run.call({userId: '1'}, {campaignSlugs})
+    const user = Meteor.users.findOne('1')
+    assert.equal(user.myMedialists.length, 3)
+    delete user.myMedialists[1].updatedAt
+    assert.deepEqual(user.myMedialists[1], {
+      _id: '0',
+      name: '0',
+      slug: '0',
+      avatar: '0',
+      clientName: ''
+    })
+  })
+})
 
 describe('Medialist update method', function () {
   beforeEach(function () {

@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor'
 import { check } from 'meteor/check'
+import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import escapeRegExp from 'lodash.escaperegexp'
-import createUniqueSlug from '/imports/lib/slug'
+import createUniqueSlug, { checkAllSlugsExist } from '/imports/lib/slug'
 import Medialists, { MedialistSchema, MedialistUpdateSchema, MedialistCreateSchema, MedialistAddTeamMatesSchema, MedialistRemoveTeamMateSchema } from './medialists'
 import Clients from '/imports/api/clients/clients'
 import Uploadcare from '/imports/lib/uploadcare'
@@ -19,6 +20,44 @@ function findOrCreateClientRef (name) {
   const _id = Clients.insert({ name })
   return {_id, name}
 }
+
+// Add all contacts to myContacts.
+// Update existing favs with new updatedAt
+export const batchFavouriteCampaigns = new ValidatedMethod({
+  name: 'Contacts/batchFavouriteCampaigns',
+
+  validate: new SimpleSchema({
+    campaignSlugs: { type: [String] }
+  }).validator(),
+
+  run ({ campaignSlugs }) {
+    if (!this.userId) throw new Meteor.Error('You must be logged in')
+    checkAllSlugsExist(campaignSlugs, Medialists)
+    const user = Meteor.users.findOne({_id: this.userId})
+    const now = new Date()
+
+    // transform contacts into contact refs for user.myContacts array.
+    const newFavs = Medialists.find(
+      { slug: { $in: campaignSlugs } },
+      { fields: { avatar: 1, slug: 1, name: 1, client: 1 } }
+    ).map((campaign) => ({
+      _id: campaign._id,
+      name: campaign.name,
+      slug: campaign.slug,
+      avatar: campaign.avatar,
+      clientName: campaign.client && campaign.client.name || '',
+      updatedAt: now
+    }))
+
+    // Preserve other favs.
+    const existingFavs = user.myMedialists.filter((c) => !campaignSlugs.includes(c.slug))
+
+    return Meteor.users.update(
+      this.userId,
+      { $set: { myMedialists: existingFavs.concat(newFavs) } }
+    )
+  }
+})
 
 export const update = new ValidatedMethod({
   name: 'Medialists/update',
