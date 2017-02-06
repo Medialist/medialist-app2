@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
 import Toast from '../navigation/toast'
+import Tooltip from '../navigation/tooltip'
 import {
   FeedCampaignIcon,
   FavouritesIcon,
@@ -39,11 +40,21 @@ const ContactsActionsToast = React.createClass({
               <span className='gray20'>contact{contacts.length === 1 ? '' : 's'} selected</span>
             </div>
             <div className='flex-auto center'>
-              <FeedCampaignIcon className='svg-icon-lg p3 pointer gray60 hover-blue' onClick={() => onCampaignClick(contacts)} />
-              <SectorIcon className='svg-icon-lg p3 pointer gray60 hover-blue' onClick={() => onSectorClick(contacts)} />
-              <FavouritesIcon className='svg-icon-lg p3 pointer gray60 hover-gold' onClick={() => onFavouriteClick(contacts)} />
-              <TagIcon className='svg-icon-lg p3 pointer gray60 hover-blue' onClick={() => onTagClick(contacts)} />
-              <DeleteIcon className='svg-icon-lg p3 pointer gray60 hover-red' onClick={() => onDeleteClick(contacts)} />
+              <Tooltip title='Add to Campaigns'>
+                <FeedCampaignIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onCampaignClick(contacts)} />
+              </Tooltip>
+              <Tooltip title='Add to Master list'>
+                <SectorIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onSectorClick(contacts)} />
+              </Tooltip>
+              <Tooltip title='Add to My Contacts'>
+                <FavouritesIcon className='svg-icon-lg px3 pointer gray60 hover-gold' onClick={() => onFavouriteClick(contacts)} />
+              </Tooltip>
+              <Tooltip title='Add Tags'>
+                <TagIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onTagClick(contacts)} />
+              </Tooltip>
+              <Tooltip title='Delete Contacts'>
+                <DeleteIcon className='svg-icon-lg px3 pointer gray60 hover-red' onClick={() => onDeleteClick(contacts)} />
+              </Tooltip>
             </div>
             <div className='flex-none'>
               <button className='btn bg-transparent grey40' onClick={() => onDeselectAllClick(contacts)}>Deselect all</button>
