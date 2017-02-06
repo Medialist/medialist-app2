@@ -120,7 +120,7 @@ const AddContactsToCampaignsContainer = withSnackbar(React.createClass({
     batchAddContactsToCampaigns.call({contactSlugs, campaignSlugs}, (err, res) => {
       if (err) {
         console.log(err)
-        return snackbar.show(`Sorry, that didn't work`)
+        return snackbar.show('Sorry, that didn\'t work')
       }
       const msg = selected.length > 1 ? `${selected.length} campaigns` : (
         <Link to={`/campaign/${selected[0].slug}`} className='underline semibold'>
