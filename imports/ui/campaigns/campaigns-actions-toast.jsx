@@ -39,11 +39,11 @@ const CampaignsActionsToast = React.createClass({
               <span className='gray20'>campaign{campaigns.length === 1 ? '' : 's'} selected</span>
             </div>
             <div className='flex-auto center'>
-              <ViewIcon className='svg-icon-lg p3 pointer' onClick={() => onViewClick(campaigns)} />
-              <SectorIcon className='svg-icon-lg p3 pointer' onClick={() => onSectorClick(campaigns)} />
-              <FavouritesIcon className='svg-icon-lg p3 pointer' onClick={() => onFavouriteClick(campaigns)} />
-              <TagIcon className='svg-icon-lg p3 pointer' onClick={() => onTagClick(campaigns)} />
-              <DeleteIcon className='svg-icon-lg p3 pointer' onClick={() => onDeleteClick(campaigns)} />
+              <ViewIcon className='svg-icon-lg p3 pointer gray60 hover-blue' onClick={() => onViewClick(campaigns)} />
+              <SectorIcon className='svg-icon-lg p3 pointer gray60 hover-blue' onClick={() => onSectorClick(campaigns)} />
+              <FavouritesIcon className='svg-icon-lg p3 pointer gray60 hover-gold' onClick={() => onFavouriteClick(campaigns)} />
+              <TagIcon className='svg-icon-lg p3 pointer gray60 hover-blue' onClick={() => onTagClick(campaigns)} />
+              <DeleteIcon className='svg-icon-lg p3 pointer gray60 hover-red' onClick={() => onDeleteClick(campaigns)} />
             </div>
             <div className='flex-none'>
               <button className='btn bg-transparent grey40' onClick={() => onDeselectAllClick(campaigns)}>Deselect all</button>
