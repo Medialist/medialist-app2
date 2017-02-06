@@ -7,7 +7,7 @@ import { batchFavouriteCampaigns } from './methods'
 import Clients from '/imports/api/clients/clients'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
 
-describe.only('Contacts/batchFavouriteCampaigns', function () {
+describe('Contacts/batchFavouriteCampaigns', function () {
   beforeEach(function () {
     resetDatabase()
   })
