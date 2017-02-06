@@ -71,7 +71,7 @@ describe('Contacts/batchAddContactsToCampaigns', function () {
     assert.throws(() => batchAddContactsToCampaigns.run.call({}, {}), /You must be logged in/)
   })
 
-  it('should validated the parameters', function () {
+  it('should validate the parameters', function () {
     assert.throws(() => batchAddContactsToCampaigns.validate({contactSlugs: ['a']}), /Campaign slugs is required/)
     assert.throws(() => batchAddContactsToCampaigns.validate({campaignSlugs: ['a']}), /Contact slugs is required/)
     assert.throws(() => batchAddContactsToCampaigns.validate({contactSlugs: [1], campaignSlugs: [1]}), /must be a string/)
