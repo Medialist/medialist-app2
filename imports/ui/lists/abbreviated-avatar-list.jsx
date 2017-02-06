@@ -25,10 +25,12 @@ const AbbreviatedAvatarList = React.createClass({
   },
 
   renderTooltip ({ tooltipExcess, tooltipItems }) {
-    return <ul className='list-reset m0 left-align p1 f-xs semibold' style={{ minWidth: '150px', lineHeight: 1.35 }}>
-      {tooltipItems.map((item) => <li>{item.name}</li>)}
-      {tooltipExcess ? <li>and {tooltipExcess} more...</li> : null}
-    </ul>
+    return (
+      <ul className='list-reset m0 left-align p1 f-xs semibold' style={{ minWidth: '150px', lineHeight: 1.35 }}>
+        {tooltipItems.map((item) => <li>{item.name}</li>)}
+        {tooltipExcess ? <li>and {tooltipExcess} more...</li> : null}
+      </ul>
+    )
   },
 
   renderExcess ({ avatarExcess, tooltipExcess, tooltipItems }) {
@@ -59,7 +61,7 @@ const AbbreviatedAvatarList = React.createClass({
     const Avatar = shape === 'square' ? SquareAvatar : CircleAvatar
 
     return (
-      <ul className={classNames('list-reset', className)} style={style}>
+      <ul className={classNames('list-reset center', className)} style={style}>
         {items.slice(0, maxAvatars).map((item, i) => {
           const { avatar, name } = item
           return (
