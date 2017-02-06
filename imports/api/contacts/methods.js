@@ -36,7 +36,7 @@ export const batchAddContactsToCampaigns = new ValidatedMethod({
         return ref
       }, {})
       const bulkCampaigns = Campaigns.rawCollection().initializeUnorderedBulkOp()
-      bulkCampaigns.executeAsync = Meteor.wrapAsync(bulkCampaigns.execute)
+      bulkCampaigns.executeSync = Meteor.wrapAsync(bulkCampaigns.execute)
       campaigns.forEach(({_id, contacts}) => {
         bulkCampaigns.find({_id}).update({
           $set: {
@@ -44,7 +44,7 @@ export const batchAddContactsToCampaigns = new ValidatedMethod({
           }
         })
       })
-      bulkCampaigns.executeAsync()
+      bulkCampaigns.executeSync()
     }
 
     // Set all new campaigns on contacts
