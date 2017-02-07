@@ -37,7 +37,9 @@ describe.only('Contacts/batchAddTags', function () {
       slug: 'hot',
       contactsCount: 1,
       campaignsCount: 99,
-      users: ['alf'],
+      users: {
+        'alf': 1
+      },
       updatedAt: new Date()
     })
 
@@ -55,7 +57,10 @@ describe.only('Contacts/batchAddTags', function () {
       slug: 'hot',
       contactsCount: 3,
       campaignsCount: 99,
-      users: ['alf', 'bob']
+      users: {
+        'alf': 2,
+        'bob': 1
+      }
     })
 
     const coldTag = Tags.findOne({slug: 'cold'})
@@ -66,7 +71,9 @@ describe.only('Contacts/batchAddTags', function () {
       slug: 'cold',
       contactsCount: 2,
       campaignsCount: 0,
-      users: ['bob']
+      users: {
+        'bob': 1
+      }
     })
 
     Contacts.find({slug: { $in: slugs }}).forEach((c, i) => {

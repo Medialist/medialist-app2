@@ -17,17 +17,17 @@ if (Meteor.isServer) {
  */
 Tags.suggest = ({type, userId, searchTerm}) => {
   const countField = `${type.toLowerCase()}Count`
-  const sort = { [countField]: -1 }
+  const sort = [[countField, 'desc']]
   const limit = 30
   if (searchTerm) {
     const stem = cleanSlug(searchTerm)
     const query = { slug: { $regex: stem } }
-    return Tags.find(query, { sort, limit }).fetch()
+    return Tags.find(query, { sort, limit })
   } else {
     const query = { users: userId }
-    const favs = Tags.find(query, { sort, limit }).fetch()
-    const others = Tags.find({}, { sort, limit: limit - favs.length }).fetch()
-    return favs.contact(others)
+    const userSort = [[`users.${userId}`, 'desc']]
+    console.log(userSort.concat(sort))
+    return Tags.find(query, { sort: userSort.concat(sort), limit })
   }
 }
 

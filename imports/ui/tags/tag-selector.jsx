@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import { createContainer } from 'meteor/react-meteor-data'
 import { Meteor } from 'meteor/meteor'
 import Tag from './tag'
-import Tags from '/import/api/tags/tags'
+import Tags from '/imports/api/tags/tags'
 
 const TagSelector = React.createClass({
   propTypes: {
@@ -23,8 +23,8 @@ const TagSelector = React.createClass({
     this.refs['tag-input'].focus()
   },
   onCreateTag () {
-    const { createTag, searchTerm } = this.props
-    createTag(searchTerm)
+    const { onCreateTag, searchTerm } = this.props
+    onCreateTag(searchTerm)
   },
   onRemoveTag (tag) {
     this.props.onRemoveTag(tag)
@@ -40,8 +40,7 @@ const TagSelector = React.createClass({
   },
   render () {
     const { onChange, onCreateTag, onAddTag, onRemoveTag, onKeyUp } = this
-    const { selectedTags } = this.props
-    const { value, filteredTags } = this.state
+    const { selectedTags, suggestedTags, searchTerm } = this.props
     return (
       <div>
         <div className='border-top border-gray80 py1 px4'>
@@ -52,16 +51,15 @@ const TagSelector = React.createClass({
             style={{outline: 'none'}}
             onChange={onChange}
             onKeyUp={onKeyUp}
-            value={value} />
+            value={searchTerm} />
         </div>
-        <div className='border-top border-gray80 pb2 overflow-hidden overflow-scroll' style={{height: 270}}>
-          {filteredTags.length > 0 ? (
-            filteredTags.map((tag, i) => <SelectableTag tag={tag} onAddTag={onAddTag} key={tag.slug} />)
-          ) : (
-            <div className='px4 py2 border-transparent border-top border-bottom hover-bg-gray90 hover-border-gray80' onClick={onCreateTag}>
-              <span>{value.length > 0 ? `Add tag "${value}"` : `Add a tag`}</span>
-            </div>
+        <div className='border-top border-gray80 pb2 overflow-hidden overflow-scroll-y' style={{height: 270}}>
+          {suggestedTags && suggestedTags.map((tag, i) =>
+            <SelectableTag tag={tag} onAddTag={onAddTag} key={tag.slug} />
           )}
+          <div className='px4 py2 border-transparent border-top border-bottom hover-bg-gray90 hover-border-gray80' onClick={onCreateTag}>
+            <span>{searchTerm && searchTerm.length > 0 ? `Add tag "${searchTerm}"` : `Add a tag`}</span>
+          </div>
         </div>
       </div>
     )
@@ -78,9 +76,10 @@ const SelectableTag = (props) => {
 }
 
 const TagSelectorContainer = createContainer((props) => {
-  const { userId } = Meteor
+  const userId = Meteor.userId()
   const { searchTerm, type, selectedTags } = props
   const subs = []
+  console.log({type})
   if (searchTerm) {
     subs.push(Meteor.subscribe('tags', {type, searchTerm: searchTerm.substring(0, 2)}))
   } else {
@@ -88,11 +87,14 @@ const TagSelectorContainer = createContainer((props) => {
   }
   const suggestedTags = Tags
     .suggest({type, userId, searchTerm})
-    .filter((t1) => selectedTags.any((t2) => t1.slug === t2.slug))
+    .fetch()
+    .filter((t1) => selectedTags.some((t2) => t1.slug === t2.slug))
 
-  const loading = subs.any((s) => !s.ready())
+  const loading = subs.some((s) => !s.ready())
 
   return { ...props, suggestedTags, loading }
 }, TagSelector)
 
 export default TagSelectorContainer
+
+window.Tags = Tags

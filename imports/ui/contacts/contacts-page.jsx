@@ -18,8 +18,10 @@ import AddContactsToCampaigns from './add-contacts-to-campaigns'
 import Medialists from '/imports/api/medialists/medialists'
 import { AvatarTag } from '../tags/tag'
 import { batchFavouriteContacts } from '/imports/api/contacts/methods'
+import { batchAddTags } from '/imports/api/tags/methods'
 import withSnackbar from '../snackbar/with-snackbar'
 import AddTags from '../tags/add-tags'
+import AbbreviatedAvatarList from '../lists/abbreviated-avatar-list.jsx'
 
 /*
  * ContactPage and ContactsPageContainer
@@ -77,6 +79,20 @@ const ContactsPage = withSnackbar(React.createClass({
         snackbar.show('Sorry, that didn\'t work')
       }
       snackbar.show(`Favourited ${contactSlugs.length} ${contactSlugs.length === 1 ? 'contact' : 'contacts'}`)
+    })
+  },
+
+  onTagAll (tags) {
+    const { snackbar } = this.props
+    const { selections } = this.state
+    const slugs = selections.map((s) => s.slug)
+    const names = tags.map((t) => t.name)
+    batchAddTags.call({type: 'Contacts', slugs, names}, (err, res) => {
+      if (err) {
+        console.log(err)
+        snackbar.show('Sorry, that didn\'t work')
+      }
+      snackbar.show(`Add ${names.length} ${names.length === 1 ? 'tag' : 'tags'} to ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'}`)
     })
   },
 
@@ -182,7 +198,7 @@ const ContactsPage = withSnackbar(React.createClass({
           onCampaignClick={() => this.setState({addContactsToCampaignsModalOpen: true})}
           onSectorClick={() => console.log('TODO: add/edit sectors')}
           onFavouriteClick={this.onFavouriteAll}
-          onTagClick={() => console.log('TODO: add/edit tags')}
+          onTagClick={() => this.setState({addTagsOpen: true})}
           onDeleteClick={this.onDeleteAllClick}
           onDeselectAllClick={this.onDeselectAllClick} />
         <EditContact
@@ -196,11 +212,14 @@ const ContactsPage = withSnackbar(React.createClass({
           onSubmit={() => this.setState({addContactsToCampaignsModalOpen: false})}
           open={this.state.addContactsToCampaignsModalOpen} />
         <AddTags
+          type='Contacts'
           open={this.state.addTagsOpen}
           onDismiss={() => this.setState({addTagsOpen: false})}
-          onUpdateTags={this.onUpdateTags}
+          onUpdateTags={this.onTagAll}
           title='Tag these Contacts'
-          selectedTags={this.state.selectedTags} />
+          selectedTags={this.state.selectedTags}>
+          <AbbreviatedAvatarList items={selections} />
+        </AddTags>
       </div>
     )
   }

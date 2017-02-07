@@ -41,7 +41,7 @@ export const batchAddTags = new ValidatedMethod({
       .map((t) => (Object.assign(t, {
         contactsCount: 0,
         campaignsCount: 0,
-        users: []
+        users: {}
       })))
 
     // insert missing tags
@@ -80,10 +80,8 @@ export const batchAddTags = new ValidatedMethod({
           { slug: t.slug },
           {
             $inc: {
-              [countField]: updated
-            },
-            $addToSet: {
-              users: this.userId
+              [countField]: updated,
+              [`users.${this.userId}`]: 1
             }
           },
           { multi: true }

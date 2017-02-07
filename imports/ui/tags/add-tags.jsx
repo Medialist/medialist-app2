@@ -1,22 +1,22 @@
 import React, {PropTypes} from 'react'
 import Modal from '../navigation/modal'
 import TagSelector from './tag-selector'
-import cleanSlug from '/imports/lib/slug'
+import { cleanSlug } from '/imports/lib/slug'
 
 const AddTags = React.createClass({
   propTypes: {
+    type: React.PropTypes.oneOf(['Contacts', 'Campaigns']).isRequired,
     open: PropTypes.bool.isRequired,
     onDismiss: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
     selectedTags: PropTypes.array.isRequired,
-    allTags: PropTypes.array.isRequired,
     onUpdateTags: PropTypes.func.isRequired,
     children: PropTypes.node
   },
   getInitialState () {
     return {
-      searchTerm: null,
-      selectedTags: this.props.selectedTags
+      searchTerm: '',
+      selectedTags: this.props.selectedTags || []
     }
   },
   onSave () {
@@ -25,6 +25,7 @@ const AddTags = React.createClass({
   },
   onCreateTag (searchTerm) {
     this.setState(({selectedTags}) => ({
+      searchTerm: '',
       selectedTags: selectedTags.concat([{
         name: searchTerm,
         slug: cleanSlug(searchTerm),
@@ -46,7 +47,7 @@ const AddTags = React.createClass({
     if (!this.props.open) return null
     const { selectedTags, searchTerm } = this.state
     const { onSave, onCreateTag, onAddTag, onRemoveTag } = this
-    const { onDismiss, title, children } = this.props
+    const { type, onDismiss, title, children } = this.props
     return (
       <div>
         <div className='py6 center f-lg normal'>
@@ -55,7 +56,8 @@ const AddTags = React.createClass({
         {children}
         <div className='border-bottom border-gray80'>
           <TagSelector
-            onSearchChange={() => this.setState({searchTerm})}
+            type={type}
+            onSearchChange={(searchTerm) => this.setState({searchTerm})}
             searchTerm={searchTerm}
             selectedTags={selectedTags}
             onCreateTag={onCreateTag}
