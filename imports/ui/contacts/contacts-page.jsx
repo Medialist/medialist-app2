@@ -44,8 +44,7 @@ const ContactsPage = withSnackbar(React.createClass({
       isDropdownOpen: false,
       addContactModalOpen: false,
       addContactsToCampaignsModalOpen: false,
-      addTagsOpen: false,
-      selectedTags: []
+      addTagsOpen: false
     }
   },
 
@@ -216,8 +215,7 @@ const ContactsPage = withSnackbar(React.createClass({
           open={this.state.addTagsOpen}
           onDismiss={() => this.setState({addTagsOpen: false})}
           onUpdateTags={this.onTagAll}
-          title='Tag these Contacts'
-          selectedTags={this.state.selectedTags}>
+          title='Tag these Contacts'>
           <AbbreviatedAvatarList items={selections} />
         </AddTags>
       </div>

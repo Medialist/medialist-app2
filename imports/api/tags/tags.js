@@ -24,7 +24,7 @@ Tags.suggest = ({type, userId, searchTerm}) => {
     const query = { slug: { $regex: stem } }
     return Tags.find(query, { sort, limit })
   } else {
-    const query = { users: userId }
+    const query = {}
     const userSort = [[`users.${userId}`, 'desc']]
     console.log(userSort.concat(sort))
     return Tags.find(query, { sort: userSort.concat(sort), limit })

@@ -19,15 +19,12 @@ const TagSelector = React.createClass({
     this.props.onSearchChange(value)
   },
   onSelectTag (tag) {
-    this.props.onAddTag()
+    this.props.onAddTag(tag)
     this.refs['tag-input'].focus()
   },
   onCreateTag () {
     const { onCreateTag, searchTerm } = this.props
     onCreateTag(searchTerm)
-  },
-  onRemoveTag (tag) {
-    this.props.onRemoveTag(tag)
   },
   onKeyUp (e) {
     if (['Enter', 'Tag'].indexOf(e.key) === -1) return
@@ -39,8 +36,8 @@ const TagSelector = React.createClass({
     }
   },
   render () {
-    const { onChange, onCreateTag, onAddTag, onRemoveTag, onKeyUp } = this
-    const { selectedTags, suggestedTags, searchTerm } = this.props
+    const { onChange, onSelectTag, onCreateTag, onKeyUp } = this
+    const { selectedTags, suggestedTags, searchTerm, onRemoveTag } = this.props
     return (
       <div>
         <div className='border-top border-gray80 py1 px4'>
@@ -55,7 +52,7 @@ const TagSelector = React.createClass({
         </div>
         <div className='border-top border-gray80 pb2 overflow-hidden overflow-scroll-y' style={{height: 270}}>
           {suggestedTags && suggestedTags.map((tag, i) =>
-            <SelectableTag tag={tag} onAddTag={onAddTag} key={tag.slug} />
+            <SelectableTag tag={tag} onSelectTag={onSelectTag} key={tag.slug} />
           )}
           <div className='px4 py2 border-transparent border-top border-bottom hover-bg-gray90 hover-border-gray80' onClick={onCreateTag}>
             <span>{searchTerm && searchTerm.length > 0 ? `Add tag "${searchTerm}"` : `Add a tag`}</span>
@@ -67,9 +64,9 @@ const TagSelector = React.createClass({
 })
 
 const SelectableTag = (props) => {
-  const { tag, onAddTag } = props
+  const { tag, onSelectTag } = props
   return (
-    <div className='px4 py2 border-transparent border-top border-bottom hover-bg-gray90 hover-border-gray80' onClick={() => onAddTag(tag)}>
+    <div className='px4 py2 border-transparent border-top border-bottom hover-bg-gray90 hover-border-gray80' onClick={() => onSelectTag(tag)}>
       #{tag.name}<span className='gray60 ml2 semibold'>{tag.count}</span>
     </div>
   )
@@ -88,7 +85,7 @@ const TagSelectorContainer = createContainer((props) => {
   const suggestedTags = Tags
     .suggest({type, userId, searchTerm})
     .fetch()
-    .filter((t1) => selectedTags.some((t2) => t1.slug === t2.slug))
+    .filter((t1) => !selectedTags.some((t2) => t1.slug === t2.slug))
 
   const loading = subs.some((s) => !s.ready())
 
