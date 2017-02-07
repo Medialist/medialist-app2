@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import nothing from '/imports/lib/nothing'
+import { cleanSlug } from '/imports/lib/slug'
 
 const Tags = new Mongo.Collection('tags')
 
@@ -9,6 +10,25 @@ Tags.allow(nothing)
 
 if (Meteor.isServer) {
   Tags._ensureIndex({slug: 1})
+}
+
+/*
+ * Find 30 relvant tags, sorted by users favourites and then popularity
+ */
+Tags.suggest = ({type, userId, searchTerm}) => {
+  const countField = `${type.toLowerCase()}Count`
+  const sort = { [countField]: -1 }
+  const limit = 30
+  if (searchTerm) {
+    const stem = cleanSlug(searchTerm)
+    const query = { slug: { $regex: stem } }
+    return Tags.find(query, { sort, limit }).fetch()
+  } else {
+    const query = { users: userId }
+    const favs = Tags.find(query, { sort, limit }).fetch()
+    const others = Tags.find({}, { sort, limit: limit - favs.length }).fetch()
+    return favs.contact(others)
+  }
 }
 
 export default Tags
@@ -38,3 +58,4 @@ export const TagSchema = new SimpleSchema({
     type: Date
   }
 })
+

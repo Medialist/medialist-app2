@@ -19,6 +19,7 @@ import Medialists from '/imports/api/medialists/medialists'
 import { AvatarTag } from '../tags/tag'
 import { batchFavouriteContacts } from '/imports/api/contacts/methods'
 import withSnackbar from '../snackbar/with-snackbar'
+import AddTags from '../tags/add-tags'
 
 /*
  * ContactPage and ContactsPageContainer
@@ -40,7 +41,9 @@ const ContactsPage = withSnackbar(React.createClass({
       selectedSector: null,
       isDropdownOpen: false,
       addContactModalOpen: false,
-      addContactsToCampaignsModalOpen: false
+      addContactsToCampaignsModalOpen: false,
+      addTagsOpen: false,
+      selectedTags: []
     }
   },
 
@@ -192,6 +195,12 @@ const ContactsPage = withSnackbar(React.createClass({
           onDismiss={() => this.setState({addContactsToCampaignsModalOpen: false})}
           onSubmit={() => this.setState({addContactsToCampaignsModalOpen: false})}
           open={this.state.addContactsToCampaignsModalOpen} />
+        <AddTags
+          open={this.state.addTagsOpen}
+          onDismiss={() => this.setState({addTagsOpen: false})}
+          onUpdateTags={this.onUpdateTags}
+          title='Tag these Contacts'
+          selectedTags={this.state.selectedTags} />
       </div>
     )
   }

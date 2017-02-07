@@ -1,17 +1,11 @@
 import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
+import { TypeSchema } from '/imports/lib/schema'
 import Tags from './tags'
 import Contacts from '../contacts/contacts'
 import Campaigns from '../medialists/medialists'
 import { checkAllSlugsExist, cleanSlug } from '/imports/lib/slug'
-
-const TypeSchema = new SimpleSchema({
-  type: {
-    type: String,
-    allowedValues: ['Contacts', 'Campaigns']
-  }
-})
 
 /*
  * Add tags to a batch of entities.

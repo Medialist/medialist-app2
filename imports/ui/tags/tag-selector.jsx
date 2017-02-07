@@ -1,60 +1,45 @@
 import React, {PropTypes} from 'react'
+import { createContainer } from 'meteor/react-meteor-data'
+import { Meteor } from 'meteor/meteor'
 import Tag from './tag'
-import find from 'lodash.find'
-import capitalize from 'underscore.string/capitalize'
+import Tags from '/import/api/tags/tags'
 
 const TagSelector = React.createClass({
   propTypes: {
+    onSearchChange: PropTypes.func.isRequired,
+    searchTerm: PropTypes.string,
     selectedTags: PropTypes.array.isRequired,
-    allTags: PropTypes.array.isRequired,
+    suggestedTags: PropTypes.array.isRequired,
+    onCreateTag: PropTypes.func.isRequired,
     onAddTag: PropTypes.func.isRequired,
     onRemoveTag: PropTypes.func.isRequired
   },
-  getInitialState () {
-    return {
-      value: '',
-      filteredTags: this.createFilteredTags(this.props)
-    }
-  },
-  componentWillReceiveProps (props) {
-    this.setState({ filteredTags: this.createFilteredTags(props) })
-  },
-  createFilteredTags (props) {
-    const { allTags, selectedTags } = props
-    return allTags.filter((tag) => !find(selectedTags, {slug: tag.slug}))
-  },
   onChange (e) {
     const { value } = e.target
-    if (!value) return this.setState({ value })
-
-    const filteredTags = this.props.allTags
-      .filter((tag) => !find(this.props.selectedTags, {slug: tag.slug}))
-      .filter((tag) => tag.name.toLowerCase().substring(0, value.length) === value.toLowerCase())
-
-    this.setState({ value, filteredTags })
+    this.props.onSearchChange(value)
   },
-  onAddTag (tag) {
-    this.props.onAddTag(tag)
-    this.setState({ value: '' })
+  onSelectTag (tag) {
+    this.props.onAddTag()
     this.refs['tag-input'].focus()
+  },
+  onCreateTag () {
+    const { createTag, searchTerm } = this.props
+    createTag(searchTerm)
   },
   onRemoveTag (tag) {
     this.props.onRemoveTag(tag)
   },
-  createTag () {
-    const newTag = {
-      name: capitalize(this.state.value),
-      slug: this.state.value.toLowerCase().replace(' ', '-'),
-      count: 0
-    }
-    this.onAddTag(newTag)
-    console.log('TODO: Add ', newTag.name, ' to DB')
-  },
   onKeyUp (e) {
-    if (e.key === 'Enter' || e.key === 'Tab') this.createTag()
+    if (['Enter', 'Tag'].indexOf(e.key) === -1) return
+    const {suggestedTags} = this.props
+    if (suggestedTags.length === 0) {
+      this.onCreateTag()
+    } else {
+      this.onSelectTag(suggestedTags[0])
+    }
   },
   render () {
-    const { onChange, onAddTag, onRemoveTag, createTag, onKeyUp } = this
+    const { onChange, onCreateTag, onAddTag, onRemoveTag, onKeyUp } = this
     const { selectedTags } = this.props
     const { value, filteredTags } = this.state
     return (
@@ -73,7 +58,7 @@ const TagSelector = React.createClass({
           {filteredTags.length > 0 ? (
             filteredTags.map((tag, i) => <SelectableTag tag={tag} onAddTag={onAddTag} key={tag.slug} />)
           ) : (
-            <div className='px4 py2 border-transparent border-top border-bottom hover-bg-gray90 hover-border-gray80' onClick={createTag}>
+            <div className='px4 py2 border-transparent border-top border-bottom hover-bg-gray90 hover-border-gray80' onClick={onCreateTag}>
               <span>{value.length > 0 ? `Add tag "${value}"` : `Add a tag`}</span>
             </div>
           )}
@@ -92,4 +77,22 @@ const SelectableTag = (props) => {
   )
 }
 
-export default TagSelector
+const TagSelectorContainer = createContainer((props) => {
+  const { userId } = Meteor
+  const { searchTerm, type, selectedTags } = props
+  const subs = []
+  if (searchTerm) {
+    subs.push(Meteor.subscribe('tags', {type, searchTerm: searchTerm.substring(0, 2)}))
+  } else {
+    subs.push(Meteor.subscribe('tags', {type}))
+  }
+  const suggestedTags = Tags
+    .suggest({type, userId, searchTerm})
+    .filter((t1) => selectedTags.any((t2) => t1.slug === t2.slug))
+
+  const loading = subs.any((s) => !s.ready())
+
+  return { ...props, suggestedTags, loading }
+}, TagSelector)
+
+export default TagSelectorContainer
