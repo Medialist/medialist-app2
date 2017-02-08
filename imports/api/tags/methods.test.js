@@ -1,12 +1,10 @@
-import { Meteor } from 'meteor/meteor'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
 import assert from 'assert'
 import Contacts from '../contacts/contacts'
-import Campaigns from '../medialists/medialists'
 import Tags from './tags'
 import { batchAddTags } from './methods'
 
-describe.only('Contacts/batchAddTags', function () {
+describe('Contacts/batchAddTags', function () {
   beforeEach(function () {
     resetDatabase()
   })

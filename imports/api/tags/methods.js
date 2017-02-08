@@ -48,10 +48,12 @@ export const batchAddTags = new ValidatedMethod({
     newTags
       .forEach((t) => Tags.insert(t))
 
+    const now = new Date()
+
     // Update contacts with tags where missing.
-    return existingTags
+    existingTags
       .concat(newTags)
-      .map((t) => {
+      .forEach((t) => {
         const tag = {
           name: t.name,
           slug: t.slug,
@@ -59,20 +61,29 @@ export const batchAddTags = new ValidatedMethod({
         }
         // Add tags to contacts / campaigns.
         // Returns number of contacts modfied.
-        const updated = Collection.update(
+        const added = Collection.update(
           {
             slug: { $in: slugs },
             'tags.slug': { $ne: t.slug }
           },
-          { $push: { tags: tag } },
+          {
+            $push: {
+              tags: tag
+            },
+            $set: {
+              updatedAt: now
+            }
+          },
           { multi: true }
         )
         // Update counts
         Collection.update(
           { 'tags.slug': t.slug },
-          { $inc: {
-            'tags.$.count': updated
-          }},
+          {
+            $inc: {
+              'tags.$.count': added
+            }
+          },
           { multi: true }
         )
         // Update counts and users on tags
@@ -80,7 +91,7 @@ export const batchAddTags = new ValidatedMethod({
           { slug: t.slug },
           {
             $inc: {
-              [countField]: updated,
+              [countField]: added,
               [`users.${this.userId}`]: 1
             }
           },
