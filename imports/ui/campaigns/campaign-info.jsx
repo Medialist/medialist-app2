@@ -11,23 +11,6 @@ import AddTags from '../tags/add-tags'
 import Tooltip from '../navigation/tooltip'
 import { update } from '../../api/medialists/methods'
 
-// Dummy data to be replaced with subscription data
-const selectedTags = [
-  {_id: 0, name: 'Appropsal', slug: 'appropsal', count: 3},
-  {_id: 0, name: 'Attract', slug: 'attract', count: 8}
-]
-const allTags = [
-  {_id: 0, name: 'Apples', slug: 'apples', count: 12},
-  {_id: 0, name: 'Appropsal', slug: 'appropsal', count: 3},
-  {_id: 0, name: 'Attitude', slug: 'attitude', count: 1},
-  {_id: 0, name: 'Atack', slug: 'atack', count: 15},
-  {_id: 0, name: 'Attract', slug: 'attract', count: 8},
-  {_id: 0, name: 'Bees', slug: 'bees', count: 1},
-  {_id: 0, name: 'Burner', slug: 'burner', count: 1},
-  {_id: 0, name: 'Bloggers', slug: 'bloggers', count: 7}
-]
-// END of dummy data
-
 const CampaignInfo = React.createClass({
   propTypes: {
     campaign: PropTypes.object,
@@ -102,7 +85,7 @@ const CampaignInfo = React.createClass({
     } = this
     const { addToMasterListOpen, addTagsOpen } = this.state
     const { onEditClick, onEditTeamClick, user, campaign, masterlists, onAddCampaignToMasterLists } = this.props
-    const { name, client, avatar, purpose, links, team } = this.props.campaign
+    const { name, client, avatar, purpose, links, team, tags } = this.props.campaign
     const isFavourite = user.myMedialists.some((m) => m._id === campaign._id)
     const selectedMasterLists = campaign.masterLists.map((listId) => find(masterlists, {_id: listId}))
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
@@ -155,15 +138,15 @@ const CampaignInfo = React.createClass({
           masterlists={masterlists}
           type='Campaigns' />
         <AddTags
+          type='Campaigns'
           open={addTagsOpen}
           onDismiss={dismissAddTags}
           title={`Tag the ${name} Campaign`}
-          selectedTags={selectedTags}
-          allTags={allTags}
+          selectedTags={tags}
           onUpdateTags={onUpdateTags} />
         <QuickAdd
           selectedMasterLists={selectedMasterLists}
-          tags={selectedTags}
+          tags={tags}
           onAddToMasterList={onAddToMasterList}
           onAddTags={onAddTags} />
       </div>

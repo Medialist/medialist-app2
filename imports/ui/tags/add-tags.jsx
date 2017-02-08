@@ -1,51 +1,66 @@
 import React, {PropTypes} from 'react'
 import Modal from '../navigation/modal'
 import TagSelector from './tag-selector'
-import find from 'lodash.find'
-import findIndex from 'lodash.findindex'
+import { cleanSlug } from '/imports/lib/slug'
 
 const AddTags = React.createClass({
   propTypes: {
+    type: React.PropTypes.oneOf(['Contacts', 'Campaigns']).isRequired,
     open: PropTypes.bool.isRequired,
     onDismiss: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
     selectedTags: PropTypes.array.isRequired,
-    allTags: PropTypes.array.isRequired,
-    onUpdateTags: PropTypes.func.isRequired
+    onUpdateTags: PropTypes.func.isRequired,
+    children: PropTypes.node
   },
   getInitialState () {
-    return { selectedTags: this.props.selectedTags }
+    return {
+      searchTerm: '',
+      selectedTags: this.props.selectedTags || []
+    }
   },
   onSave () {
     this.props.onUpdateTags(this.state.selectedTags)
     this.props.onDismiss()
   },
+  onCreateTag (searchTerm) {
+    this.setState(({selectedTags}) => ({
+      searchTerm: '',
+      selectedTags: selectedTags.concat([{
+        name: searchTerm,
+        slug: cleanSlug(searchTerm),
+        count: 0
+      }])
+    }))
+  },
   onAddTag (tag) {
-    const selectedTags = this.state.selectedTags.slice(0)
-    if (find(selectedTags, {slug: tag.slug})) return
-    selectedTags.push(tag)
-    this.setState({ selectedTags })
+    this.setState(({selectedTags}) => ({
+      selectedTags: selectedTags.concat([tag])
+    }))
   },
   onRemoveTag (tag) {
-    const selectedTags = this.state.selectedTags.slice(0)
-    const index = findIndex(selectedTags, {slug: tag.slug})
-    selectedTags.splice(index, 1)
-    this.setState({ selectedTags })
+    this.setState(({selectedTags}) => ({
+      selectedTags: selectedTags.filter((t) => t.slug !== tag.slug)
+    }))
   },
   render () {
     if (!this.props.open) return null
-    const { selectedTags } = this.state
-    const { onSave, onAddTag, onRemoveTag } = this
-    const { onDismiss, title, allTags } = this.props
+    const { selectedTags, searchTerm } = this.state
+    const { onSave, onCreateTag, onAddTag, onRemoveTag } = this
+    const { type, onDismiss, title, children } = this.props
     return (
       <div>
         <div className='py6 center f-lg normal'>
           {title}
         </div>
+        {children}
         <div className='border-bottom border-gray80'>
           <TagSelector
+            type={type}
+            onSearchChange={(searchTerm) => this.setState({searchTerm})}
+            searchTerm={searchTerm}
             selectedTags={selectedTags}
-            allTags={allTags}
+            onCreateTag={onCreateTag}
             onAddTag={onAddTag}
             onRemoveTag={onRemoveTag} />
         </div>
