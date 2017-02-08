@@ -12,6 +12,7 @@ import Clients from '/imports/api/clients/clients'
 import Medialists from '/imports/api/medialists/medialists'
 import Contacts from '/imports/api/contacts/contacts'
 import MasterLists from '/imports/api/master-lists/master-lists'
+import { setMasterLists } from '/imports/api/master-lists/methods'
 import CreateContact from '../contacts/edit-contact'
 import AddContact from './add-contact'
 import EditTeam from './edit-team'
@@ -55,6 +56,10 @@ const CampaignActivityPage = React.createClass({
 
   onAddContactModalDismiss () {
     this.setState({ addContactModalOpen: false })
+  },
+
+  onAddCampaignToMasterLists ({item, masterLists}) {
+    setMasterLists.call({ type: 'Campaigns', item, masterLists })
   },
 
   toggleEditModal () {
@@ -103,7 +108,8 @@ const CampaignActivityPage = React.createClass({
       toggleEditTeamModal,
       onFeedback,
       onCoverage,
-      onCreateContact
+      onCreateContact,
+      onAddCampaignToMasterLists
     } = this
     const { campaign, contacts, contactsCount, clients, teamMates, loading, user, masterlists } = this.props
     const {
@@ -121,7 +127,13 @@ const CampaignActivityPage = React.createClass({
         <CampaignTopbar campaign={campaign} onAddContactClick={onAddContactClick} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
-            <CampaignInfo campaign={campaign} onEditClick={toggleEditModal} onEditTeamClick={toggleEditTeamModal} user={user} masterlists={masterlists} />
+            <CampaignInfo
+              campaign={campaign}
+              onEditClick={toggleEditModal}
+              onEditTeamClick={toggleEditTeamModal}
+              user={user}
+              masterlists={masterlists}
+              onAddCampaignToMasterLists={onAddCampaignToMasterLists} />
             <EditCampaign campaign={campaign} open={editModalOpen} onDismiss={toggleEditModal} clients={clients} />
             <EditTeam campaign={campaign} open={editTeamModalOpen} onDismiss={toggleEditTeamModal} teamMates={teamMates} loading={loading} />
           </div>
@@ -172,6 +184,6 @@ export default createContainer((props) => {
     teamMates: campaign && campaign.team,
     user: Meteor.user(),
     clients: Clients.find({}).fetch(),
-    masterlists: MasterLists.find().fetch()
+    masterlists: MasterLists.find({type: 'Campaigns'}).fetch()
   }
 }, withRouter(CampaignActivityPage))

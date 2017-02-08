@@ -1,17 +1,16 @@
 import React, {PropTypes} from 'react'
 import { Link } from 'react-router'
 import Modal from '../navigation/modal'
-import find from 'lodash.find'
 import findIndex from 'lodash.findindex'
 import { Check } from '../images/icons'
 
-const AddCampaignToMasterList = React.createClass({
+const AddToMasterList = React.createClass({
   propTypes: {
     open: PropTypes.bool.isRequired,
     onDismiss: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
-    selectedMasterLists: PropTypes.array,
-    allMasterLists: PropTypes.array,
+    document: PropTypes.object,
+    masterlists: PropTypes.array,
     type: PropTypes.oneOf(['Campaigns', 'Contacts'])
   },
   getInitialState () {
@@ -20,9 +19,9 @@ const AddCampaignToMasterList = React.createClass({
   componentWillReceiveProps (props) {
     this.setState({ selectableList: this.setSelectableList(props) })
   },
-  setSelectableList ({ allMasterLists, selectedMasterLists }) {
-    return allMasterLists.map((item) => {
-      const selected = !!find(selectedMasterLists, {name: item.name})
+  setSelectableList ({ masterlists, document }) {
+    return masterlists.map((item) => {
+      const selected = document.masterLists.indexOf(item._id) !== -1
       return { item, selected }
     })
   },
@@ -34,10 +33,11 @@ const AddCampaignToMasterList = React.createClass({
     this.setState({ selectableList })
   },
   onSave () {
-    const payload = this.state.selectableList
+    const item = this.props.document._id
+    const masterLists = this.state.selectableList
       .filter((item) => item.selected)
-      .map((item) => item.item)
-    this.props.onSave(payload)
+      .map((item) => item.item._id)
+    this.props.onSave({ item, masterLists })
     this.props.onDismiss()
   },
   render () {
@@ -45,7 +45,6 @@ const AddCampaignToMasterList = React.createClass({
     const { onSelect, onSave } = this
     const { type, onDismiss } = this.props
     const { selectableList } = this.state
-
     return (
       <div>
         <div className='py6 center'>
@@ -107,4 +106,4 @@ const EmptyMasterLists = ({type}) => {
   )
 }
 
-export default Modal(AddCampaignToMasterList)
+export default Modal(AddToMasterList)
