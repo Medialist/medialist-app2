@@ -120,7 +120,11 @@ export const setMasterLists = new ValidatedMethod({
 
     MasterLists.update({_id: {$in: masterLists}}, {$addToSet: {items: item}}, {multi: true})
 
-    removeItemsFromMasterListsIds.forEach((_id) => MasterLists.update({ _id }, {$pull: {items: item}}, {multi: true}))
+    MasterLists.update(
+      { _id: { $in: removeItemsFromMasterListsIds } },
+      { $pull: { items: item } },
+      { multi: true }
+    )
 
     return refCollection.update({_id: item}, {$set: {masterLists}})
   }
