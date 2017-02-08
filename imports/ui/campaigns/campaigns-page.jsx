@@ -12,6 +12,9 @@ import EditCampaign from './edit-campaign'
 import CampaignListEmpty from './campaign-list-empty'
 import withSnackbar from '../snackbar/with-snackbar'
 import createSearchContainer from './campaign-search-container'
+import { batchAddTags } from '/imports/api/tags/methods'
+import AddTags from '../tags/add-tags'
+import AbbreviatedAvatarList from '../lists/abbreviated-avatar-list.jsx'
 
 const CampaignsPage = React.createClass({
   propTypes: {
@@ -31,7 +34,8 @@ const CampaignsPage = React.createClass({
       selections: [],
       term: '',
       selectedSector: null,
-      editCampaignOpen: false
+      editCampaignOpen: false,
+      addTagsOpen: false
     }
   },
 
@@ -79,6 +83,20 @@ const CampaignsPage = React.createClass({
     })
   },
 
+  onTagAll (tags) {
+    const { snackbar } = this.props
+    const { selections } = this.state
+    const slugs = selections.map((s) => s.slug)
+    const names = tags.map((t) => t.name)
+    batchAddTags.call({type: 'Campaigns', slugs, names}, (err, res) => {
+      if (err) {
+        console.log(err)
+        snackbar.show('Sorry, that didn\'t work')
+      }
+      snackbar.show(`Add ${names.length} ${names.length === 1 ? 'tag' : 'tags'} to ${slugs.length} ${slugs.length === 1 ? 'campaign' : 'campaigns'}`)
+    })
+  },
+
   render () {
     const { campaignCount, campaigns, loading, total, sort, term, snackbar } = this.props
     const { onSortChange, onSelectionsChange, onSectorChange, onViewSelection } = this
@@ -123,9 +141,17 @@ const CampaignsPage = React.createClass({
             onViewClick={onViewSelection}
             onSectorClick={() => console.log('TODO: add/edit sectors')}
             onFavouriteClick={() => console.log('TODO: toggle favourite')}
-            onTagClick={() => console.log('TODO: add/edit tags')}
+            onTagClick={() => this.setState({addTagsOpen: true})}
             onDeleteClick={() => snackbar.show('TODO: delete campaigns')}
             onDeselectAllClick={this.onDeselectAllClick} />
+          <AddTags
+            type='Campaigns'
+            open={this.state.addTagsOpen}
+            onDismiss={() => this.setState({addTagsOpen: false})}
+            onUpdateTags={this.onTagAll}
+            title='Tag these Campaigns'>
+            <AbbreviatedAvatarList items={selections} shape='square' />
+          </AddTags>
         </div>
       </div>
     )
