@@ -13,6 +13,5 @@ Meteor.publish('tags', function (props) {
   ]).validate(props)
 
   const { type, searchTerm } = props
-  console.log({type, userId: this.userId, searchTerm})
   return Tags.suggest({type, userId: this.userId, searchTerm})
 })

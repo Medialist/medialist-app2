@@ -38,7 +38,8 @@ describe.only('Contacts/batchAddTags', function () {
       contactsCount: 1,
       campaignsCount: 99,
       users: {
-        'alf': 1
+        'alf': 1,
+        'bob': 1
       },
       updatedAt: new Date()
     })
@@ -58,8 +59,8 @@ describe.only('Contacts/batchAddTags', function () {
       contactsCount: 3,
       campaignsCount: 99,
       users: {
-        'alf': 2,
-        'bob': 1
+        'alf': 1,
+        'bob': 2
       }
     })
 

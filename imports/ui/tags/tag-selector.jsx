@@ -76,7 +76,6 @@ const TagSelectorContainer = createContainer((props) => {
   const userId = Meteor.userId()
   const { searchTerm, type, selectedTags } = props
   const subs = []
-  console.log({type})
   if (searchTerm) {
     subs.push(Meteor.subscribe('tags', {type, searchTerm: searchTerm.substring(0, 2)}))
   } else {
