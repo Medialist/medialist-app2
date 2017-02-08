@@ -21,7 +21,7 @@ function findOrCreateClientRef (name) {
   return {_id, name}
 }
 
-// Add all contacts to myContacts.
+// Add all campaigns to myMedialists
 // Update existing favs with new updatedAt
 export const batchFavouriteCampaigns = new ValidatedMethod({
   name: 'Contacts/batchFavouriteCampaigns',
@@ -36,7 +36,7 @@ export const batchFavouriteCampaigns = new ValidatedMethod({
     const user = Meteor.users.findOne({_id: this.userId})
     const now = new Date()
 
-    // transform contacts into contact refs for user.myContacts array.
+    // transform campaigns into refs for user.myMedialists array.
     const newFavs = Medialists.find(
       { slug: { $in: campaignSlugs } },
       { fields: { avatar: 1, slug: 1, name: 1, client: 1 } }
