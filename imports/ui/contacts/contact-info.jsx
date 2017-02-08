@@ -15,24 +15,6 @@ const selectedMasterLists = [
   {_id: 0, name: 'Personal Fitness', items: []}
 ]
 
-const selectedTags = [
-  {_id: 0, name: 'Appropsal', slug: 'appropsal', count: 3},
-  {_id: 0, name: 'Attract', slug: 'attract', count: 8},
-  {_id: 0, name: 'Bees', slug: 'bees', count: 1},
-  {_id: 0, name: 'Burner', slug: 'burner', count: 1}
-]
-const allTags = [
-  {_id: 0, name: 'Apples', slug: 'apples', count: 12},
-  {_id: 0, name: 'Appropsal', slug: 'appropsal', count: 3},
-  {_id: 0, name: 'Attitude', slug: 'attitude', count: 1},
-  {_id: 0, name: 'Atack', slug: 'atack', count: 15},
-  {_id: 0, name: 'Attract', slug: 'attract', count: 8},
-  {_id: 0, name: 'Bees', slug: 'bees', count: 1},
-  {_id: 0, name: 'Burner', slug: 'burner', count: 1},
-  {_id: 0, name: 'Bloggers', slug: 'bloggers', count: 7}
-]
-// END of dummy data
-
 const ContactInfo = React.createClass({
   propTypes: {
     contact: PropTypes.object,
@@ -95,7 +77,7 @@ const ContactInfo = React.createClass({
       onUpdateTags
     } = this
     const { addToMasterListOpen, addTagsOpen, showMore } = this.state
-    const { user: { myContacts }, contact: { _id, name, avatar, emails, outlets, medialists }, masterlists } = this.props
+    const { user: { myContacts }, contact: { _id, name, avatar, emails, outlets, medialists, tags }, masterlists } = this.props
     const isFavourite = myContacts.some((c) => c._id === _id)
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
     const tooltip = isFavourite ? 'Remove from My Contacts' : 'Add to My Contacts'
@@ -142,15 +124,15 @@ const ContactInfo = React.createClass({
           allMasterLists={masterlists}
           type='Contacts' />
         <AddTags
+          type='Contacts'
           open={addTagsOpen}
           onDismiss={dismissAddTags}
           title={`Tag ${name}`}
-          selectedTags={selectedTags}
-          allTags={allTags}
+          selectedTags={tags}
           onUpdateTags={onUpdateTags} />
         <QuickAdd
           selectedMasterLists={selectedMasterLists}
-          tags={selectedTags}
+          tags={tags}
           onAddTags={onAddTags}
           onAddToMasterList={onAddToMasterList} />
       </div>
