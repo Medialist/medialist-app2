@@ -14,8 +14,11 @@ import EditContact from './edit-contact.jsx'
 import ContactListEmpty from './contacts-list-empty'
 import { FeedContactIcon } from '../images/icons'
 import createSearchContainer from './search-container'
+import AddContactsToCampaigns from './add-contacts-to-campaigns'
 import Medialists from '/imports/api/medialists/medialists'
 import { AvatarTag } from '../tags/tag'
+import { batchFavouriteContacts } from '/imports/api/contacts/methods'
+import withSnackbar from '../snackbar/with-snackbar'
 
 /*
  * ContactPage and ContactsPageContainer
@@ -30,13 +33,14 @@ import { AvatarTag } from '../tags/tag'
  * The sector-selector is ?sector=<sector>
  */
 
-const ContactsPage = React.createClass({
+const ContactsPage = withSnackbar(React.createClass({
   getInitialState () {
     return {
       selections: [],
       selectedSector: null,
       isDropdownOpen: false,
-      addContactModalOpen: false
+      addContactModalOpen: false,
+      addContactsToCampaignsModalOpen: false
     }
   },
 
@@ -58,6 +62,19 @@ const ContactsPage = React.createClass({
 
   onDeselectAllClick () {
     this.setState({ selections: [] })
+  },
+
+  onFavouriteAll () {
+    const { snackbar } = this.props
+    const { selections } = this.state
+    const contactSlugs = selections.map((s) => s.slug)
+    batchFavouriteContacts.call({contactSlugs}, (err, res) => {
+      if (err) {
+        console.log(err)
+        snackbar.show('Sorry, that didn\'t work')
+      }
+      snackbar.show(`Favourited ${contactSlugs.length} ${contactSlugs.length === 1 ? 'contact' : 'contacts'}`)
+    })
   },
 
   onDeleteAllClick () {
@@ -159,9 +176,9 @@ const ContactsPage = React.createClass({
         </div>
         <ContactsActionsToast
           contacts={selections}
-          onCampaignClick={() => console.log('TODO: add contacts to campaign')}
+          onCampaignClick={() => this.setState({addContactsToCampaignsModalOpen: true})}
           onSectorClick={() => console.log('TODO: add/edit sectors')}
-          onFavouriteClick={() => console.log('TODO: toggle favourite')}
+          onFavouriteClick={this.onFavouriteAll}
           onTagClick={() => console.log('TODO: add/edit tags')}
           onDeleteClick={this.onDeleteAllClick}
           onDeselectAllClick={this.onDeselectAllClick} />
@@ -170,10 +187,15 @@ const ContactsPage = React.createClass({
           onChange={this.onAddContactChange}
           onSubmit={this.onAddContactSubmit}
           open={this.state.addContactModalOpen} />
+        <AddContactsToCampaigns
+          contacts={selections}
+          onDismiss={() => this.setState({addContactsToCampaignsModalOpen: false})}
+          onSubmit={() => this.setState({addContactsToCampaignsModalOpen: false})}
+          open={this.state.addContactsToCampaignsModalOpen} />
       </div>
     )
   }
-})
+}))
 
 const MasterListsSelectorContainer = createContainer((props) => {
   const items = MasterLists.find({type: 'Contacts'}).fetch()

@@ -12,6 +12,7 @@ import EditCampaign from './edit-campaign'
 import CampaignListEmpty from './campaign-list-empty'
 import withSnackbar from '../snackbar/with-snackbar'
 import createSearchContainer from './campaign-search-container'
+import { batchFavouriteCampaigns } from '/imports/api/medialists/methods'
 
 const CampaignsPage = React.createClass({
   propTypes: {
@@ -79,9 +80,22 @@ const CampaignsPage = React.createClass({
     })
   },
 
+  onFavouriteAll () {
+    const { snackbar } = this.props
+    const { selections } = this.state
+    const campaignSlugs = selections.map((c) => c.slug)
+    batchFavouriteCampaigns.call({campaignSlugs}, (err, res) => {
+      if (err) {
+        console.log(err)
+        snackbar.show('Sorry, that didn\'t work.')
+      }
+      snackbar.show(`Favourited ${campaignSlugs.length} ${campaignSlugs.length === 1 ? 'campaign' : 'campaigns'}`)
+    })
+  },
+
   render () {
     const { campaignCount, campaigns, loading, total, sort, term, snackbar } = this.props
-    const { onSortChange, onSelectionsChange, onSectorChange, onViewSelection } = this
+    const { onSortChange, onSelectionsChange, onSectorChange, onViewSelection, onFavouriteAll } = this
     const { selections, selectedSector, editCampaignOpen } = this.state
 
     if (!loading && campaignCount === 0) {
@@ -122,7 +136,7 @@ const CampaignsPage = React.createClass({
             campaigns={selections}
             onViewClick={onViewSelection}
             onSectorClick={() => console.log('TODO: add/edit sectors')}
-            onFavouriteClick={() => console.log('TODO: toggle favourite')}
+            onFavouriteClick={onFavouriteAll}
             onTagClick={() => console.log('TODO: add/edit tags')}
             onDeleteClick={() => snackbar.show('TODO: delete campaigns')}
             onDeselectAllClick={this.onDeselectAllClick} />
