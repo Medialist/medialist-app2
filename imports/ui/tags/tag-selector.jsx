@@ -99,5 +99,3 @@ const TagSelectorContainer = createContainer((props) => {
 }, TagSelector)
 
 export default TagSelectorContainer
-
-window.Tags = Tags
