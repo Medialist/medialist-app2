@@ -106,3 +106,17 @@ export const MasterListDelSchema = new SimpleSchema({
     regEx: SimpleSchema.RegEx.Id
   }
 })
+
+export const MasterListsSetMasterLists = new SimpleSchema([
+  TypeSchema,
+  {
+    item: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    },
+    masterLists: {
+      type: [String],
+      regEx: SimpleSchema.RegEx.Id
+    }
+  }
+])
