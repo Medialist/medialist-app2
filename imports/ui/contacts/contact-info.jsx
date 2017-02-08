@@ -89,7 +89,7 @@ const ContactInfo = React.createClass({
             <span className='semibold block f-xl mb1'>
               {name}
               <Tooltip title={tooltip}>
-                <Icon className='mx2 pointer svg-icon-lg align-bottom' onClick={this.onToggleFavourite} />
+                <Icon className='mx2 pointer svg-icon-lg align-bottom gray40' onClick={this.onToggleFavourite} />
               </Tooltip>
             </span>
             <span className='block f-sm'>{(outlets && outlets.length) ? outlets[0].value : null}</span>
