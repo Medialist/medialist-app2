@@ -26,7 +26,6 @@ Tags.suggest = ({type, userId, searchTerm}) => {
   } else {
     const query = {}
     const userSort = [[`users.${userId}`, 'desc']]
-    console.log(userSort.concat(sort))
     return Tags.find(query, { sort: userSort.concat(sort), limit })
   }
 }

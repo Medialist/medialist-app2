@@ -27,7 +27,7 @@ const TagSelector = React.createClass({
     onCreateTag(searchTerm)
   },
   onKeyUp (e) {
-    if (['Enter', 'Tag'].indexOf(e.key) === -1) return
+    if (['Enter', 'Tab'].indexOf(e.key) === -1) return
     const {suggestedTags} = this.props
     if (suggestedTags.length === 0) {
       this.onCreateTag()
@@ -50,27 +50,34 @@ const TagSelector = React.createClass({
             onKeyUp={onKeyUp}
             value={searchTerm} />
         </div>
-        <div className='border-top border-gray80 pb2 overflow-hidden overflow-scroll-y' style={{height: 270}}>
+        <div className='border-top border-gray80 pb2' style={{height: 270, overflowY: 'auto'}}>
           {suggestedTags && suggestedTags.map((tag, i) =>
-            <SelectableTag tag={tag} onSelectTag={onSelectTag} key={tag.slug} />
+            <ListItem onClick={() => onSelectTag(tag)} key={tag.slug}>
+              #{tag.name}<span className='gray60 ml2 semibold'>{tag.count}</span>
+            </ListItem>
           )}
-          <div className='px4 py2 border-transparent border-top border-bottom hover-bg-gray90 hover-border-gray80' onClick={onCreateTag}>
-            <span>{searchTerm && searchTerm.length > 0 ? `Add tag "${searchTerm}"` : `Add a tag`}</span>
-          </div>
+          {searchTerm ? (
+            <ListItem onClick={onCreateTag}>
+              Add tag "{searchTerm}"
+            </ListItem>
+          ) : (
+            <ListItem>
+              Add a tag
+            </ListItem>
+          )}
         </div>
       </div>
     )
   }
 })
 
-const SelectableTag = (props) => {
-  const { tag, onSelectTag } = props
-  return (
-    <div className='px4 py2 border-transparent border-top border-bottom hover-bg-gray90 hover-border-gray80' onClick={() => onSelectTag(tag)}>
-      #{tag.name}<span className='gray60 ml2 semibold'>{tag.count}</span>
-    </div>
-  )
-}
+const ListItem = ({onClick, children}) => (
+  <div
+    className='px4 py2 border-transparent border-top border-bottom hover-bg-gray90 hover-border-gray80'
+    onClick={onClick}>
+    {children}
+  </div>
+)
 
 const TagSelectorContainer = createContainer((props) => {
   const userId = Meteor.userId()
