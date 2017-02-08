@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
+import find from 'lodash.find'
 import EditableAvatar from '../images/editable-avatar'
 import { SquareAvatar, CircleAvatar } from '../images/avatar'
 import { BioIcon, FavouritesIcon, FavouritesIconGold, WebsiteIcon } from '../images/icons'
@@ -11,10 +12,6 @@ import Tooltip from '../navigation/tooltip'
 import { update } from '../../api/medialists/methods'
 
 // Dummy data to be replaced with subscription data
-const selectedMasterLists = [
-  {_id: 0, name: 'Healthcare', items: []},
-  {_id: 0, name: 'Energy', items: []}
-]
 const selectedTags = [
   {_id: 0, name: 'Appropsal', slug: 'appropsal', count: 3},
   {_id: 0, name: 'Attract', slug: 'attract', count: 8}
@@ -37,7 +34,8 @@ const CampaignInfo = React.createClass({
     user: PropTypes.object,
     onEditClick: PropTypes.func,
     onEditTeamClick: PropTypes.func,
-    masterlists: PropTypes.array
+    masterlists: PropTypes.array,
+    onAddCampaignToMasterLists: PropTypes.func
   },
 
   getInitialState () {
@@ -58,10 +56,6 @@ const CampaignInfo = React.createClass({
 
   dismissAddToMasterList () {
     this.setState({addToMasterListOpen: false})
-  },
-
-  onUpdateMasterList (payload) {
-    console.log(payload)
   },
 
   onAddTags () {
@@ -100,7 +94,6 @@ const CampaignInfo = React.createClass({
       onAddToMasterList,
       onAddTags,
       dismissAddToMasterList,
-      onUpdateMasterList,
       onAvatarChange,
       onAvatarError,
       onToggleFavourite,
@@ -108,9 +101,10 @@ const CampaignInfo = React.createClass({
       onUpdateTags
     } = this
     const { addToMasterListOpen, addTagsOpen } = this.state
-    const { onEditClick, onEditTeamClick, user, campaign, masterlists } = this.props
+    const { onEditClick, onEditTeamClick, user, campaign, masterlists, onAddCampaignToMasterLists } = this.props
     const { name, client, avatar, purpose, links, team } = this.props.campaign
     const isFavourite = user.myMedialists.some((m) => m._id === campaign._id)
+    const selectedMasterLists = campaign.masterLists.map((listId) => find(masterlists, {_id: listId}))
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
     const tooltip = isFavourite ? 'Remove from My Campaigns' : 'Add to My Campaigns'
     return (
@@ -156,9 +150,9 @@ const CampaignInfo = React.createClass({
         <AddToMasterList
           open={addToMasterListOpen}
           onDismiss={dismissAddToMasterList}
-          onSave={onUpdateMasterList}
-          selectedMasterLists={selectedMasterLists}
-          allMasterLists={masterlists}
+          onSave={onAddCampaignToMasterLists}
+          document={campaign}
+          masterlists={masterlists}
           type='Campaigns' />
         <AddTags
           open={addTagsOpen}

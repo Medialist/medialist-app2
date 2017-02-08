@@ -3,7 +3,7 @@ import React, { PropTypes } from 'react'
 const MasterListsSelector = React.createClass({
   propTypes: {
     items: PropTypes.array.isRequired,
-    selected: PropTypes.object.isRequired,
+    selected: PropTypes.object,
     onSectorChange: PropTypes.func.isRequired
   },
 

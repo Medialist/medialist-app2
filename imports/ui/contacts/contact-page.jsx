@@ -95,7 +95,7 @@ export default createContainer((props) => {
   const contact = window.Contacts.findOne({ slug: contactSlug })
   const campaigns = contact ? window.Medialists.find({ slug: { $in: contact.medialists } }).fetch() : []
   const user = Meteor.user()
-  const masterlists = MasterLists.find().fetch()
+  const masterlists = MasterLists.find({type: 'Contacts'}).fetch()
   return { ...props, contact, campaigns, user, masterlists }
 }, withRouter(ContactPage))
 
