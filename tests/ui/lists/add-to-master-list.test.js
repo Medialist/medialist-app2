@@ -1,14 +1,14 @@
 import test from 'ava'
 import React from 'react'
 import { shallow } from 'enzyme'
-import AddToMasterList from '../../../imports/ui/lists/add-to-master-list.jsx'
+import AddToMasterListModal from '../../../imports/ui/master-lists/add-to-master-list-modal.jsx'
 
 const stubFunc = () => {}
 
 test('should not render if open is false', (t) => {
   t.plan(1)
   const wrapper = shallow(
-    <AddToMasterList
+    <AddToMasterListModal
       open={false}
       onDismiss={stubFunc}
       onSave={stubFunc}
@@ -22,7 +22,7 @@ test('should not render if open is false', (t) => {
 test('should render it open is true', (t) => {
   t.plan(1)
   const wrapper = shallow(
-    <AddToMasterList
+    <AddToMasterListModal
       open
       onDismiss={stubFunc}
       onSave={stubFunc}

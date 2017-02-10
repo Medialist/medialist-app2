@@ -20,7 +20,7 @@ import { TypeSchema } from '/imports/lib/schema'
  * Add an array of Campaigns/Contacts to an array of master lists.
  * If any of the entities are already in a given master list, it will remain so.
  */
-export const batchAddtoMasterLists = new ValidatedMethod({
+export const batchAddToMasterLists = new ValidatedMethod({
   name: 'batchAddtoMasterLists',
   validate: new SimpleSchema([
     TypeSchema,

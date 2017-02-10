@@ -1,12 +1,11 @@
 import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
-import find from 'lodash.find'
 import { CircleAvatar, SquareAvatar } from '../images/avatar'
 import { EmailIcon, FavouritesIconGold, FavouritesIcon } from '../images/icons'
 import { setMasterLists } from '/imports/api/master-lists/methods'
 import QuickAdd from '../lists/quick-add'
 import InfoHeader from '../lists/info-header'
-import AddToMasterList from '../lists/add-to-master-list'
+import AddToMasterList from '../master-lists/add-to-master-list.jsx'
 import AddTags from '../tags/add-tags'
 import Tooltip from '../navigation/tooltip'
 
@@ -72,10 +71,9 @@ const ContactInfo = React.createClass({
       onUpdateTags
     } = this
     const { addToMasterListOpen, addTagsOpen, showMore } = this.state
-    const { user: { myContacts }, contact, masterlists } = this.props
-    const { _id, name, avatar, emails, outlets, medialists, tags } = contact
+    const { user: { myContacts }, contact } = this.props
+    const { _id, name, avatar, emails, outlets, medialists, masterLists, tags } = contact
     const isFavourite = myContacts.some((c) => c._id === _id)
-    const selectedMasterLists = contact.masterLists.map((listId) => find(masterlists, {_id: listId}))
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
     const tooltip = isFavourite ? 'Remove from My Contacts' : 'Add to My Contacts'
     return (
@@ -117,8 +115,7 @@ const ContactInfo = React.createClass({
           open={addToMasterListOpen}
           onDismiss={dismissAddToMasterList}
           onSave={onAddContactToMasterLists}
-          document={contact}
-          masterlists={masterlists}
+          selected={masterLists}
           type='Contacts' />
         <AddTags
           type='Contacts'
@@ -128,7 +125,7 @@ const ContactInfo = React.createClass({
           selectedTags={tags}
           onUpdateTags={onUpdateTags} />
         <QuickAdd
-          selectedMasterLists={selectedMasterLists}
+          selectedMasterLists={masterLists}
           tags={tags}
           onAddTags={onAddTags}
           onAddToMasterList={onAddToMasterList} />

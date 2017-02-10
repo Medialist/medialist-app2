@@ -11,30 +11,30 @@ import {
   itemCount,
   typeCount,
   setMasterLists,
-  batchAddtoMasterLists
+  batchAddToMasterLists
   } from './methods'
 import MasterLists from './master-lists'
 import Contacts from '../contacts/contacts'
 import Medialists from '../medialists/medialists'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
 
-describe.only('batchAddtoMasterLists', function () {
+describe.only('batchAddToMasterLists', function () {
   beforeEach(function () {
     resetDatabase()
   })
 
   it('should validate the parameters', function () {
     assert.throws(() => {
-      batchAddtoMasterLists.validate({ type: 'Suprise', slugs: ['alf'], masterListIds: ['1'] })
+      batchAddToMasterLists.validate({ type: 'Suprise', slugs: ['alf'], masterListIds: ['1'] })
     })
     assert.throws(() => {
-      batchAddtoMasterLists.validate({ type: 'Contacts', masterListIds: ['1'] })
+      batchAddToMasterLists.validate({ type: 'Contacts', masterListIds: ['1'] })
     })
     assert.throws(() => {
-      batchAddtoMasterLists.validate({ type: 'Contacts', slugs: ['alf'], masterListIds: 'fish' })
+      batchAddToMasterLists.validate({ type: 'Contacts', slugs: ['alf'], masterListIds: 'fish' })
     })
     assert.doesNotThrow(() => {
-      batchAddtoMasterLists.validate({ type: 'Contacts', slugs: ['alf'], masterListIds: ['WLdYNs95DmFuHfu6v'] })
+      batchAddToMasterLists.validate({ type: 'Contacts', slugs: ['alf'], masterListIds: ['WLdYNs95DmFuHfu6v'] })
     })
   })
 
@@ -57,7 +57,7 @@ describe.only('batchAddtoMasterLists', function () {
 
     const slugs = ['0', '1']
     const masterListIds = ['1', '2']
-    batchAddtoMasterLists.run.call(
+    batchAddToMasterLists.run.call(
       { userId: 'alf' },
       { type: 'Contacts', slugs, masterListIds }
     )

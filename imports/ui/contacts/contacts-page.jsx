@@ -19,9 +19,11 @@ import Medialists from '/imports/api/medialists/medialists'
 import { AvatarTag } from '../tags/tag'
 import { batchFavouriteContacts } from '/imports/api/contacts/methods'
 import { batchAddTags } from '/imports/api/tags/methods'
+import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import withSnackbar from '../snackbar/with-snackbar'
 import AddTags from '../tags/add-tags'
 import AbbreviatedAvatarList from '../lists/abbreviated-avatar-list.jsx'
+import AddToMasterList from '../master-lists/add-to-master-list.jsx'
 
 /*
  * ContactPage and ContactsPageContainer
@@ -44,7 +46,8 @@ const ContactsPage = withSnackbar(React.createClass({
       isDropdownOpen: false,
       addContactModalOpen: false,
       addContactsToCampaignsModalOpen: false,
-      addTagsOpen: false
+      addTagsOpen: false,
+      addToMasterListsOpen: false
     }
   },
 
@@ -75,7 +78,7 @@ const ContactsPage = withSnackbar(React.createClass({
     batchFavouriteContacts.call({contactSlugs}, (err, res) => {
       if (err) {
         console.log(err)
-        snackbar.show('Sorry, that didn\'t work')
+        return snackbar.show('Sorry, that didn\'t work')
       }
       snackbar.show(`Favourited ${contactSlugs.length} ${contactSlugs.length === 1 ? 'contact' : 'contacts'}`)
     })
@@ -89,18 +92,35 @@ const ContactsPage = withSnackbar(React.createClass({
     batchAddTags.call({type: 'Contacts', slugs, names}, (err, res) => {
       if (err) {
         console.log(err)
-        snackbar.show('Sorry, that didn\'t work')
+        return snackbar.show('Sorry, that didn\'t work')
       }
       snackbar.show(`Add ${names.length} ${names.length === 1 ? 'tag' : 'tags'} to ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'}`)
     })
   },
 
+  onAddAllToMasterLists (masterLists) {
+    const { snackbar } = this.props
+    const { selections } = this.state
+    const slugs = selections.map((s) => s.slug)
+    const masterListIds = masterLists.map((m) => m._id)
+    console.log({slugs, masterListIds})
+    batchAddToMasterLists.call({type: 'Contacts', slugs, masterListIds}, (err, res) => {
+      if (err) {
+        console.log(err)
+        return snackbar.show('Sorry, that didn\'t work')
+      }
+      snackbar.show(`Added ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'} to ${masterLists.length} ${masterLists.length === 1 ? 'Master List' : 'Master Lists'}`)
+    })
+  },
+
   onDeleteAllClick () {
+    const { snackbar } = this.props
     const { selections } = this.state
     const contactIds = selections.map((s) => s._id)
     Meteor.call('contacts/remove', contactIds, (err, res) => {
       if (err) return console.error('Removing contacts failed', err)
       this.setState({ selections: [] })
+      snackbar.show(`Deleted ${contactIds.length} ${contactIds.length === 1 ? 'contacts' : 'contact'}`)
     })
   },
 
@@ -142,7 +162,7 @@ const ContactsPage = withSnackbar(React.createClass({
     if (!loading && contactsCount === 0) return <ContactListEmpty />
     return (
       <div>
-        <div className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
+        <div style={{height: 66}} className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
           <div className='flex-auto border-right border-gray80'>
             <MasterListsSelectorContainer selected={this.state.selectedSector} onSectorChange={onSectorChange} />
           </div>
@@ -195,7 +215,7 @@ const ContactsPage = withSnackbar(React.createClass({
         <ContactsActionsToast
           contacts={selections}
           onCampaignClick={() => this.setState({addContactsToCampaignsModalOpen: true})}
-          onSectorClick={() => console.log('TODO: add/edit sectors')}
+          onSectorClick={() => this.setState({addToMasterListsOpen: true})}
           onFavouriteClick={this.onFavouriteAll}
           onTagClick={() => this.setState({addTagsOpen: true})}
           onDeleteClick={this.onDeleteAllClick}
@@ -218,6 +238,13 @@ const ContactsPage = withSnackbar(React.createClass({
           title='Tag these Contacts'>
           <AbbreviatedAvatarList items={selections} />
         </AddTags>
+        <AddToMasterList
+          type='Contacts'
+          open={this.state.addToMasterListsOpen}
+          onDismiss={() => this.setState({addToMasterListsOpen: false})}
+          onSave={this.onAddAllToMasterLists}>
+          <AbbreviatedAvatarList items={selections} maxTooltip={12} />
+        </AddToMasterList>
       </div>
     )
   }
