@@ -26,9 +26,6 @@ const AddToMasterListModal = Modal(React.createClass({
       selectedMasterLists: s.selectedMasterLists.filter((m) => m._id !== masterList._id)
     }))
   },
-
-  // no longer return the item.
-  // return the selected masterListIds
   onSave () {
     this.props.onSave(this.state.selectedMasterLists)
     this.props.onDismiss()
