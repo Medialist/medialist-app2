@@ -162,7 +162,7 @@ const ContactsPage = withSnackbar(React.createClass({
     if (!loading && contactsCount === 0) return <ContactListEmpty />
     return (
       <div>
-        <div style={{height: 66}} className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
+        <div style={{height: 58}} className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
           <div className='flex-auto border-right border-gray80'>
             <MasterListsSelectorContainer selected={this.state.selectedSector} onSectorChange={onSectorChange} />
           </div>
