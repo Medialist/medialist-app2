@@ -21,7 +21,7 @@ import { TypeSchema } from '/imports/lib/schema'
  * If any of the entities are already in a given master list, it will remain so.
  */
 export const batchAddToMasterLists = new ValidatedMethod({
-  name: 'batchAddtoMasterLists',
+  name: 'batchAddToMasterLists',
   validate: new SimpleSchema([
     TypeSchema,
     {

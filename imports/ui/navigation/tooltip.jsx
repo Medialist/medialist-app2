@@ -6,8 +6,7 @@ import React from 'react'
  * Built on top of ReBass tooltip
  */
 
-const scale = 8
-const fontSize = 12
+const fontSize = 13
 const css = `
   .Tooltip_box { display: none }
   .Tooltip:hover .Tooltip_box { display: block }
@@ -26,10 +25,10 @@ const sx = {
     left: '50%',
     fontSize,
     whiteSpace: 'nowrap',
-    paddingTop: scale / 2,
-    paddingBottom: scale / 2,
-    paddingLeft: scale,
-    paddingRight: scale,
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 15,
+    paddingRight: 15,
     color: '#fff',
     backgroundColor: '#25364b',
     borderRadius: '2px'

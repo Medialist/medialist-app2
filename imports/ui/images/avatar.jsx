@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react'
 import classNames from 'classnames/dedupe'
 
-const defaultSize = 40
+const defaultSize = 30
 
 const Avatar = React.createClass({
   propTypes: {
@@ -32,9 +32,9 @@ const Avatar = React.createClass({
   render () {
     const { imageLoadError } = this.state
     const { avatar, name } = this.props
-    const className = classNames(this.props.className, 'inline-block overflow-hidden white normal align-middle center')
+    const className = classNames(this.props.className, 'inline-block overflow-hidden white align-middle center semibold')
     const size = Number(this.props.size || defaultSize) // px
-    const fontSize = ((size / defaultSize) * 100) + '%' // a size of 40px gives a fontSize of 100% which matches the body fontSize.
+    const fontSize = ((size / defaultSize) * 13).toFixed(0) + 'px'
     const style = Object.assign({ width: size, height: size, lineHeight: size + 'px', fontSize }, this.props.style || {})
 
     if (avatar && !imageLoadError) {

@@ -119,7 +119,6 @@ const CampaignsPage = React.createClass({
     const { selections } = this.state
     const slugs = selections.map((s) => s.slug)
     const masterListIds = masterLists.map((m) => m._id)
-    console.log({slugs, masterListIds})
     batchAddToMasterLists.call({type: 'Campaigns', slugs, masterListIds}, (err, res) => {
       if (err) {
         console.log(err)
