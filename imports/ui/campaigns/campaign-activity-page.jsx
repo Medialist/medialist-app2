@@ -111,7 +111,7 @@ const CampaignActivityPage = React.createClass({
       onCreateContact,
       onAddCampaignToMasterLists
     } = this
-    const { campaign, contacts, contactsCount, clients, teamMates, loading, user, masterlists } = this.props
+    const { campaign, contacts, contactsCount, clients, teamMates, loading, user } = this.props
     const {
       createContactModalOpen,
       addContactModalOpen,
@@ -132,7 +132,6 @@ const CampaignActivityPage = React.createClass({
               onEditClick={toggleEditModal}
               onEditTeamClick={toggleEditTeamModal}
               user={user}
-              masterlists={masterlists}
               onAddCampaignToMasterLists={onAddCampaignToMasterLists} />
             <EditCampaign campaign={campaign} open={editModalOpen} onDismiss={toggleEditModal} clients={clients} />
             <EditTeam campaign={campaign} open={editTeamModalOpen} onDismiss={toggleEditTeamModal} teamMates={teamMates} loading={loading} />

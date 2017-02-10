@@ -14,6 +14,56 @@ import MasterLists, {
 import Contacts from '../contacts/contacts'
 import Medialists from '../medialists/medialists'
 import findUniqueSlug from '/imports/lib/slug'
+import { TypeSchema } from '/imports/lib/schema'
+
+/*
+ * Add an array of Campaigns/Contacts to an array of master lists.
+ * If any of the entities are already in a given master list, it will remain so.
+ */
+export const batchAddToMasterLists = new ValidatedMethod({
+  name: 'batchAddToMasterLists',
+  validate: new SimpleSchema([
+    TypeSchema,
+    {
+      slugs: { type: [String] },
+      masterListIds: { type: [String], regEx: SimpleSchema.RegEx.Id }
+    }
+  ]).validator(),
+
+  run ({type, slugs, masterListIds}) {
+    if (!this.userId) throw new Meteor.Error('You must be logged in')
+
+    const Collection = (type === 'Contacts') ? Contacts : Medialists
+
+    const itemIds = Collection
+      .find(
+        { slug: { $in: slugs } },
+        { fields: { _id: 1 } }
+      )
+      .map((d) => d._id)
+
+    const masterListRefs = MasterLists
+      .find(
+        { _id: { $in: masterListIds } },
+        { fields: { _id: 1, name: 1, slug: 1 } }
+      ).fetch()
+
+    MasterLists.update(
+      { _id: { $in: masterListIds } },
+      { $addToSet: { items: { $each: itemIds } } },
+      { multi: true }
+    )
+
+    Collection.update(
+      { _id: { $in: itemIds } },
+      {
+        $addToSet: { masterLists: { $each: masterListRefs } },
+        $set: { updatedAt: new Date() }
+      },
+      { multi: true }
+    )
+  }
+})
 
 export const create = new ValidatedMethod({
   name: 'MasterLists/create',

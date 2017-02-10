@@ -2,11 +2,83 @@ import assert from 'assert'
 import Faker from 'faker'
 import isEqual from 'lodash.isequal'
 import { Random } from 'meteor/random'
-import { create, del, update, addItems, removeItem, itemCount, typeCount, setMasterLists } from './methods'
+import {
+  create,
+  del,
+  update,
+  addItems,
+  removeItem,
+  itemCount,
+  typeCount,
+  setMasterLists,
+  batchAddToMasterLists
+  } from './methods'
 import MasterLists from './master-lists'
 import Contacts from '../contacts/contacts'
 import Medialists from '../medialists/medialists'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
+
+describe.only('batchAddToMasterLists', function () {
+  beforeEach(function () {
+    resetDatabase()
+  })
+
+  it('should validate the parameters', function () {
+    assert.throws(() => {
+      batchAddToMasterLists.validate({ type: 'Suprise', slugs: ['alf'], masterListIds: ['1'] })
+    })
+    assert.throws(() => {
+      batchAddToMasterLists.validate({ type: 'Contacts', masterListIds: ['1'] })
+    })
+    assert.throws(() => {
+      batchAddToMasterLists.validate({ type: 'Contacts', slugs: ['alf'], masterListIds: 'fish' })
+    })
+    assert.doesNotThrow(() => {
+      batchAddToMasterLists.validate({ type: 'Contacts', slugs: ['alf'], masterListIds: ['WLdYNs95DmFuHfu6v'] })
+    })
+  })
+
+  it('should add all contacts to all master lists', function () {
+    const contacts = Array(3).fill(0).map((_, index) => ({
+      _id: `${index}`,
+      slug: `${index}`,
+      masterLists: []
+    }))
+    contacts.forEach((c) => Contacts.insert(c))
+
+    const masterLists = Array(3).fill(0).map((_, index) => ({
+      _id: `${index}`,
+      name: `${index}`,
+      slug: `${index}`,
+      order: `${index}`,
+      items: []
+    }))
+    masterLists.forEach((c) => MasterLists.insert(c))
+
+    const slugs = ['0', '1']
+    const masterListIds = ['1', '2']
+    batchAddToMasterLists.run.call(
+      { userId: 'alf' },
+      { type: 'Contacts', slugs, masterListIds }
+    )
+
+    Contacts.find({slug: { $in: slugs }}).forEach((c) => {
+      assert.deepEqual(
+        c.masterLists[0],
+        { _id: '1', name: '1', slug: '1' }
+      )
+      assert.deepEqual(
+        c.masterLists[1],
+        { _id: '2', name: '2', slug: '2' }
+      )
+    })
+
+    MasterLists.find({_id: { $in: masterListIds }}).forEach((c) => {
+      assert.deepEqual(c.items[0], '0')
+      assert.deepEqual(c.items[1], '1')
+    })
+  })
+})
 
 describe('master-lists-create', function () {
   beforeEach(function () {
