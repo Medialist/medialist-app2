@@ -40,7 +40,7 @@ const AddToMasterListModal = Modal(React.createClass({
     const { selectedMasterLists } = this.state
     return (
       <div>
-        <div className='pt6 center'>
+        <div className='py6 center'>
           <span className='f-lg'>Add {type} to a Master List</span>
         </div>
         {children}
