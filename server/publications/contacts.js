@@ -19,6 +19,8 @@ Meteor.publish('contacts', function (opts) {
   check(opts, {
     regex: Match.Optional(String),
     campaignSlugs: Match.Optional(Array),
+    masterListSlug: Match.Optional(String),
+    userId: Match.Optional(String),
     limit: Match.Optional(Number)
   })
 
@@ -28,6 +30,15 @@ Meteor.publish('contacts', function (opts) {
     query.medialists = {
       $in: opts.campaignSlugs
     }
+  }
+
+  if (opts.masterListSlug) {
+    query['masterLists.slug'] = opts.masterListSlug
+  }
+
+  if (opts.userId) {
+    const user = Meteor.users.findOne({_id: opts.userId}, {fields: { myContacts: 1 }})
+    query.slug = { $in: user.myContacts.map((c) => c.slug) }
   }
 
   if (opts.regex) {
@@ -46,7 +57,7 @@ Meteor.publish('contacts', function (opts) {
 
   if (opts.limit)
   options.limit = opts.limit
-
+  console.log({query})
   return Contacts.find(query, options)
 })
 

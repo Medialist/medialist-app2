@@ -53,6 +53,7 @@ const ContactsPage = withSnackbar(React.createClass({
 
   onSectorChange (selectedSector) {
     this.setState({ selectedSector })
+    this.props.setQuery({ list: selectedSector.slug })
   },
 
   onSortChange (sort) {
@@ -164,7 +165,10 @@ const ContactsPage = withSnackbar(React.createClass({
       <div>
         <div style={{height: 58}} className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
           <div className='flex-auto border-right border-gray80'>
-            <MasterListsSelectorContainer selected={this.state.selectedSector} onSectorChange={onSectorChange} />
+            <MasterListsSelectorContainer
+              allCount={contactsCount}
+              selected={this.state.selectedSector}
+              onSectorChange={onSectorChange} />
           </div>
           <div className='flex-none bg-white center px4' style={{width: 240}}>
             <button className='btn bg-completed white mr1' onClick={this.toggleAddContactModal}>New Contact</button>
@@ -253,7 +257,13 @@ const ContactsPage = withSnackbar(React.createClass({
 }))
 
 const MasterListsSelectorContainer = createContainer((props) => {
-  const items = MasterLists.find({type: 'Contacts'}).fetch()
+  const lists = MasterLists.find({type: 'Contacts'}).map(({slug, name, items}) => ({
+    slug, name, count: items.length
+  }))
+  const items = [
+    { slug: 'all', name: 'All', count: props.allCount },
+    { slug: 'my', name: 'My Contacts', count: Meteor.user().myContacts.length }
+  ].concat(lists)
   return { ...props, items, selected: props.selected || items[0] }
 }, MasterListsSelector)
 
@@ -277,9 +287,18 @@ const ContactsPageContainer = withRouter(React.createClass({
     if (opts.hasOwnProperty('term')) {
       newQuery.q = opts.term
     }
+    if (opts.list) {
+      if (opts.list === 'my') {
+        newQuery.my = Meteor.userId()
+      } else {
+        newQuery.list = opts.list
+      }
+    }
     if (opts.campaignSlugs) newQuery.campaign = opts.campaignSlugs
     const query = Object.assign({}, location.query, newQuery)
     if (query.q === '') delete query.q
+    if (query.list === 'all' || newQuery.my) delete query.list
+    if (newQuery.list) delete query.my
     const qs = querystring.stringify(query)
     router.replace('/contacts?' + qs)
   },
@@ -287,12 +306,12 @@ const ContactsPageContainer = withRouter(React.createClass({
   parseQuery ({query}) {
     const sort = query.sort ? JSON.parse(query.sort) : { updatedAt: -1 }
     const term = query.q || ''
-    const { campaign } = query
-    if (!campaign) return { sort, term, campaignSlugs: [], campaigns: [] }
+    const { campaign, list, my } = query
+    if (!campaign) return { sort, term, userId: my, masterListSlug: list, campaignSlugs: [], campaigns: [] }
 
     const campaignSlugs = Array.isArray(campaign) ? campaign : [campaign]
     const campaigns = Medialists.find({slug: {$in: campaignSlugs}}).fetch()
-    return { sort, term, campaignSlugs, campaigns }
+    return { sort, term, list, userId: my, masterListSlug: list, campaignSlugs, campaigns }
   },
 
   render () {

@@ -6,42 +6,34 @@ const MasterListsSelector = React.createClass({
     selected: PropTypes.object,
     onSectorChange: PropTypes.func.isRequired
   },
-
-  isSelected (item) {
-    return item._id === this.props.selected._id
-  },
-
-  onClick (item) {
-    this.props.onSectorChange(item)
-  },
-
-  renderSelectedItem (item) {
-    return (
-      <div key={item._id} className='inline-block pointer p4 semibold shadow-inset-blue'>
-        <div className='inline-block f-sm mr1 blue'>{item.name}</div>
-        <div className='inline-block f-xs rounded white bg-blue px1 py-2px'>{item.items.length}</div>
-      </div>
-    )
-  },
-
-  renderItem (item) {
-    return (
-      <div key={item._id} className='inline-block pointer p4 semibold' onClick={this.onClick.bind(this, item)}>
-        <div className='inline-block f-sm mr1 gray40'>{item.name}</div>
-        <div className='inline-block f-xs rounded gray60 bg-gray90 px1 py-2px'>{item.items.length}</div>
-      </div>
-    )
-  },
-
   render () {
+    const { items, selected, onSectorChange } = this.props
     return (
       <nav className='block px4'>
         <div className='nowrap truncate'>
-          {this.props.items.map((i) => this.isSelected(i) ? this.renderSelectedItem(i) : this.renderItem(i))}
+          {items.map((item) =>
+            <Item
+              key={item.slug}
+              name={item.name}
+              count={item.count}
+              selected={selected && item.slug === selected.slug}
+              onClick={() => onSectorChange(item)} />
+          )}
         </div>
       </nav>
     )
   }
 })
+
+const Item = ({name, count, selected, onClick}) => (
+  <div className={`inline-block p4 semibold ${selected ? 'shadow-inset-blue' : 'pointer gray40'}`} onClick={onClick}>
+    <div className={`inline-block mr1 f-sm ${selected ? 'blue' : 'gray40'}`}>
+      {name}
+    </div>
+    <div className={`inline-block px1 py-2px f-xs rounded ${selected ? 'white bg-blue' : 'gray60 bg-gray90'}`}>
+      {count}
+    </div>
+  </div>
+)
 
 export default MasterListsSelector

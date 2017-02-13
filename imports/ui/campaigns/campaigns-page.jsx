@@ -144,7 +144,7 @@ const CampaignsPage = React.createClass({
       <div>
         <div style={{height: 58}} className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
           <div className='flex-auto border-right border-gray80'>
-            <MasterListsSelectorContainer selected={selectedSector} onSectorChange={onSectorChange} />
+            <MasterListsSelectorContainer type='Campaigns' selected={selectedSector} onSectorChange={onSectorChange} />
           </div>
           <div className='flex-none bg-white center px4'>
             <button className='btn bg-completed white mx4' onClick={this.toggleEditCampaign}>New Campaign</button>
