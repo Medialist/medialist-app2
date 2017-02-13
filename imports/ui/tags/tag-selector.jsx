@@ -3,9 +3,11 @@ import { createContainer } from 'meteor/react-meteor-data'
 import { Meteor } from 'meteor/meteor'
 import Tag from './tag'
 import Tags from '/imports/api/tags/tags'
+import SearchBox from '../lists/search-box'
 
 const TagSelector = React.createClass({
   propTypes: {
+    type: PropTypes.string.isRequired,
     onSearchChange: PropTypes.func.isRequired,
     searchTerm: PropTypes.string,
     selectedTags: PropTypes.array.isRequired,
@@ -13,10 +15,6 @@ const TagSelector = React.createClass({
     onCreateTag: PropTypes.func.isRequired,
     onAddTag: PropTypes.func.isRequired,
     onRemoveTag: PropTypes.func.isRequired
-  },
-  onChange (e) {
-    const { value } = e.target
-    this.props.onSearchChange(value)
   },
   onSelectTag (tag) {
     this.props.onAddTag(tag)
@@ -36,24 +34,25 @@ const TagSelector = React.createClass({
     }
   },
   render () {
-    const { onChange, onSelectTag, onCreateTag, onKeyUp } = this
-    const { selectedTags, suggestedTags, searchTerm, onRemoveTag } = this.props
+    const { onSelectTag, onCreateTag, onKeyUp } = this
+    const { type, selectedTags, suggestedTags, searchTerm, onRemoveTag, onSearchChange } = this.props
+    const countField = `${type.toLowerCase()}Count`
     return (
       <div>
-        <div className='border-top border-gray80 py1 px4'>
-          {selectedTags.map((tag) => <Tag {...tag} key={tag.slug} onRemove={onRemoveTag} />)}
-          <input
-            ref='tag-input'
-            className='py2 mr2 gray20 f-md bg-transparent border-transparent'
-            style={{outline: 'none'}}
-            onChange={onChange}
-            onKeyUp={onKeyUp}
-            value={searchTerm} />
-        </div>
-        <div className='border-top border-gray80 pb2' style={{height: 270, overflowY: 'auto'}}>
+        <SearchBox
+          style={{borderLeft: '0 none', borderRight: '0 none'}}
+          onTermChange={onSearchChange}
+          onKeyUp={onKeyUp}>
+          <div style={{marginBottom: -4}} >
+            {selectedTags.map((tag) =>
+              <Tag name={tag.name} count={tag[countField]} key={tag.slug} onRemove={() => onRemoveTag(tag)} />
+            )}
+          </div>
+        </SearchBox>
+        <div className='pb2' style={{height: 270, overflowY: 'auto'}}>
           {suggestedTags && suggestedTags.map((tag, i) =>
             <ListItem onClick={() => onSelectTag(tag)} key={tag.slug}>
-              #{tag.name}<span className='gray60 ml2 semibold'>{tag.count}</span>
+              #{tag.name}<span className='gray60 ml2 semibold'>{tag[countField]}</span>
             </ListItem>
           )}
           {searchTerm ? (
@@ -73,7 +72,8 @@ const TagSelector = React.createClass({
 
 const ListItem = ({onClick, children}) => (
   <div
-    className='px4 py2 border-transparent border-top border-bottom hover-bg-gray90 hover-border-gray80'
+    style={{paddingLeft: 45}}
+    className='py2 border-transparent border-top border-bottom hover-bg-gray90 hover-border-gray80'
     onClick={onClick}>
     {children}
   </div>

@@ -129,7 +129,7 @@ const ContactsTable = React.createClass({
               return (
                 <SelectableRow data={contact} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id}>
                   <td className='left-align'>
-                    <Link to={`/contact/${slug}`}>
+                    <Link to={`/contact/${slug}`} className='nowrap'>
                       <CircleAvatar avatar={avatar} name={name} />
                       <span className='ml3 semibold'>{name}</span>
                     </Link>

@@ -187,15 +187,16 @@ const ContactsPage = withSnackbar(React.createClass({
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
               <SearchBox onTermChange={onTermChange} placeholder='Search contacts...'>
-                {campaigns && campaigns.map((c) => (
-                  <AvatarTag
-                    key={c.slug}
-                    name={c.name}
-                    avatar={c.avatar}
-                    style={{marginTop: -4, marginBottom: -4}}
-                    onRemove={() => onCampaignRemove(c)}
-                  />
-                ))}
+                <div style={{marginBottom: -4}} >
+                  {campaigns && campaigns.map((c) => (
+                    <AvatarTag
+                      key={c.slug}
+                      name={c.name}
+                      avatar={c.avatar}
+                      onRemove={() => onCampaignRemove(c)}
+                    />
+                  ))}
+                </div>
               </SearchBox>
             </div>
             <div className='flex-none pl4 f-xs'>
@@ -236,7 +237,7 @@ const ContactsPage = withSnackbar(React.createClass({
           onDismiss={() => this.setState({addTagsOpen: false})}
           onUpdateTags={this.onTagAll}
           title='Tag these Contacts'>
-          <AbbreviatedAvatarList items={selections} />
+          <AbbreviatedAvatarList items={selections} style={{marginTop: -15}} />
         </AddTags>
         <AddToMasterList
           type='Contacts'

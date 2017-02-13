@@ -6,11 +6,11 @@ const Tag = (props) => {
   return (
     <div
       className='inline-block bg-gray10 pointer rounded mr1 mb1 select-none'
-      style={{lineHeight: 1.5, ...style}}
+      style={{height: 28, lineHeight: 1.5, ...style}}
       onClick={onClick}>
       <div
         style={{fontWeight: 800, transform: 'scale(1.5)'}}
-        className='inline-block px2 py1 gray40 f-xxs'
+        className='inline-block px2 py1 gray40 f-xxs semibold'
         onClick={() => onRemove(props)}>
         &times;
       </div>
@@ -30,8 +30,8 @@ const CountTag = (props) => {
   const {count, name, ...tagProps} = props
   return (
     <Tag {...tagProps}>
-      <div className='inline-block px2 py1 white f-xxs border-gray20 border-left'>{name}</div>
-      <div className='inline-block pr2 pl0 py1 gray40 f-xxs'>{count}</div>
+      <div className='inline-block px2 py1 white semibold f-xxs border-gray20 border-left'>{name}</div>
+      <div className='inline-block pr2 pl0 py1 gray40 semibold f-xxs'>{count}</div>
     </Tag>
   )
 }

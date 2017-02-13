@@ -1,12 +1,14 @@
 import React, { PropTypes } from 'react'
-import { SearchDarkIcon } from '../images/icons'
+import { SearchIcon } from '../images/icons'
 import debounce from 'lodash.debounce'
 
 const SearchBox = React.createClass({
   propTypes: {
     placeholder: PropTypes.string,
     onTermChange: PropTypes.func.isRequired,
-    children: PropTypes.node
+    onKeyUp: PropTypes.func,
+    children: PropTypes.node,
+    style: PropTypes.object
   },
 
   getDefaultProps () {
@@ -14,7 +16,7 @@ const SearchBox = React.createClass({
   },
 
   getInitialState () {
-    return { term: '' }
+    return { term: '', isFocused: false }
   },
 
   onChange (e) {
@@ -27,22 +29,36 @@ const SearchBox = React.createClass({
     this.onTermChange = debounce(this.props.onTermChange, 200, {maxWait: 600})
   },
 
+  focus () {
+    this.textInput.focus()
+  },
+
   render () {
-    const { placeholder, children } = this.props
-    const { term } = this.state
+    const { placeholder, children, onKeyUp, style } = this.props
+    const { term, isFocused } = this.state
     return (
-      <div className='flex items-center border border-gray80 p2'>
-        <SearchDarkIcon className='flex-none f-lg ml1 mr2' />
-        <div className='flex-none'>
-          {children}
+      <div
+        style={{paddingLeft: 45, ...style}}
+        className={`relative border py2 pr1 ${isFocused ? 'border-blue' : 'border-gray80'}`}>
+        <SearchIcon
+          style={{left: 20, top: 13}}
+          className={`absolute f-lg mr2 ${isFocused ? 'blue' : 'gray20'}`} />
+        <div className='flex flex-wrap items-start'>
+          <div className='inline-block'>
+            {children}
+          </div>
+          <input
+            ref={(input) => { this.textInput = input }}
+            type='search'
+            style={{outline: 'none', height: 28, lineHeight: 28}}
+            className='flex-auto f-lg normal gray20'
+            onChange={this.onChange}
+            onKeyUp={onKeyUp}
+            onFocus={() => this.setState({isFocused: true})}
+            onBlur={() => this.setState({isFocused: false})}
+            value={term}
+            placeholder={placeholder} />
         </div>
-        <input
-          type='search'
-          className='flex-auto pl1 mb0 f-lg normal gray20'
-          onChange={this.onChange}
-          value={term}
-          placeholder={placeholder}
-          style={{outline: 'none'}} />
       </div>
     )
   }

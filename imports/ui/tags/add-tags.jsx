@@ -24,12 +24,13 @@ const AddTags = React.createClass({
     this.props.onDismiss()
   },
   onCreateTag (searchTerm) {
+    const {type} = this.props
     this.setState(({selectedTags}) => ({
       searchTerm: '',
       selectedTags: selectedTags.concat([{
         name: searchTerm,
         slug: cleanSlug(searchTerm),
-        count: 0
+        [`${type.toLowerCase()}Count`]: 0
       }])
     }))
   },

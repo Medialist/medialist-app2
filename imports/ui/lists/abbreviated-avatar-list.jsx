@@ -42,7 +42,7 @@ const AbbreviatedAvatarList = React.createClass({
 
     return (
       <li className='inline-block mb1' style={{ marginLeft: '2px' }}>
-        <Tooltip position='bottom' arrowPosition='35%' title={this.renderTooltip({ tooltipExcess, tooltipItems })}>
+        <Tooltip position='bottom' title={this.renderTooltip({ tooltipExcess, tooltipItems })}>
           <span className='relative inline-block'>
             <div className={className} style={style}>
               <div className='white px2'>+{avatarExcess}</div>
