@@ -243,7 +243,8 @@ const ContactsPage = withSnackbar(React.createClass({
           type='Contacts'
           open={this.state.addToMasterListsOpen}
           onDismiss={() => this.setState({addToMasterListsOpen: false})}
-          onSave={this.onAddAllToMasterLists}>
+          onSave={this.onAddAllToMasterLists}
+          title='Add Contacts to a Master List'>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddToMasterList>
       </div>

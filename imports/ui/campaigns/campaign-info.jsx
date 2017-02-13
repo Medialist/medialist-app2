@@ -133,7 +133,8 @@ const CampaignInfo = React.createClass({
           onSave={onAddCampaignToMasterLists}
           document={campaign}
           masterlists={masterLists}
-          type='Campaigns' />
+          type='Campaigns'
+          title={`Add ${name} to a Master List`} />
         <AddTags
           type='Campaigns'
           open={addTagsOpen}

@@ -11,6 +11,7 @@ const AddToMasterListModal = Modal(React.createClass({
     selectedMasterLists: PropTypes.array,
     allMasterLists: PropTypes.array.isRequired,
     type: PropTypes.oneOf(['Campaigns', 'Contacts']),
+    title: PropTypes.string.isRequired,
     children: PropTypes.node
   },
   getInitialState () {
@@ -33,17 +34,17 @@ const AddToMasterListModal = Modal(React.createClass({
   render () {
     if (!this.props.open) return null
     const { onSelect, onDeselect, onSave } = this
-    const { type, onDismiss, allMasterLists, children } = this.props
+    const { type, title, onDismiss, allMasterLists, children } = this.props
     const { selectedMasterLists } = this.state
     return (
       <div>
         <div className='pt6 center'>
-          <span className='f-xl'>Add {type} to a Master List</span>
+          <span className='f-xl'>{title}</span>
         </div>
         {children}
         <div
           style={{minHeight: 240}}
-          className='bg-gray90 shadow-inset-2 border-top border-gray80 pt6 px2 pb2 flex flex-wrap'>
+          className='bg-gray90 shadow-inset-2 border-top border-gray80 mt6 p2 flex flex-wrap'>
           {!allMasterLists || allMasterLists.length === 0 && <EmptyMasterLists type={type} />}
           {allMasterLists && allMasterLists.map((item, ind) => (
             <MasterListBtn

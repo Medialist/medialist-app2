@@ -181,14 +181,15 @@ const CampaignsPage = React.createClass({
             onDismiss={() => this.setState({addTagsOpen: false})}
             onUpdateTags={this.onTagAll}
             title='Tag these Campaigns'>
-            <AbbreviatedAvatarList items={selections} shape='square' style={{marginTop: -15}} />
+            <AbbreviatedAvatarList items={selections} shape='square' />
           </AddTags>
           <AddToMasterList
             type='Campaigns'
             open={this.state.addToMasterListsOpen}
             onDismiss={() => this.setState({addToMasterListsOpen: false})}
-            onSave={this.onAddAllToMasterLists}>
-            <AbbreviatedAvatarList items={selections} maxTooltip={12} shape='square' style={{marginTop: -15}} />
+            onSave={this.onAddAllToMasterLists}
+            title='Add Campaigns to a Master List'>
+            <AbbreviatedAvatarList items={selections} maxTooltip={12} shape='square' />
           </AddToMasterList>
         </div>
       </div>
