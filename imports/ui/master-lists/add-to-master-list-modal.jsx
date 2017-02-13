@@ -37,13 +37,13 @@ const AddToMasterListModal = Modal(React.createClass({
     const { selectedMasterLists } = this.state
     return (
       <div>
-        <div className='py6 center'>
-          <span className='f-lg'>Add {type} to a Master List</span>
+        <div className='pt6 center'>
+          <span className='f-xl'>Add {type} to a Master List</span>
         </div>
         {children}
         <div
           style={{minHeight: 240}}
-          className='bg-gray90 shadow-inset-2 border-top border-gray80 p2 flex flex-wrap'>
+          className='bg-gray90 shadow-inset-2 border-top border-gray80 pt6 px2 pb2 flex flex-wrap'>
           {!allMasterLists || allMasterLists.length === 0 && <EmptyMasterLists type={type} />}
           {allMasterLists && allMasterLists.map((item, ind) => (
             <MasterListBtn

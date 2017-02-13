@@ -290,6 +290,7 @@ button {
 .stroke-gray20 { stroke: var(--gray20) }
 
 .table {
+  table-layout: fixed;
   width: 100%;
   max-width: 100%;
   border-collapse: collapse;
@@ -309,6 +310,11 @@ button {
   border-left: 1px solid var(--gray80);
   border-right: 1px solid var(--gray80);
 }
+.table td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .label {
   font-size: .875rem;
   font-weight: bold;

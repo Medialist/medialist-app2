@@ -6,7 +6,7 @@ const SearchBox = React.createClass({
   propTypes: {
     placeholder: PropTypes.string,
     onTermChange: PropTypes.func.isRequired,
-    onKeyUp: PropTypes.func,
+    onKeyDown: PropTypes.func,
     children: PropTypes.node,
     style: PropTypes.object
   },
@@ -33,8 +33,12 @@ const SearchBox = React.createClass({
     this.textInput.focus()
   },
 
+  clear () {
+    this.setState({term: ''})
+  },
+
   render () {
-    const { placeholder, children, onKeyUp, style } = this.props
+    const { placeholder, children, onKeyDown, style } = this.props
     const { term, isFocused } = this.state
     return (
       <div
@@ -50,10 +54,10 @@ const SearchBox = React.createClass({
           <input
             ref={(input) => { this.textInput = input }}
             type='search'
-            style={{outline: 'none', height: 28, lineHeight: 28}}
+            style={{outline: 'none', height: 30, lineHeight: 30}}
             className='flex-auto f-lg normal gray20'
             onChange={this.onChange}
-            onKeyUp={onKeyUp}
+            onKeyDown={onKeyDown}
             onFocus={() => this.setState({isFocused: true})}
             onBlur={() => this.setState({isFocused: false})}
             value={term}

@@ -237,14 +237,14 @@ const ContactsPage = withSnackbar(React.createClass({
           onDismiss={() => this.setState({addTagsOpen: false})}
           onUpdateTags={this.onTagAll}
           title='Tag these Contacts'>
-          <AbbreviatedAvatarList items={selections} style={{marginTop: -15}} />
+          <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddTags>
         <AddToMasterList
           type='Contacts'
           open={this.state.addToMasterListsOpen}
           onDismiss={() => this.setState({addToMasterListsOpen: false})}
           onSave={this.onAddAllToMasterLists}>
-          <AbbreviatedAvatarList items={selections} maxTooltip={12} style={{marginTop: -15}} />
+          <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddToMasterList>
       </div>
     )

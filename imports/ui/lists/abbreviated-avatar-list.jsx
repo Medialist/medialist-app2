@@ -61,11 +61,11 @@ const AbbreviatedAvatarList = React.createClass({
     const Avatar = shape === 'square' ? SquareAvatar : CircleAvatar
 
     return (
-      <ul className={classNames('list-reset center', className)} style={style}>
+      <ul className={classNames('list-reset center mb0', className)} style={style}>
         {items.slice(0, maxAvatars).map((item, i) => {
           const { avatar, name } = item
           return (
-            <li key={item._id || i} className='inline-block mb1 f-xs semibold' style={{ marginLeft: i ? '2px' : 0 }}>
+            <li key={item._id || i} className='inline-block f-xs semibold' style={{ marginLeft: i ? '2px' : 0 }}>
               <Tooltip title={name}>
                 <span className='relative inline-block'>
                   <Avatar

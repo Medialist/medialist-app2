@@ -18,14 +18,16 @@ const TagSelector = React.createClass({
   },
   onSelectTag (tag) {
     this.props.onAddTag(tag)
-    this.refs['tag-input'].focus()
+    this.searchBox.focus()
   },
   onCreateTag () {
     const { onCreateTag, searchTerm } = this.props
     onCreateTag(searchTerm)
+    this.searchBox.clear()
   },
-  onKeyUp (e) {
+  onKeyDown (e) {
     if (['Enter', 'Tab'].indexOf(e.key) === -1) return
+    e.preventDefault()
     const {suggestedTags} = this.props
     if (suggestedTags.length === 0) {
       this.onCreateTag()
@@ -34,15 +36,16 @@ const TagSelector = React.createClass({
     }
   },
   render () {
-    const { onSelectTag, onCreateTag, onKeyUp } = this
+    const { onSelectTag, onCreateTag, onKeyDown } = this
     const { type, selectedTags, suggestedTags, searchTerm, onRemoveTag, onSearchChange } = this.props
     const countField = `${type.toLowerCase()}Count`
     return (
       <div>
         <SearchBox
+          ref={(searchBox) => { this.searchBox = searchBox }}
           style={{borderLeft: '0 none', borderRight: '0 none'}}
           onTermChange={onSearchChange}
-          onKeyUp={onKeyUp}>
+          onKeyDown={onKeyDown}>
           <div style={{marginBottom: -4}} >
             {selectedTags.map((tag) =>
               <Tag name={tag.name} count={tag[countField]} key={tag.slug} onRemove={() => onRemoveTag(tag)} />

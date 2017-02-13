@@ -51,11 +51,11 @@ const AddTags = React.createClass({
     const { type, onDismiss, title, children } = this.props
     return (
       <div>
-        <div className='py6 center f-lg normal'>
+        <div className='pt6 center f-xl normal'>
           {title}
         </div>
         {children}
-        <div className='border-bottom border-gray80'>
+        <div className='pt6 border-bottom border-gray80'>
           <TagSelector
             type={type}
             onSearchChange={(searchTerm) => this.setState({searchTerm})}

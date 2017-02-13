@@ -81,7 +81,7 @@ const CampaignsTable = React.createClass({
               onSortChange={(d) => onSortChange({ 'client.name': d })}>
               Client
             </SortableHeader>
-            <th className='left-align'>Key Message</th>
+            <th className='left-align' style={{width: '40%'}}>Key Message</th>
             <SortableHeader
               className='left-align'
               sortDirection={sort['updatedAt']}
