@@ -75,4 +75,4 @@ const AddTags = React.createClass({
   }
 })
 
-export default Modal(AddTags)
+export default Modal(AddTags, {width: 495})
