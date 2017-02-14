@@ -38,7 +38,7 @@ export default (Component, opts = {}) => {
     mixins: [ReactMeteorData],
 
     getMeteorData () {
-      const { sort, term, masterListSlug, userId, campaignSlugs } = this.props
+      const { sort, term, selectedMasterListSlug, userId, campaignSlugs } = this.props
       const subs = [ Meteor.subscribe('contactCount') ]
       const contactsCount = window.Counter.get('contactCount')
       const query = {}
@@ -47,15 +47,15 @@ export default (Component, opts = {}) => {
         query.medialists = { $in: campaignSlugs }
         subs.push(Meteor.subscribe('contacts', {campaignSlugs}))
       }
-      if (masterListSlug) {
-        query['masterLists.slug'] = masterListSlug
-        subs.push(Meteor.subscribe('contacts', {masterListSlug}))
+      if (selectedMasterListSlug) {
+        query['masterLists.slug'] = selectedMasterListSlug
+        subs.push(Meteor.subscribe('contacts', {masterListSlug: selectedMasterListSlug}))
       }
       if (userId) {
-        subs.concat([
-          Meteor.subscribe('users-by-id', {userIds: [userId]}),
-          Meteor.subscribe('contacts', {userId: userId})
-        ])
+        subs.push(Meteor.subscribe('contacts', {userId: userId}))
+        if (userId !== Meteor.userId()) {
+          subs.push(Meteor.subscribe('users-by-id', {userIds: [userId]}))
+        }
         const user = Meteor.users.findOne({_id: userId})
         const myContacts = user && user.myContacts || []
         query.slug = { $in: myContacts.map((c) => c.slug) }

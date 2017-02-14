@@ -57,7 +57,6 @@ Meteor.publish('contacts', function (opts) {
 
   if (opts.limit)
   options.limit = opts.limit
-  console.log({query})
   return Contacts.find(query, options)
 })
 
