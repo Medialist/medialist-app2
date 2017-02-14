@@ -6,13 +6,17 @@ import Contacts from '../../api/contacts/contacts'
 /**
 * Wrap your component in me to gain contact searching powers.
 *
-* You pass the search `term` and the results `sort` props.
+* You can pass in:
+* - `term` - The Search term
+* - `sort` - a mongo sort sort specifier
+* - `masterListSlug` - to search a in a specific list
+* - `userId` to search in the `myContacts` for a given user
 *
-* The container provides you with these props:
-* `contacts` - search results
-* `contactsCount` - count of all contacts available
-* `loading` - search subscription is loading
-* `searching` - true if the term is long enough to trigger a search subscription
+* Your component will recieve these additional props:
+* - `contacts` - search results
+* - `contactsCount` - count of all contacts available
+* - `loading` - search subscription is loading
+* - `searching` - true if the term is long enough to trigger a search subscription
 */
 export default (Component, opts = {}) => {
   opts.minSearchLength = opts.minSearchLength || 3
@@ -22,8 +26,9 @@ export default (Component, opts = {}) => {
       term: PropTypes.string.isRequired,
       // http://docs.meteor.com/api/collections.html#sortspecifiers
       sort: PropTypes.oneOfType([ PropTypes.object, PropTypes.array ]),
+      campaignSlugs: PropTypes.arrayOf(PropTypes.string),
       masterListSlug: PropTypes.string,
-      campaignSlugs: PropTypes.arrayOf(PropTypes.string)
+      userId: PropTypes.string
     },
 
     getDefaultProps () {
@@ -70,7 +75,6 @@ export default (Component, opts = {}) => {
       }
       const contacts = Contacts.find(query, { sort }).fetch()
       const loading = !subs.every((sub) => sub.ready())
-      console.log({query})
       return { contacts, contactsCount, loading, searching }
     },
 

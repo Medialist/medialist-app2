@@ -21,16 +21,28 @@ Medialists.search = (opts) => {
 
   check(opts, {
     regex: Match.Optional(String),
+    masterListSlug: Match.Optional(String),
+    userId: Match.Optional(String),
     limit: Match.Optional(Number)
   })
 
   const query = {}
 
+  if (opts.masterListSlug) {
+    query['masterLists.slug'] = opts.masterListSlug
+  }
+
+  if (opts.userId) {
+    const user = Meteor.users.findOne({_id: opts.userId}, {fields: { myMedialists: 1 }})
+    query.slug = { $in: user.myMedialists.map((c) => c.slug) }
+  }
+
   if (opts.regex) {
-    const regex = new RegExp(opts.regex, 'gi')
+    const filterRegExp = new RegExp(opts.regex, 'gi')
     query.$or = [
-      { slug: regex },
-      { name: regex }
+      { name: filterRegExp },
+      { purpose: filterRegExp },
+      { 'client.name': filterRegExp }
     ]
   }
 

@@ -23,6 +23,7 @@ const CampaignsPage = React.createClass({
   propTypes: {
     campaigns: PropTypes.arrayOf(PropTypes.object),
     campaignCount: PropTypes.number,
+    selectedMasterListSlug: PropTypes.string,
     loading: PropTypes.bool,
     searching: PropTypes.bool,
     sort: PropTypes.object,
@@ -33,10 +34,7 @@ const CampaignsPage = React.createClass({
 
   getInitialState () {
     return {
-      sort: { updatedAt: -1 },
       selections: [],
-      term: '',
-      selectedSector: null,
       editCampaignOpen: false,
       addTagsOpen: false,
       addToMasterListsOpen: false
@@ -51,29 +49,30 @@ const CampaignsPage = React.createClass({
     }
   },
 
-  toggleEditCampaign () {
-    const editCampaignOpen = !this.state.editCampaignOpen
-    this.setState({ editCampaignOpen })
+  onMasterListChange (selectedMasterListSlug) {
+    this.props.setQuery({ selectedMasterListSlug })
   },
 
   onSortChange (sort) {
     this.props.setQuery({ sort })
   },
 
-  onSelectionsChange (selections) {
-    this.setState({ selections })
-  },
-
   onTermChange (term) {
     this.props.setQuery({ term })
   },
 
-  onSectorChange (selectedSector) {
-    this.setState({ selectedSector })
+  onSelectionsChange (selections) {
+    this.setState({ selections })
   },
 
   onDeselectAllClick () {
     this.setState({ selections: [] })
+  },
+
+  toggleEditCampaign () {
+    this.setState((s) => ({
+      editCampaignOpen: !s.editCampaignOpen
+    }))
   },
 
   onViewSelection () {
@@ -129,9 +128,9 @@ const CampaignsPage = React.createClass({
   },
 
   render () {
-    const { campaignCount, campaigns, loading, total, sort, term, snackbar } = this.props
-    const { onSortChange, onSelectionsChange, onSectorChange, onViewSelection, onFavouriteAll } = this
-    const { selections, selectedSector, editCampaignOpen } = this.state
+    const { campaignCount, campaigns, selectedMasterListSlug, loading, total, sort, term, snackbar } = this.props
+    const { onSortChange, onSelectionsChange, onMasterListChange, onViewSelection, onFavouriteAll } = this
+    const { selections, editCampaignOpen } = this.state
 
     if (!loading && campaignCount === 0) {
       return (<div>
@@ -144,7 +143,11 @@ const CampaignsPage = React.createClass({
       <div>
         <div style={{height: 58}} className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
           <div className='flex-auto border-right border-gray80'>
-            <MasterListsSelectorContainer type='Campaigns' selected={selectedSector} onSectorChange={onSectorChange} />
+            <MasterListsSelectorContainer
+              userId={this.props.userId}
+              allCount={campaignCount}
+              selectedMasterListSlug={selectedMasterListSlug}
+              onChange={onMasterListChange} />
           </div>
           <div className='flex-none bg-white center px4'>
             <button className='btn bg-completed white mx4' onClick={this.toggleEditCampaign}>New Campaign</button>
@@ -207,19 +210,21 @@ const EditCampaignContainer = createContainer((props) => {
 }, EditCampaign)
 
 const MasterListsSelectorContainer = createContainer((props) => {
-  const items = MasterLists.find({type: 'Campaigns'}).fetch()
-  return { ...props, items, selected: props.selected || items[0] }
+  const { selectedMasterListSlug, userId } = props
+  const lists = MasterLists.find({type: 'Campaigns'}).map(({slug, name, items}) => ({
+    slug, name, count: items.length
+  }))
+  const items = [
+    { slug: 'all', name: 'All', count: props.allCount },
+    { slug: 'my', name: 'My Campaigns', count: Meteor.user().myMedialists.length }
+  ].concat(lists)
+  const selectedSlug = (userId && 'my') || selectedMasterListSlug
+  return { ...props, items, selectedSlug }
 }, MasterListsSelector)
 
 const SearchableCampaignsPage = createSearchContainer(CampaignsPage)
 
 const CampaignsPageContainer = withSnackbar(withRouter(React.createClass({
-
-  parseQuery ({query}) {
-    const sort = query.sort ? JSON.parse(query.sort) : { updatedAt: -1 }
-    const term = query.q || ''
-    return { sort, term }
-  },
 
   setQuery (opts) {
     const { location, router } = this.props
@@ -228,20 +233,36 @@ const CampaignsPageContainer = withSnackbar(withRouter(React.createClass({
     if (opts.hasOwnProperty('term')) {
       newQuery.q = opts.term
     }
+    if (opts.selectedMasterListSlug) {
+      if (opts.selectedMasterListSlug === 'my') {
+        newQuery.my = Meteor.userId()
+      } else {
+        newQuery.list = opts.selectedMasterListSlug
+      }
+    }
     const query = Object.assign({}, location.query, newQuery)
     if (query.q === '') delete query.q
+    if (query.list === 'all' || newQuery.my) delete query.list
+    if (newQuery.list) delete query.my
     const qs = querystring.stringify(query)
-    router.replace('/campaigns?' + qs)
+    if (!qs) return router.replace('/campaigns')
+    router.replace(`/campaigns?${qs}`)
+  },
+
+  parseQuery ({query}) {
+    const sort = query.sort ? JSON.parse(query.sort) : { updatedAt: -1 }
+    const term = query.q || ''
+    const { list, my } = query
+    return { sort, term, selectedMasterListSlug: list, userId: my }
   },
 
   render () {
-    const { sort, term } = this.parseQuery(this.props.location)
+    const { location } = this.props
     return (
       <SearchableCampaignsPage
         {...this.props}
         {...this.data}
-        sort={sort}
-        term={term}
+        {...this.parseQuery(location)}
         setQuery={this.setQuery} />
     )
   }

@@ -278,7 +278,7 @@ const SearchableContactsPage = createSearchContainer(ContactsPage)
 // I decode and encode the search options from the query string
 // and set up the subscriptions and collecton queries from those options.
 const ContactsPageContainer = withRouter(React.createClass({
-  // API is like setState..
+  // API is like setState...
   // Pass an obj with the new params you want to set on the query string.
   setQuery (opts) {
     const { location, router } = this.props
@@ -307,7 +307,7 @@ const ContactsPageContainer = withRouter(React.createClass({
     const sort = query.sort ? JSON.parse(query.sort) : { updatedAt: -1 }
     const term = query.q || ''
     const { campaign, list, my } = query
-    if (!campaign) return { sort, term, userId: my, masterListSlug: list, campaignSlugs: [], campaigns: [] }
+    if (!campaign) return { sort, term, masterListSlug: list, userId: my, campaignSlugs: [], campaigns: [] }
 
     const campaignSlugs = Array.isArray(campaign) ? campaign : [campaign]
     const campaigns = Medialists.find({slug: {$in: campaignSlugs}}).fetch()

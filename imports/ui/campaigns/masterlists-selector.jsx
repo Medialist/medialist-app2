@@ -1,29 +1,33 @@
 import React, { PropTypes } from 'react'
 
-const MasterListsSelector = React.createClass({
-  propTypes: {
-    items: PropTypes.array.isRequired,
-    selected: PropTypes.object,
-    onSectorChange: PropTypes.func.isRequired
-  },
-  render () {
-    const { items, selected, onSectorChange } = this.props
-    return (
-      <nav className='block px4'>
-        <div className='nowrap truncate'>
-          {items.map((item) =>
-            <Item
-              key={item.slug}
-              name={item.name}
-              count={item.count}
-              selected={selected && item.slug === selected.slug}
-              onClick={() => onSectorChange(item)} />
-          )}
-        </div>
-      </nav>
-    )
-  }
-})
+const MasterListsSelector = ({ items, selectedSlug, onChange }) => {
+  return (
+    <nav className='block px4'>
+      <div className='nowrap truncate'>
+        {items.map((item) =>
+          <Item
+            key={item.slug}
+            name={item.name}
+            count={item.count}
+            selected={item.slug === selectedSlug}
+            onClick={() => onChange(item.slug)} />
+        )}
+      </div>
+    </nav>
+  )
+}
+
+MasterListsSelector.defaultProps = {
+  selectedSlug: 'all'
+}
+
+MasterListsSelector.propTypes = {
+  items: PropTypes.array.isRequired,
+  selectedSlug: PropTypes.string,
+  onChange: PropTypes.func.isRequired
+}
+
+export default MasterListsSelector
 
 const Item = ({name, count, selected, onClick}) => (
   <div className={`inline-block p4 semibold ${selected ? 'shadow-inset-blue' : 'pointer gray40'}`} onClick={onClick}>
@@ -35,5 +39,3 @@ const Item = ({name, count, selected, onClick}) => (
     </div>
   </div>
 )
-
-export default MasterListsSelector
