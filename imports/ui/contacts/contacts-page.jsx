@@ -42,7 +42,6 @@ const ContactsPage = withSnackbar(React.createClass({
   getInitialState () {
     return {
       selections: [],
-      selectedSector: null,
       isDropdownOpen: false,
       addContactModalOpen: false,
       addContactsToCampaignsModalOpen: false,
@@ -51,8 +50,8 @@ const ContactsPage = withSnackbar(React.createClass({
     }
   },
 
-  onSectorChange (selectedSector) {
-    this.setState({ selectedSector })
+  onMasterListChange (selectedMasterListSlug) {
+    this.props.setQuery({ selectedMasterListSlug })
   },
 
   onSortChange (sort) {
@@ -156,15 +155,19 @@ const ContactsPage = withSnackbar(React.createClass({
   },
 
   render () {
-    const { contactsCount, loading, searching, contacts, term, sort, campaigns } = this.props
-    const { onSortChange, onSelectionsChange, onSectorChange, onTermChange, onCampaignRemove } = this
+    const { contactsCount, selectedMasterListSlug, loading, searching, contacts, term, sort, campaigns } = this.props
+    const { onSortChange, onSelectionsChange, onMasterListChange, onTermChange, onCampaignRemove } = this
     const { selections } = this.state
     if (!loading && contactsCount === 0) return <ContactListEmpty />
     return (
       <div>
         <div style={{height: 58}} className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
           <div className='flex-auto border-right border-gray80'>
-            <MasterListsSelectorContainer selected={this.state.selectedSector} onSectorChange={onSectorChange} />
+            <MasterListsSelectorContainer
+              userId={this.props.userId}
+              allCount={contactsCount}
+              selectedMasterListSlug={selectedMasterListSlug}
+              onChange={onMasterListChange} />
           </div>
           <div className='flex-none bg-white center px4' style={{width: 240}}>
             <button className='btn bg-completed white mr1' onClick={this.toggleAddContactModal}>New Contact</button>
@@ -253,8 +256,16 @@ const ContactsPage = withSnackbar(React.createClass({
 }))
 
 const MasterListsSelectorContainer = createContainer((props) => {
-  const items = MasterLists.find({type: 'Contacts'}).fetch()
-  return { ...props, items, selected: props.selected || items[0] }
+  const { selectedMasterListSlug, userId } = props
+  const lists = MasterLists.find({type: 'Contacts'}).map(({slug, name, items}) => ({
+    slug, name, count: items.length
+  }))
+  const items = [
+    { slug: 'all', name: 'All', count: props.allCount },
+    { slug: 'my', name: 'My Contacts', count: Meteor.user().myContacts.length }
+  ].concat(lists)
+  const selectedSlug = userId ? 'my' : selectedMasterListSlug
+  return { ...props, items, selectedSlug }
 }, MasterListsSelector)
 
 const ContactsTotal = ({ searching, results, total }) => {
@@ -268,7 +279,7 @@ const SearchableContactsPage = createSearchContainer(ContactsPage)
 // I decode and encode the search options from the query string
 // and set up the subscriptions and collecton queries from those options.
 const ContactsPageContainer = withRouter(React.createClass({
-  // API is like setState..
+  // API is like setState...
   // Pass an obj with the new params you want to set on the query string.
   setQuery (opts) {
     const { location, router } = this.props
@@ -277,22 +288,32 @@ const ContactsPageContainer = withRouter(React.createClass({
     if (opts.hasOwnProperty('term')) {
       newQuery.q = opts.term
     }
+    if (opts.selectedMasterListSlug) {
+      if (opts.selectedMasterListSlug === 'my') {
+        newQuery.my = Meteor.userId()
+      } else {
+        newQuery.list = opts.selectedMasterListSlug
+      }
+    }
     if (opts.campaignSlugs) newQuery.campaign = opts.campaignSlugs
     const query = Object.assign({}, location.query, newQuery)
     if (query.q === '') delete query.q
+    if (query.list === 'all' || newQuery.my) delete query.list
+    if (newQuery.list) delete query.my
     const qs = querystring.stringify(query)
-    router.replace('/contacts?' + qs)
+    if (!qs) return router.replace('/contacts')
+    router.replace(`/contacts?${qs}`)
   },
 
   parseQuery ({query}) {
     const sort = query.sort ? JSON.parse(query.sort) : { updatedAt: -1 }
     const term = query.q || ''
-    const { campaign } = query
-    if (!campaign) return { sort, term, campaignSlugs: [], campaigns: [] }
+    const { campaign, list, my } = query
+    if (!campaign) return { sort, term, selectedMasterListSlug: list, userId: my, campaignSlugs: [], campaigns: [] }
 
     const campaignSlugs = Array.isArray(campaign) ? campaign : [campaign]
     const campaigns = Medialists.find({slug: {$in: campaignSlugs}}).fetch()
-    return { sort, term, campaignSlugs, campaigns }
+    return { sort, term, list, selectedMasterListSlug: list, userId: my, campaignSlugs, campaigns }
   },
 
   render () {

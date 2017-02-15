@@ -21,7 +21,9 @@ export default (Component, opts = {}) => {
     propTypes: {
       term: PropTypes.string.isRequired,
       // http://docs.meteor.com/api/collections.html#sortspecifiers
-      sort: PropTypes.oneOfType([ PropTypes.object, PropTypes.array ])
+      sort: PropTypes.oneOfType([ PropTypes.object, PropTypes.array ]),
+      selectedMasterListSlug: PropTypes.string,
+      userId: PropTypes.string
     },
 
     getDefaultProps () {
@@ -31,10 +33,25 @@ export default (Component, opts = {}) => {
     mixins: [ReactMeteorData],
 
     getMeteorData () {
-      const { sort, term } = this.props
+      const { sort, term, selectedMasterListSlug, userId } = this.props
       const subs = [ Meteor.subscribe('campaignCount') ]
       const campaignCount = window.Counter.get('campaignCount')
       const query = {}
+
+      if (selectedMasterListSlug) {
+        query['masterLists.slug'] = selectedMasterListSlug
+        subs.push(Meteor.subscribe('medialists', {masterListSlug: selectedMasterListSlug}))
+      }
+      if (userId) {
+        subs.push(Meteor.subscribe('medialists', {userId: userId}))
+        if (userId !== Meteor.userId()) {
+          subs.push(Meteor.subscribe('users-by-id', {userIds: [userId]}))
+        }
+        const user = Meteor.users.findOne({_id: userId})
+        const myMedialists = user && user.myMedialists || []
+        query.slug = { $in: myMedialists.map((c) => c.slug) }
+      }
+
       const searching = term.length >= opts.minSearchLength
       if (searching) {
         const filterRegExp = new RegExp(term, 'gi')
