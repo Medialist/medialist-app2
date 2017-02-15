@@ -81,7 +81,7 @@ const CampaignsTable = React.createClass({
               onSortChange={(d) => onSortChange({ 'client.name': d })}>
               Client
             </SortableHeader>
-            <th className='left-align'>Key Message</th>
+            <th className='left-align' style={{width: '40%'}}>Key Message</th>
             <SortableHeader
               className='left-align'
               sortDirection={sort['updatedAt']}
@@ -96,13 +96,13 @@ const CampaignsTable = React.createClass({
             return (
               <SelectableRow data={campaign} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id}>
                 <td className='left-align'>
-                  <Link to={`/campaign/${slug}`}>
+                  <Link to={`/campaign/${slug}`} className='nowrap'>
                     <SquareAvatar avatar={avatar} name={name} />
                     <span className='ml3 semibold'>{name}</span>
                   </Link>
                 </td>
                 <td className='left-align'>{client && client.name}</td>
-                <td className='left-align'>{purpose}</td>
+                <td className='left-align truncate'>{purpose}</td>
                 <td className='left-align'>
                   <span className='semibold'><TimeFromNow date={updatedAt} /></span>
                   <span> by <YouOrName user={updatedBy} /></span>

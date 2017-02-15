@@ -187,8 +187,9 @@ const CampaignsPage = React.createClass({
             type='Campaigns'
             open={this.state.addToMasterListsOpen}
             onDismiss={() => this.setState({addToMasterListsOpen: false})}
-            onSave={this.onAddAllToMasterLists}>
-            <AbbreviatedAvatarList items={selections} maxTooltip={12} style={{marginTop: -15}} />
+            onSave={this.onAddAllToMasterLists}
+            title='Add Campaigns to a Master List'>
+            <AbbreviatedAvatarList items={selections} maxTooltip={12} shape='square' />
           </AddToMasterList>
         </div>
       </div>

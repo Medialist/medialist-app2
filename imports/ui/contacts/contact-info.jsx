@@ -116,12 +116,13 @@ const ContactInfo = React.createClass({
           onDismiss={dismissAddToMasterList}
           onSave={onAddContactToMasterLists}
           selected={masterLists}
-          type='Contacts' />
+          type='Contacts'
+          title={`Add ${name} to a Master List`} />
         <AddTags
           type='Contacts'
           open={addTagsOpen}
           onDismiss={dismissAddTags}
-          title={`Tag ${name}`}
+          title={`Tag ${name.split(' ')[0]}`}
           selectedTags={tags}
           onUpdateTags={onUpdateTags} />
         <QuickAdd
