@@ -122,7 +122,7 @@ const ContactInfo = React.createClass({
           type='Contacts'
           open={addTagsOpen}
           onDismiss={dismissAddTags}
-          title={`Tag ${name}`}
+          title={`Tag ${name.split(' ')[0]}`}
           selectedTags={tags}
           onUpdateTags={onUpdateTags} />
         <QuickAdd
