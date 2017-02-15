@@ -28,6 +28,7 @@ Meteor.methods({
       outlets: details.outlets,
       sectors: '',
       masterLists: [],
+      tags: [],
       languages: 'English',
       emails:  [{label: Contacts.emailTypes[0], value: details.email}],
       phones:  [{label: Contacts.phoneTypes[0], value: details.phone}],
@@ -147,7 +148,7 @@ Meteor.methods({
       'updatedAt': new Date()
     }
     App.contactInteracted(contactSlug, this.userId)
-    
+
     return Contacts.update({ slug: contactSlug }, { $set: updateSet, $push: { outlets: outlet } })
   },
 

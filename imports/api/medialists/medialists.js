@@ -5,6 +5,7 @@ import { check, Match } from 'meteor/check'
 import nothing from '/imports/lib/nothing'
 import { MasterListRefSchema } from '/imports/api/master-lists/master-lists'
 import { UserRefSchema } from '/imports/api/users/users'
+import { TagRefSchema } from '/imports/api/tags/tags'
 
 const Medialists = new Mongo.Collection('medialists')
 
@@ -121,6 +122,9 @@ export const MedialistSchema = new SimpleSchema({
   },
   masterLists: {
     type: [MasterListRefSchema]
+  },
+  tags: {
+    type: [TagRefSchema]
   },
   team: {
     type: [UserRefSchema]
