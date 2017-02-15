@@ -34,6 +34,10 @@ Medialists.search = (opts) => {
 
   if (opts.userId) {
     const user = Meteor.users.findOne({_id: opts.userId}, {fields: { myMedialists: 1 }})
+    if (!user) {
+      console.log(`'contacts' publication failed to find user for provided userId ${opts.userId}`)
+      return null
+    }
     query.slug = { $in: user.myMedialists.map((c) => c.slug) }
   }
 

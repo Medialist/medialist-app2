@@ -38,6 +38,10 @@ Meteor.publish('contacts', function (opts) {
 
   if (opts.userId) {
     const user = Meteor.users.findOne({_id: opts.userId}, {fields: { myContacts: 1 }})
+    if (!user) {
+      console.log(`'contacts' publication failed to find user for provided userId ${opts.userId}`)
+      return this.ready()
+    }
     query.slug = { $in: user.myContacts.map((c) => c.slug) }
   }
 
@@ -55,8 +59,9 @@ Meteor.publish('contacts', function (opts) {
     fields: { importedData: 0 }
   }
 
-  if (opts.limit)
-  options.limit = opts.limit
+  if (opts.limit) {
+    options.limit = opts.limit
+  }
   return Contacts.find(query, options)
 })
 

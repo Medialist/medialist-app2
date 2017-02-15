@@ -22,7 +22,7 @@ export default (Component, opts = {}) => {
       term: PropTypes.string.isRequired,
       // http://docs.meteor.com/api/collections.html#sortspecifiers
       sort: PropTypes.oneOfType([ PropTypes.object, PropTypes.array ]),
-      masterListSlug: PropTypes.string,
+      selectedMasterListSlug: PropTypes.string,
       userId: PropTypes.string
     },
 

@@ -47,11 +47,11 @@ Meteor.publish('users-by-id', function (opts = {}) {
   if (!this.userId) return this.ready()
 
   check(opts, {
-    userIds: Match.Optional(Array),
+    userIds: Array,
     limit: Match.Optional(Number)
   })
 
-  const query = { _id: { $in: opts.userId } }
+  const query = { _id: { $in: opts.userIds } }
   const options = {
     fields: {
       'profile.name': 1,

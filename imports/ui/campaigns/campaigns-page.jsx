@@ -218,7 +218,7 @@ const MasterListsSelectorContainer = createContainer((props) => {
     { slug: 'all', name: 'All', count: props.allCount },
     { slug: 'my', name: 'My Campaigns', count: Meteor.user().myMedialists.length }
   ].concat(lists)
-  const selectedSlug = (userId && 'my') || selectedMasterListSlug
+  const selectedSlug = userId ? 'my' : selectedMasterListSlug
   return { ...props, items, selectedSlug }
 }, MasterListsSelector)
 
