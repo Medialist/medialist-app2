@@ -18,7 +18,7 @@ import Contacts from '../contacts/contacts'
 import Medialists from '../medialists/medialists'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
 
-describe.only('batchAddToMasterLists', function () {
+describe('batchAddToMasterLists', function () {
   beforeEach(function () {
     resetDatabase()
   })
