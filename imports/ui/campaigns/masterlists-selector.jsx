@@ -4,6 +4,11 @@ import { ChevronDown } from '../images/icons'
 import { Dropdown, DropdownMenu } from '../navigation/dropdown'
 
 const MasterListsSelector = React.createClass({
+  propTypes: {
+    items: PropTypes.array.isRequired,
+    selectedSlug: PropTypes.string,
+    onChange: PropTypes.func.isRequired
+  },
   getInitialState () {
     return {
       hideItemsAfterIndex: null,
@@ -25,6 +30,13 @@ const MasterListsSelector = React.createClass({
     const { hideItemsAfterIndex, showMoreOpen } = this.state
     const visibleItems = hideItemsAfterIndex ? items.slice(0, hideItemsAfterIndex) : items
     const moreItems = hideItemsAfterIndex ? items.slice(hideItemsAfterIndex, items.length) : []
+    const selectedIndex = moreItems.findIndex((i) => i.slug === selectedSlug)
+    if (selectedIndex > -1) {
+      // Swap the selected item out of the hidden list for the item at the end of the visible list
+      const [selectedItem] = moreItems.splice(selectedIndex, 1)
+      const [itemToSwap] = visibleItems.splice(visibleItems.length - 1, 1, selectedItem)
+      moreItems.unshift(itemToSwap)
+    }
     this.itemElements = []
     return (
       <nav className='block px4' ref={(el) => { this.containerEl = el }}>
@@ -72,12 +84,6 @@ const MasterListsSelector = React.createClass({
 
 MasterListsSelector.defaultProps = {
   selectedSlug: 'all'
-}
-
-MasterListsSelector.propTypes = {
-  items: PropTypes.array.isRequired,
-  selectedSlug: PropTypes.string,
-  onChange: PropTypes.func.isRequired
 }
 
 export default MasterListsSelector
