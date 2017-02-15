@@ -158,13 +158,14 @@ export const create = new ValidatedMethod({
       avatar,
       purpose,
       links,
+      contacts: {},
+      team: [createdBy],
+      masterLists: [],
+      tags: [],
       createdAt,
       createdBy,
       updatedAt: createdAt,
-      updatedBy: createdBy,
-      contacts: {},
-      team: [createdBy],
-      masterLists: []
+      updatedBy: createdBy
     }
 
     check(doc, MedialistSchema)

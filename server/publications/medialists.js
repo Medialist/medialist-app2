@@ -6,7 +6,7 @@ Meteor.publish('campaignCount', function () {
 
 Meteor.publish('medialists', function (opts) {
   if (!this.userId) return this.ready()
-  return Medialists.search(opts)
+  return Medialists.search(opts) || this.ready()
 })
 
 Meteor.publish('medialists-by-slug', function (slugs) {

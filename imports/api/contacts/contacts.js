@@ -3,6 +3,7 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import values from 'lodash.values'
 import nothing from '/imports/lib/nothing'
 import { MasterListRefSchema } from '/imports/api/master-lists/master-lists'
+import { TagRefSchema } from '/imports/api/tags/tags'
 
 const Contacts = new Mongo.Collection('contacts')
 
@@ -161,6 +162,9 @@ export const ContactSchema = new SimpleSchema({
   },
   masterLists: {
     type: [MasterListRefSchema]
+  },
+  tags: {
+    type: [TagRefSchema]
   }
 })
 

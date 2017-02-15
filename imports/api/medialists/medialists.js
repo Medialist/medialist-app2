@@ -5,6 +5,7 @@ import { check, Match } from 'meteor/check'
 import nothing from '/imports/lib/nothing'
 import { MasterListRefSchema } from '/imports/api/master-lists/master-lists'
 import { UserRefSchema } from '/imports/api/users/users'
+import { TagRefSchema } from '/imports/api/tags/tags'
 
 const Medialists = new Mongo.Collection('medialists')
 
@@ -34,6 +35,10 @@ Medialists.search = (opts) => {
 
   if (opts.userId) {
     const user = Meteor.users.findOne({_id: opts.userId}, {fields: { myMedialists: 1 }})
+    if (!user) {
+      console.log(`'contacts' publication failed to find user for provided userId ${opts.userId}`)
+      return null
+    }
     query.slug = { $in: user.myMedialists.map((c) => c.slug) }
   }
 
@@ -117,6 +122,9 @@ export const MedialistSchema = new SimpleSchema({
   },
   masterLists: {
     type: [MasterListRefSchema]
+  },
+  tags: {
+    type: [TagRefSchema]
   },
   team: {
     type: [UserRefSchema]

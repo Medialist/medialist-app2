@@ -58,3 +58,17 @@ export const TagSchema = new SimpleSchema({
   }
 })
 
+export const TagRefSchema = new SimpleSchema({
+  name: {
+    type: String,
+    min: 1
+  },
+  slug: {
+    type: String,
+    min: 1
+  },
+  count: {
+    type: Number,
+    min: 0
+  }
+})
