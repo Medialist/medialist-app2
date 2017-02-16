@@ -48,12 +48,12 @@ const ImportTable = React.createClass({
 
     return (
       <div style={{overflowY: 'scroll'}}>
-        <table className='table bg-white shadow-2 nowrap' >
+        <table className='table bg-white shadow-2 nowrap'>
           <thead>
             <tr>
               {cols.map((col, columnIndex) => {
                 return (
-                  <th key={columnIndex} className='pointer bg-white' style={{padding: '0px 80px 0 0', borderLeft: '0 none', borderRight: '0 none'}}>
+                  <th key={columnIndex} className='pointer bg-white' style={{width: 240, padding: '0px 80px 0 0', borderLeft: '0 none', borderRight: '0 none'}}>
                     <Dropdown>
                       <div className='p2 m2 rounded border border-gray80 left-align' style={{width: 180}} onClick={() => onColumnSelect(columnIndex)}>
                         <ChevronDown className='right' />
