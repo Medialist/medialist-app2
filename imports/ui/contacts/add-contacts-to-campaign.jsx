@@ -154,7 +154,7 @@ const ResultList = React.createClass({
                 <CampaignResult {...res} />
               </div>
               <div className='flex-none px4 f-sm gray40 hover-gray20'>
-                {contactCount} {contactCount === 1 ? 'contacts' : 'contact'} involved
+                {contactCount} {contactCount === 1 ? 'contact' : 'contacts'} involved
               </div>
               <div className='flex-none pl4 pr2 opacity-0 hover-opacity-100'>
                 <AddIcon />
