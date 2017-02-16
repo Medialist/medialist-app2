@@ -132,7 +132,7 @@ const MenuItem = ({name, count, slug, onClick}) => (
     data-slug={slug}
     className='py1 pl4 hover-bg-blue hover-color-trigger hover-bg-trigger'
     onClick={onClick}>
-    <div className='inline-block f-md semibold gray40 hover-white'>{name}</div>
+    <div style={{maxWidth: 280}} className='inline-block truncate align-middle f-md semibold gray40 hover-white'>{name}</div>
     <div className='inline-block px1 py-2px ml1 f-xs rounded gray60 bg-gray90 hover-blue hover-bg-white'>{count}</div>
   </div>
 )
