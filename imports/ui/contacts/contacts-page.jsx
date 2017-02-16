@@ -14,7 +14,7 @@ import EditContact from './edit-contact.jsx'
 import ContactListEmpty from './contacts-list-empty'
 import { FeedContactIcon } from '../images/icons'
 import createSearchContainer from './search-container'
-import AddContactsToCampaigns from './add-contacts-to-campaigns'
+import AddContactsToCampaign from './add-contacts-to-campaign'
 import Medialists from '/imports/api/medialists/medialists'
 import { AvatarTag } from '../tags/tag'
 import { batchFavouriteContacts } from '/imports/api/contacts/methods'
@@ -44,7 +44,7 @@ const ContactsPage = withSnackbar(React.createClass({
       selections: [],
       isDropdownOpen: false,
       addContactModalOpen: false,
-      addContactsToCampaignsModalOpen: false,
+      AddContactsToCampaignModalOpen: false,
       addTagsOpen: false,
       addToMasterListsOpen: false
     }
@@ -219,7 +219,7 @@ const ContactsPage = withSnackbar(React.createClass({
         </div>
         <ContactsActionsToast
           contacts={selections}
-          onCampaignClick={() => this.setState({addContactsToCampaignsModalOpen: true})}
+          onCampaignClick={() => this.setState({AddContactsToCampaignModalOpen: true})}
           onSectorClick={() => this.setState({addToMasterListsOpen: true})}
           onFavouriteClick={this.onFavouriteAll}
           onTagClick={() => this.setState({addTagsOpen: true})}
@@ -230,11 +230,11 @@ const ContactsPage = withSnackbar(React.createClass({
           onChange={this.onAddContactChange}
           onSubmit={this.onAddContactSubmit}
           open={this.state.addContactModalOpen} />
-        <AddContactsToCampaigns
+        <AddContactsToCampaign
           contacts={selections}
-          onDismiss={() => this.setState({addContactsToCampaignsModalOpen: false})}
-          onSubmit={() => this.setState({addContactsToCampaignsModalOpen: false})}
-          open={this.state.addContactsToCampaignsModalOpen} />
+          onDismiss={() => this.setState({AddContactsToCampaignModalOpen: false})}
+          onSubmit={() => this.setState({AddContactsToCampaignModalOpen: false})}
+          open={this.state.AddContactsToCampaignModalOpen} />
         <AddTags
           type='Contacts'
           open={this.state.addTagsOpen}
