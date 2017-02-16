@@ -474,6 +474,23 @@ button {
 .hover-color-trigger:hover .hover-gray20{
   color: var(--gray20) !important;
 }
+.hover-blue:hover,
+.hover-color-trigger:hover .hover-blue {
+  color: var(--blue) !important;
+}
+.hover-gold:hover,
+.hover-color-trigger:hover .hover-gold {
+  color: var(--gold) !important;
+}
+.hover-red:hover,
+.hover-color-trigger:hover .hover-red {
+  color: red !important;
+}
+
+.hover-bg-white:hover,
+.hover-bg-trigger:hover .hover-bg-white {
+  background-color: var(--white);
+}
 .hover-bg-blue:hover {
   color: var(--white) !important;
   background-color: var(--blue);
@@ -481,15 +498,7 @@ button {
 .hover-bg-gray90:hover {
   background-color: var(--gray90);
 }
-.hover-blue:hover {
-  color: var(--blue) !important;
-}
-.hover-gold:hover {
-  color: var(--gold) !important;
-}
-.hover-red:hover {
-  color: red !important;
-}
+
 .hover-border-blue:hover {
   border-color: var(--blue) !important;
 }

@@ -144,6 +144,7 @@ const CampaignsPage = React.createClass({
         <div style={{height: 58}} className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
           <div className='flex-auto border-right border-gray80'>
             <MasterListsSelectorContainer
+              type='Campaigns'
               userId={this.props.userId}
               allCount={campaignCount}
               selectedMasterListSlug={selectedMasterListSlug}
