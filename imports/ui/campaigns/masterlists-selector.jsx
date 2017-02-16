@@ -79,7 +79,7 @@ const MasterListsSelector = React.createClass({
               </Item>
             </div>
           )}
-          {moreItems.length &&
+          {moreItems.length > 0 &&
             <Dropdown>
               <Item selected={showMoreOpen} onClick={() => this.setState({showMoreOpen: true})}>
                 <span className='pl2'>More <ChevronDown /></span>
