@@ -41,11 +41,13 @@ const MasterListsSelector = React.createClass({
   },
   componentDidUpdate () {
     if (this.state.hideItemsAfterIndex) return
+    const {items} = this.props
     const itemWidthBuffer = 180
     const maxWidth = this.containerEl.clientWidth - itemWidthBuffer
-    const hideItemsAfterIndex = this.itemElements
+    let hideItemsAfterIndex = this.itemElements
       .filter((el) => !!el)
       .findIndex((el) => el.getBoundingClientRect().right > maxWidth)
+    if (hideItemsAfterIndex === -1) hideItemsAfterIndex = items.length
     this.setState((s) => {
       return s.hideItemsAfterIndex === hideItemsAfterIndex ? {} : {hideItemsAfterIndex}
     })
@@ -77,7 +79,7 @@ const MasterListsSelector = React.createClass({
               </Item>
             </div>
           )}
-          {hideItemsAfterIndex &&
+          {moreItems.length &&
             <Dropdown>
               <Item selected={showMoreOpen} onClick={() => this.setState({showMoreOpen: true})}>
                 <span className='pl2'>More <ChevronDown /></span>
