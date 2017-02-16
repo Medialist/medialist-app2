@@ -40,36 +40,42 @@ const MasterListsSelector = React.createClass({
     window.removeEventListener('resize', this.onResize)
   },
   componentDidUpdate () {
-    if (this.state.hideItemsAfterIndex) return
+    if (this.state.hideItemsAfterIndex !== null) return
     const {items} = this.props
     const itemWidthBuffer = 180
     const maxWidth = this.containerEl.clientWidth - itemWidthBuffer
     let hideItemsAfterIndex = this.itemElements
-      .filter((el) => !!el)
       .findIndex((el) => el.getBoundingClientRect().right > maxWidth)
     if (hideItemsAfterIndex === -1) hideItemsAfterIndex = items.length
-    this.setState((s) => {
-      return s.hideItemsAfterIndex === hideItemsAfterIndex ? {} : {hideItemsAfterIndex}
-    })
+    if (hideItemsAfterIndex === this.state.hideItemsAfterIndex) return
+    this.setState({ hideItemsAfterIndex })
   },
   render () {
     const { type, items, selectedSlug } = this.props
     const { hideItemsAfterIndex, showMoreOpen } = this.state
     const visibleItems = hideItemsAfterIndex ? items.slice(0, hideItemsAfterIndex) : items
-    const moreItems = hideItemsAfterIndex ? items.slice(hideItemsAfterIndex, items.length) : []
+    const moreItems = hideItemsAfterIndex ? items.slice(hideItemsAfterIndex) : []
     const selectedIndex = moreItems.findIndex((i) => i.slug === selectedSlug)
     if (selectedIndex > -1) {
       // Swap the selected item out of the hidden list for the item at the end of the visible list
       const [selectedItem] = moreItems.splice(selectedIndex, 1)
-      const [itemToSwap] = visibleItems.splice(visibleItems.length - 1, 1, selectedItem)
+      const [itemToSwap] = visibleItems.splice(-1, 1, selectedItem)
       moreItems.unshift(itemToSwap)
     }
-    this.itemElements = []
+    const settingsUrl = `/settings/${type.toLowerCase()}-master-lists`
     return (
       <nav className='block px4' ref={(el) => { this.containerEl = el }}>
-        <div className='nowrap'>
-          {visibleItems.map((item) =>
-            <div className='inline-block' ref={(el) => { this.itemElements.push(el) }} key={item.slug} >
+        <div className={`nowrap ${hideItemsAfterIndex === null ? 'opacity-0' : ''}`}>
+          {moreItems.length === 0 &&
+            <Link to={settingsUrl} className='right inline-block p4 align-middle f-xs underline gray40 hover-blue'>
+              Manage Master Lists
+            </Link>
+          }
+          {visibleItems.map((item, i) =>
+            <div className='inline-block' ref={(el) => {
+              if (i === 0) this.itemElements = []
+              this.itemElements.push(el)
+            }} key={item.slug} >
               <Item
                 slug={item.slug}
                 count={item.count}
@@ -92,7 +98,7 @@ const MasterListsSelector = React.createClass({
                   )}
                   <div className='py2 mt3 bg-gray90 center'>
                     <Link
-                      to={`/settings/${type.toLowerCase()}-master-lists`}
+                      to={settingsUrl}
                       className='underline f-xs gray40'>Manage Master Lists</Link>
                   </div>
                 </nav>
@@ -130,7 +136,7 @@ const Item = ({children, slug, count, selected, onClick}) => (
 const MenuItem = ({name, count, slug, onClick}) => (
   <div
     data-slug={slug}
-    className='py1 pl4 hover-bg-blue hover-color-trigger hover-bg-trigger'
+    className='py1 pl4 pointer hover-bg-blue hover-color-trigger hover-bg-trigger'
     onClick={onClick}>
     <div style={{maxWidth: 280}} className='inline-block truncate align-middle f-md semibold gray40 hover-white'>{name}</div>
     <div className='inline-block px1 py-2px ml1 f-xs rounded gray60 bg-gray90 hover-blue hover-bg-white'>{count}</div>
