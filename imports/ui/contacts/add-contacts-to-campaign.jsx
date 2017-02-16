@@ -1,9 +1,8 @@
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import Modal from '../navigation/modal'
-import { SearchBlueIcon, AddIcon, SelectedIcon, RemoveIcon } from '../images/icons'
+import { SearchBlueIcon, AddIcon } from '../images/icons'
 import AbbreviatedAvatarList from '../lists/abbreviated-avatar-list'
-import Tooltip from '../navigation/tooltip'
 import createSearchContainer from '../campaigns/campaign-search-container'
 import { SquareAvatar } from '../images/avatar'
 import { TimeFromNow } from '../time/time'
@@ -15,12 +14,8 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
     term: PropTypes.string,
     onTermChange: PropTypes.func.isRequired,
     onAdd: PropTypes.func.isRequired,
-    onReset: PropTypes.func.isRequired,
-    onSubmit: PropTypes.func.isRequired,
-    isActive: PropTypes.func.isRequired,
     contacts: PropTypes.array.isRequired,
-    campaigns: PropTypes.array.isRequired,
-    selected: PropTypes.array.isRequired
+    campaigns: PropTypes.array.isRequired
   },
 
   onChange (e) {
@@ -29,27 +24,17 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
 
   onKeyPress (e) {
     if (e.key !== 'Enter') return
-
-    const { term, isActive, campaigns, onAdd, onTermChange } = this.props
-    if (!term) return
-
-    const res = campaigns[0]
-    if (!res || isActive(res)) return
-
-    onAdd(res)
-    onTermChange('')
+    const { campaigns, onAdd } = this.props
+    if (!campaigns[0]) return
+    onAdd(campaigns[0])
   },
 
   render () {
     const {
       term,
-      onReset,
-      onSubmit,
       contacts,
       campaigns,
-      onAdd,
-      onRemove,
-      isActive
+      onAdd
     } = this.props
 
     const { onChange, onKeyPress } = this
@@ -64,17 +49,7 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
           <input className='flex-auto f-lg pa2 mx2' placeholder='Find a campaign...' onChange={onChange} style={{outline: 'none'}} onKeyPress={onKeyPress} value={term} />
         </div>
         <div style={{height: scrollableHeight, overflowY: 'scroll'}}>
-          <ResultList
-            isActive={isActive}
-            onAdd={onAdd}
-            onRemove={onRemove}
-            results={campaigns} />
-        </div>
-        <div className='py4 border-top border-gray80 flex'>
-          <div className='flex-auto right-align'>
-            <button className='btn bg-transparent gray40 mr2' onClick={onReset}>Cancel</button>
-            <button className='btn bg-completed white px3 mr4' onClick={onSubmit}>Save Changes</button>
-          </div>
+          <ResultList onAdd={onAdd} results={campaigns} />
         </div>
       </div>
     )
@@ -89,61 +64,28 @@ const AddContactsToCampaignsContainer = withSnackbar(React.createClass({
   },
 
   getInitialState () {
-    return { selected: [], term: '' }
-  },
-
-  // Is the item selected?
-  isActive (item) {
-    const { selected } = this.state
-    return selected.some((i) => i._id === item._id)
+    return { term: '' }
   },
 
   onAdd (item) {
-    this.setState((s) => ({
-      selected: s.selected.concat([item])
-    }))
-  },
-
-  onRemove (item) {
-    this.setState((s) => ({
-      selected: s.selected.filter((i) => i._id !== item._id)
-    }))
-  },
-
-  onSubmit (evt) {
-    evt.preventDefault()
-    evt.stopPropagation()
-    const {contacts, snackbar} = this.props
-    const {selected} = this.state
+    const {contacts, snackbar, onDismiss} = this.props
     const contactSlugs = contacts.map((c) => c.slug)
-    const campaignSlugs = selected.map((c) => c.slug)
+    const campaignSlugs = [item.slug]
     batchAddContactsToCampaigns.call({contactSlugs, campaignSlugs}, (err, res) => {
       if (err) {
         console.log(err)
         return snackbar.show('Sorry, that didn\'t work')
       }
-      const msg = selected.length > 1 ? `${selected.length} campaigns` : (
-        <Link to={`/campaign/${selected[0].slug}`} className='underline semibold'>
-          {selected[0].name}
-        </Link>
-      )
+      onDismiss()
       return snackbar.show((
         <div>
           <span>Added {contacts.length} {contacts.length === 1 ? 'contact' : 'contacts'} to </span>
-          {msg}
+          <Link to={`/campaign/${item.slug}`} className='underline semibold'>
+            {item.name}
+          </Link>
         </div>
       ))
     })
-    this.onReset()
-  },
-
-  onReset () {
-    this.props.onDismiss()
-    this.deselectAll()
-  },
-
-  deselectAll () {
-    this.setState({ selected: [] })
   },
 
   onTermChange (term) {
@@ -153,24 +95,15 @@ const AddContactsToCampaignsContainer = withSnackbar(React.createClass({
   render () {
     const {
       onTermChange,
-      isActive,
-      onAdd,
-      onRemove,
-      onReset,
-      onSubmit
+      onAdd
     } = this
-    const { term, selected } = this.state
+    const { term } = this.state
     return (
       <AddContactsToCampaigns
         {...this.props}
         term={term}
         onTermChange={onTermChange}
-        isActive={isActive}
-        onAdd={onAdd}
-        onRemove={onRemove}
-        onReset={onReset}
-        onSubmit={onSubmit}
-        selected={selected} />
+        onAdd={onAdd} />
     )
   }
 }))
@@ -200,43 +133,31 @@ const CampaignResult = (props) => {
 
 const ResultList = React.createClass({
   propTypes: {
-    isActive: PropTypes.func.isRequired,
     onAdd: PropTypes.func.isRequired,
-    onRemove: PropTypes.func.isRequired,
     results: PropTypes.array.isRequired
   },
 
-  onClick (item, isActive) {
-    const { onAdd, onRemove } = this.props
-    return isActive ? onRemove(item) : onAdd(item)
-  },
-
   render () {
-    const { results } = this.props
-    const { onClick } = this
+    const { results, onAdd } = this.props
 
     return (
       <div>
         {results.map((res) => {
-          const isActive = this.props.isActive(res)
           const {slug, contacts} = res
           const contactCount = Object.keys(contacts).length
           return (
             <div
-              className={`flex items-center pointer border-bottom border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger hover-color-trigger ${isActive ? 'active' : ''}`}
+              className='flex items-center pointer border-bottom border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger hover-color-trigger'
               key={slug}
-              onClick={() => onClick(res, isActive)}>
+              onClick={() => onAdd(res)}>
               <div className='flex-auto'>
                 <CampaignResult {...res} />
               </div>
               <div className='flex-none px4 f-sm gray40 hover-gray20'>
                 {contactCount} {contactCount === 1 ? 'contacts' : 'contact'} involved
               </div>
-              <div className={`flex-none pl4 pr2 ${isActive ? '' : 'opacity-0'} hover-opacity-100`}>
-                {isActive ? <SelectedIcon /> : <AddIcon />}
-              </div>
-              <div className={`flex-none pl2 pr4 ${isActive ? 'hover-opacity-100' : 'opacity-0'} gray20 hover-fill-trigger`}>
-                {isActive ? <Tooltip title='Remove'><RemoveIcon /></Tooltip> : <RemoveIcon />}
+              <div className='flex-none pl4 pr2 opacity-0 hover-opacity-100'>
+                <AddIcon />
               </div>
             </div>
           )
