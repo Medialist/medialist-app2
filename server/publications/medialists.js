@@ -1,3 +1,4 @@
+import Contacts from '/imports/api/contacts/contacts'
 const campaignCounter = new Counter('campaignCount', Medialists.find({}))
 
 Meteor.publish('campaignCount', function () {

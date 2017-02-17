@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { TypeSchema } from '/imports/lib/schema'
-import Tags from './tags'
+import Tags from '../tags'
 
 // Gotta function as meteor needs to noodle with `this`
 Meteor.publish('tags', function (props) {

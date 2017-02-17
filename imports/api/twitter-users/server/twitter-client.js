@@ -1,17 +1,35 @@
-ServiceConfiguration.configurations.upsert(
-  {
-    service: 'twitter'
-  },
-  {
-    $set: {
-      consumerKey: Meteor.settings.twitter.consumer_key,
-      secret: Meteor.settings.twitter.consumer_secret,
-      loginStyle: 'popup'
-    }
-  }
-)
+import { Meteor } from 'meteor/meteor'
+import { check, Match } from 'meteor/check'
+import NpmTwitter from 'twitter'
+import twitterScreenName from 'twitter-screen-name'
+import TwitterUsers from './twitter-users'
 
-TwitterClient = new Twitter({
+class TwitterStream {
+  constructor (stream) {
+    this.stream = stream
+  }
+  on (event, cb) {
+    return this.stream.on(event, Meteor.bindEnvironment(cb))
+  }
+}
+
+// Meteorising wrapper around the npm `twitter` module
+class Twitter {
+  constructor (opts) {
+    this.twitter = new NpmTwitter(opts)
+  }
+  stream () {
+    var args = Array.prototype.slice.call(arguments)
+    var cb = args[args.length - 1]
+    console.assert(typeof cb === 'function')
+    args[args.length - 1] = (stream) => cb.call(this, new TwitterStream(stream))
+    return this.twitter.stream.apply(this.twitter, args)
+  }
+}
+
+// An api for pulling data from twitter
+// and storing it in the `TwitterUsers` collection
+const TwitterClient = new Twitter({
   consumer_key: Meteor.settings.twitter.consumer_key,
   consumer_secret: Meteor.settings.twitter.consumer_secret,
   access_token_key: Meteor.settings.twitter.access_token_key,
@@ -36,9 +54,9 @@ TwitterClient.grabUser = function (query, cb) {
   }))
 }
 
-TwitterClient.grabUserByScreenName = function (screen_name, cb) {
-  screen_name = twitterScreenName(screen_name)
-  TwitterClient.grabUser({screen_name: screen_name}, cb)
+TwitterClient.grabUserByScreenName = function (screenName, cb) {
+  const opts = {screen_name: twitterScreenName(screenName)}
+  TwitterClient.grabUser(opts, cb)
 }
 
 TwitterClient.grabUserById = function (id, cb) {
@@ -75,3 +93,5 @@ TwitterClient.lookupUsers = (identifiers, cb) => {
     cb(null, users)
   }))
 }
+
+export default TwitterClient

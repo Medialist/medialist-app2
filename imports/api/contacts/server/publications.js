@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor'
+import { check, Match } from 'meteor/check'
+import { Counter } from 'meteor/natestrauser:publish-performant-counts'
+import Medialists from '/imports/api/medialists/medialists'
+import Contacts from './contacts'
+
 const contactCounter = new Counter('contactCount', Contacts.find({}))
 
 Meteor.publish('contactCount', function () {
@@ -7,8 +13,8 @@ Meteor.publish('contactCount', function () {
 Meteor.publish('my-contacts-and-campaigns', function () {
   if (!this.userId) return this.ready()
   return [
-    Contacts.find({}, { sort: { updatedAt: -1 }, limit: 100}),
-    Medialists.find({}, { sort: { updatedAt: -1 }, limit: 10})
+    Contacts.find({}, { sort: { updatedAt: -1 }, limit: 100 }),
+    Medialists.find({}, { sort: { updatedAt: -1 }, limit: 10 })
   ]
 })
 

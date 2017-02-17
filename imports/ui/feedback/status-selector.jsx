@@ -1,9 +1,7 @@
 import React, { PropTypes } from 'react'
-import values from 'lodash.values'
 import { Dropdown, DropdownMenu } from '../navigation/dropdown'
 import StatusLabel from './status-label'
-
-const items = values(window.Contacts.status)
+import { StatusValues } from '/imports/api/contacts/status'
 
 const StatusSelector = React.createClass({
   propTypes: {
@@ -47,7 +45,7 @@ const StatusSelector = React.createClass({
         )}
           <DropdownMenu width={223} open={this.state.open} onDismiss={this.closeDropdown}>
             <nav className='py3'>
-              {items.map((item) => (
+              {StatusValues.map((item) => (
                 <div key={item} className='px3 py2 pointer hover-bg-gray90' onClick={() => this.onLinkClick(item)}>
                   <StatusLabel name={item} />
                 </div>

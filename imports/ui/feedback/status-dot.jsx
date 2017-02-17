@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
-import values from 'lodash.values'
 import classNames from 'classnames'
+import { StatusValues } from '/imports/api/contacts/status'
 
 const StatusDot = ({ name, size = 12, className, style }) => {
   if (!name) return null
@@ -12,7 +12,7 @@ const StatusDot = ({ name, size = 12, className, style }) => {
 }
 
 StatusDot.propTypes = {
-  name: PropTypes.oneOf(values(window.Contacts.status)).isRequired,
+  name: PropTypes.oneOf(StatusValues).isRequired,
   size: PropTypes.number,
   className: PropTypes.string
 }

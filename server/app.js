@@ -71,5 +71,3 @@ App.contactInteracted = function (contactSlug, userId) {
     } } })
   }
 }
-
-Meteor.startup(() => ContactsTask.periodicallyUpdate())

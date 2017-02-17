@@ -1,10 +1,10 @@
 {
   "name": "medialist-app2",
-  "version": "8.0.0",
+  "version": "9.0.0",
   "private": true,
   "scripts": {
     "postinstall": "run-s build:*",
-    "start": "run-s build watch:server",
+    "start": "run-s build watch:server:prod",
     "test": "run-p lint ava",
     "test:server": "meteor test --once --driver-package dispatch:mocha --port 3100",
     "test:server:watch": "TEST_WATCH=1 meteor test --driver-package dispatch:mocha --port 3100",
@@ -17,7 +17,8 @@
     "watch": "run-p watch:*",
     "watch:css": "nodemon --quiet --watch ./imports/ui --ext css --exec npm run build:css",
     "watch:svg": "nodemon --quiet --watch ./private/svgs/icons --ext svg --exec npm run build:svg",
-    "watch:server": "meteor run --settings settings.json"
+    "watch:server": "meteor run --settings settings.json",
+    "watch:server:prod": "meteor run --settings settings.json --production"
   },
   "dependencies": {
     "async": "^2.1.2",
@@ -56,6 +57,7 @@
     "rebass": "^0.3.3",
     "redux": "^3.6.0",
     "redux-thunk": "^2.1.0",
+    "twitter": "^1.2.5",
     "twitter-screen-name": "^1.0.0",
     "underscore.string": "^3.3.4",
     "uploadcare": "^0.4.3",
