@@ -11,7 +11,7 @@ import Contacts from './contacts'
 // TODO: Should batch options update updatedAt timestamps?
 // TODO: Should batch options raise a batch specific post?
 export const batchAddContactsToCampaigns = new ValidatedMethod({
-  name: 'Contacts/batchAddContactsToCampaigns',
+  name: 'batchAddContactsToCampaigns',
 
   validate: new SimpleSchema({
     contactSlugs: { type: [String] },
@@ -59,7 +59,7 @@ export const batchAddContactsToCampaigns = new ValidatedMethod({
 // Add all contacts to myContacts.
 // Update existing favs with new updatedAt
 export const batchFavouriteContacts = new ValidatedMethod({
-  name: 'Contacts/batchFavouriteContacts',
+  name: 'batchFavouriteContacts',
 
   validate: new SimpleSchema({
     contactSlugs: { type: [String] }
@@ -91,5 +91,23 @@ export const batchFavouriteContacts = new ValidatedMethod({
       this.userId,
       { $set: { myContacts: existingFavs.concat(newFavs) } }
     )
+  }
+})
+
+export const removeContacts = new ValidatedMethod({
+  name: 'removeContacts',
+
+  validate: new SimpleSchema({
+    contactSlugs: { type: [String] }
+  }).validator(),
+
+  run ({contactSlugs}) {
+    if (!this.userId) throw new Meteor.Error('You must be logged in')
+    Meteor.users.update(
+      { 'myContacts.slug': { $in: contactSlugs } },
+      { $pull: { 'myContacts.slug': { $in: contactSlugs } } },
+      { multi: true }
+    )
+    return Contacts.remove({ slug: { $in: contactSlugs } })
   }
 })

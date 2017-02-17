@@ -118,3 +118,10 @@ describe('Contacts/batchAddContactsToCampaigns', function () {
     assert.deepEqual(Contacts.findOne({_id: '2'}).medialists, [], 'Other contacts are unharmed')
   })
 })
+
+describe('removeContacts', function () {
+  // TODO: it should it remove them from plenty other places too.
+  it('should remove the contact from contact and myContacts', function () {
+    
+  })
+})
