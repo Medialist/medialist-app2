@@ -4,7 +4,7 @@ import values from 'lodash.values'
 import nothing from '/imports/lib/nothing'
 import { MasterListRefSchema } from '/imports/api/master-lists/master-lists'
 import { TagRefSchema } from '/imports/api/tags/tags'
-import status from './status'
+import StatusMap from './status'
 
 const Contacts = new Mongo.Collection('contacts')
 
@@ -12,7 +12,7 @@ Contacts.allow(nothing)
 
 export default Contacts
 
-Contacts.status = status
+Contacts.status = StatusMap
 Contacts.phoneTypes = [
   'Mobile',
   'Landline'
