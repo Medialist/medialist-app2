@@ -55,6 +55,38 @@ export const batchAddContactsToCampaigns = new ValidatedMethod({
   }
 })
 
+export const removeContactsFromCampaign = new ValidatedMethod({
+  name: 'removeContactsFromCampaigns',
+
+  validate: new SimpleSchema({
+    contactSlugs: { type: [String], min: 1 },
+    campaignSlug: { type: String }
+  }).validator(),
+
+  run ({ contactSlugs, campaignSlug }) {
+    if (!this.userId) throw new Meteor.Error('You must be logged in')
+    checkAllSlugsExist(contactSlugs, Contacts)
+    checkAllSlugsExist([campaignSlug], Campaigns)
+
+    // a map of contacts.<slug> properties to delete from the campaign
+    const $unset = contactSlugs.reduce(($unset, slug) => {
+      $unset[`contacts.${slug}`] = ''
+      return $unset
+    }, {})
+
+    Campaigns.update(
+      { slug: campaignSlug },
+      { $unset }
+    )
+
+    Contacts.update(
+      { slug: { $in: contactSlugs } },
+      { $pull: { medialists: campaignSlug } },
+      { multi: true }
+    )
+  }
+})
+
 // Add all contacts to myContacts.
 // Update existing favs with new updatedAt
 export const batchFavouriteContacts = new ValidatedMethod({

@@ -5,6 +5,7 @@ import Contacts from './contacts'
 import Campaigns from '../medialists/medialists'
 import {
   batchAddContactsToCampaigns,
+  removeContactsFromCampaign,
   batchFavouriteContacts,
   batchRemoveContacts,
   createContact
@@ -120,6 +121,66 @@ describe('Contacts/batchAddContactsToCampaigns', function () {
     assert.deepEqual(Contacts.findOne({_id: '2'}).medialists, [], 'Other contacts are unharmed')
   })
 })
+
+describe.only('removeContactsFromCampaign', function () {
+  beforeEach(function () {
+    resetDatabase()
+  })
+
+  it('should require the user to be logged in', function () {
+    assert.throws(() => removeContactsFromCampaign.run.call({}, {}), /You must be logged in/)
+  })
+
+  it('should validate the parameters', function () {
+    assert.throws(() => removeContactsFromCampaign.validate({}), /Contact slugs is required/)
+    assert.throws(() => removeContactsFromCampaign.validate({ contactSlugs: 'foo' }), /must be an array/)
+    assert.doesNotThrow(() => removeContactsFromCampaign.validate({ contactSlugs: ['foo'], campaignSlug: 'cam' }))
+  })
+
+  // TODO: it should use a deleted flag
+  // TODO: it should it remove them from plenty other places too.
+  it('should remove the contact from the campaign', function () {
+    const user = {
+      _id: 'kKz46qgWmbGHrznJC',
+      profile: {
+        name: 'Bob'
+      },
+      myContacts: [],
+      services: {}
+    }
+    Meteor.users.insert(user)
+
+    const contacts = Array(3).fill(0).map((_, index) => ({
+      _id: `${index}`,
+      slug: `${index}`,
+      name: `${index}`,
+      avatar: `${index}`,
+      outlets: [],
+    }))
+    contacts[0].medialists = ['0']
+    contacts[2].medialists = ['0']
+    contacts.forEach((c) => Contacts.insert(c))
+
+    const campaigns = Array(1).fill(0).map((_, index) => ({
+      _id: `${index}`,
+      slug: `${index}`,
+      contacts: { '2': { slug: '2' }, '0': { slug: '0' } }
+    }))
+    campaigns.forEach((c) => Campaigns.insert(c))
+
+    const userId = 'kKz46qgWmbGHrznJC'
+    const contactSlugs = ['1', '2']
+    const campaignSlug = '0'
+    removeContactsFromCampaign.run.call({userId}, {contactSlugs, campaignSlug})
+
+    const campaign = Campaigns.findOne()
+
+    assert.equal(Object.keys(campaign.contacts).length, 1)
+    assert.deepEqual(campaign.contacts['0'], { slug: '0' })
+
+  })
+})
+
 
 describe('batchRemoveContacts', function () {
   beforeEach(function () {
