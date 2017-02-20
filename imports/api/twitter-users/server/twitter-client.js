@@ -8,8 +8,11 @@ class TwitterStream {
   constructor (stream) {
     this.stream = stream
   }
+  onError (err) {
+    console.error('Error during TwitterStream event handler', err)
+  }
   on (event, cb) {
-    return this.stream.on(event, Meteor.bindEnvironment(cb))
+    return this.stream.on(event, Meteor.bindEnvironment(cb, this.onError))
   }
 }
 
@@ -19,7 +22,7 @@ class Twitter {
     this.twitter = new NpmTwitter(opts)
   }
   stream () {
-    var args = Array.prototype.slice.call(arguments)
+    var args = Array.from(arguments)
     var cb = args[args.length - 1]
     console.assert(typeof cb === 'function')
     args[args.length - 1] = (stream) => cb.call(this, new TwitterStream(stream))
