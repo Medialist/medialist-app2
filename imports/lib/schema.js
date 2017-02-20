@@ -6,3 +6,8 @@ export const TypeSchema = new SimpleSchema({
     allowedValues: ['Contacts', 'Campaigns']
   }
 })
+
+export const LabelValueSchema = new SimpleSchema({
+  label: { type: String, min: 1 },
+  value: { type: String, min: 1 }
+})

@@ -1,13 +1,12 @@
 import { Meteor } from 'meteor/meteor'
+import { check } from 'meteor/check'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
-import { checkAllSlugsExist } from '/imports/lib/slug'
+import { uniqueSlug, checkAllSlugsExist } from '/imports/lib/slug'
 import Campaigns from '../medialists/medialists'
-import Contacts from './contacts'
+import Contacts, { ContactSchema, ContactCreateSchema } from './contacts'
 
-// TODO: port other contact methods to new style and test
-
-// TODO: Should batch options update My contacts / campaigns?
+// TODO: Should batch options update My contacts / campaigns timestamp?
 // TODO: Should batch options update updatedAt timestamps?
 // TODO: Should batch options raise a batch specific post?
 export const batchAddContactsToCampaigns = new ValidatedMethod({
@@ -94,20 +93,85 @@ export const batchFavouriteContacts = new ValidatedMethod({
   }
 })
 
-export const removeContacts = new ValidatedMethod({
-  name: 'removeContacts',
+/*
+ * Remove an array of contacts by id
+ * Remove from all users myContacts array before deleting.
+ * TODO: refactor to use a deletedAt flag instead of removing.
+ */
+export const batchRemoveContacts = new ValidatedMethod({
+  name: 'batchRemoveContacts',
 
   validate: new SimpleSchema({
-    contactSlugs: { type: [String] }
+    contactIds: { type: [String] }
   }).validator(),
 
-  run ({contactSlugs}) {
+  run ({contactIds}) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
     Meteor.users.update(
-      { 'myContacts.slug': { $in: contactSlugs } },
-      { $pull: { 'myContacts.slug': { $in: contactSlugs } } },
+      { 'myContacts._id': { $in: contactIds } },
+      { $pull: { myContacts: { _id: { $in: contactIds } } } },
       { multi: true }
     )
-    return Contacts.remove({ slug: { $in: contactSlugs } })
+    return Contacts.remove({ _id: { $in: contactIds } })
+  }
+})
+
+/*
+ * Create a new contact.
+ * Check for duplicates first and add to the users `myContacts` array.
+ */
+export const createContact = new ValidatedMethod({
+  name: 'createContact',
+
+  validate: new SimpleSchema({
+    details: { type: [ContactCreateSchema] }
+  }).validator(),
+
+  run ({details}) {
+    if (!this.userId) throw new Meteor.Error('You must be logged in')
+      // return if a matching twitter handle already exists
+    const existingContact = details.twitter && Contacts.findOne({ 'socials.label': 'Twitter', 'socials.value': details.twitter })
+    if (existingContact) return existingContact
+
+    const user = Meteor.user()
+    const createdBy = {
+      _id: user._id,
+      name: user.profile.name,
+      avatar: user.services.twitter.profile_image_url_https
+    }
+    const createdAt = new Date()
+
+    // Merge the provided details with any missing values
+    const contact = Object.assign({}, details, {
+      slug: uniqueSlug(details.name, Contacts),
+      medialists: [],
+      masterLists: [],
+      tags: [],
+      languages: 'English',
+      createdAt,
+      createdBy,
+      updatedAt: createdAt,
+      updatedBy: createdBy
+    })
+
+    // Save the contact
+    check(contact, ContactSchema)
+    const contactId = Contacts.insert(contact)
+
+    Meteor.users.update(
+      { _id: this.userId },
+      { $push: {
+        'myContacts': {
+          _id: contactId,
+          slug: contact.slug,
+          avatar: contact.avatar,
+          name: contact.name,
+          outlets: contact.outlets,
+          updatedAt: contact.updatedAt
+        }
+      }}
+    )
+
+    return contactId
   }
 })

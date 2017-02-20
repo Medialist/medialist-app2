@@ -5,7 +5,8 @@ import Contacts from './contacts'
 import Campaigns from '../medialists/medialists'
 import {
   batchAddContactsToCampaigns,
-  batchFavouriteContacts
+  batchFavouriteContacts,
+  batchRemoveContacts
 } from './methods'
 
 describe('Contacts/batchFavouriteContacts', function () {
@@ -120,8 +121,74 @@ describe('Contacts/batchAddContactsToCampaigns', function () {
 })
 
 describe('removeContacts', function () {
+  beforeEach(function () {
+    resetDatabase()
+  })
+
+  // TODO: it should use a deleted flag
   // TODO: it should it remove them from plenty other places too.
-  it('should remove the contact from contact and myContacts', function () {
-    
+  it('should remove the contact from Contacts and all users myContacts array', function () {
+    const contacts = Array(3).fill(0).map((_, index) => ({
+      _id: `${index}`,
+      slug: `${index}`,
+      name: `${index}`,
+      avatar: `${index}`,
+      outlets: []
+    }))
+    contacts.forEach((c) => Contacts.insert(c))
+    const users = Array(2).fill(0).map((_, index) => ({
+      _id: `${index}`,
+      name: `${index}`
+    }))
+    users[0].myContacts = [{_id: '0'}, {_id: '1'}]
+    users[1].myContacts = [{_id: '2'}, {_id: '0'}]
+    users.forEach((u) => Meteor.users.insert(u))
+
+    const userId = 'jake'
+    const contactIds = ['0', '2']
+    batchRemoveContacts.run.call({userId}, {contactIds})
+
+    const user0 = Meteor.users.findOne({_id: '0'})
+    assert.equal(user0.myContacts.length, 1)
+    assert.deepEqual(user0.myContacts[0], {_id: '1'})
+
+    const user1 = Meteor.users.findOne({_id: '1'})
+    assert.equal(user1.myContacts.length, 0)
+  })
+})
+
+describe('createContact', function () {
+  beforeEach(function () {
+    resetDatabase()
+  })
+  // TODO: it should it remove them from plenty other places too.
+  // TODO: it should use a deleted flag
+  it('should add a doc to Contacts and the users myContacts array', function () {
+    const contacts = Array(3).fill(0).map((_, index) => ({
+      _id: `${index}`,
+      slug: `${index}`,
+      name: `${index}`,
+      avatar: `${index}`,
+      outlets: []
+    }))
+    contacts.forEach((c) => Contacts.insert(c))
+    const users = Array(2).fill(0).map((_, index) => ({
+      _id: `${index}`,
+      name: `${index}`
+    }))
+    users[0].myContacts = [{_id: '0'}, {_id: '1'}]
+    users[1].myContacts = [{_id: '2'}, {_id: '0'}]
+    users.forEach((u) => Meteor.users.insert(u))
+
+    const userId = 'jake'
+    const contactIds = ['0', '2']
+    batchRemoveContacts.run.call({userId}, {contactIds})
+
+    const user0 = Meteor.users.findOne({_id: '0'})
+    assert.equal(user0.myContacts.length, 1)
+    assert.deepEqual(user0.myContacts[0], {_id: '1'})
+
+    const user1 = Meteor.users.findOne({_id: '1'})
+    assert.equal(user1.myContacts.length, 0)
   })
 })

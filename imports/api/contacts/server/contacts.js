@@ -6,27 +6,30 @@ Contacts._ensureIndex({'slug': 1})
 Contacts.find({}).observeChanges({
   changed (id, fields) {
     checkScreenNameUpdate(id, fields)
+  },
+  added (id, fields) {
+    checkScreenNameUpdate(id, fields)
   }
 })
 
 function checkScreenNameUpdate (id, fields) {
   var social = fields.socials && fields.socials[0]
   if (social && social.label === 'Twitter' && social.value) {
-    Contacts.changeScreenName(id, social.value)
+    changeScreenName(id, social.value)
   }
 }
 
-Contacts.changeScreenName = function (id, screenName) {
+function changeScreenName (id, screenName) {
   return new Promise((resolve, reject) => {
     TwitterClient.grabUserByScreenName(screenName, (err, user) => {
       if (err) return reject(err)
       if (!user) return reject('Failed to get twitter info for contact', id)
-      resolve(Contacts.updateWithTwitterInfo(id, user))
+      resolve(updateWithTwitterInfo(id, user))
     })
   })
 }
 
-Contacts.updateWithTwitterInfo = function (id, twitterUser) {
+function updateWithTwitterInfo (id, twitterUser) {
   return Contacts.update({ _id: id, 'socials.label': 'Twitter' }, {
     $set: {
       avatar: twitterUser.profile_image_url_https,

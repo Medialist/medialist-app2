@@ -8,77 +8,70 @@ import Contacts, { ContactsSchema } from '/imports/api/contacts/server/contacts'
 
 Meteor.methods({
 
-  'contacts/remove': function (contactIds) {
-    if (!this.userId) throw new Meteor.Error('Only a logged in user can remove a contact')
-    check(contactIds, Array)
-    Meteor.users.update({ 'myContacts._id': { $in: contactIds } }, { $pull: { myContacts: { _id: { $in: contactIds } } } })
-    return Contacts.remove({_id: {$in: contactIds}})
-  },
-
-  'contacts/create': function (details, medialistSlug) {
-    if (!this.userId) throw new Meteor.Error('Only a logged in user can create a contact')
-    check(details, Object)
-    if (medialistSlug) {
-      check(medialistSlug, String)
-      if (!Medialists.find({slug: medialistSlug}).count()) throw new Meteor.Error('Medialist #' + medialistSlug + ' does not exist')
-    }
-
-    // return if a matching twitter handle already exists
-    var existingContact = details.twitter && Contacts.findOne({ 'socials.label': 'Twitter', 'socials.value': details.twitter })
-    if (existingContact) return existingContact
-
-    var user = Meteor.user()
-    var contact = {
-      name: details.name,
-      slug: App.uniqueSlug(details.twitter || App.cleanSlug(details.name), Contacts),
-      avatar: '/images/avatar.svg',
-      bio: '',
-      outlets: details.outlets,
-      sectors: '',
-      masterLists: [],
-      tags: [],
-      languages: 'English',
-      emails:  [{label: Contacts.emailTypes[0], value: details.email}],
-      phones:  [{label: Contacts.phoneTypes[0], value: details.phone}],
-      socials: [{label: 'Twitter', value: details.twitter}],
-      medialists: [],
-      createdAt: new Date(),
-      createdBy: {
-        _id: user._id,
-        name: user.profile.name,
-        avatar: user.services.twitter.profile_image_url_https
-      }
-    }
-    contact.updatedAt = contact.createdAt
-    contact.updatedBy = contact.createdBy
-
-    if (medialistSlug) contact.medialists.push(medialistSlug)
-
-    // Save the contact
-    check(contact, ContactsSchema)
-    var contactId = Contacts.insert(contact)
-
-    if (medialistSlug) {
-      var updateMedialist = {}
-      updateMedialist['contacts.' + contact.slug] = Contacts.status.toContact
-      Medialists.update({ slug: medialistSlug }, {$set: updateMedialist})
-      App.medialistUpdated(medialistSlug, this.userId)
-    }
-
-    return (details.twitter ? Contacts.changeScreenName(contactId, details.twitter) : Promise.resolve())
-      .then(() => {
-        const contact = Contacts.findOne(contactId)
-        Meteor.users.update({ _id: this.userId }, { $push: { 'myContacts': {
-          _id: contactId,
-          slug: contact.slug,
-          avatar: contact.avatar,
-          name: contact.name,
-          outlets: contact.outlets,
-          updatedAt: new Date()
-        } } })
-        return contact
-      })
-  },
+  // 'contacts/create': function (details, medialistSlug) {
+  //   if (!this.userId) throw new Meteor.Error('Only a logged in user can create a contact')
+  //   check(details, Object)
+  //   if (medialistSlug) {
+  //     check(medialistSlug, String)
+  //     if (!Medialists.find({slug: medialistSlug}).count()) throw new Meteor.Error('Medialist #' + medialistSlug + ' does not exist')
+  //   }
+  //
+  //   // return if a matching twitter handle already exists
+  //   var existingContact = details.twitter && Contacts.findOne({ 'socials.label': 'Twitter', 'socials.value': details.twitter })
+  //   if (existingContact) return existingContact
+  //
+  //   var user = Meteor.user()
+  //   var contact = {
+  //     name: details.name,
+  //     slug: App.uniqueSlug(details.twitter || App.cleanSlug(details.name), Contacts),
+  //     avatar: '/images/avatar.svg',
+  //     bio: '',
+  //     outlets: details.outlets,
+  //     sectors: '',
+  //     masterLists: [],
+  //     tags: [],
+  //     languages: 'English',
+  //     emails:  [{label: Contacts.emailTypes[0], value: details.email}],
+  //     phones:  [{label: Contacts.phoneTypes[0], value: details.phone}],
+  //     socials: [{label: 'Twitter', value: details.twitter}],
+  //     medialists: [],
+  //     createdAt: new Date(),
+  //     createdBy: {
+  //       _id: user._id,
+  //       name: user.profile.name,
+  //       avatar: user.services.twitter.profile_image_url_https
+  //     }
+  //   }
+  //   contact.updatedAt = contact.createdAt
+  //   contact.updatedBy = contact.createdBy
+  //
+  //   if (medialistSlug) contact.medialists.push(medialistSlug)
+  //
+  //   // Save the contact
+  //   check(contact, ContactsSchema)
+  //   var contactId = Contacts.insert(contact)
+  //
+  //   if (medialistSlug) {
+  //     var updateMedialist = {}
+  //     updateMedialist['contacts.' + contact.slug] = Contacts.status.toContact
+  //     Medialists.update({ slug: medialistSlug }, {$set: updateMedialist})
+  //     App.medialistUpdated(medialistSlug, this.userId)
+  //   }
+  //
+  //   return (details.twitter ? Contacts.changeScreenName(contactId, details.twitter) : Promise.resolve())
+  //     .then(() => {
+  //       const contact = Contacts.findOne(contactId)
+  //       Meteor.users.update({ _id: this.userId }, { $push: { 'myContacts': {
+  //         _id: contactId,
+  //         slug: contact.slug,
+  //         avatar: contact.avatar,
+  //         name: contact.name,
+  //         outlets: contact.outlets,
+  //         updatedAt: new Date()
+  //       } } })
+  //       return contact
+  //     })
+  // },
 
   'contacts/addToMedialist': function (contactSlugs, medialistSlug) {
     if (typeof contactSlugs === 'string') contactSlugs = [contactSlugs]

@@ -17,7 +17,7 @@ import createSearchContainer from './search-container'
 import AddContactsToCampaign from './add-contacts-to-campaign'
 import Medialists from '/imports/api/medialists/medialists'
 import { AvatarTag } from '../tags/tag'
-import { batchFavouriteContacts, removeContacts } from '/imports/api/contacts/methods'
+import { batchFavouriteContacts, batchRemoveContacts } from '/imports/api/contacts/methods'
 import { batchAddTags } from '/imports/api/tags/methods'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import withSnackbar from '../snackbar/with-snackbar'
@@ -115,14 +115,14 @@ const ContactsPage = withSnackbar(React.createClass({
   onDeleteAllClick () {
     const { snackbar } = this.props
     const { selections } = this.state
-    const contactSlugs = selections.map((s) => s.slug)
-    removeContacts.run({contactSlugs}, (err, res) => {
+    const contactIds = selections.map((s) => s._id)
+    batchRemoveContacts.call({contactIds}, (err, res) => {
       if (err) {
         console.log(err)
         return snackbar.show('Sorry, that didn\'t work')
       }
       this.setState({ selections: [] })
-      snackbar.show(`Deleted ${contactSlugs.length} ${contactSlugs.length === 1 ? 'contacts' : 'contact'}`)
+      snackbar.show(`Deleted ${contactIds.length} ${contactIds.length === 1 ? 'contacts' : 'contact'}`)
     })
   },
 
