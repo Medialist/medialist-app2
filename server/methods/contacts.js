@@ -1,3 +1,11 @@
+
+// TODO: port to validatedmethods in /imports dir and test
+
+import { Meteor } from 'meteor/meteor'
+import { check } from 'meteor/check'
+import Medialists from '/imports/api/medialists/medialists'
+import Contacts, { ContactsSchema } from '/imports/api/contacts/server/contacts'
+
 Meteor.methods({
 
   'contacts/remove': function (contactIds) {
@@ -47,7 +55,7 @@ Meteor.methods({
     if (medialistSlug) contact.medialists.push(medialistSlug)
 
     // Save the contact
-    check(contact, Schemas.Contacts)
+    check(contact, ContactsSchema)
     var contactId = Contacts.insert(contact)
 
     if (medialistSlug) {
@@ -127,29 +135,6 @@ Meteor.methods({
     }, {
       $unset: unset
     })
-  },
-
-  'contacts/addDetails': function (contactSlug, outlet) {
-    if (!this.userId) throw new Meteor.Error('Only a logged in user can add roles to a contact')
-    check(contactSlug, String)
-    check(outlet, { label: String, value: String })
-    var user = Meteor.users.findOne(this.userId)
-    if (!Contacts.find({slug: contactSlug}).count()) throw new Meteor.Error('Contact #' + contactSlug + ' does not exist')
-
-    var org = Orgs.findOne({ name: outlet.label })
-    if (!org) {
-      Orgs.insert({ name: outlet.label })
-    }
-    check(details, Schemas.ContactDetails)
-    const updateSet = {
-      'updatedBy._id': user._id,
-      'updatedBy.name': user.profile.name,
-      'updatedBy.avatar': user.services.twitter.profile_image_url_https,
-      'updatedAt': new Date()
-    }
-    App.contactInteracted(contactSlug, this.userId)
-
-    return Contacts.update({ slug: contactSlug }, { $set: updateSet, $push: { outlets: outlet } })
   },
 
   'contacts/setLabel': function (contactSlug, type, index, newLabel) {

@@ -1,2 +1,2 @@
-import '../imports/startup/client/index.jsx'
-import '../imports/methods/shared'
+import '/imports/startup/client/index'
+import '/imports/methods/shared'

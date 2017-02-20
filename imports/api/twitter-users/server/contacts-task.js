@@ -1,4 +1,9 @@
-ContactsTask = {}
+import { Meteor } from 'meteor/meteor'
+import { check, Match } from 'meteor/check'
+import TwitterClient from './twitter-client'
+import Contacts from '/imports/api/contacts/server/contacts'
+
+const ContactsTask = {}
 
 var contactUpdateQueue = []
 
@@ -110,3 +115,5 @@ ContactsTask.queueUpdate = (ids) => {
   ids = ids.filter(id => contactUpdateQueue.indexOf(id) === -1)
   contactUpdateQueue = contactUpdateQueue.concat(ids)
 }
+
+export default ContactsTask

@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { check } from 'meteor/check'
-
-const Contacts = (typeof window === 'undefined') ? global.Contacts : window.Contacts
+import Contacts from '/imports/api/contacts/contacts'
 
 Meteor.methods({
   'contacts/toggle-favourite': function (contactSlug) {

@@ -1,4 +1,6 @@
 import moment from 'moment'
+import Contacts, { ContactSchema } from '/imports/api/contacts/contacts'
+import ContactsTask from '/imports/api/twitter-users/server/contacts-task'
 
 // TODO: reafactor to return _ids of created and updated users, so we can do batch actions on them. Or use the tag?
 
@@ -69,7 +71,7 @@ function createContact (data, user) {
   data.updatedAt = data.createdAt
   data.updatedBy = data.createdBy
 
-  check(data, Schemas.Contacts)
+  check(data, ContactSchema)
 
   var id = Contacts.insert(data)
   ContactsTask.queueUpdate(id)
@@ -106,7 +108,7 @@ function mergeContact (data, contact, user) {
   var id = contact._id
   delete contact._id
 
-  check(contact, Schemas.Contacts)
+  check(contact, ContactSchema)
 
   Contacts.update({_id: id}, {$set: contact})
   ContactsTask.queueUpdate(id)

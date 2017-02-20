@@ -1,3 +1,6 @@
+import Contacts from '../contacts'
+import TwitterClient from '/imports/api/twitter-users/server/twitter-client'
+
 Contacts._ensureIndex({'slug': 1})
 
 Contacts.find({}).observeChanges({
@@ -33,3 +36,5 @@ Contacts.updateWithTwitterInfo = function (id, twitterUser) {
     }
   })
 }
+
+export default Contacts

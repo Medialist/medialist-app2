@@ -1,10 +1,12 @@
-TwitterUsers = new Mongo.Collection('twitter_users')
+import { Mongo } from 'meteor/mongo'
+import nothing from '/imports/lib/nothing'
+import Contacts from '/imports/api/contacts/server/contacts'
 
-TwitterUsers.allow({
-  insert: () => false,
-  update: () => false,
-  remove: () => false,
-})
+const TwitterUsers = new Mongo.Collection('twitter_users')
+
+TwitterUsers.allow(nothing)
+
+export default TwitterUsers
 
 TwitterUsers.find({}).observeChanges({
   changed: updateContact
