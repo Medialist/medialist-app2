@@ -22,7 +22,10 @@ const ContactPage = React.createClass({
   },
 
   getInitialState () {
-    return { editContactOpen: false }
+    return {
+      editContactOpen: false,
+      addContactModalOpen: false
+    }
   },
 
   componentDidMount () {
@@ -42,8 +45,12 @@ const ContactPage = React.createClass({
     console.log('onEditContact', contact)
   },
 
-  onAddClick () {
-    console.log('TODO: Add contact to campaign')
+  onAddContactToCampaign () {
+    this.setState(({ addContactModalOpen }) => ({ addContactModalOpen: true }))
+  },
+
+  onDismissAddContactToCampaign () {
+    this.setState(({ addContactModalOpen }) => ({ addContactModalOpen: false }))
   },
 
   onFeedback ({message, campaign, status}, cb) {
@@ -67,11 +74,12 @@ const ContactPage = React.createClass({
 
   render () {
     const { contact, campaigns, user, masterlists } = this.props
-    const { editContactOpen } = this.state
+    const { editContactOpen, addContactModalOpen } = this.state
+    const { onDismissAddContactToCampaign, onAddContactToCampaign } = this
     if (!contact) return null
     return (
       <div>
-        <ContactTopbar contact={contact} onAddClick={this.onAddClick} />
+        <ContactTopbar contact={contact} open={addContactModalOpen} onAddContactToCampaign={onAddContactToCampaign} onDismiss={onDismissAddContactToCampaign} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
             <ContactInfo contact={contact} onEditClick={this.toggleEditContact} user={user} masterlists={masterlists} />

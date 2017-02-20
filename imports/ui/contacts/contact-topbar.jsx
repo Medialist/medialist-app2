@@ -1,9 +1,13 @@
 import React, { PropTypes } from 'react'
 import { browserHistory } from 'react-router'
+import AddContactsToCampaigns from './add-contacts-to-campaign'
 
 const ContactTopbar = React.createClass({
   propTypes: {
-    contact: PropTypes.object
+    contact: PropTypes.object,
+    open: PropTypes.bool.isRequired,
+    onDismiss: PropTypes.func.isRequired,
+    onAddContactToCampaign: PropTypes.func.isRequired
   },
 
   onBackClick (e) {
@@ -12,7 +16,7 @@ const ContactTopbar = React.createClass({
   },
 
   render () {
-    const { contact } = this.props
+    const { contact, open, onDismiss, onAddContactToCampaign } = this.props
     if (!contact) return null
 
     return (
@@ -21,10 +25,15 @@ const ContactTopbar = React.createClass({
           <a className='inline-block p4' href='#' onClick={this.onBackClick}>◀ Back</a>
         </div>
         <div className='flex-none border-left border-gray80 px4 py3'>
-          <button type='button' className='btn white bg-blue mx2' onClick={() => console.log('TODO: Add to campaign')}>
+          <button type='button' className='btn white bg-blue mx2' onClick={onAddContactToCampaign}>
             Add <FirstName contact={contact} /> to Campaign
           </button>
         </div>
+        <AddContactsToCampaigns
+          title={`Add ${contact.name.split(' ')[0] || 'Unknown'} to a Campaign`}
+          open={open}
+          onDismiss={onDismiss}
+          contacts={[contact]} />
       </nav>
     )
   }

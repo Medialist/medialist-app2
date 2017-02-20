@@ -158,6 +158,7 @@ const ContactsPage = withSnackbar(React.createClass({
     const { contactsCount, selectedMasterListSlug, loading, searching, contacts, term, sort, campaigns } = this.props
     const { onSortChange, onSelectionsChange, onMasterListChange, onTermChange, onCampaignRemove } = this
     const { selections } = this.state
+
     if (!loading && contactsCount === 0) return <ContactListEmpty />
     return (
       <div>
@@ -231,10 +232,13 @@ const ContactsPage = withSnackbar(React.createClass({
           onSubmit={this.onAddContactSubmit}
           open={this.state.addContactModalOpen} />
         <AddContactsToCampaign
+          title='Add these Contacts to a Campaign'
           contacts={selections}
           onDismiss={() => this.setState({AddContactsToCampaignModalOpen: false})}
           onSubmit={() => this.setState({AddContactsToCampaignModalOpen: false})}
-          open={this.state.AddContactsToCampaignModalOpen} />
+          open={this.state.AddContactsToCampaignModalOpen}>
+          <AbbreviatedAvatarList size={30} items={selections} className='mx-auto my4 px4' />
+        </AddContactsToCampaign>
         <AddTags
           type='Contacts'
           open={this.state.addTagsOpen}
