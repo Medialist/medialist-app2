@@ -86,13 +86,13 @@ const ContactInfo = React.createClass({
                 <Icon className='mx2 pointer svg-icon-lg align-bottom gray40' onClick={this.onToggleFavourite} />
               </Tooltip>
             </span>
-            <span className='block f-sm'>{(outlets && outlets.length) ? outlets[0].value : null}</span>
+            <span className='block f-sm mb1'>{(outlets && outlets.length) ? outlets[0].value : null}</span>
             <span className='block f-sm'>{outlets.map((o) => o.label).join(', ')}</span>
-            <span className='block mt2'>{socials.map((social) => <Socials {...social} />)}</span>
+            <span className='block mt3'>{socials.map((social) => <Socials {...social} />)}</span>
           </div>
         </div>
         <div className='clearfix p3 pt4 mt4 border-gray80 border-bottom'>
-          <a href='#' className='f-xs blue right' onClick={this.props.onEditClick}>Edit Contact</a>
+          <a href='#' className='f-xs blue right' onClick={this.props.onEditClick}>Edit</a>
           <h1 className='m0 f-md normal gray20 left'>Info</h1>
         </div>
         <div className='clearfix'>
@@ -175,7 +175,7 @@ const ContactItemsEmail = ({ email }) => {
     <div>
       <a href={`mailto:${encodeURIComponent(value)}`} className='hover-blue block py1 clearfix'>
         <div className='col col-2 center'><EmailIcon /></div>
-        <div className='col col-10'>{value}</div>
+        <div className='col col-10 gray10'>{value}</div>
       </a>
     </div>
   )
@@ -188,7 +188,7 @@ const ContactItemsPhone = ({ phone }) => {
     <div>
       <a href={`tel:${value}`} className='hover-blue block py1 clearfix'>
         <div className='col col-2 center'><Icon /></div>
-        <div className='col col-10'>{value}</div>
+        <div className='col col-10 gray10'>{value}</div>
       </a>
     </div>
   )
@@ -200,7 +200,7 @@ const ContactItemBio = ({ bio }) => {
     <div>
       <a className='block py1 clearfix'>
         <div className='col col-2 center'><BioIcon className='gray60' /></div>
-        <div className='col col-10'>{bio}</div>
+        <div className='col col-10 gray10'>{bio}</div>
       </a>
     </div>
   )

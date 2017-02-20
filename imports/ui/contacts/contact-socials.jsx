@@ -1,10 +1,18 @@
 import React from 'react'
-import { Twitter } from '../images/icons'
+import { Twitter, Facebook, WebsiteIcon } from '../images/icons'
 
 const socialIcons = {
   Twitter: {
     icon: Twitter,
     url: 'https://twitter.com/'
+  },
+  Facebook: {
+    icon: Facebook,
+    url: 'https://facebook.com/public/'
+  },
+  Website: {
+    icon: WebsiteIcon,
+    url: ''
   }
 }
 
@@ -13,6 +21,6 @@ export default (props) => {
   const Icon = socialIcons[label].icon
   const url = `${socialIcons[label].url}${value}`
   return (
-    <a href={url} target='_Blank'><Icon size='20' className='mr2' /></a>
+    <a href={url} target='_Blank'><Icon className='mr2' /></a>
   )
 }
