@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { check } from 'meteor/check'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
-import { uniqueSlug, checkAllSlugsExist } from '/imports/lib/slug'
+import slugify, { checkAllSlugsExist } from '/imports/lib/slug'
 import Campaigns from '../medialists/medialists'
 import Contacts, { ContactSchema, ContactCreateSchema } from './contacts'
 
@@ -124,7 +124,7 @@ export const createContact = new ValidatedMethod({
   name: 'createContact',
 
   validate: new SimpleSchema({
-    details: { type: [ContactCreateSchema] }
+    details: { type: ContactCreateSchema }
   }).validator(),
 
   run ({details}) {
@@ -133,17 +133,17 @@ export const createContact = new ValidatedMethod({
     const existingContact = details.twitter && Contacts.findOne({ 'socials.label': 'Twitter', 'socials.value': details.twitter })
     if (existingContact) return existingContact
 
-    const user = Meteor.user()
+    const user = Meteor.users.findOne({_id: this.userId})
     const createdBy = {
       _id: user._id,
       name: user.profile.name,
-      avatar: user.services.twitter.profile_image_url_https
+      avatar: user.services.twitter && user.services.twitter.profile_image_url_https
     }
     const createdAt = new Date()
 
     // Merge the provided details with any missing values
     const contact = Object.assign({}, details, {
-      slug: uniqueSlug(details.name, Contacts),
+      slug: slugify(details.name, Contacts),
       medialists: [],
       masterLists: [],
       tags: [],

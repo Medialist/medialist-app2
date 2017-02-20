@@ -6,7 +6,8 @@ import Campaigns from '../medialists/medialists'
 import {
   batchAddContactsToCampaigns,
   batchFavouriteContacts,
-  batchRemoveContacts
+  batchRemoveContacts,
+  createContact
 } from './methods'
 
 describe('Contacts/batchFavouriteContacts', function () {
@@ -18,7 +19,7 @@ describe('Contacts/batchFavouriteContacts', function () {
     assert.throws(() => batchFavouriteContacts.run.call({}, {}), /You must be logged in/)
   })
 
-  it('should validated the parameters', function () {
+  it('should validate the parameters', function () {
     assert.throws(() => batchFavouriteContacts.validate({}), /Contact slugs is required/)
     assert.throws(() => batchFavouriteContacts.validate({contactSlugs: [1]}), /must be a string/)
     assert.doesNotThrow(() => batchFavouriteContacts.validate({contactSlugs: ['a']}))
@@ -120,9 +121,19 @@ describe('Contacts/batchAddContactsToCampaigns', function () {
   })
 })
 
-describe('removeContacts', function () {
+describe('batchRemoveContacts', function () {
   beforeEach(function () {
     resetDatabase()
+  })
+
+  it('should require the user to be logged in', function () {
+    assert.throws(() => batchRemoveContacts.run.call({}, {}), /You must be logged in/)
+  })
+
+  it('should validate the parameters', function () {
+    assert.throws(() => batchRemoveContacts.validate({}), /Contact ids is required/)
+    assert.throws(() => batchRemoveContacts.validate({ contactIds: 'foo' }), /must be an array/)
+    assert.doesNotThrow(() => batchRemoveContacts.validate({ contactIds: ['kKz46qgWmbGHrznJC'] }))
   })
 
   // TODO: it should use a deleted flag
@@ -161,34 +172,69 @@ describe('createContact', function () {
   beforeEach(function () {
     resetDatabase()
   })
-  // TODO: it should it remove them from plenty other places too.
-  // TODO: it should use a deleted flag
-  it('should add a doc to Contacts and the users myContacts array', function () {
-    const contacts = Array(3).fill(0).map((_, index) => ({
-      _id: `${index}`,
-      slug: `${index}`,
-      name: `${index}`,
-      avatar: `${index}`,
-      outlets: []
-    }))
-    contacts.forEach((c) => Contacts.insert(c))
-    const users = Array(2).fill(0).map((_, index) => ({
-      _id: `${index}`,
-      name: `${index}`
-    }))
-    users[0].myContacts = [{_id: '0'}, {_id: '1'}]
-    users[1].myContacts = [{_id: '2'}, {_id: '0'}]
-    users.forEach((u) => Meteor.users.insert(u))
 
-    const userId = 'jake'
-    const contactIds = ['0', '2']
-    batchRemoveContacts.run.call({userId}, {contactIds})
+  it('should require the user to be logged in', function () {
+    assert.throws(() => createContact.run.call({}, {}), /You must be logged in/)
+  })
 
-    const user0 = Meteor.users.findOne({_id: '0'})
-    assert.equal(user0.myContacts.length, 1)
-    assert.deepEqual(user0.myContacts[0], {_id: '1'})
+  it('should validate the parameters', function () {
+    assert.throws(() => createContact.validate({}), /Details is required/)
+    assert.throws(() => createContact.validate({ details: {
+      name: 0
+    }}), /must be a string/)
+    assert.doesNotThrow(() => createContact.validate({ details: {
+      name: 'Journaldo',
+      avatar: 'https://laser.cat/lrg.png',
+      outlets: [
+        {label: 'Gordian', value: 'knot'}
+      ],
+      emails: [
+        {label: 'email', value: 'j@gord.ian'}
+      ],
+      phones: [],
+      socials: [],
+      address: ''
+    }}))
+  })
 
-    const user1 = Meteor.users.findOne({_id: '1'})
-    assert.equal(user1.myContacts.length, 0)
+  it('should add a doc to Contacts and the current user\'s myContacts array', function () {
+    const user = {
+      _id: 'kKz46qgWmbGHrznJC',
+      profile: {
+        name: 'Bob'
+      },
+      myContacts: [],
+      services: {}
+    }
+    Meteor.users.insert(user)
+
+    const details = {
+      name: 'Journaldo',
+      avatar: 'https://laser.cat/lrg.png',
+      outlets: [
+        {label: 'Gordian', value: 'knot'}
+      ],
+      emails: [
+        {label: 'email', value: 'j@gord.ian'}
+      ],
+      phones: [],
+      socials: [],
+      address: ''
+    }
+
+    const userId = user._id
+    createContact.run.call({userId}, {details})
+
+    const contact = Contacts.findOne()
+    Object.keys(details).forEach((k) => {
+      assert.deepEqual(contact[k], details[k])
+    })
+    assert.equal(contact.slug, 'journaldo')
+
+    const myContacts = Meteor.users.findOne().myContacts
+    assert.equal(myContacts.length, 1)
+    Object.keys(myContacts[0]).forEach((k) => {
+      assert.deepEqual(myContacts[0][k], contact[k])
+    })
   })
 })

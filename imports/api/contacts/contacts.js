@@ -4,7 +4,7 @@ import values from 'lodash.values'
 import nothing from '/imports/lib/nothing'
 import { MasterListRefSchema } from '/imports/api/master-lists/master-lists'
 import { TagRefSchema } from '/imports/api/tags/tags'
-import { LabelValueSchema } from '/imports/lib/schema'
+import { LabelValueSchema, AuditSchema } from '/imports/lib/schema'
 import StatusMap from './status'
 
 const Contacts = new Mongo.Collection('contacts')
@@ -79,6 +79,7 @@ export const ContactCreateSchema = new SimpleSchema({
 })
 
 export const ContactSchema = new SimpleSchema([
+  AuditSchema,
   ContactCreateSchema,
   {
     slug: {
@@ -95,33 +96,6 @@ export const ContactSchema = new SimpleSchema([
     },
     tags: {
       type: [TagRefSchema]
-    },
-
-    'createdBy._id': {
-      type: String,
-      regEx: SimpleSchema.RegEx.Id
-    },
-    'createdBy.name': {
-      type: String
-    },
-    'createdBy.avatar': {
-      type: String
-    },
-    createdAt: {
-      type: Date
-    },
-    'updatedBy._id': {
-      type: String,
-      regEx: SimpleSchema.RegEx.Id
-    },
-    'updatedBy.name': {
-      type: String
-    },
-    'updatedBy.avatar': {
-      type: String
-    },
-    updatedAt: {
-      type: Date
     },
 
     // TODO: import sectors as MasterLists...
