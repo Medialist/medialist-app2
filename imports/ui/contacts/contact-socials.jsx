@@ -21,6 +21,6 @@ export default (props) => {
   const Icon = socialIcons[label].icon
   const url = `${socialIcons[label].url}${value}`
   return (
-    <a href={url} target='_Blank'><Icon className='mr2' /></a>
+    <a href={url} target='_Blank'><Icon size='20' className='mr2 gray60' /></a>
   )
 }
