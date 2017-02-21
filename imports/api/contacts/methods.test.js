@@ -139,7 +139,7 @@ describe.only('removeContactsFromCampaign', function () {
 
   // TODO: it should use a deleted flag
   // TODO: it should it remove them from plenty other places too.
-  it('should remove the contact from the campaign', function () {
+  it('should remove the contacts from the campaign', function () {
     const user = {
       _id: 'kKz46qgWmbGHrznJC',
       profile: {

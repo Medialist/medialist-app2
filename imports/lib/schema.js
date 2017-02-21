@@ -28,6 +28,11 @@ export const UserRefSchema = new SimpleSchema({
   }
 })
 
+export const CreatedAtSchema = new SimpleSchema({
+  createdAt: { type: Date },
+  createdBy: { type: UserRefSchema }
+})
+
 export const AuditSchema = new SimpleSchema({
   createdAt: { type: Date },
   createdBy: { type: UserRefSchema },

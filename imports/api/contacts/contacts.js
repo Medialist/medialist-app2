@@ -144,3 +144,10 @@ Contacts.fieldNames = function (name) {
     address: 'address'
   }[key]
 }
+
+Contacts.findContactRefs = ({contactSlugs}) => {
+  return Contacts.find(
+    { slug: { $in: contactSlugs } },
+    { fields: { _id: 1, slug: 1, name: 1, avatar: 1 } }
+  ).fetch()
+}

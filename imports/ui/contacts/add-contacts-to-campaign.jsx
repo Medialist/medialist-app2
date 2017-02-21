@@ -7,7 +7,7 @@ import createSearchContainer from '../campaigns/campaign-search-container'
 import { SquareAvatar } from '../images/avatar'
 import { TimeFromNow } from '../time/time'
 import withSnackbar from '../snackbar/with-snackbar'
-import { batchAddContactsToCampaigns } from '/imports/api/contacts/methods'
+import { addContactsToCampaign } from '/imports/api/contacts/methods'
 
 const AddContactsToCampaigns = createSearchContainer(React.createClass({
   propTypes: {
@@ -70,8 +70,8 @@ const AddContactsToCampaignsContainer = withSnackbar(React.createClass({
   onAdd (item) {
     const {contacts, snackbar, onDismiss} = this.props
     const contactSlugs = contacts.map((c) => c.slug)
-    const campaignSlugs = [item.slug]
-    batchAddContactsToCampaigns.call({contactSlugs, campaignSlugs}, (err, res) => {
+    const campaignSlug = item.slug
+    addContactsToCampaign.call({contactSlugs, campaignSlug}, (err, res) => {
       if (err) {
         console.log(err)
         return snackbar.show('Sorry, that didn\'t work')

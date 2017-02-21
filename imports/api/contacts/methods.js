@@ -3,60 +3,102 @@ import { check } from 'meteor/check'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import slugify, { checkAllSlugsExist } from '/imports/lib/slug'
+import toUserRef from '/imports/lib/to-user-ref'
+import { addToMyFavourites } from '/imports/api/users/users'
 import Campaigns from '../medialists/medialists'
+import Posts from '/imports/api/posts/posts'
 import Contacts, { ContactSchema, ContactCreateSchema } from './contacts'
 
-// TODO: Should batch options update My contacts / campaigns timestamp?
-// TODO: Should batch options update updatedAt timestamps?
-// TODO: Should batch options raise a batch specific post?
-export const batchAddContactsToCampaigns = new ValidatedMethod({
-  name: 'batchAddContactsToCampaigns',
+/*
+ * Add mulitple Contacts to 1 Campaign
+ * - Push all the contacts to the Campaign.contacts map
+ * - Push the campaign to all the Contact.campigns arrays
+ * - Update updatedAt on the Campaign and all contacts
+ * - Create a Post about it.
+ * - Add Campaigns and Contacts to users favourites
+ */
+export const addContactsToCampaign = new ValidatedMethod({
+  name: 'addContactsToCampaign',
 
   validate: new SimpleSchema({
     contactSlugs: { type: [String] },
-    campaignSlugs: { type: [String] }
+    campaignSlug: { type: String }
   }).validator(),
 
-  run ({ contactSlugs, campaignSlugs }) {
+  run ({ contactSlugs, campaignSlug }) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
     checkAllSlugsExist(contactSlugs, Contacts)
-    checkAllSlugsExist(campaignSlugs, Campaigns)
+    checkAllSlugsExist([campaignSlug], Campaigns)
 
-    // Set all new contacts on campaigns
-    // Create the { slug: status } map for new contcts
-    // For each campaign, merge it with the existing map, and save the result.
-    if (!this.isSimulation) {
-      const campaigns = Campaigns.find(
-        {slug: {$in: campaignSlugs}},
-        {_id: 1, contacts: 1}
-      )
-      const newContacts = contactSlugs.reduce((ref, slug) => {
-        ref[slug] = Contacts.status.toContact
-        return ref
-      }, {})
-      const bulkCampaigns = Campaigns.rawCollection().initializeUnorderedBulkOp()
-      bulkCampaigns.executeSync = Meteor.wrapAsync(bulkCampaigns.execute)
-      campaigns.forEach(({_id, contacts}) => {
-        bulkCampaigns.find({_id}).update({
-          $set: {
-            contacts: Object.assign({}, newContacts, contacts)
-          }
-        })
-      })
-      bulkCampaigns.executeSync()
-    }
+    const updatedBy = toUserRef(Meteor.user())
+    const updatedAt = new Date()
 
-    // Set all new campaigns on contacts
+    const newContacts = contactSlugs.reduce((ref, slug) => {
+      ref[slug] = Contacts.status.toContact
+      return ref
+    }, {})
+
+    const campaign = Campaigns.findOne(
+      { slug: campaignSlug },
+      { contacts: 1 }
+    )
+
+    // Merge incoming contacts with existing.
+    // If a contact is already part of the campaign, it's status is preserved.
+    Campaigns.update(
+      { slug: campaignSlug },
+      {
+        $set: {
+          contacts: Object.assign({}, newContacts, campaign.contacts),
+          updatedAt,
+          updatedBy
+        }
+      }
+    )
+
+    // Add campaign to all contacts
     Contacts.update(
       { slug: { $in: contactSlugs } },
-      { $addToSet: { medialists: { $each: campaignSlugs } } },
+      {
+        $addToSet: {
+          medialists: campaignSlug
+        },
+        $set: {
+          updatedAt,
+          updatedBy
+        }
+      },
       { multi: true }
     )
+
+    // Add an entry to the activity feed
+    Posts.createCampaignChange({
+      action: 'addContactsToCampaign',
+      campaignSlug,
+      contactSlugs,
+      updatedAt,
+      updatedBy
+    })
+
+    // Add the things to the users my<Contact|Campaigns> list
+    addToMyFavourites({
+      userId: this.userId,
+      contactSlugs,
+      campaignSlugs: [campaignSlug]
+    })
   }
 })
 
+/*
+ * Remove mulitple Contacts from 1 Campaign
+ * - Pull all the contacts from the Campaign.contacts map
+ * - Pull all campaign from all the Contact.campaings array
+ * - Update updatedAt on Campaign but not Contacts.
+ * - Create a Post about it.
+ * - Add nothing to users favorites.
+ */
 export const removeContactsFromCampaign = new ValidatedMethod({
-  name: 'removeContactsFromCampaigns',
+  name: 'removeContactsFromCampaign',
 
   validate: new SimpleSchema({
     contactSlugs: { type: [String], min: 1 },
@@ -68,6 +110,9 @@ export const removeContactsFromCampaign = new ValidatedMethod({
     checkAllSlugsExist(contactSlugs, Contacts)
     checkAllSlugsExist([campaignSlug], Campaigns)
 
+    const updatedBy = toUserRef(Meteor.user())
+    const updatedAt = new Date()
+
     // a map of contacts.<slug> properties to delete from the campaign
     const $unset = contactSlugs.reduce(($unset, slug) => {
       $unset[`contacts.${slug}`] = ''
@@ -76,7 +121,13 @@ export const removeContactsFromCampaign = new ValidatedMethod({
 
     Campaigns.update(
       { slug: campaignSlug },
-      { $unset }
+      {
+        $unset,
+        $set: {
+          updatedAt,
+          updatedBy
+        }
+      }
     )
 
     Contacts.update(
@@ -84,6 +135,14 @@ export const removeContactsFromCampaign = new ValidatedMethod({
       { $pull: { medialists: campaignSlug } },
       { multi: true }
     )
+
+    Posts.createCampaignChange({
+      action: 'removeContactsFromCampaign',
+      campaignSlug,
+      contactSlugs,
+      updatedAt,
+      updatedBy
+    })
   }
 })
 
@@ -99,34 +158,12 @@ export const batchFavouriteContacts = new ValidatedMethod({
   run ({ contactSlugs }) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
     checkAllSlugsExist(contactSlugs, Contacts)
-    const user = Meteor.users.findOne({_id: this.userId})
-    const now = new Date()
-
-    // transform contacts into contact refs for user.myContacts array.
-    const newFavs = Contacts.find(
-      { slug: { $in: contactSlugs } },
-      { fields: { avatar: 1, slug: 1, name: 1, outlets: 1 } }
-    ).map((contact) => ({
-      _id: contact._id,
-      name: contact.name,
-      slug: contact.slug,
-      avatar: contact.avatar,
-      outlets: contact.outlets,
-      updatedAt: now
-    }))
-
-    // Preserve other favs.
-    const existingFavs = user.myContacts.filter((c) => !contactSlugs.includes(c.slug))
-
-    return Meteor.users.update(
-      this.userId,
-      { $set: { myContacts: existingFavs.concat(newFavs) } }
-    )
+    addToMyFavourites({userId: this.userId, contactSlugs})
   }
 })
 
 /*
- * Remove an array of contacts by id
+ * Delete an array of contacts by id
  * Remove from all users myContacts array before deleting.
  * TODO: refactor to use a deletedAt flag instead of removing.
  */
