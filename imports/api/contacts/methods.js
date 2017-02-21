@@ -215,7 +215,6 @@ export const createContact = new ValidatedMethod({
       medialists: [],
       masterLists: [],
       tags: [],
-      languages: 'English',
       createdAt,
       createdBy,
       updatedAt: createdAt,

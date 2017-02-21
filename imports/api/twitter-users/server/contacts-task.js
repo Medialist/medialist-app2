@@ -84,10 +84,6 @@ function updateContact (contact, user) {
     data.avatar = user.profile_image_url_https
   }
 
-  if (user.description && contact.bio !== user.description) {
-    data.bio = user.description
-  }
-
   var social = findTwitterSocial(contact)
 
   if (!social.twitterId || user.screen_name !== social.value) {

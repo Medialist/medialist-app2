@@ -271,10 +271,12 @@ export function createContacts ({cols, rows}) {
 
     delete contact.jobTitles
 
-    // We don't use these
+    // We don't use these currently.
     delete contact.memberType
     delete contact.notes
     delete contact.salutation
+    delete contact.sectors
+    delete contact.languages
 
     return contact
   })

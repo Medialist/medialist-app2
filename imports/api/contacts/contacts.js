@@ -96,37 +96,6 @@ export const ContactSchema = new SimpleSchema([
     },
     tags: {
       type: [TagRefSchema]
-    },
-
-    // TODO: import sectors as MasterLists...
-    sectors: {
-      type: String,
-      optional: true
-    },
-
-    // TODO: No longer used.
-    bio: {
-      type: String,
-      optional: true
-    },
-    languages: {
-      type: String,
-      optional: true
-    },
-    website: {
-      type: String,
-      optional: true
-    },
-    importedData: {
-      type: [Object],
-      optional: true
-    },
-    'importedData.$.importedAt': {
-      type: Date
-    },
-    'importedData.$.data': {
-      type: Object,
-      blackbox: true
     }
   }
 ])
