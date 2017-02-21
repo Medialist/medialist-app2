@@ -79,7 +79,7 @@ const ContactInfo = React.createClass({
           <div className='col col-3'>
             <CircleAvatar className='ml2' size={70} avatar={avatar} name={name} />
           </div>
-          <div className='col col-9 pl2'>
+          <div className='col col-9 pl3'>
             <span className='semibold block f-xl mb1'>
               {name}
               <Tooltip title={tooltip}>
