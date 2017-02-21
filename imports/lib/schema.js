@@ -8,8 +8,8 @@ export const TypeSchema = new SimpleSchema({
 })
 
 export const LabelValueSchema = new SimpleSchema({
-  label: { type: String, min: 1 },
-  value: { type: String, min: 1 }
+  label: { type: String },
+  value: { type: String }
 })
 
 export const UserRefSchema = new SimpleSchema({
