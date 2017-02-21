@@ -4,125 +4,92 @@ import assert from 'assert'
 import Contacts from './contacts'
 import Campaigns from '../medialists/medialists'
 import {
-  batchAddContactsToCampaigns,
+  addContactsToCampaign,
   removeContactsFromCampaign,
   batchFavouriteContacts,
   batchRemoveContacts,
   createContact
 } from './methods'
 
-describe('Contacts/batchFavouriteContacts', function () {
+describe('addContactsToCampaign', function () {
   beforeEach(function () {
     resetDatabase()
-  })
 
-  it('should require the user to be logged in', function () {
-    assert.throws(() => batchFavouriteContacts.run.call({}, {}), /You must be logged in/)
-  })
-
-  it('should validate the parameters', function () {
-    assert.throws(() => batchFavouriteContacts.validate({}), /Contact slugs is required/)
-    assert.throws(() => batchFavouriteContacts.validate({contactSlugs: [1]}), /must be a string/)
-    assert.doesNotThrow(() => batchFavouriteContacts.validate({contactSlugs: ['a']}))
-  })
-
-  it('should add all contacts to favourites', function () {
-    const contacts = Array(3).fill(0).map((_, index) => ({
-      _id: `${index}`,
-      slug: `${index}`,
-      name: `${index}`,
-      slug: `${index}`,
-      avatar: `${index}`,
-      outlets: `${index}`,
-      medialists: []
-    }))
-    contacts.forEach((c) => Contacts.insert(c))
-    Meteor.users.insert({_id: '1', myContacts: [{slug: 'oldie'}]})
-    const contactSlugs = ['0', '1']
-    batchFavouriteContacts.run.call({userId: '1'}, {contactSlugs})
-    const user = Meteor.users.findOne('1')
-    assert.equal(user.myContacts.length, 3)
-    delete user.myContacts[1].updatedAt
-    assert.deepEqual(user.myContacts[1], {
-      _id: '0',
-      name: '0',
-      slug: '0',
-      avatar: '0',
-      outlets: '0'
+    Meteor.users.insert({
+      _id: 'alf',
+      profile: { name: 'Alfonze' },
+      myContacts: [],
+      myMedialists: []
     })
-  })
-})
 
-describe('Contacts/batchAddContactsToCampaigns', function () {
-  beforeEach(function () {
-    resetDatabase()
     const contacts = Array(3).fill(0).map((_, index) => ({
-      _id: `${index}`,
-      slug: `${index}`,
+      _id: `id${index}`,
+      slug: `slug${index}`,
       medialists: []
     }))
     contacts.forEach((c) => Contacts.insert(c))
+
     const campaigns = Array(3).fill(0).map((_, index) => ({
-      _id: `${index}`,
-      slug: `${index}`,
+      _id: `id${index}`,
+      slug: `slug${index}`,
       contacts: {}
     }))
     campaigns.forEach((c) => Campaigns.insert(c))
   })
 
   it('should require the user to be logged in', function () {
-    assert.throws(() => batchAddContactsToCampaigns.run.call({}, {}), /You must be logged in/)
+    assert.throws(() => addContactsToCampaign.run.call({}, {}), /You must be logged in/)
   })
 
   it('should validate the parameters', function () {
-    assert.throws(() => batchAddContactsToCampaigns.validate({contactSlugs: ['a']}), /Campaign slugs is required/)
-    assert.throws(() => batchAddContactsToCampaigns.validate({campaignSlugs: ['a']}), /Contact slugs is required/)
-    assert.throws(() => batchAddContactsToCampaigns.validate({contactSlugs: [1], campaignSlugs: [1]}), /must be a string/)
-    assert.doesNotThrow(() => batchAddContactsToCampaigns.validate({contactSlugs: ['a'], campaignSlugs: ['a']}))
+    assert.throws(() => addContactsToCampaign.validate({contactSlugs: ['a']}), /Campaign slug is required/)
+    assert.throws(() => addContactsToCampaign.validate({campaignSlug: 'a'}), /Contact slugs is required/)
+    assert.throws(() => addContactsToCampaign.validate({contactSlugs: [1], campaignSlug: 1}), /must be a string/)
+    assert.doesNotThrow(() => addContactsToCampaign.validate({contactSlugs: ['a'], campaignSlug: 'a'}))
   })
 
-  it('should add all contacts to all campaigns', function () {
-    const contactSlugs = ['0', '1']
-    const campaignSlugs = ['1', '2']
-    batchAddContactsToCampaigns.run.call({userId: 1}, {contactSlugs, campaignSlugs})
+  it('should add all contacts to the campaign', function () {
+    const contactSlugs = ['slug0', 'slug1']
+    const campaignSlug = 'slug1'
+    addContactsToCampaign.run.call({userId: 'alf'}, {contactSlugs, campaignSlug})
 
-    Campaigns.find({_id: {$in: campaignSlugs}}).forEach((c) => {
+    Campaigns.find({slug: campaignSlug}).forEach((c) => {
       assert.deepEqual(c.contacts, {
-        '0': 'To Contact',
-        '1': 'To Contact'
+        'slug0': 'To Contact',
+        'slug1': 'To Contact'
       }, 'Campaigns contain contacts')
     })
-    Contacts.find({_id: {$in: contactSlugs}}).forEach((c) => {
-      assert.deepEqual(c.medialists, campaignSlugs, 'Contacts are in campaigns')
+
+    Contacts.find({slug: {$in: contactSlugs}}).forEach((c) => {
+      assert.deepEqual(c.medialists, [campaignSlug], 'Contacts are in campaigns')
     })
   })
 
   it('should merge contacts with existing ones', function () {
-    Campaigns.update({_id: '2'}, {$set: {contacts: {'0': 'Hot!'}}})
-    Contacts.update({_id: '0'}, {$set: {medialists: ['2']}})
-    const contactSlugs = ['0', '1']
-    const campaignSlugs = ['1', '2']
-    batchAddContactsToCampaigns.run.call({userId: 1}, {contactSlugs, campaignSlugs})
+    Campaigns.update({_id: 'id2'}, {$set: {contacts: {'slug0': 'Hot!'}}})
+    Contacts.update({_id: 'id0'}, {$set: {medialists: ['slug2']}})
+    const contactSlugs = ['slug0', 'slug1']
+    const campaignSlug = 'slug2'
+    addContactsToCampaign.run.call({userId: 'alf'}, {contactSlugs, campaignSlug})
 
-    assert.deepEqual(Campaigns.findOne({_id: '1'}).contacts, {
-      '0': 'To Contact',
-      '1': 'To Contact'
-    }, 'Campaigns contain contacts')
-    assert.deepEqual(Campaigns.findOne({_id: '2'}).contacts, {
-      '0': 'Hot!',
-      '1': 'To Contact'
+    assert.deepEqual(Campaigns.findOne({_id: 'id2'}).contacts, {
+      'slug0': 'Hot!',
+      'slug1': 'To Contact'
     }, 'Campaigns contain merged contacts')
-    assert.deepEqual(Campaigns.findOne({_id: '0'}).contacts, {}, 'Other campaigns are unharmed')
+
+    assert.deepEqual(Campaigns.findOne({_id: 'id0'}).contacts, {}, 'Other campaigns are unharmed')
+
     Contacts.find({_id: {$in: contactSlugs}}).forEach((c) => {
-      assert.equal(c.medialists.length, campaignSlugs.length, 'Contacts are in campaigns')
-      assert.ok(c.medialists.includes('1'))
-      assert.ok(c.medialists.includes('2'))
+      assert.equal(c.medialists.length, 1, 'Contacts are in campaigns')
+      assert.ok(c.medialists.includes('slug1'))
+      assert.ok(c.medialists.includes('slug2'))
     })
-    assert.deepEqual(Contacts.findOne({_id: '2'}).medialists, [], 'Other contacts are unharmed')
+
+    assert.deepEqual(Contacts.findOne({_id: 'id2'}).medialists, [], 'Other contacts are unharmed')
   })
 })
 
-describe.only('removeContactsFromCampaign', function () {
+describe('removeContactsFromCampaign', function () {
   beforeEach(function () {
     resetDatabase()
   })
@@ -155,7 +122,7 @@ describe.only('removeContactsFromCampaign', function () {
       slug: `${index}`,
       name: `${index}`,
       avatar: `${index}`,
-      outlets: [],
+      outlets: []
     }))
     contacts[0].medialists = ['0']
     contacts[2].medialists = ['0']
@@ -177,10 +144,51 @@ describe.only('removeContactsFromCampaign', function () {
 
     assert.equal(Object.keys(campaign.contacts).length, 1)
     assert.deepEqual(campaign.contacts['0'], { slug: '0' })
-
   })
 })
 
+describe('batchFavouriteContacts', function () {
+  beforeEach(function () {
+    resetDatabase()
+  })
+
+  it('should require the user to be logged in', function () {
+    assert.throws(() => batchFavouriteContacts.run.call({}, {}), /You must be logged in/)
+  })
+
+  it('should validate the parameters', function () {
+    assert.throws(() => batchFavouriteContacts.validate({}), /Contact slugs is required/)
+    assert.throws(() => batchFavouriteContacts.validate({contactSlugs: [1]}), /must be a string/)
+    assert.doesNotThrow(() => batchFavouriteContacts.validate({contactSlugs: ['a']}))
+  })
+
+  it('should add all contacts to favourites', function () {
+    const contacts = Array(3).fill(0).map((_, index) => ({
+      _id: `${index}`,
+      slug: `${index}`,
+      name: `${index}`,
+      slug: `${index}`,
+      avatar: `${index}`,
+      outlets: `${index}`,
+      medialists: []
+    }))
+    contacts.forEach((c) => Contacts.insert(c))
+    Meteor.users.insert({_id: '1', myContacts: [{slug: 'oldie'}]})
+    const contactSlugs = ['0', '1']
+    batchFavouriteContacts.run.call({userId: '1'}, {contactSlugs})
+    const user = Meteor.users.findOne('1')
+    assert.equal(user.myContacts.length, 3)
+    const myContactRef = user.myContacts.find((c) => c.slug === '0')
+    delete myContactRef.updatedAt
+    assert.deepEqual(myContactRef, {
+      _id: '0',
+      name: '0',
+      slug: '0',
+      avatar: '0',
+      outlets: '0'
+    })
+  })
+})
 
 describe('batchRemoveContacts', function () {
   beforeEach(function () {

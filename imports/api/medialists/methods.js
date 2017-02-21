@@ -167,7 +167,7 @@ export const create = new ValidatedMethod({
       { $push: { myMedialists }
       })
 
-    Posts.createCampaignCreated({ campaign: doc, author: user })
+    Posts.createCampaignCreated({ user, campaign: doc, author: user })
 
     return slug
   }

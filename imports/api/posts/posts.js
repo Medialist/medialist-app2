@@ -1,6 +1,6 @@
 import { Mongo } from 'meteor/mongo'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
-import { check } from 'meteor/check'
+// import { check } from 'meteor/check'
 import values from 'lodash.values'
 import nothing from '/imports/lib/nothing'
 import { CreatedAtSchema } from '/imports/lib/schema'
@@ -73,8 +73,8 @@ Posts.createCampaignCreated = ({ user, campaign, author }) => {
     createdBy: toUserRef(user),
     createdAt: new Date()
   }
-
-  check(post, PostSchema)
+  // TODO: refactor post schema.
+  // check(post, PostSchema)
   return Posts.insert(post)
 }
 
@@ -92,7 +92,8 @@ Posts.createCampaignChange = ({action, campaignSlug, contactSlugs, updatedAt, up
     createdBy: updatedBy,
     createdAt: updatedAt
   }
-  check(post, PostSchema)
+  // TODO: refactor post schema.
+  // check(post, PostSchema)
   return Posts.insert(post)
 }
 

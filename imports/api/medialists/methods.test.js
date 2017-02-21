@@ -35,8 +35,9 @@ describe('Contacts/batchFavouriteCampaigns', function () {
     batchFavouriteCampaigns.run.call({userId: '1'}, {campaignSlugs})
     const user = Meteor.users.findOne('1')
     assert.equal(user.myMedialists.length, 3)
-    delete user.myMedialists[1].updatedAt
-    assert.deepEqual(user.myMedialists[1], {
+    const myCampaingRef = user.myMedialists.find((c) => c.slug === '0')
+    delete myCampaingRef.updatedAt
+    assert.deepEqual(myCampaingRef, {
       _id: '0',
       name: '0',
       slug: '0',
