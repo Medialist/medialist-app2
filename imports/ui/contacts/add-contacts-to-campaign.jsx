@@ -148,7 +148,7 @@ const ResultList = React.createClass({
 
     return (
       <div>
-        {results.map((res, i) => {
+        {results.map((res) => {
           const {slug, contacts} = res
           const contactCount = Object.keys(contacts).length
           return (
