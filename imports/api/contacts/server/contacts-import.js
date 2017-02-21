@@ -1,16 +1,18 @@
 import moment from 'moment'
-import Contacts, { ContactSchema } from '/imports/api/contacts/contacts'
+import { Meteor } from 'meteor/meteor'
+import { ValidatedMethod } from 'meteor/mdg:validated-method'
+import { check, Match } from 'meteor/check'
+import slugify from '/imports/lib/slug'
+import { findOneUserRef } from '/imports/api/users/users'
 import ContactsTask from '/imports/api/twitter-users/server/contacts-task'
+import Contacts, { ContactSchema } from '../contacts'
 
 // TODO: reafactor to return _ids of created and updated users, so we can do batch actions on them. Or use the tag?
 
-Meteor.methods({
-  'contacts/import' (contacts) {
-    if (!this.userId) throw new Meteor.Error('Only a logged in user can import contacts')
-    this.unblock()
+export const importContacts = new ValidatedMethod({
+  name: 'importContacts',
 
-    var user = Meteor.users.findOne(this.userId)
-
+  validate ({contacts}) {
     check(contacts, [{
       emails: Match.Optional([{label: String, value: String}]),
       socials: Match.Optional([{label: String, value: String}]),
@@ -21,6 +23,12 @@ Meteor.methods({
       sectors: Match.Optional(String),
       languages: Match.Optional(String)
     }])
+  },
+
+  run ({ contacts }) {
+    if (!this.userId) throw new Meteor.Error('You must be logged in')
+
+    var userRef = findOneUserRef(this.userId)
 
     console.log(`Importing ${contacts.length} contacts`)
 
@@ -32,14 +40,14 @@ Meteor.methods({
         var contact = Contacts.findOne({'emails.value': {$in: emails}})
 
         if (contact) {
-          mergeContact(contactData, contact, user)
+          mergeContact(contactData, contact, userRef)
           results.updated++
         } else {
-          createContact(contactData, user)
+          createContact(contactData, userRef)
           results.created++
         }
       } else {
-        createContact(contactData, user)
+        createContact(contactData, userRef)
         results.created++
       }
     })
@@ -48,7 +56,7 @@ Meteor.methods({
   }
 })
 
-function createContact (data, user) {
+function createContact (data, userRef) {
   console.log(`Creating contact ${data.name}`)
 
   data.name = data.name || 'Unknown'
@@ -56,18 +64,12 @@ function createContact (data, user) {
   data.socials = data.socials || []
   data.phones = data.phones || []
 
-  data.avatar = '/images/avatar.svg'
-  data.slug = App.cleanSlug(data.name)
-  data.slug = App.uniqueSlug(data.slug, Contacts)
+  data.slug = slugify(data.name, Contacts)
   data.medialists = []
   data.masterLists = []
   data.tags = []
   data.createdAt = new Date()
-  data.createdBy = {
-    _id: user._id,
-    name: user.profile.name,
-    avatar: user.services.twitter.profile_image_url_https
-  }
+  data.createdBy = userRef
   data.updatedAt = data.createdAt
   data.updatedBy = data.createdBy
 
@@ -77,7 +79,7 @@ function createContact (data, user) {
   ContactsTask.queueUpdate(id)
 }
 
-function mergeContact (data, contact, user) {
+function mergeContact (data, contact, userRef) {
   console.log(`Merging contact ${data.name}`)
 
   ;['emails', 'socials', 'phones'].forEach(key => {
@@ -99,11 +101,7 @@ function mergeContact (data, contact, user) {
   contact.createdAt = moment(contact.createdAt).toDate()
 
   contact.updatedAt = new Date()
-  contact.updatedBy = {
-    _id: user._id,
-    name: user.profile.name,
-    avatar: user.services.twitter.profile_image_url_https
-  }
+  contact.updatedBy = userRef
 
   var id = contact._id
   delete contact._id

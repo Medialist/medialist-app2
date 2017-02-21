@@ -3,7 +3,7 @@ import { check } from 'meteor/check'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import slugify, { checkAllSlugsExist } from '/imports/lib/slug'
-import { addToMyFavourites, findUserRefs } from '/imports/api/users/users'
+import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import Campaigns from '../medialists/medialists'
 import Posts from '/imports/api/posts/posts'
 import Contacts, { ContactSchema, ContactCreateSchema } from './contacts'
@@ -29,7 +29,7 @@ export const addContactsToCampaign = new ValidatedMethod({
     checkAllSlugsExist(contactSlugs, Contacts)
     checkAllSlugsExist([campaignSlug], Campaigns)
 
-    const updatedBy = findUserRefs({userIds: [this.userId]})
+    const updatedBy = findOneUserRef(this.userId)
     const updatedAt = new Date()
 
     const newContacts = contactSlugs.reduce((ref, slug) => {
@@ -109,7 +109,7 @@ export const removeContactsFromCampaign = new ValidatedMethod({
     checkAllSlugsExist(contactSlugs, Contacts)
     checkAllSlugsExist([campaignSlug], Campaigns)
 
-    const updatedBy = findUserRefs({userIds: [this.userId]})
+    const updatedBy = findOneUserRef(this.userId)
     const updatedAt = new Date()
 
     // a map of contacts.<slug> properties to delete from the campaign

@@ -19,6 +19,14 @@ export const UserRefSchema = new SimpleSchema({
   }
 })
 
+export const findOneUserRef = (userId) => {
+  const user = Meteor.users.findOne(
+    { _id: userId },
+    { fields: { _id: 1, 'profile.name': 1, 'services.twitter': 1 } }
+  )
+  return toUserRef(user)
+}
+
 export const findUserRefs = ({userIds}) => {
   Meteor.users.find(
     { _id: { $in: userIds } },

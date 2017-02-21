@@ -30,7 +30,7 @@ export default withRouter(React.createClass({
     // TODO: automagic header detection.
     const contacts = CsvToContacts.createContacts({cols, rows: rows.slice(1)})
     this.setState({contacts})
-    Meteor.call('contacts/import', contacts, (err, results) => {
+    Meteor.call('importContacts', { contacts }, (err, results) => {
       if (err) return console.error(err) // TODO: snackbar / alert user.
       this.setState({results})
     })
