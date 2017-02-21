@@ -4,7 +4,7 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import escapeRegExp from 'lodash.escaperegexp'
 import createUniqueSlug, { checkAllSlugsExist } from '/imports/lib/slug'
-import Medialists, { MedialistSchema, MedialistUpdateSchema, MedialistCreateSchema, MedialistAddTeamMatesSchema, MedialistRemoveTeamMateSchema } from './medialists'
+import Campaigns, { MedialistSchema, MedialistUpdateSchema, MedialistCreateSchema, MedialistAddTeamMatesSchema, MedialistRemoveTeamMateSchema } from './campaigns'
 import Clients from '/imports/api/clients/clients'
 import Uploadcare from '/imports/lib/uploadcare'
 import Posts from '/imports/api/posts/posts'
@@ -22,7 +22,7 @@ function findOrCreateClientRef (name) {
   return {_id, name}
 }
 
-// Add all campaigns to myMedialists
+// Add all campaigns to myCampaigns
 // Update existing favs with new updatedAt
 export const batchFavouriteCampaigns = new ValidatedMethod({
   name: 'batchFavouriteCampaigns',
@@ -33,13 +33,13 @@ export const batchFavouriteCampaigns = new ValidatedMethod({
 
   run ({ campaignSlugs }) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
-    checkAllSlugsExist(campaignSlugs, Medialists)
+    checkAllSlugsExist(campaignSlugs, Campaigns)
     addToMyFavourites({userId: this.userId, campaignSlugs})
   }
 })
 
 export const update = new ValidatedMethod({
-  name: 'Medialists/update',
+  name: 'Campaigns/update',
   validate: MedialistUpdateSchema.validator(),
   run (data) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
@@ -51,7 +51,7 @@ export const update = new ValidatedMethod({
       throw new Error('Missing fields to update')
     }
 
-    if (!Medialists.find({ _id }).count()) {
+    if (!Campaigns.find({ _id }).count()) {
       throw new Meteor.Error('Medialist not found')
     }
 
@@ -68,40 +68,40 @@ export const update = new ValidatedMethod({
       avatar: user.services.twitter.profile_image_url_https
     }
 
-    const result = Medialists.update({ _id }, { $set: data })
+    const result = Campaigns.update({ _id }, { $set: data })
 
     if (Meteor.isServer) {
       Uploadcare.store(data.avatar)
     }
 
     // Add this user to the updated campaign's team if required
-    Medialists.update({ _id, 'team._id': { $ne: this.userId } }, { $push: { team: data.updatedBy } })
+    Campaigns.update({ _id, 'team._id': { $ne: this.userId } }, { $push: { team: data.updatedBy } })
 
-    const updatedMedialist = Medialists.findOne({ _id })
+    const updatedMedialist = Campaigns.findOne({ _id })
 
-    // Update existing users' favourite medialists with new denormalised data
+    // Update existing users' favourite campaigns with new denormalised data
     Meteor.users.update({
-      'myMedialists._id': _id
+      'myCampaigns._id': _id
     }, {
       $set: {
-        'myMedialists.$.name': updatedMedialist.name,
-        'myMedialists.$.slug': updatedMedialist.slug,
-        'myMedialists.$.avatar': updatedMedialist.avatar,
-        'myMedialists.$.clientName': updatedMedialist.client
+        'myCampaigns.$.name': updatedMedialist.name,
+        'myCampaigns.$.slug': updatedMedialist.slug,
+        'myCampaigns.$.avatar': updatedMedialist.avatar,
+        'myCampaigns.$.clientName': updatedMedialist.client
           ? updatedMedialist.client.name
           : null,
-        'myMedialists.$.updatedAt': now
+        'myCampaigns.$.updatedAt': now
       }
     }, {
       multi: true
     })
 
-    // Add this medialist to the updating user's favourites if required
+    // Add this campaign to the updating user's favourites if required
     Meteor.users.update({
       _id: this.userId,
-      'myMedialists._id': { $ne: _id }
+      'myCampaigns._id': { $ne: _id }
     }, {
-      $push: { myMedialists: {
+      $push: { myCampaigns: {
         name: updatedMedialist.name,
         slug: updatedMedialist.slug,
         avatar: updatedMedialist.avatar,
@@ -117,11 +117,11 @@ export const update = new ValidatedMethod({
 })
 
 export const create = new ValidatedMethod({
-  name: 'Medialists/create',
+  name: 'Campaigns/create',
   validate: MedialistCreateSchema.validator(),
   run ({ name, clientName, avatar, purpose, links }) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
-    const slug = createUniqueSlug(name, Medialists)
+    const slug = createUniqueSlug(name, Campaigns)
     const client = findOrCreateClientRef(clientName)
     const user = Meteor.users.findOne(this.userId)
     const createdAt = new Date()
@@ -148,13 +148,13 @@ export const create = new ValidatedMethod({
     }
 
     check(doc, MedialistSchema)
-    const _id = Medialists.insert(doc)
+    const _id = Campaigns.insert(doc)
 
     if (Meteor.isServer) {
       Uploadcare.store(doc.avatar)
     }
 
-    const myMedialists = {
+    const myCampaigns = {
       _id,
       name: name,
       slug: slug,
@@ -164,7 +164,7 @@ export const create = new ValidatedMethod({
     }
     Meteor.users.update(
       { _id: user._id },
-      { $push: { myMedialists }
+      { $push: { myCampaigns }
       })
 
     Posts.createCampaignCreated({ user, campaign: doc, author: user })
@@ -174,12 +174,12 @@ export const create = new ValidatedMethod({
 })
 
 export const addTeamMates = new ValidatedMethod({
-  name: 'Medialists/addTeamMates',
+  name: 'Campaigns/addTeamMates',
   validate: MedialistAddTeamMatesSchema.validator(),
   run ({ _id, userIds }) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
 
-    const campaign = Medialists.findOne(_id)
+    const campaign = Campaigns.findOne(_id)
     if (!campaign) {
       throw new Meteor.Error('Medialist not found')
     }
@@ -203,14 +203,14 @@ export const addTeamMates = new ValidatedMethod({
       }
     }
 
-    const result = Medialists.update(campaign._id, { $set, $push })
+    const result = Campaigns.update(campaign._id, { $set, $push })
 
-    // Add this medialist to the updating user's favourites if required
+    // Add this campaign to the updating user's favourites if required
     Meteor.users.update({
       _id: this.userId,
-      'myMedialists._id': { $ne: campaign._id }
+      'myCampaigns._id': { $ne: campaign._id }
     }, {
-      $push: { myMedialists: {
+      $push: { myCampaigns: {
         name: campaign.name,
         slug: campaign.slug,
         avatar: campaign.avatar,
@@ -226,12 +226,12 @@ export const addTeamMates = new ValidatedMethod({
 })
 
 export const removeTeamMate = new ValidatedMethod({
-  name: 'Medialists/removeTeamMate',
+  name: 'Campaigns/removeTeamMate',
   validate: MedialistRemoveTeamMateSchema.validator(),
   run ({ _id, userId }) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
 
-    const campaign = Medialists.findOne(_id)
+    const campaign = Campaigns.findOne(_id)
     if (!campaign) {
       throw new Meteor.Error('Medialist not found')
     }
@@ -249,14 +249,14 @@ export const removeTeamMate = new ValidatedMethod({
     }
     const $pull = { team: { _id: userId } }
 
-    const result = Medialists.update(campaign._id, { $set, $pull })
+    const result = Campaigns.update(campaign._id, { $set, $pull })
 
-    // Add this medialist to the updating user's favourites if required
+    // Add this campaign to the updating user's favourites if required
     Meteor.users.update({
       _id: this.userId,
-      'myMedialists._id': { $ne: campaign._id }
+      'myCampaigns._id': { $ne: campaign._id }
     }, {
-      $push: { myMedialists: {
+      $push: { myCampaigns: {
         name: campaign.name,
         slug: campaign.slug,
         avatar: campaign.avatar,

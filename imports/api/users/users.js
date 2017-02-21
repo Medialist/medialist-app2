@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import toUserRef from '/imports/lib/to-user-ref'
 import Contacts from '/imports/api/contacts/contacts'
-import Campaigns from '/imports/api/medialists/medialists'
+import Campaigns from '/imports/api/campaigns/campaigns'
 
 export const UserRefSchema = new SimpleSchema({
   _id: {
@@ -40,14 +40,14 @@ export const findUserRefs = ({userIds}) => {
 export const addToMyFavourites = ({userId, contactSlugs = [], campaignSlugs = []}) => {
   const user = Meteor.users.findOne(
     { _id: userId },
-    { fields: { myContacts: 1, myMedialists: 1 } }
+    { fields: { myContacts: 1, myCampaigns: 1 } }
   )
   const now = new Date()
   const myContacts = findMyContactRefs({user, contactSlugs, now})
-  const myMedialists = findMyCampaignRefs({user, campaignSlugs, now})
+  const myCampaigns = findMyCampaignRefs({user, campaignSlugs, now})
   const $set = {}
   if (myContacts.length) $set.myContacts = myContacts
-  if (myMedialists.length) $set.myMedialists = myMedialists
+  if (myCampaigns.length) $set.myCampaigns = myCampaigns
 
   return Meteor.users.update(
     { _id: userId },
@@ -79,7 +79,7 @@ function findMyContactRefs ({user, contactSlugs, now}) {
 function findMyCampaignRefs ({user, campaignSlugs, now}) {
   if (campaignSlugs.length === 0) return []
 
-  // transform campaigns into refs for user.myMedialists array.
+  // transform campaigns into refs for user.myCampaigns array.
   const newRefs = Campaigns.find(
     { slug: { $in: campaignSlugs } },
     { fields: { avatar: 1, slug: 1, name: 1, client: 1 } }
@@ -93,7 +93,7 @@ function findMyCampaignRefs ({user, campaignSlugs, now}) {
   }))
 
   // Preserve other favs.
-  const existingRefs = user.myMedialists.filter((c) => !campaignSlugs.includes(c.slug))
+  const existingRefs = user.myCampaigns.filter((c) => !campaignSlugs.includes(c.slug))
 
   return newRefs.concat(existingRefs)
 }

@@ -32,11 +32,11 @@ export default createContainer(() => {
     Meteor.subscribe('master-lists')
   ]
 
-  // Prefetch recent posts for my medialists
+  // Prefetch recent posts for my campaigns
   if (user) {
     subs = subs.concat(
-      (user.myMedialists || []).map((c) => (
-        Meteor.subscribe('posts', { medialist: c.slug, limit: 5 })
+      (user.myCampaigns || []).map((c) => (
+        Meteor.subscribe('posts', { campaign: c.slug, limit: 5 })
       ))
     )
   }

@@ -4,7 +4,7 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import slugify, { checkAllSlugsExist } from '/imports/lib/slug'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
-import Campaigns from '../medialists/medialists'
+import Campaigns from '../campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
 import Contacts, { ContactSchema, ContactCreateSchema } from './contacts'
 
@@ -60,7 +60,7 @@ export const addContactsToCampaign = new ValidatedMethod({
       { slug: { $in: contactSlugs } },
       {
         $addToSet: {
-          medialists: campaignSlug
+          campaigns: campaignSlug
         },
         $set: {
           updatedAt,
@@ -131,7 +131,7 @@ export const removeContactsFromCampaign = new ValidatedMethod({
 
     Contacts.update(
       { slug: { $in: contactSlugs } },
-      { $pull: { medialists: campaignSlug } },
+      { $pull: { campaigns: campaignSlug } },
       { multi: true }
     )
 
@@ -212,7 +212,7 @@ export const createContact = new ValidatedMethod({
     // Merge the provided details with any missing values
     const contact = Object.assign({}, details, {
       slug: slugify(details.name, Contacts),
-      medialists: [],
+      campaigns: [],
       masterLists: [],
       tags: [],
       createdAt,

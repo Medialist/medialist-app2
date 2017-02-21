@@ -15,7 +15,7 @@ import ContactListEmpty from './contacts-list-empty'
 import { FeedContactIcon } from '../images/icons'
 import createSearchContainer from './search-container'
 import AddContactsToCampaign from './add-contacts-to-campaign'
-import Medialists from '/imports/api/medialists/medialists'
+import Campaigns from '/imports/api/campaigns/campaigns'
 import { AvatarTag } from '../tags/tag'
 import { batchFavouriteContacts, batchRemoveContacts } from '/imports/api/contacts/methods'
 import { batchAddTags } from '/imports/api/tags/methods'
@@ -316,7 +316,7 @@ const ContactsPageContainer = withRouter(React.createClass({
     if (!campaign) return { sort, term, selectedMasterListSlug: list, userId: my, campaignSlugs: [], campaigns: [] }
 
     const campaignSlugs = Array.isArray(campaign) ? campaign : [campaign]
-    const campaigns = Medialists.find({slug: {$in: campaignSlugs}}).fetch()
+    const campaigns = Campaigns.find({slug: {$in: campaignSlugs}}).fetch()
     return { sort, term, list, selectedMasterListSlug: list, userId: my, campaignSlugs, campaigns }
   },
 

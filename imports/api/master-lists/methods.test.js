@@ -15,7 +15,7 @@ import {
   } from './methods'
 import MasterLists from './master-lists'
 import Contacts from '../contacts/contacts'
-import Medialists from '../medialists/medialists'
+import Campaigns from '../campaigns/campaigns'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
 
 describe('batchAddToMasterLists', function () {
@@ -175,7 +175,7 @@ describe('master-lists-update', function () {
       items: Array(3).fill(0).map(() => Random.id()),
       order: 0
     })
-    Medialists.insert({ masterLists: [{ _id: masterListId }] })
+    Campaigns.insert({ masterLists: [{ _id: masterListId }] })
   })
 
   it('should not allow a MasterList update unless logged in', function () {
@@ -195,8 +195,8 @@ describe('master-lists-update', function () {
     update.run.call({ userId: 123 }, { _id: masterListId, name: newName })
     const masterList = MasterLists.findOne({ _id: masterListId })
     assert.equal(masterList.name, newName)
-    const medialist = Medialists.findOne()
-    assert.equal(medialist.masterLists[0].name, newName)
+    const campaign = Campaigns.findOne()
+    assert.equal(campaign.masterLists[0].name, newName)
   })
 })
 
@@ -207,7 +207,7 @@ describe('master-lists-addItems', function () {
     resetDatabase()
     campaigns = Array(3).fill(0).map(() => {
       const campaign = { name: Faker.company.companyName(), slug: Faker.commerce.productMaterial(), masterLists: [] }
-      const _id = Medialists.insert({ name: Faker.company.companyName(), slug: Faker.commerce.productMaterial(), masterLists: [] })
+      const _id = Campaigns.insert({ name: Faker.company.companyName(), slug: Faker.commerce.productMaterial(), masterLists: [] })
       return { _id, ...campaign }
     })
     contact = { name: Faker.name.findName(), slug: Faker.commerce.productMaterial(), masterLists: [] }
@@ -238,7 +238,7 @@ describe('master-lists-addItems', function () {
     addItems.run.call({ userId: 123 }, { _id: masterListId, items: campaigns.map((c) => c._id) })
     const masterList = MasterLists.findOne({ _id: masterListId })
     assert.equal(masterList.items.length, 3)
-    const addedCampaign = Medialists.findOne()
+    const addedCampaign = Campaigns.findOne()
     assert.equal(addedCampaign.masterLists[0]._id, masterListId)
   })
 })
@@ -250,7 +250,7 @@ describe('master-lists-removeItem', function () {
     resetDatabase()
     campaigns = Array(3).fill(0).map(() => {
       const campaign = { name: Faker.company.companyName(), slug: Faker.commerce.productMaterial(), masterLists: [] }
-      const _id = Medialists.insert({ name: Faker.company.companyName(), slug: Faker.commerce.productMaterial(), masterLists: [] })
+      const _id = Campaigns.insert({ name: Faker.company.companyName(), slug: Faker.commerce.productMaterial(), masterLists: [] })
       return { _id, ...campaign }
     })
     contact = { name: Faker.name.findName(), slug: Faker.commerce.productMaterial(), masterLists: [] }
@@ -263,7 +263,7 @@ describe('master-lists-removeItem', function () {
       items: campaigns.map((c) => c._id),
       order: 0
     })
-    Medialists.update({ _id: campaigns[0]._id }, { $set: { masterLists: [{ _id: masterListId }] } })
+    Campaigns.update({ _id: campaigns[0]._id }, { $set: { masterLists: [{ _id: masterListId }] } })
   })
 
   it('should not allow an item to be removed from a MasterList unless logged in', function () {
@@ -282,7 +282,7 @@ describe('master-lists-removeItem', function () {
     removeItem.run.call({ userId: 123 }, { _id: masterListId, item: campaigns[0]._id })
     const masterList = MasterLists.findOne({ _id: masterListId })
     assert.equal(masterList.items.length, 2)
-    const removedCampaign = Medialists.findOne({ _id: campaigns[0]._id })
+    const removedCampaign = Campaigns.findOne({ _id: campaigns[0]._id })
     assert.equal(removedCampaign.masterLists.length, 0)
   })
 })
@@ -360,7 +360,7 @@ describe('master-lists-set-masterlists', function () {
     masterListIds = masterlists.map((m) => m._id)
     campaigns = Array(1).fill(0).map(() => {
       const campaign = { name: Faker.company.companyName(), slug: Faker.commerce.productMaterial(), masterLists: [] }
-      const _id = Medialists.insert({ name: Faker.company.companyName(), slug: Faker.commerce.productMaterial(), masterLists: [] })
+      const _id = Campaigns.insert({ name: Faker.company.companyName(), slug: Faker.commerce.productMaterial(), masterLists: [] })
       return { _id, ...campaign }
     })
   })
@@ -381,7 +381,7 @@ describe('master-lists-set-masterlists', function () {
   it('should set a new masterlist on a campaign', function () {
     const itemId = campaigns[0]._id
     setMasterLists.run.call({userId: 123}, { type: 'Campaigns', item: itemId, masterLists: masterListIds })
-    const upatedCampaign = Medialists.findOne({_id: itemId})
+    const upatedCampaign = Campaigns.findOne({_id: itemId})
     assert.equal(upatedCampaign.masterLists.length, 3, 'campaign has 3 masterlists')
     const updatedMasterLists = MasterLists.find({items: {$in: [itemId]}})
     assert.equal(updatedMasterLists.count(), 3, '3 masterlists have been updated')
@@ -391,7 +391,7 @@ describe('master-lists-set-masterlists', function () {
     const campaignId = campaigns[0]._id
     // add item to two masterlists
     setMasterLists.run.call({userId: 123}, { type: 'Campaigns', item: campaignId, masterLists: [masterListIds[0], masterListIds[1]] })
-    const campaign = Medialists.findOne({_id: campaignId})
+    const campaign = Campaigns.findOne({_id: campaignId})
     assert.equal(campaign.masterLists.indexOf(masterListIds[2]), -1, 'campaign is not added to a masterlist if it is not specified')
     assert.ok(campaign.masterLists.indexOf(masterListIds[0]) > -1 && campaign.masterLists.indexOf(masterListIds[1]) > -1, 'campaign is added to all masterlists that are specified')
     const masterLists = MasterLists.find({items: {$size: 1}}).fetch()
