@@ -15,7 +15,7 @@
     "build:css": "postcss --config ./postcss.config.js --output ./client/bundle.css ./imports/ui/main.css",
     "build:svg": "node ./private/build/createSvgComponents",
     "watch": "run-p watch:*",
-    "watch:css": "nodemon --quiet --watch ./imports/ui --ext css --exec npm run build:css",
+    "watch:css": "nodemon --quiet --watch ./imports/ui/mains.css --exec npm run build:css",
     "watch:svg": "nodemon --quiet --watch ./private/svgs/icons --ext svg --exec npm run build:svg",
     "watch:server": "meteor run --settings settings.json",
     "watch:server:prod": "meteor run --settings settings.json --production"
