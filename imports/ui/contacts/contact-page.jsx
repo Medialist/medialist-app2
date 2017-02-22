@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react'
 import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
 import Contacts from '/imports/api/contacts/contacts'
-import Medialists from '/imports/api/medialists/medialists'
+import Campaigns from '/imports/api/campaigns/campaigns'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import { createContainer } from 'meteor/react-meteor-data'
 import ContactTopbar from './contact-topbar'
@@ -49,7 +49,7 @@ const ContactPage = React.createClass({
   onFeedback ({message, campaign, status}, cb) {
     const post = {
       contactSlug: this.props.contact.slug,
-      medialistSlug: campaign.slug,
+      campaignSlug: campaign.slug,
       message,
       status
     }
@@ -59,7 +59,7 @@ const ContactPage = React.createClass({
   onCoverage ({message, campaign}, cb) {
     const post = {
       contactSlug: this.props.contact.slug,
-      medialistSlug: campaign.slug,
+      campaignSlug: campaign.slug,
       message
     }
     Meteor.call('posts/createCoverage', post, cb)
@@ -93,9 +93,9 @@ const ContactPage = React.createClass({
 export default createContainer((props) => {
   const { contactSlug } = props.params
   Meteor.subscribe('contact', contactSlug)
-  Meteor.subscribe('medialists')
+  Meteor.subscribe('campaigns')
   const contact = Contacts.findOne({ slug: contactSlug })
-  const campaigns = contact ? Medialists.find({ slug: { $in: contact.medialists } }).fetch() : []
+  const campaigns = contact ? Campaigns.find({ slug: { $in: contact.campaigns } }).fetch() : []
   const user = Meteor.user()
   const masterlists = MasterLists.find({type: 'Contacts'}).fetch()
   return { ...props, contact, campaigns, user, masterlists }

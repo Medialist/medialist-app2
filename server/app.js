@@ -1,23 +1,25 @@
-App.medialistUpdated = function (medialistSlug, userId) {
+import Contacts from '/imports/api/contacts/contacts'
+
+App.campaignUpdated = function (campaignSlug, userId) {
   var user = Meteor.users.findOne(userId)
   if (!user) throw new Meteor.Error('unknown-user', 'Medialist cannot be updated by an unknown user')
-  const medialist = Medialists.findOne({ slug: medialistSlug }, { fields: { name: 1, avatar: 1, slug: 1, client: 1 } })
-  if (!medialist) throw new Meteor.Error('unknown-medialist', 'Cannot find medialist')
+  const campaign = Campaigns.findOne({ slug: campaignSlug }, { fields: { name: 1, avatar: 1, slug: 1, client: 1 } })
+  if (!campaign) throw new Meteor.Error('unknown-campaign', 'Cannot find campaign')
 
-  if (Meteor.users.find({ _id: userId, 'myMedialists._id': medialist._id }).count()) {
-    Meteor.users.update({ _id: userId, 'myMedialists._id': medialist._id }, { $set: { 'myMedialists.$.updatedAt': new Date() } })
+  if (Meteor.users.find({ _id: userId, 'myCampaigns._id': campaign._id }).count()) {
+    Meteor.users.update({ _id: userId, 'myCampaigns._id': campaign._id }, { $set: { 'myCampaigns.$.updatedAt': new Date() } })
   } else {
-    Meteor.users.update({ _id: userId }, { $push: { 'myMedialists': {
-      _id: medialist._id,
-      slug: medialist.slug,
-      avatar: medialist.avatar,
-      name: medialist.name,
-      clientName: medialist.client.name,
+    Meteor.users.update({ _id: userId }, { $push: { 'myCampaigns': {
+      _id: campaign._id,
+      slug: campaign.slug,
+      avatar: campaign.avatar,
+      name: campaign.name,
+      clientName: campaign.client.name,
       updatedAt: new Date()
     } } })
   }
 
-  return Medialists.update({slug: medialistSlug}, {$set: {
+  return Campaigns.update({slug: campaignSlug}, {$set: {
     'updatedBy._id': user._id,
     'updatedBy.name': user.profile.name,
     'updatedBy.avatar': user.services.twitter.profile_image_url_https,

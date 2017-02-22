@@ -6,7 +6,7 @@ import nothing from '/imports/lib/nothing'
 import { CreatedAtSchema } from '/imports/lib/schema'
 import toUserRef from '/imports/lib/to-user-ref'
 import Contacts, { ContactRefSchema } from '/imports/api/contacts/contacts'
-import Campaigns from '/imports/api/medialists/medialists'
+import Campaigns from '/imports/api/campaigns/campaigns'
 
 const Posts = new Mongo.Collection('posts')
 
@@ -25,7 +25,7 @@ export const PostSchema = new SimpleSchema([
       type: [ContactRefSchema],
       minCount: 0
     },
-    medialists: {
+    campaigns: {
       type: [String],
       minCount: 0
     },
@@ -41,7 +41,7 @@ export const PostSchema = new SimpleSchema([
         'coverage',
         'need to know',
         'details changed',
-        'medialists changed',
+        'campaigns changed',
         'campaign created'
       ],
       optional: true
@@ -57,7 +57,7 @@ export const PostSchema = new SimpleSchema([
 Posts.createCampaignCreated = ({ user, campaign, author }) => {
   const post = {
     type: 'campaign created',
-    medialists: [campaign.slug],
+    campaigns: [campaign.slug],
     contacts: [],
     message: `created a campaign`,
     details: {
@@ -80,12 +80,12 @@ Posts.createCampaignCreated = ({ user, campaign, author }) => {
 
 Posts.createCampaignChange = ({action, campaignSlug, contactSlugs, updatedAt, updatedBy}) => {
   const contacts = Contacts.findContactRefs({contactSlugs})
-  const medialists = Campaigns.findCampaignRefs({campaignSlugs: [campaignSlug]})
+  const campaigns = Campaigns.findCampaignRefs({campaignSlugs: [campaignSlug]})
   const post = {
-    type: 'medialists changed',
-    message: `${action} ${contacts.length} ${(action === 'added') ? 'to' : 'from'} ${medialists[0].name}`,
+    type: 'campaigns changed',
+    message: `${action} ${contacts.length} ${(action === 'added') ? 'to' : 'from'} ${campaigns[0].name}`,
     contacts,
-    medialists,
+    campaigns,
     details: {
       action: action
     },

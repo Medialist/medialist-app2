@@ -9,7 +9,7 @@ Meteor.publish(null, function () {
 
   return Meteor.users.find(
     {_id: this.userId},
-    {fields: {'services.twitter.profile_image_url_https': 1, myMedialists: 1, myContacts: 1}}
+    {fields: {'services.twitter.profile_image_url_https': 1, myCampaigns: 1, myContacts: 1}}
   )
 })
 
@@ -57,7 +57,7 @@ Meteor.publish('users-by-id', function (opts = {}) {
       'profile.name': 1,
       'services.twitter.profile_image_url_https': 1,
       myContacts: 1,
-      myMedialists: 1
+      myCampaigns: 1
     },
     sort: { createdAt: -1 },
     limit: opts.limit || DEFAULT_LIMIT

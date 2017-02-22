@@ -7,24 +7,24 @@ import { MasterListRefSchema } from '/imports/api/master-lists/master-lists'
 import { UserRefSchema } from '/imports/api/users/users'
 import { TagRefSchema } from '/imports/api/tags/tags'
 
-const Medialists = new Mongo.Collection('medialists')
+const Campaigns = new Mongo.Collection('campaigns')
 
 if (Meteor.isServer) {
-  Medialists._ensureIndex({ slug: 1 })
+  Campaigns._ensureIndex({ slug: 1 })
 }
 
-Medialists.allow(nothing)
+Campaigns.allow(nothing)
 
-export default Medialists
+export default Campaigns
 
-Medialists.findCampaignRefs = ({campaignSlugs}) => {
-  return Medialists.find(
+Campaigns.findCampaignRefs = ({campaignSlugs}) => {
+  return Campaigns.find(
     { slug: { $in: campaignSlugs } },
     { fields: { slug: 1, name: 1, avatar: 1 } }
   ).fetch()
 }
 
-Medialists.search = (opts) => {
+Campaigns.search = (opts) => {
   opts = opts || {}
 
   check(opts, {
@@ -41,12 +41,12 @@ Medialists.search = (opts) => {
   }
 
   if (opts.userId) {
-    const user = Meteor.users.findOne({_id: opts.userId}, {fields: { myMedialists: 1 }})
+    const user = Meteor.users.findOne({_id: opts.userId}, {fields: { myCampaigns: 1 }})
     if (!user) {
       console.log(`'contacts' publication failed to find user for provided userId ${opts.userId}`)
       return null
     }
-    query.slug = { $in: user.myMedialists.map((c) => c.slug) }
+    query.slug = { $in: user.myCampaigns.map((c) => c.slug) }
   }
 
   if (opts.regex) {
@@ -63,7 +63,7 @@ Medialists.search = (opts) => {
     limit: opts.limit || 100
   }
 
-  return Medialists.find(query, options)
+  return Campaigns.find(query, options)
 }
 
 export const MedialistSchema = new SimpleSchema({

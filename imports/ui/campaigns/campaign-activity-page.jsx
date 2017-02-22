@@ -9,7 +9,7 @@ import PostBox from './campaign-postbox'
 import ActivityFeed from '../dashboard/activity-feed'
 import EditCampaign from './edit-campaign'
 import Clients from '/imports/api/clients/clients'
-import Medialists from '/imports/api/medialists/medialists'
+import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import { setMasterLists } from '/imports/api/master-lists/methods'
@@ -75,7 +75,7 @@ const CampaignActivityPage = React.createClass({
   onFeedback ({message, contact, status}, cb) {
     const post = {
       contactSlug: contact.slug,
-      medialistSlug: this.props.campaign.slug,
+      campaignSlug: this.props.campaign.slug,
       message,
       status
     }
@@ -84,7 +84,7 @@ const CampaignActivityPage = React.createClass({
 
   onCoverage ({message, contact}, cb) {
     const post = {
-      medialistSlug: this.props.campaign.slug,
+      campaignSlug: this.props.campaign.slug,
       contactSlug: contact.slug,
       message
     }
@@ -164,21 +164,21 @@ export default createContainer((props) => {
   const { campaignSlug } = props.params
 
   const subs = [
-    Meteor.subscribe('medialist', campaignSlug),
+    Meteor.subscribe('campaign', campaignSlug),
     Meteor.subscribe('contacts-by-campaign', campaignSlug),
     Meteor.subscribe('contactCount'),
     Meteor.subscribe('clients')
   ]
   const loading = subs.some((s) => !s.ready())
-  const campaign = Medialists.findOne({ slug: campaignSlug })
+  const campaign = Campaigns.findOne({ slug: campaignSlug })
 
   return {
     ...props,
     loading,
     campaign,
     // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
-    contacts: Contacts.find({medialists: campaignSlug}, {sort: {updatedAt: -1}}).fetch(),
-    contactsCount: Contacts.find({medialists: campaignSlug}).count(),
+    contacts: Contacts.find({campaigns: campaignSlug}, {sort: {updatedAt: -1}}).fetch(),
+    contactsCount: Contacts.find({campaigns: campaignSlug}).count(),
     contactsAllCount: window.Counter.get('contactCount'),
     teamMates: campaign && campaign.team,
     user: Meteor.user(),

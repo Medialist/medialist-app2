@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
 import assert from 'assert'
 import Contacts from './contacts'
-import Campaigns from '../medialists/medialists'
+import Campaigns from '../campaigns/campaigns'
 import {
   addContactsToCampaign,
   removeContactsFromCampaign,
@@ -19,13 +19,13 @@ describe('addContactsToCampaign', function () {
       _id: 'alf',
       profile: { name: 'Alfonze' },
       myContacts: [],
-      myMedialists: []
+      myCampaigns: []
     })
 
     const contacts = Array(3).fill(0).map((_, index) => ({
       _id: `id${index}`,
       slug: `slug${index}`,
-      medialists: []
+      campaigns: []
     }))
     contacts.forEach((c) => Contacts.insert(c))
 
@@ -61,13 +61,13 @@ describe('addContactsToCampaign', function () {
     })
 
     Contacts.find({slug: {$in: contactSlugs}}).forEach((c) => {
-      assert.deepEqual(c.medialists, [campaignSlug], 'Contacts are in campaigns')
+      assert.deepEqual(c.campaigns, [campaignSlug], 'Contacts are in campaigns')
     })
   })
 
   it('should merge contacts with existing ones', function () {
     Campaigns.update({_id: 'id2'}, {$set: {contacts: {'slug0': 'Hot!'}}})
-    Contacts.update({_id: 'id0'}, {$set: {medialists: ['slug2']}})
+    Contacts.update({_id: 'id0'}, {$set: {campaigns: ['slug2']}})
     const contactSlugs = ['slug0', 'slug1']
     const campaignSlug = 'slug2'
     addContactsToCampaign.run.call({userId: 'alf'}, {contactSlugs, campaignSlug})
@@ -80,12 +80,12 @@ describe('addContactsToCampaign', function () {
     assert.deepEqual(Campaigns.findOne({_id: 'id0'}).contacts, {}, 'Other campaigns are unharmed')
 
     Contacts.find({_id: {$in: contactSlugs}}).forEach((c) => {
-      assert.equal(c.medialists.length, 1, 'Contacts are in campaigns')
-      assert.ok(c.medialists.includes('slug1'))
-      assert.ok(c.medialists.includes('slug2'))
+      assert.equal(c.campaigns.length, 1, 'Contacts are in campaigns')
+      assert.ok(c.campaigns.includes('slug1'))
+      assert.ok(c.campaigns.includes('slug2'))
     })
 
-    assert.deepEqual(Contacts.findOne({_id: 'id2'}).medialists, [], 'Other contacts are unharmed')
+    assert.deepEqual(Contacts.findOne({_id: 'id2'}).campaigns, [], 'Other contacts are unharmed')
   })
 })
 
@@ -124,8 +124,8 @@ describe('removeContactsFromCampaign', function () {
       avatar: `${index}`,
       outlets: []
     }))
-    contacts[0].medialists = ['0']
-    contacts[2].medialists = ['0']
+    contacts[0].campaigns = ['0']
+    contacts[2].campaigns = ['0']
     contacts.forEach((c) => Contacts.insert(c))
 
     const campaigns = Array(1).fill(0).map((_, index) => ({
@@ -170,7 +170,7 @@ describe('batchFavouriteContacts', function () {
       slug: `${index}`,
       avatar: `${index}`,
       outlets: `${index}`,
-      medialists: []
+      campaigns: []
     }))
     contacts.forEach((c) => Contacts.insert(c))
     Meteor.users.insert({_id: '1', myContacts: [{slug: 'oldie'}]})

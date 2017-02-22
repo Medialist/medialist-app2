@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
 import { ReactMeteorData } from 'meteor/react-meteor-data'
-import Medialists from '../../api/medialists/medialists'
+import Campaigns from '../../api/campaigns/campaigns'
 
 /**
 * CampaignSearchContainer
@@ -40,16 +40,16 @@ export default (Component, opts = {}) => {
 
       if (selectedMasterListSlug) {
         query['masterLists.slug'] = selectedMasterListSlug
-        subs.push(Meteor.subscribe('medialists', {masterListSlug: selectedMasterListSlug}))
+        subs.push(Meteor.subscribe('campaigns', {masterListSlug: selectedMasterListSlug}))
       }
       if (userId) {
-        subs.push(Meteor.subscribe('medialists', {userId: userId}))
+        subs.push(Meteor.subscribe('campaigns', {userId: userId}))
         if (userId !== Meteor.userId()) {
           subs.push(Meteor.subscribe('users-by-id', {userIds: [userId]}))
         }
         const user = Meteor.users.findOne({_id: userId})
-        const myMedialists = user && user.myMedialists || []
-        query.slug = { $in: myMedialists.map((c) => c.slug) }
+        const myCampaigns = user && user.myCampaigns || []
+        query.slug = { $in: myCampaigns.map((c) => c.slug) }
       }
 
       const searching = term.length >= opts.minSearchLength
@@ -61,10 +61,10 @@ export default (Component, opts = {}) => {
           { 'client.name': filterRegExp }
         ]
         subs.push(
-          Meteor.subscribe('medialists', { regex: term.substr(0, opts.minSearchLength) })
+          Meteor.subscribe('campaigns', { regex: term.substr(0, opts.minSearchLength) })
         )
       }
-      const campaigns = Medialists.find(query, { sort }).fetch()
+      const campaigns = Campaigns.find(query, { sort }).fetch()
       const loading = !subs.every((sub) => sub.ready())
       return { campaigns, campaignCount, loading, searching }
     },

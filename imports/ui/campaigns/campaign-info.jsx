@@ -8,7 +8,7 @@ import QuickAdd from '../lists/quick-add'
 import AddToMasterList from '../master-lists/add-to-master-list.jsx'
 import AddTags from '../tags/add-tags'
 import Tooltip from '../navigation/tooltip'
-import { update } from '../../api/medialists/methods'
+import { update } from '../../api/campaigns/methods'
 
 const CampaignInfo = React.createClass({
   propTypes: {
@@ -64,7 +64,7 @@ const CampaignInfo = React.createClass({
   },
 
   onToggleFavourite () {
-    Meteor.call('medialists/toggle-favourite', this.props.campaign.slug, (err) => {
+    Meteor.call('campaigns/toggle-favourite', this.props.campaign.slug, (err) => {
       if (err) console.error('Could not toggle favourite status for campaign', err)
     })
   },
@@ -84,7 +84,7 @@ const CampaignInfo = React.createClass({
     const { addToMasterListOpen, addTagsOpen } = this.state
     const { onEditClick, onEditTeamClick, user, campaign, onAddCampaignToMasterLists } = this.props
     const { name, client, avatar, purpose, links, team, tags, masterLists } = this.props.campaign
-    const isFavourite = user.myMedialists.some((m) => m._id === campaign._id)
+    const isFavourite = user.myCampaigns.some((m) => m._id === campaign._id)
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
     const tooltip = isFavourite ? 'Remove from My Campaigns' : 'Add to My Campaigns'
     return (

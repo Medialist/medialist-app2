@@ -4,7 +4,7 @@ import Contacts from '/imports/api/contacts/contacts'
 
 Meteor.methods({
   'contacts/toggle-favourite': function (contactSlug) {
-    if (!this.userId) throw new Meteor.Error('Only a logged-in user can (un)favourite a medialist')
+    if (!this.userId) throw new Meteor.Error('Only a logged-in user can (un)favourite a campaign')
     const user = Meteor.users.findOne(this.userId, { fields: { myContacts: 1 } })
     check(contactSlug, String)
     const contact = Contacts.findOne({ slug: contactSlug }, { fields: { avatar: 1, slug: 1, name: 1, outlets: 1 } })

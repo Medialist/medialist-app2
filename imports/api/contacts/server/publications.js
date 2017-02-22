@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor'
 import { check, Match } from 'meteor/check'
 import { Counter } from 'meteor/natestrauser:publish-performant-counts'
-import Medialists from '/imports/api/medialists/medialists'
+import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from './contacts'
 
 const contactCounter = new Counter('contactCount', Contacts.find({}))
@@ -14,7 +14,7 @@ Meteor.publish('my-contacts-and-campaigns', function () {
   if (!this.userId) return this.ready()
   return [
     Contacts.find({}, { sort: { updatedAt: -1 }, limit: 100 }),
-    Medialists.find({}, { sort: { updatedAt: -1 }, limit: 10 })
+    Campaigns.find({}, { sort: { updatedAt: -1 }, limit: 10 })
   ]
 })
 
@@ -33,7 +33,7 @@ Meteor.publish('contacts', function (opts) {
   var query = {}
 
   if (opts.campaignSlugs) {
-    query.medialists = {
+    query.campaigns = {
       $in: opts.campaignSlugs
     }
   }
@@ -85,5 +85,5 @@ Meteor.publish('contacts-by-campaign', function (campaignSlug, limit) {
     check(limit, Number)
     opts.limit = limit
   }
-  return Contacts.find({ medialists: campaignSlug }, opts)
+  return Contacts.find({ campaigns: campaignSlug }, opts)
 })

@@ -65,7 +65,7 @@ function createContact (data, userRef) {
   data.phones = data.phones || []
 
   data.slug = slugify(data.name, Contacts)
-  data.medialists = []
+  data.campaigns = []
   data.masterLists = []
   data.tags = []
   data.createdAt = new Date()

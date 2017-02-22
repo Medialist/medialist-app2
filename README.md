@@ -41,7 +41,7 @@ npm run watch
 	"profile" : {
 		"name" : "Richard Silverton"
 	},
-	"myMedialists": [
+	"myCampaigns": [
 		{
 			"_id": "eoriwoerijgworigjw409jgw4",
 			"name": "The Next Big Thing",
@@ -85,8 +85,8 @@ npm run watch
 		{ "label" : "Mobile", "value" : "+44 (0)7980 327 310" }
 	],
 	"address" : "53 Athenlay Road, London, SE15 3EN, United Kingdom",
-	"medialists" : [
-		"medialistSlug"
+	"campaigns" : [
+		"campaignSlug"
 	],
 	"tags": [
 		{ "_id": "xyz", "slug": "nice", "name": "Nice", "count": 9 }
@@ -109,7 +109,7 @@ npm run watch
 }
 ```
 
-**Medialist**
+**Campaigns**
 
 ```js
 {
@@ -152,7 +152,7 @@ npm run watch
 ```js
 {
 	"_id" : "2EnrcJ7r5i94JTmwZ",
-  "type" : "medialists changed",
+  "type" : "campaigns changed",
 	"details" : {
 		"action" : "added"
 	}
@@ -164,7 +164,7 @@ npm run watch
 			"avatar" : "https://pbs.twimg.com/profile_images/674213477477691392/63oxEK6E_normal.jpg"
 		}
 	],
-	"medialists" : [
+	"campaigns" : [
 		"activeschools"
 	],
 	"createdBy" : {

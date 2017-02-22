@@ -44,7 +44,7 @@ export default (Component, opts = {}) => {
       const query = {}
 
       if (campaignSlugs && campaignSlugs.length) {
-        query.medialists = { $in: campaignSlugs }
+        query.campaigns = { $in: campaignSlugs }
         subs.push(Meteor.subscribe('contacts', {campaignSlugs}))
       }
       if (selectedMasterListSlug) {
