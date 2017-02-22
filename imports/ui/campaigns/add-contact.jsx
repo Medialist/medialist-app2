@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react'
-import { Meteor } from 'meteor/meteor'
 import { Link } from 'react-router'
 import Modal from '../navigation/modal'
 import { SearchBlueIcon, AddIcon, SelectedIcon, RemoveIcon } from '../images/icons'
@@ -7,6 +6,7 @@ import AvatarList from '../lists/avatar-list'
 import Tooltip from '../navigation/tooltip'
 import CampaignContact from './campaign-contact.jsx'
 import createSearchContainer from '../contacts/search-container'
+import { addContactsToCampaign, removeContactsFromCampaign } from '/imports/api/contacts/methods'
 
 const AddContact = React.createClass({
   propTypes: {
@@ -124,7 +124,7 @@ const AddContactContainer = React.createClass({
     evt.preventDefault()
     const contactSlugs = this.state.selectedContacts.map((c) => c.slug)
     const campaignSlug = this.props.campaign.slug
-    if (contactSlugs.length > 0) Meteor.call('contacts/addToMedialist', contactSlugs, campaignSlug)
+    if (contactSlugs.length > 0) addContactsToCampaign.call({contactSlugs, campaignSlug})
     this.onReset()
   },
 
@@ -135,7 +135,10 @@ const AddContactContainer = React.createClass({
       selectedContacts = selectedContacts.filter((c) => c._id !== contact._id)
       this.setState({ selectedContacts })
     } else {
-      Meteor.call('contacts/removeFromMedialist', contact.slug, this.props.campaign.slug)
+      removeContactsFromCampaign.call({
+        contactSlugs: [contact.slug],
+        campaignSlug: this.props.campaign.slug
+      })
     }
   },
 

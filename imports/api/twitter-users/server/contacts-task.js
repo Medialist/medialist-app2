@@ -1,4 +1,9 @@
-ContactsTask = {}
+import { Meteor } from 'meteor/meteor'
+import { check, Match } from 'meteor/check'
+import TwitterClient from './twitter-client'
+import Contacts from '/imports/api/contacts/server/contacts'
+
+const ContactsTask = {}
 
 var contactUpdateQueue = []
 
@@ -79,10 +84,6 @@ function updateContact (contact, user) {
     data.avatar = user.profile_image_url_https
   }
 
-  if (user.description && contact.bio !== user.description) {
-    data.bio = user.description
-  }
-
   var social = findTwitterSocial(contact)
 
   if (!social.twitterId || user.screen_name !== social.value) {
@@ -110,3 +111,5 @@ ContactsTask.queueUpdate = (ids) => {
   ids = ids.filter(id => contactUpdateQueue.indexOf(id) === -1)
   contactUpdateQueue = contactUpdateQueue.concat(ids)
 }
+
+export default ContactsTask

@@ -4,6 +4,8 @@ import values from 'lodash.values'
 import nothing from '/imports/lib/nothing'
 import { MasterListRefSchema } from '/imports/api/master-lists/master-lists'
 import { TagRefSchema } from '/imports/api/tags/tags'
+import { LabelValueSchema, AuditSchema } from '/imports/lib/schema'
+import StatusMap from './status'
 
 const Contacts = new Mongo.Collection('contacts')
 
@@ -11,13 +13,7 @@ Contacts.allow(nothing)
 
 export default Contacts
 
-Contacts.status = {
-  completed: 'Completed',
-  hotLead: 'Hot Lead',
-  contacted: 'Contacted',
-  toContact: 'To Contact',
-  notInterested: 'Not Interested'
-}
+Contacts.status = StatusMap
 Contacts.phoneTypes = [
   'Mobile',
   'Landline'
@@ -39,134 +35,70 @@ Contacts.socialTypes = [
 // String => Integer
 Contacts.statusIndex = [].indexOf.bind(values(Contacts.status))
 
-export const ContactSchema = new SimpleSchema({
-  'createdBy._id': {
+export const ContactRefSchema = new SimpleSchema({
+  slug: {
+    type: String
+  },
+  name: {
+    type: String
+  },
+  avatar: {
     type: String,
-    regEx: SimpleSchema.RegEx.Id
-  },
-  'createdBy.name': {
-    type: String
-  },
-  'createdBy.avatar': {
-    type: String
-  },
-  createdAt: {
-    type: Date
-  },
-  'updatedBy._id': {
-    type: String,
-    regEx: SimpleSchema.RegEx.Id
-  },
-  'updatedBy.name': {
-    type: String
-  },
-  'updatedBy.avatar': {
-    type: String
-  },
-  updatedAt: {
-    type: Date
-  },
-  medialists: {
-    type: [String]
-  },
+    regEx: SimpleSchema.RegEx.Url,
+    optional: true
+  }
+})
+
+export const ContactCreateSchema = new SimpleSchema({
   name: {
     type: String,
     min: 1
   },
   avatar: {
     type: String,
-    optional: true
-  },
-  socials: {
-    type: [Object],
-    optional: true
-  },
-  'socials.$.label': {
-    type: String
-  },
-  'socials.$.value': {
-    type: String,
-    optional: true
-  },
-  'socials.$.twitterId': {
-    type: String,
+    regEx: SimpleSchema.RegEx.Url,
     optional: true
   },
   outlets: {
-    type: [Object],
-    optional: true
+    type: [LabelValueSchema]
   },
-  'outlets.$.label': { // this is the organisation (e.g. 'The Guardian')
-    type: String
+  emails: {
+    type: [LabelValueSchema]
   },
-  'outlets.$.value': { // this is the role (e.g. 'Technology writer')
-    type: String
+  phones: {
+    type: [LabelValueSchema]
   },
-  // TODO: import sectors as MasterLists...
-  sectors: {
-    type: String,
-    optional: true
+  socials: {
+    type: [LabelValueSchema]
   },
-  languages: {
-    type: String,
-    optional: true
-  },
+  // TODO: Refactor address format
   address: {
     type: String,
     optional: true
-  },
-  website: {
-    type: String,
-    optional: true
-  },
-  emails: {
-    type: [Object],
-    optional: true
-  },
-  'emails.$.label': {
-    type: String
-  },
-  'emails.$.value': {
-    type: String,
-    regEx: SimpleSchema.RegEx.Email,
-    optional: true
-  },
-  phones: {
-    type: [Object],
-    optional: true
-  },
-  'phones.$.label': {
-    type: String
-  },
-  'phones.$.value': {
-    type: String,
-    optional: true
-  },
-  bio: {
-    type: String,
-    optional: true
-  },
-  slug: {
-    type: String
-  },
-  importedData: {
-    type: [Object],
-    optional: true
-  },
-  'importedData.$.importedAt': {
-    type: Date
-  },
-  'importedData.$.data': {
-    type: Object,
-    blackbox: true
-  },
-  masterLists: {
-    type: [MasterListRefSchema]
-  },
-  tags: {
-    type: [TagRefSchema]
   }
 })
+
+export const ContactSchema = new SimpleSchema([
+  AuditSchema,
+  ContactCreateSchema,
+  {
+    slug: {
+      type: String,
+      min: 1
+    },
+    // References to other collections
+    medialists: {
+      type: [String],
+      regEx: SimpleSchema.RegEx.Id
+    },
+    masterLists: {
+      type: [MasterListRefSchema]
+    },
+    tags: {
+      type: [TagRefSchema]
+    }
+  }
+])
 
 // TODO: needs contact object for context
 Contacts.fieldNames = function (name) {
@@ -182,15 +114,9 @@ Contacts.fieldNames = function (name) {
   }[key]
 }
 
-export const ContactRefSchema = new SimpleSchema({
-  slug: {
-    type: String
-  },
-  name: {
-    type: String
-  },
-  avatar: {
-    type: String,
-    optional: true
-  }
-})
+Contacts.findContactRefs = ({contactSlugs}) => {
+  return Contacts.find(
+    { slug: { $in: contactSlugs } },
+    { fields: { _id: 1, slug: 1, name: 1, avatar: 1 } }
+  ).fetch()
+}

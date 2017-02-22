@@ -1,7 +1,9 @@
 import React, { PropTypes } from 'react'
 import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
-import MasterLists from '../../api/master-lists/master-lists'
+import Contacts from '/imports/api/contacts/contacts'
+import Medialists from '/imports/api/medialists/medialists'
+import MasterLists from '/imports/api/master-lists/master-lists'
 import { createContainer } from 'meteor/react-meteor-data'
 import ContactTopbar from './contact-topbar'
 import ContactInfo from './contact-info'
@@ -92,8 +94,8 @@ export default createContainer((props) => {
   const { contactSlug } = props.params
   Meteor.subscribe('contact', contactSlug)
   Meteor.subscribe('medialists')
-  const contact = window.Contacts.findOne({ slug: contactSlug })
-  const campaigns = contact ? window.Medialists.find({ slug: { $in: contact.medialists } }).fetch() : []
+  const contact = Contacts.findOne({ slug: contactSlug })
+  const campaigns = contact ? Medialists.find({ slug: { $in: contact.medialists } }).fetch() : []
   const user = Meteor.user()
   const masterlists = MasterLists.find({type: 'Contacts'}).fetch()
   return { ...props, contact, campaigns, user, masterlists }
