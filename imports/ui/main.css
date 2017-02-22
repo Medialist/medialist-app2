@@ -499,7 +499,7 @@ button {
   background-color: var(--gray90);
 }
 
-.-blue:hover {
+.hover-border-blue:hover {
   border-color: var(--blue) !important;
 }
 .hover-border-gray80:hover {

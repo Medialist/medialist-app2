@@ -73,7 +73,7 @@ const CampaignSelector = React.createClass({
 })
 
 const itemMatchesTerm = (item, term) => {
-  if (!item) return item
+  if (!item) return
   return item.toLowerCase().substring(0, term.length) === term.toLowerCase()
 }
 
