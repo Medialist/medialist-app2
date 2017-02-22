@@ -9,7 +9,7 @@ export const TypeSchema = new SimpleSchema({
 })
 
 export const StatusSchema = new SimpleSchema({
-  type: {
+  status: {
     type: String,
     allowedValues: StatusValues
   }

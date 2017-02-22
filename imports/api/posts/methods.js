@@ -8,59 +8,76 @@ import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from './posts'
 
+function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, message, status}) {
+  const createdBy = findOneUserRef(userId)
+  const createdAt = new Date()
+  const post = {
+    contacts: Contacts.findContactRefs({contactSlugs: [contactSlug]}),
+    campaigns: Campaigns.findCampaignRefs({campaignSlugs: [campaignSlug]}),
+    type,
+    status,
+    message,
+    createdBy,
+    createdAt
+  }
+  Posts.insert(post)
+
+  Campaigns.update(
+    { slug: campaignSlug },
+    {
+      $set: {
+        [`contacts.${contactSlug}`]: status,
+        updatedAt: createdAt,
+        updatedBy: createdBy
+      }
+    }
+  )
+
+  Contacts.update(
+    { slug: contactSlug },
+    {
+      $set: {
+        updatedAt: createdAt,
+        updatedBy: createdBy
+      },
+      $addToSet: {
+        campaigns: campaignSlug
+      }
+    }
+  )
+
+  addToMyFavourites({
+    userId,
+    contactSlugs: [contactSlug],
+    campaignSlugs: [campaignSlug]
+  })
+}
+
+const FeedbackOrCoverageSchema = new SimpleSchema([
+  {
+    contactSlug: { type: String },
+    campaignSlug: { type: String },
+    message: { type: String }
+  },
+  StatusSchema
+])
+
 export const createFeedbackPost = new ValidatedMethod({
   name: 'createFeedbackPost',
 
-  validate: new SimpleSchema({
-    contactSlug: { type: String },
-    campaignSlug: { type: String },
-    message: { type: String },
-    status: { type: StatusSchema }
-  }).validator(),
+  validate: FeedbackOrCoverageSchema.validator(),
 
   run ({ contactSlug, campaignSlug, message, status }) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
     checkAllSlugsExist([contactSlug], Contacts)
     checkAllSlugsExist([campaignSlug], Campaigns)
-
-    const createdBy = findOneUserRef(this.userId)
-    const createdAt = new Date()
-    const post = {
+    postFeedbackOrCoverage({
       type: 'createFeedbackPost',
-      contacts: Contacts.findContactRefs({contactSlugs: [contactSlug]}),
-      campaigns: Campaigns.findCampaignRefs({campaignSlugs: [campaignSlug]}),
-      status,
-      message,
-      createdBy,
-      createdAt
-    }
-    Posts.insert(post)
-
-    Campaigns.update(
-      { slug: campaignSlug },
-      {
-        $set: {
-          [`contact.${contactSlug}`]: status,
-          updatedAt: createdAt,
-          updatedBy: createdBy
-        }
-      }
-    )
-
-    Contacts.update(
-      { slug: contactSlug },
-      {
-        $set: {
-          updatedAt: createdAt,
-          updatedBy: createdBy
-        }
-      }
-    )
-
-    addToMyFavourites({
       userId: this.userId,
-      contactSlugs: [contactSlug],
-      campaignSlugs: [campaignSlug]
+      contactSlug,
+      campaignSlug,
+      message,
+      status
     })
   }
 })
@@ -68,53 +85,19 @@ export const createFeedbackPost = new ValidatedMethod({
 export const createCoveragePost = new ValidatedMethod({
   name: 'createCoveragePost',
 
-  validate: new SimpleSchema({
-    contactSlug: { type: String },
-    campaignSlug: { type: String },
-    message: { type: String }
-  }).validator(),
+  validate: FeedbackOrCoverageSchema.validator(),
 
-  run ({ contactSlug, campaignSlug, message }) {
+  run ({ contactSlug, campaignSlug, message, status }) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
     checkAllSlugsExist([contactSlug], Contacts)
     checkAllSlugsExist([campaignSlug], Campaigns)
-
-    const createdBy = findOneUserRef(this.userId)
-    const createdAt = new Date()
-    const post = {
+    postFeedbackOrCoverage({
       type: 'createCoveragePost',
-      contacts: Contacts.findContactRefs({contactSlugs: [contactSlug]}),
-      campaigns: Campaigns.findCampaignRefs({campaignSlugs: [campaignSlug]}),
-      message,
-      createdBy,
-      createdAt
-    }
-    Posts.insert(post)
-
-    Campaigns.update(
-      { slug: campaignSlug },
-      {
-        $set: {
-          updatedAt: createdAt,
-          updatedBy: createdBy
-        }
-      }
-    )
-
-    Contacts.update(
-      { slug: contactSlug },
-      {
-        $set: {
-          updatedAt: createdAt,
-          updatedBy: createdBy
-        }
-      }
-    )
-
-    addToMyFavourites({
       userId: this.userId,
-      contactSlugs: [contactSlug],
-      campaignSlugs: [campaignSlug]
+      contactSlug,
+      campaignSlug,
+      message,
+      status
     })
   }
 })
@@ -136,6 +119,7 @@ export const createNeedToKnowPost = new ValidatedMethod({
     const post = {
       type: 'createNeedToKnowPost',
       contacts: Contacts.findContactRefs({contactSlugs: [contactSlug]}),
+      campaigns: [],
       message,
       createdBy,
       createdAt
