@@ -71,7 +71,7 @@ export const addContactsToCampaign = new ValidatedMethod({
     )
 
     // Add an entry to the activity feed
-    Posts.createCampaignChange({
+    Posts.createCampaignChanged({
       action: 'addContactsToCampaign',
       campaignSlug,
       contactSlugs,
@@ -135,7 +135,7 @@ export const removeContactsFromCampaign = new ValidatedMethod({
       { multi: true }
     )
 
-    Posts.createCampaignChange({
+    Posts.createCampaignChanged({
       action: 'removeContactsFromCampaign',
       campaignSlug,
       contactSlugs,

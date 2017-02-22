@@ -72,7 +72,7 @@ export const createFeedbackPost = new ValidatedMethod({
     checkAllSlugsExist([contactSlug], Contacts)
     checkAllSlugsExist([campaignSlug], Campaigns)
     postFeedbackOrCoverage({
-      type: 'createFeedbackPost',
+      type: 'FeedbackPost',
       userId: this.userId,
       contactSlug,
       campaignSlug,
@@ -92,7 +92,7 @@ export const createCoveragePost = new ValidatedMethod({
     checkAllSlugsExist([contactSlug], Contacts)
     checkAllSlugsExist([campaignSlug], Campaigns)
     postFeedbackOrCoverage({
-      type: 'createCoveragePost',
+      type: 'CoveragePost',
       userId: this.userId,
       contactSlug,
       campaignSlug,
@@ -117,7 +117,7 @@ export const createNeedToKnowPost = new ValidatedMethod({
     const createdBy = findOneUserRef(this.userId)
     const createdAt = new Date()
     const post = {
-      type: 'createNeedToKnowPost',
+      type: 'NeedToKnowPost',
       contacts: Contacts.findContactRefs({contactSlugs: [contactSlug]}),
       campaigns: [],
       message,

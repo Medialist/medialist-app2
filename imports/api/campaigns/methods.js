@@ -8,7 +8,7 @@ import Campaigns, { MedialistSchema, MedialistUpdateSchema, MedialistCreateSchem
 import Clients from '/imports/api/clients/clients'
 import Uploadcare from '/imports/lib/uploadcare'
 import Posts from '/imports/api/posts/posts'
-import { addToMyFavourites } from '/imports/api/users/users'
+import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import getAvatar from '/imports/lib/get-avatar'
 
 function findOrCreateClientRef (name) {
@@ -123,13 +123,8 @@ export const create = new ValidatedMethod({
     if (!this.userId) throw new Meteor.Error('You must be logged in')
     const slug = createUniqueSlug(name, Campaigns)
     const client = findOrCreateClientRef(clientName)
-    const user = Meteor.users.findOne(this.userId)
+    const createdBy = findOneUserRef(this.userId)
     const createdAt = new Date()
-    const createdBy = {
-      _id: user._id,
-      name: user.profile.name,
-      avatar: user.services.twitter.profile_image_url_https
-    }
     const doc = {
       name,
       slug,
@@ -148,26 +143,15 @@ export const create = new ValidatedMethod({
     }
 
     check(doc, MedialistSchema)
-    const _id = Campaigns.insert(doc)
+    Campaigns.insert(doc)
 
     if (Meteor.isServer) {
       Uploadcare.store(doc.avatar)
     }
 
-    const myCampaigns = {
-      _id,
-      name: name,
-      slug: slug,
-      avatar: avatar,
-      clientName: client && client.name || '',
-      updatedAt: createdAt
-    }
-    Meteor.users.update(
-      { _id: user._id },
-      { $push: { myCampaigns }
-      })
+    addToMyFavourites({userId: this.userId, campaignSlugs: [slug]})
 
-    Posts.createCampaignCreated({ user, campaign: doc, author: user })
+    Posts.createCampaignCreated({campaignSlug: slug, createdBy, createdAt})
 
     return slug
   }

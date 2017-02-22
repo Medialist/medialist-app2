@@ -66,6 +66,18 @@ Campaigns.search = (opts) => {
   return Campaigns.find(query, options)
 }
 
+export const CampaignRefSchema = new SimpleSchema([
+  {
+    slug: { type: String },
+    name: { type: String },
+    avatar: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Url,
+      optional: true
+    }
+  }
+])
+
 export const MedialistSchema = new SimpleSchema({
   'createdBy._id': {
     type: String,

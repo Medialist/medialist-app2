@@ -4,9 +4,8 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import values from 'lodash.values'
 import nothing from '/imports/lib/nothing'
 import { CreatedAtSchema } from '/imports/lib/schema'
-import toUserRef from '/imports/lib/to-user-ref'
 import Contacts, { ContactRefSchema } from '/imports/api/contacts/contacts'
-import Campaigns from '/imports/api/campaigns/campaigns'
+import Campaigns, { CampaignRefSchema } from '/imports/api/campaigns/campaigns'
 
 const Posts = new Mongo.Collection('posts')
 
@@ -17,17 +16,17 @@ export default Posts
 export const PostSchema = new SimpleSchema([
   CreatedAtSchema,
   {
-    message: {
-      type: String,
-      optional: true
-    },
     contacts: {
       type: [ContactRefSchema],
       minCount: 0
     },
     campaigns: {
-      type: [String],
+      type: [CampaignRefSchema],
       minCount: 0
+    },
+    message: {
+      type: String,
+      optional: true
     },
     status: {
       type: String,
@@ -37,52 +36,34 @@ export const PostSchema = new SimpleSchema([
     type: {
       type: String,
       allowedValues: [
-        'feedback',
-        'coverage',
-        'need to know',
-        'details changed',
-        'campaigns changed',
-        'campaign created'
-      ],
-      optional: true
-    },
-    details: {
-      type: Object,
-      blackbox: true,
-      optional: true
+        'FeedbackPost',
+        'CoveragePost',
+        'NeedToKnowPost',
+        'CampaignCreated',
+        'CampaignChanged'
+      ]
     }
   }
 ])
 
-Posts.createCampaignCreated = ({ user, campaign, author }) => {
+Posts.createCampaignCreated = ({ campaignSlug, createdAt, createdBy }) => {
   const post = {
-    type: 'campaign created',
-    campaigns: [campaign.slug],
+    type: 'CampaignCreated',
+    campaigns: Campaigns.findCampaignRefs({campaignSlugs: [campaignSlug]}),
     contacts: [],
-    message: `created a campaign`,
-    details: {
-      campaign: {
-        _id: campaign._id,
-        slug: campaign.slug,
-        name: campaign.name,
-        avatar: campaign.avatar,
-        clientName: campaign.client && campaign.client.name,
-        updatedAt: campaign.updatedAt
-      }
-    },
-    createdBy: toUserRef(user),
-    createdAt: new Date()
+    createdBy,
+    createdAt
   }
   // TODO: refactor post schema.
   // check(post, PostSchema)
   return Posts.insert(post)
 }
 
-Posts.createCampaignChange = ({action, campaignSlug, contactSlugs, updatedAt, updatedBy}) => {
+Posts.createCampaignChanged = ({action, campaignSlug, contactSlugs, updatedAt, updatedBy}) => {
   const contacts = Contacts.findContactRefs({contactSlugs})
   const campaigns = Campaigns.findCampaignRefs({campaignSlugs: [campaignSlug]})
   const post = {
-    type: 'campaigns changed',
+    type: 'CampaignChanged',
     message: `${action} ${contacts.length} ${(action === 'added') ? 'to' : 'from'} ${campaigns[0].name}`,
     contacts,
     campaigns,

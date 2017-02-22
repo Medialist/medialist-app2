@@ -110,7 +110,7 @@ describe('Medialist create method', function () {
   })
 
   it('should create a campaign', function () {
-    const user = { profile: { name: 'O' }, services: { twitter: {profile_image_url_https: 'bar'} } }
+    const user = { myContacts: [], myCampaigns: [], profile: { name: 'O' }, services: { twitter: {profile_image_url_https: 'bar'} } }
     const userId = Meteor.users.insert(user)
     const payload = { name: 'Foo' }
     const slug = create.run.call({ userId }, payload)
@@ -120,7 +120,7 @@ describe('Medialist create method', function () {
   })
 
   it('should create a campaign and client', function () {
-    const user = { profile: { name: 'O' }, services: { twitter: {profile_image_url_https: 'bar'} } }
+    const user = { myContacts: [], myCampaigns: [], profile: { name: 'O' }, services: { twitter: {profile_image_url_https: 'bar'} } }
     const userId = Meteor.users.insert(user)
     const payload = { name: 'Foo', clientName: 'Bar', purpose: 'Better!' }
     const slug = create.run.call({ userId }, payload)
@@ -131,7 +131,7 @@ describe('Medialist create method', function () {
   })
 
   it('should create a campaign and re-use existing client info', function () {
-    const user = { profile: { name: 'O'}, services: { twitter: {profile_image_url_https: 'bar'} } }
+    const user = { myContacts: [], myCampaigns: [], profile: { name: 'O'}, services: { twitter: {profile_image_url_https: 'bar'} } }
     const userId = Meteor.users.insert(user)
     const clientName = 'Marmite'
     Clients.insert({name: clientName})
@@ -145,7 +145,7 @@ describe('Medialist create method', function () {
   })
 
   it('should update the myCampaigns', function () {
-    const user = { profile: { name: 'O'}, services: { twitter: {profile_image_url_https: 'bar'} } }
+    const user = { myContacts: [], myCampaigns: [], profile: { name: 'O'}, services: { twitter: {profile_image_url_https: 'bar'} } }
     const userId = Meteor.users.insert(user)
     const payload = { name: 'Foo', clientName: 'Bar', purpose: 'Better!'}
     const slug = create.run.call({ userId }, payload)

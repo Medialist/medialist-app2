@@ -78,7 +78,7 @@ describe('createFeedbackPost', function () {
     assert.equal(Posts.find({}).count(), 1)
     const post = Posts.findOne({}, {fields: {_id: 0, createdAt: 0}})
     assert.deepEqual(post, {
-      type: 'createFeedbackPost',
+      type: 'FeedbackPost',
       status,
       message,
       campaigns: [{
@@ -178,7 +178,7 @@ describe('createCoveragePost', function () {
     assert.equal(Posts.find({}).count(), 1)
     const post = Posts.findOne({}, {fields: {_id: 0, createdAt: 0}})
     assert.deepEqual(post, {
-      type: 'createCoveragePost',
+      type: 'CoveragePost',
       status,
       message,
       campaigns: [{
@@ -272,7 +272,7 @@ describe('createNeedToKnowPost', function () {
     assert.equal(Posts.find({}).count(), 1)
     const post = Posts.findOne({}, {fields: {_id: 0, createdAt: 0}})
     assert.deepEqual(post, {
-      type: 'createNeedToKnowPost',
+      type: 'NeedToKnowPost',
       message,
       campaigns: [],
       contacts: [{
