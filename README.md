@@ -75,9 +75,6 @@ npm run watch
 		{ "label": "the Guardian", "value": "Freelance" },
 		{ "label": "the Guardian - g2 (supplement)", "value": "Features" }
 	],
-  "sectors" : "Entertainment (Cinema, Film & DVD), Home Interest (Architecture), Arts",
-  "bio" : "I'm a freelance writer, mainly on cinema and architecture. I often write for the Guardian: http://t.co/xgjs5FoFLn"
-  "languages" : "English",
 	"emails" : [
 		{ "label" : "Email", "value" : "steverose7@gmail.com" }
 	],
@@ -88,15 +85,15 @@ npm run watch
 		{ "label" : "Mobile", "value" : "+44 (0)7980 327 310" }
 	],
 	"address" : "53 Athenlay Road, London, SE15 3EN, United Kingdom",
-	"importedData" : [
-		{
-			"data" : { "columns" : [], "row" : [] },
-			"importedAt" : ISODate("2016-02-26T13:12:53.455Z")
-		}
-	],
 	"medialists" : [
 		"medialistSlug"
 	],
+	"tags": [
+		{ "_id": "xyz", "slug": "nice", "name": "Nice", "count": 9 }
+	],
+	"masterLists": [
+		{ "_id": "123", "slug": "tech", "name": "Tech" }
+	]
 	"createdAt" : ISODate("2016-02-26T13:12:53.456Z"),
 	"createdBy" : {
     "_id" : "hNc2ArK9TcAWyEXqQ",
@@ -108,13 +105,7 @@ npm run watch
 		"_id" : "hNc2ArK9TcAWyEXqQ",
 		"name" : "Olly Gilbert",
 		"avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
-	},
-	"masterLists": [
-		{ "_id": "123", "slug": "tech", "name": "Tech" }
-	],
-	"links": [
-		{ "url": "http://example.org" }
-	]
+	}
 }
 ```
 
@@ -123,13 +114,13 @@ npm run watch
 ```js
 {
 	"_id" : "54gbNST2YBuqbrB4T",
-	"name" : "dailymailjournos",
+  "slug" : "amazonecho",
+	"name" : "Amazon Echo",
 	"client" : {
 		"name" : "Amazon",
 		"_id" : "iYurjZ3HbvmMbuRYr"
 	},
 	"purpose" : "Amazon is good for the UK",
-	"topics" : [ ],
 	"contacts" : {
 		"EleanorHarding" : "To Contact",
 		"SeanWilliams" : "To Contact",
@@ -137,6 +128,12 @@ npm run watch
 		"RogerBaird" : "To Contact",
 		"GeoffFoster" : "Hot Lead"
 	},
+	"tags": [
+		{ "_id": "xyz", "slug": "nice", "name": "Nice", "count": 9 }
+	],
+	"masterLists": [
+		{ "_id": "123", "slug": "tech", "name": "Tech" }
+	],
 	"createdAt" : ISODate("2016-02-24T22:26:39.782Z"),
 	"createdBy" : {
 		"_id" : "hNc2ArK9TcAWyEXqQ",
@@ -146,11 +143,7 @@ npm run watch
 	"updatedBy" : {
 		"_id" : "hNc2ArK9TcAWyEXqQ",
 		"name" : "Olly Gilbert"
-	},
-	"slug" : "dailymailjournos",
-	"masterLists": [
-		{ "_id": "123", "slug": "tech", "name": "Tech" }
-	],
+	}
 }
 ```
 

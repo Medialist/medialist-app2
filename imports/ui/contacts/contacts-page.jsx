@@ -17,7 +17,7 @@ import createSearchContainer from './search-container'
 import AddContactsToCampaign from './add-contacts-to-campaign'
 import Medialists from '/imports/api/medialists/medialists'
 import { AvatarTag } from '../tags/tag'
-import { batchFavouriteContacts } from '/imports/api/contacts/methods'
+import { batchFavouriteContacts, batchRemoveContacts } from '/imports/api/contacts/methods'
 import { batchAddTags } from '/imports/api/tags/methods'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import withSnackbar from '../snackbar/with-snackbar'
@@ -116,8 +116,11 @@ const ContactsPage = withSnackbar(React.createClass({
     const { snackbar } = this.props
     const { selections } = this.state
     const contactIds = selections.map((s) => s._id)
-    Meteor.call('contacts/remove', contactIds, (err, res) => {
-      if (err) return console.error('Removing contacts failed', err)
+    batchRemoveContacts.call({contactIds}, (err, res) => {
+      if (err) {
+        console.log(err)
+        return snackbar.show('Sorry, that didn\'t work')
+      }
       this.setState({ selections: [] })
       snackbar.show(`Deleted ${contactIds.length} ${contactIds.length === 1 ? 'contacts' : 'contact'}`)
     })

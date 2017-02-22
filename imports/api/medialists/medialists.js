@@ -17,6 +17,13 @@ Medialists.allow(nothing)
 
 export default Medialists
 
+Medialists.findCampaignRefs = ({campaignSlugs}) => {
+  return Medialists.find(
+    { slug: { $in: campaignSlugs } },
+    { fields: { slug: 1, name: 1, avatar: 1 } }
+  ).fetch()
+}
+
 Medialists.search = (opts) => {
   opts = opts || {}
 

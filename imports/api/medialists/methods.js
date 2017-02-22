@@ -8,6 +8,7 @@ import Medialists, { MedialistSchema, MedialistUpdateSchema, MedialistCreateSche
 import Clients from '/imports/api/clients/clients'
 import Uploadcare from '/imports/lib/uploadcare'
 import Posts from '/imports/api/posts/posts'
+import { addToMyFavourites } from '/imports/api/users/users'
 import getAvatar from '/imports/lib/get-avatar'
 
 function findOrCreateClientRef (name) {
@@ -24,7 +25,7 @@ function findOrCreateClientRef (name) {
 // Add all campaigns to myMedialists
 // Update existing favs with new updatedAt
 export const batchFavouriteCampaigns = new ValidatedMethod({
-  name: 'Contacts/batchFavouriteCampaigns',
+  name: 'batchFavouriteCampaigns',
 
   validate: new SimpleSchema({
     campaignSlugs: { type: [String] }
@@ -33,29 +34,7 @@ export const batchFavouriteCampaigns = new ValidatedMethod({
   run ({ campaignSlugs }) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
     checkAllSlugsExist(campaignSlugs, Medialists)
-    const user = Meteor.users.findOne({_id: this.userId})
-    const now = new Date()
-
-    // transform campaigns into refs for user.myMedialists array.
-    const newFavs = Medialists.find(
-      { slug: { $in: campaignSlugs } },
-      { fields: { avatar: 1, slug: 1, name: 1, client: 1 } }
-    ).map((campaign) => ({
-      _id: campaign._id,
-      name: campaign.name,
-      slug: campaign.slug,
-      avatar: campaign.avatar,
-      clientName: campaign.client && campaign.client.name || '',
-      updatedAt: now
-    }))
-
-    // Preserve other favs.
-    const existingFavs = user.myMedialists.filter((c) => !campaignSlugs.includes(c.slug))
-
-    return Meteor.users.update(
-      this.userId,
-      { $set: { myMedialists: existingFavs.concat(newFavs) } }
-    )
+    addToMyFavourites({userId: this.userId, campaignSlugs})
   }
 })
 
@@ -188,7 +167,7 @@ export const create = new ValidatedMethod({
       { $push: { myMedialists }
       })
 
-    Posts.createCampaignCreated({ campaign: doc, author: user })
+    Posts.createCampaignCreated({ user, campaign: doc, author: user })
 
     return slug
   }

@@ -27,5 +27,12 @@ export default function (name, collection) {
 export function checkAllSlugsExist (slugs, Collection) {
   const count = Collection.find({deleted: null, slug: {$in: slugs}}).count()
   if (count === slugs.length) return
-  throw new Meteor.Error(`Some ${Collection._name}'s could not be found'`)
+
+  // Figure out which for better error reporting.
+  const foundSlugs = Collection
+    .find({deleted: null, slug: {$in: slugs}})
+    .map((i) => i.slug)
+
+  const missingSlugs = slugs.filter((s) => foundSlugs.indexOf(s) < 0)
+  throw new Meteor.Error(`${Collection._name} ${missingSlugs.join(', ')} could not be found'`)
 }
