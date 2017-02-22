@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor'
 import { check } from 'meteor/check'
 import '/imports/api/campaigns/methods'
-
-const Campaigns = (typeof window === 'undefined') ? global.Campaigns : window.Campaigns
+import Campaigns from '/imports/api/campaigns/campaigns'
 
 Meteor.methods({
   'campaigns/toggle-favourite': function (campaignSlug) {

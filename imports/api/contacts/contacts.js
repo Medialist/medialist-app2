@@ -1,5 +1,6 @@
 import { Mongo } from 'meteor/mongo'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
+import { Counter } from 'meteor/natestrauser:publish-performant-counts'
 import values from 'lodash.values'
 import nothing from '/imports/lib/nothing'
 import { MasterListRefSchema } from '/imports/api/master-lists/master-lists'
@@ -10,6 +11,8 @@ import StatusMap from './status'
 const Contacts = new Mongo.Collection('contacts')
 
 Contacts.allow(nothing)
+
+Contacts.allContactsCount = () => Counter.get('contactCount')
 
 export default Contacts
 

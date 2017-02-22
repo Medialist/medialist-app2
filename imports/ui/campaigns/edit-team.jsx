@@ -132,7 +132,7 @@ const AddTeamMateContainer = React.createClass({
   onSearch (evt) {
     const term = evt.target.value
     const query = {'profile.name': {$regex: term, $options: 'i'}}
-    const filteredTeamMates = window.Meteor.users.find(query, {limit: 20, sort: {'profile.name': 1}}).fetch()
+    const filteredTeamMates = Meteor.users.find(query, {limit: 20, sort: {'profile.name': 1}}).fetch()
     this.setState({filteredTeamMates})
   },
 
