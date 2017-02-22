@@ -91,16 +91,16 @@ const FilterableCampaignsList = React.createClass({
   },
   onTermChange (term) {
     const { campaigns } = this.props
-    let filteredCampaigns = campaigns.filter((c) => itemMatchesTerm(c.name, term))
-    if (!filteredCampaigns[0]) filteredCampaigns = campaigns.filter((c) => itemMatchesTerm(c.client.name, term))
+    const filteredCampaigns = campaigns.filter((c) => itemMatchesTerm(c.name, term) || itemMatchesTerm(c.client.name, term))
     this.setState({ filteredCampaigns })
   },
   render () {
     const { onClick, contact } = this.props
     const { filteredCampaigns } = this.state
+    const styleOverrides = {borderTop: 'solid 0px', borderRight: 'solid 0px', borderLeft: 'solid 0px'}
     return (
       <nav className='overflow-scroll' style={{height: 331}}>
-        <SearchBox onTermChange={this.onTermChange} placeholder='Search campaigns' />
+        <SearchBox onTermChange={this.onTermChange} placeholder='Search campaigns' style={styleOverrides} />
         {filteredCampaigns.map((item) => (
           <div key={item._id} className='px3 py2 pointer border-transparent border-bottom border-top hover-bg-gray90 hover-border-gray80' onClick={() => onClick(item)}>
             <Campaign campaign={item} contact={contact} />
