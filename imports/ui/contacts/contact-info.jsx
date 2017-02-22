@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
 import { CircleAvatar, SquareAvatar } from '../images/avatar'
-import { EmailIcon, FavouritesIconGold, FavouritesIcon, PhoneIcon, BioIcon, MobileIcon } from '../images/icons'
+import { EmailIcon, FavouritesIconGold, FavouritesIcon, PhoneIcon, BioIcon, MobileIcon, AddressIcon } from '../images/icons'
 import { setMasterLists } from '/imports/api/master-lists/methods'
 import QuickAdd from '../lists/quick-add'
 import InfoHeader from '../lists/info-header'
@@ -143,10 +143,12 @@ const ContactItems = React.createClass({
     this.setState(({showMore}) => ({ showMore: !this.state.showMore }))
   },
   render () {
+    console.log('props.contact', this.props.contact)
     const {
       emails,
       phones,
-      bio
+      bio,
+      address = null
     } = this.props.contact
     emails.slice(0, 1) // limit to most recent email address
     const { showMore } = this.state
@@ -154,11 +156,12 @@ const ContactItems = React.createClass({
     return (
       <ul className='list-reset'>
         {emails.map((email) => <ContactItemsEmail email={email} />)}
-        {showMore && (
-          <li>
-            {phones.map((phone) => <ContactItemsPhone phone={phone} />)}
-            <ContactItemBio bio={bio} />
-          </li>
+        <li>
+          {phones.map((phone) => <ContactItemsPhone phone={phone} />)}
+          <ContactItemBio bio={bio} />
+        </li>
+        {showMore && address && (
+          <li><ContactItemAddress address={address} /></li>
         )}
         <li>
           <a href='#' className='block f-sm bold blue m3' onClick={this.toggleShowMore}>Show {showMore ? 'Less' : 'More'}</a>
@@ -201,6 +204,17 @@ const ContactItemBio = ({ bio }) => {
       <a className='block py1 clearfix'>
         <div className='col col-2 center'><BioIcon className='gray60' /></div>
         <div className='col col-10 gray10'>{bio}</div>
+      </a>
+    </div>
+  )
+}
+
+const ContactItemAddress = ({ address }) => {
+  return (
+    <div>
+      <a className='block py1 clearfix'>
+        <div className='col col-2 center'><AddressIcon className='gray60' /></div>
+        <div className='col col-10 gray10'>{address.split(',').map((line) => <div className='block mb2'>{line}</div>)}</div>
       </a>
     </div>
   )
