@@ -4,7 +4,7 @@ import { Counter } from 'meteor/natestrauser:publish-performant-counts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from './contacts'
 
-const contactCounter = new Counter('contactCount', Contacts.find({}))
+const contactCounter = new Counter('contactCount', Contacts.find({}), 3000)
 
 Meteor.publish('contactCount', function () {
   return contactCounter

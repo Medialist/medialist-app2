@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
 import ActivityList from './activity-list'
 import ActivityFilter from './activity-filter'
+import Posts from '/imports/api/posts/posts'
 
 const ActivityFeed = React.createClass({
   propTypes: {
@@ -44,7 +45,7 @@ const ActivityListContainer = createContainer((props) => {
   const query = {}
   if (props.campaign) query.campaigns = props.campaign.slug
   if (props.contact) query['contacts.slug'] = props.contact.slug
-  const items = window.Posts.find(query, { sort: { createdAt: -1 }, limit }).fetch()
+  const items = Posts.find(query, { sort: { createdAt: -1 }, limit }).fetch()
   return {
     currentUser: Meteor.user(),
     items,

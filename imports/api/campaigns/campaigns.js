@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
+import { Counter } from 'meteor/natestrauser:publish-performant-counts'
 import { check, Match } from 'meteor/check'
 import nothing from '/imports/lib/nothing'
 import { MasterListRefSchema } from '/imports/api/master-lists/master-lists'
@@ -16,6 +17,8 @@ if (Meteor.isServer) {
 Campaigns.allow(nothing)
 
 export default Campaigns
+
+Campaigns.allCampaignsCount = () => Counter.get('campaignCount')
 
 Campaigns.findCampaignRefs = ({campaignSlugs}) => {
   return Campaigns.find(
