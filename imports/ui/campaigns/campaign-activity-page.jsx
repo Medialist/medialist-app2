@@ -12,6 +12,7 @@ import Clients from '/imports/api/clients/clients'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
 import MasterLists from '/imports/api/master-lists/master-lists'
+import { createFeedbackPost, createCoveragePost } from '/imports/api/posts/methods'
 import { setMasterLists } from '/imports/api/master-lists/methods'
 import CreateContact from '../contacts/edit-contact'
 import AddContact from './add-contact'
@@ -73,22 +74,15 @@ const CampaignActivityPage = React.createClass({
   },
 
   onFeedback ({message, contact, status}, cb) {
-    const post = {
-      contactSlug: contact.slug,
-      campaignSlug: this.props.campaign.slug,
-      message,
-      status
-    }
-    Meteor.call('posts/create', post, cb)
+    const campaignSlug = this.props.campaign.slug
+    const contactSlug = contact.slug
+    createFeedbackPost.call({contactSlug, campaignSlug, message, status}, cb)
   },
 
-  onCoverage ({message, contact}, cb) {
-    const post = {
-      campaignSlug: this.props.campaign.slug,
-      contactSlug: contact.slug,
-      message
-    }
-    Meteor.call('posts/createCoverage', post, cb)
+  onCoverage ({message, contact, status}, cb) {
+    const campaignSlug = this.props.campaign.slug
+    const contactSlug = contact.slug
+    createCoveragePost.call({contactSlug, campaignSlug, message, status}, cb)
   },
 
   onCreateContact (data) {

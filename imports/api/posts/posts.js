@@ -13,6 +13,19 @@ Posts.allow(nothing)
 
 export default Posts
 
+Posts.types = [
+  'FeedbackPost',
+  'CoveragePost',
+  'NeedToKnowPost',
+  'CampaignCreated',
+  'CampaignChanged'
+]
+
+Posts.feedLimit = {
+  initial: 20,
+  increment: 5
+}
+
 export const PostSchema = new SimpleSchema([
   CreatedAtSchema,
   {
@@ -35,13 +48,7 @@ export const PostSchema = new SimpleSchema([
     },
     type: {
       type: String,
-      allowedValues: [
-        'FeedbackPost',
-        'CoveragePost',
-        'NeedToKnowPost',
-        'CampaignCreated',
-        'CampaignChanged'
-      ]
+      allowedValues: Posts.types
     }
   }
 ])
@@ -76,9 +83,4 @@ Posts.createCampaignChanged = ({action, campaignSlug, contactSlugs, updatedAt, u
   // TODO: refactor post schema.
   // check(post, PostSchema)
   return Posts.insert(post)
-}
-
-Posts.feedLimit = {
-  initial: 20,
-  increment: 5
 }

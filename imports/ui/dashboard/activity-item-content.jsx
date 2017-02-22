@@ -3,10 +3,10 @@ import { SquareAvatar } from '../images/avatar'
 import { Link } from 'react-router'
 
 export default ({ item }) => {
-  const { type, details } = item
+  const { type, campaigns } = item
 
-  if (type === 'campaign created') {
-    const { slug, name, avatar, clientName } = details.campaign
+  if (type === 'CampaignCreated') {
+    const { slug, name, avatar, clientName } = campaigns[0]
 
     return (
       <div className='border-gray80 border-top py3'>

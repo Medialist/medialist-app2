@@ -23,8 +23,13 @@ Campaigns.allCampaignsCount = () => Counter.get('campaignCount')
 Campaigns.findCampaignRefs = ({campaignSlugs}) => {
   return Campaigns.find(
     { slug: { $in: campaignSlugs } },
-    { fields: { slug: 1, name: 1, avatar: 1 } }
-  ).fetch()
+    { fields: { slug: 1, name: 1, avatar: 1, client: 1 } }
+  ).map(({slug, name, avatar, client}) => ({
+    slug,
+    name,
+    avatar,
+    clientName: client ? client.name : ''
+  }))
 }
 
 Campaigns.search = (opts) => {
@@ -76,6 +81,10 @@ export const CampaignRefSchema = new SimpleSchema([
     avatar: {
       type: String,
       regEx: SimpleSchema.RegEx.Url,
+      optional: true
+    },
+    clientName: {
+      type: String,
       optional: true
     }
   }

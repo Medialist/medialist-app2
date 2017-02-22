@@ -34,9 +34,9 @@ const ActivityFeed = React.createClass({
 const ActivityListContainer = createContainer((props) => {
   const limit = props.limit || 10
   const typesForFilter = {
-    'Top Activity': ['need-to-knows', 'campaigns changed', 'feedback', 'campaign created'],
-    'Coverage': ['coverage'],
-    'Need To Know': ['need-to-knows']
+    'Top Activity': Posts.types,
+    'Coverage': ['CoveragePost'],
+    'Need To Know': ['NeedToKnowPost']
   }
   const types = typesForFilter[props.filter]
 
