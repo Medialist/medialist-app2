@@ -53,34 +53,15 @@ export const PostSchema = new SimpleSchema([
   }
 ])
 
-Posts.createCampaignCreated = ({ campaignSlug, createdAt, createdBy }) => {
-  const post = {
-    type: 'CampaignCreated',
-    campaigns: Campaigns.findCampaignRefs({campaignSlugs: [campaignSlug]}),
-    contacts: [],
-    createdBy,
-    createdAt
-  }
-  // TODO: refactor post schema.
-  // check(post, PostSchema)
-  return Posts.insert(post)
-}
-
-Posts.createCampaignChanged = ({action, campaignSlug, contactSlugs, updatedAt, updatedBy}) => {
+Posts.create = ({type, contactSlugs, campaignSlugs, updatedAt, updatedBy}) => {
   const contacts = Contacts.findContactRefs({contactSlugs})
-  const campaigns = Campaigns.findCampaignRefs({campaignSlugs: [campaignSlug]})
+  const campaigns = Campaigns.findCampaignRefs({campaignSlugs})
   const post = {
-    type: 'CampaignChanged',
-    message: `${action} ${contacts.length} ${(action === 'added') ? 'to' : 'from'} ${campaigns[0].name}`,
+    type,
     contacts,
     campaigns,
-    details: {
-      action: action
-    },
     createdBy: updatedBy,
     createdAt: updatedAt
   }
-  // TODO: refactor post schema.
-  // check(post, PostSchema)
   return Posts.insert(post)
 }
