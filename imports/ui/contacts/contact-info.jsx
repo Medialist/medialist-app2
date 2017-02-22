@@ -148,7 +148,7 @@ const ContactItems = React.createClass({
       emails,
       phones,
       bio,
-      address = null
+      address
     } = this.props.contact
     emails.slice(0, 1) // limit to most recent email address
     const { showMore } = this.state
@@ -163,9 +163,11 @@ const ContactItems = React.createClass({
         {showMore && address && (
           <li><ContactItemAddress address={address} /></li>
         )}
-        <li>
-          <a href='#' className='block f-sm bold blue m3' onClick={this.toggleShowMore}>Show {showMore ? 'Less' : 'More'}</a>
-        </li>
+        {address && (
+          <li>
+            <a href='#' className='block f-sm bold blue m3' onClick={this.toggleShowMore}>Show {showMore ? 'Less' : 'More'}</a>
+          </li>
+        )}
       </ul>
     )
   }
