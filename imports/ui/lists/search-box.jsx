@@ -43,7 +43,7 @@ const SearchBox = React.createClass({
     return (
       <div
         style={{paddingLeft: 45, ...style}}
-        className={`relative border py2 pr1 ${isFocused ? 'border-blue' : 'border-gray80'}`}>
+        className={`relative border-bottom py2 pr1 ${isFocused ? 'border-blue' : 'border-gray80'}`}>
         <SearchIcon
           style={{left: 20, top: 13}}
           className={`absolute f-lg mr2 ${isFocused ? 'blue' : 'gray20'}`} />
