@@ -13,7 +13,7 @@ import CampaignListEmpty from './campaign-list-empty'
 import withSnackbar from '../snackbar/with-snackbar'
 import createSearchContainer from './campaign-search-container'
 import { batchAddTags } from '/imports/api/tags/methods'
-import { batchFavouriteCampaigns } from '/imports/api/medialists/methods'
+import { batchFavouriteCampaigns } from '/imports/api/campaigns/methods'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import AddTags from '../tags/add-tags'
 import AbbreviatedAvatarList from '../lists/abbreviated-avatar-list.jsx'
@@ -217,7 +217,7 @@ const MasterListsSelectorContainer = createContainer((props) => {
   }))
   const items = [
     { slug: 'all', name: 'All', count: props.allCount },
-    { slug: 'my', name: 'My Campaigns', count: Meteor.user().myMedialists.length }
+    { slug: 'my', name: 'My Campaigns', count: Meteor.user().myCampaigns.length }
   ].concat(lists)
   const selectedSlug = userId ? 'my' : selectedMasterListSlug
   return { ...props, items, selectedSlug }

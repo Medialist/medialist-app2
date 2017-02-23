@@ -6,7 +6,7 @@ import SearchBox from '../lists/search-box'
 import ContactsActionsToast from '../contacts/contacts-actions-toast'
 import CampaignTopbar from './campaign-topbar'
 import CampaignSummary from './campaign-summary'
-import Medialists from '/imports/api/medialists/medialists'
+import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
 import CreateContact from '../contacts/edit-contact'
 import AddContact from './add-contact'
@@ -79,7 +79,7 @@ const CampaignContactsPage = React.createClass({
   onStatusChange ({status, contact}) {
     const post = {
       contactSlug: contact.slug,
-      medialistSlug: this.props.campaign.slug,
+      campaignSlug: this.props.campaign.slug,
       status
     }
     Meteor.call('posts/create', post)
@@ -183,7 +183,7 @@ export default createContainer((props) => {
   const { campaignSlug } = props.params
 
   const subs = [
-    Meteor.subscribe('medialist', campaignSlug),
+    Meteor.subscribe('campaign', campaignSlug),
     Meteor.subscribe('contacts-by-campaign', campaignSlug),
     Meteor.subscribe('contactCount')
   ]
@@ -192,9 +192,9 @@ export default createContainer((props) => {
   return {
     ...props,
     loading,
-    campaign: Medialists.findOne({ slug: campaignSlug }),
+    campaign: Campaigns.findOne({ slug: campaignSlug }),
     // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
-    contacts: Contacts.find({medialists: campaignSlug}, {sort: {updatedAt: -1}}).fetch(),
+    contacts: Contacts.find({campaigns: campaignSlug}, {sort: {updatedAt: -1}}).fetch(),
     contactsAllCount: window.Counter.get('contactCount'),
     user: Meteor.user()
   }

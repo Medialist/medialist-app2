@@ -5,7 +5,7 @@ import Status from '../feedback/status'
 import { ChevronRight } from '../images/icons'
 
 const ActivityItemTitle = ({ item, currentUser }) => {
-  const { type, message, contacts, medialists, status, createdBy } = item
+  const { type, message, contacts, campaigns, status, createdBy } = item
 
   if (type === 'need to know') {
     return (
@@ -16,7 +16,7 @@ const ActivityItemTitle = ({ item, currentUser }) => {
     )
   }
 
-  if (['details changed', 'medialists changed', 'campaign created'].includes(type)) {
+  if (['details changed', 'campaigns changed', 'campaign created'].includes(type)) {
     return (
       <span className='gray10'>
         <YouOrName className='semibold' currentUser={currentUser} user={createdBy} />
@@ -33,7 +33,7 @@ const ActivityItemTitle = ({ item, currentUser }) => {
           <span className='inline-block truncate align-middle'>
             <span className='gray10 ml1'>logged feedback </span>
             <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
-            <Link className='semibold gray10' to={`/campaigns/${encodeURIComponent(medialists[0])}`}>{medialists[0]}</Link>
+            <Link className='semibold gray10' to={`/campaigns/${encodeURIComponent(campaigns[0])}`}>{campaigns[0]}</Link>
             <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
             <span className='semibold gray10'>{contacts[0].name}</span>
           </span>
@@ -49,7 +49,7 @@ const ActivityItemTitle = ({ item, currentUser }) => {
         <YouOrName currentUser={currentUser} user={createdBy} />
         <span className='gray10'> logged coverage </span>
         <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
-        <Link className='semibold gray10' to={`/campaigns/${encodeURIComponent(medialists[0])}`}>{medialists[0]}</Link>
+        <Link className='semibold gray10' to={`/campaigns/${encodeURIComponent(campaigns[0])}`}>{campaigns[0]}</Link>
         <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
         <span className='semibold gray10'>{contacts[0].name}</span>
       </span>

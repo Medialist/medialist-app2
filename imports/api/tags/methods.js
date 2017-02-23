@@ -4,7 +4,7 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { TypeSchema } from '/imports/lib/schema'
 import Tags from './tags'
 import Contacts from '../contacts/contacts'
-import Campaigns from '../medialists/medialists'
+import Campaigns from '../campaigns/campaigns'
 import { checkAllSlugsExist, cleanSlug } from '/imports/lib/slug'
 
 /*

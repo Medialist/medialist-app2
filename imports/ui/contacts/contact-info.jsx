@@ -67,7 +67,7 @@ const ContactInfo = React.createClass({
     } = this
     const { addToMasterListOpen, addTagsOpen } = this.state
     const { user: { myContacts }, contact } = this.props
-    const { _id, name, avatar, outlets, medialists, masterLists, tags } = contact
+    const { _id, name, avatar, outlets, campaigns, masterLists, tags } = contact
     const isFavourite = myContacts.some((c) => c._id === _id)
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
     const tooltip = isFavourite ? 'Remove from My Contacts' : 'Add to My Contacts'
@@ -98,11 +98,11 @@ const ContactInfo = React.createClass({
         <div className='clearfix'>
           <ContactItems contact={contact} />
         </div>
-        {medialists.length > 0 &&
+        {campaigns.length > 0 &&
           <section>
             <InfoHeader name='Campaigns' />
             <div className='px2 py3'>
-              {medialists.map((campaign) => {
+              {campaigns.map((campaign) => {
                 return <SquareAvatar name={campaign} size={38} style={{marginRight: '2px', marginBottom: '2px'}} key={campaign.slug} />
               })}
             </div>

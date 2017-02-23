@@ -12,7 +12,7 @@ const iconDir = {
   'coverage': FeedCoverageIcon,
   'feedback': FeedFeedbackIcon,
   'need-to-knows': FeedNeedToKnowIcon,
-  'medialists changed': FeedContactIcon
+  'campaigns changed': FeedContactIcon
 }
 
 const ActivityIcon = ({ type }) => {

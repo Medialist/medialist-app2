@@ -17,7 +17,7 @@ ServiceConfiguration.configurations.upsert(
 
 Accounts.onCreateUser(function (options, user) {
   user.profile = options.profile || {}
-  user.myMedialists = []
+  user.myCampaigns = []
   user.myContacts = []
   return user
 })

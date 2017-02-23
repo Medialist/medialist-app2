@@ -5,8 +5,8 @@ import Modal from '../navigation/modal'
 import ValidationBanner from '../errors/validation-banner'
 import EditableAvatar from '../images/editable-avatar'
 import ClientAutocomplete from './client-autocomplete'
-import { create, update } from '/imports/api/medialists/methods'
-import { MedialistCreateSchema } from '/imports/api/medialists/medialists'
+import { create, update } from '/imports/api/campaigns/methods'
+import { MedialistCreateSchema } from '/imports/api/campaigns/campaigns'
 import callAll from '/imports/lib/call-all'
 
 const EditCampaign = React.createClass({

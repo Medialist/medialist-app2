@@ -1,20 +1,25 @@
+import { Meteor } from 'meteor/meteor'
+import { check, Match } from 'meteor/check'
+import Contacts from '/imports/api/contacts/contacts'
+import Campaigns from '/imports/api/campaigns/campaigns'
+
 Meteor.methods({
   'posts/create': function (opts) {
     check(opts, {
       contactSlug: String,
-      medialistSlug: String,
+      campaignSlug: String,
       message: Match.Optional(String),
       status: Match.OneOf.apply(null, _.values(Contacts.status))
     })
     if (!this.userId) throw new Meteor.Error('Only a logged in user can post feedback')
-    if (!Medialists.find({slug: opts.medialistSlug}).count()) throw new Meteor.Error('Cannot find medialist #' + opts.medialistSlug)
+    if (!Campaigns.find({slug: opts.campaignSlug}).count()) throw new Meteor.Error('Cannot find campaign #' + opts.campaignSlug)
     if (!Contacts.find({slug: opts.contactSlug}).count()) throw new Meteor.Error('Cannot find contact @' + opts.contactSlug)
 
     var thisUser = Meteor.users.findOne(this.userId)
-    var extraMedialists = _.filter(findHashtags(opts.message), function (hashtag) {
-      return Medialists.find({slug: hashtag}).count()
+    var extraCampaigns = _.filter(findHashtags(opts.message), function (hashtag) {
+      return Campaigns.find({slug: hashtag}).count()
     })
-    var medialists = _.uniq(extraMedialists.concat(opts.medialistSlug))
+    var campaigns = _.uniq(extraCampaigns.concat(opts.campaignSlug))
     var extraContacts = _.filter(findHandles(opts.message), function (handle) {
       return Contacts.find({slug: handle}).count()
     })
@@ -35,7 +40,7 @@ Meteor.methods({
           avatar: contact.avatar
         }
       }),
-      medialists: medialists,
+      campaigns: campaigns,
       status: opts.status,
       type: 'feedback'
     }
@@ -44,12 +49,12 @@ Meteor.methods({
     if (opts.message) post.message = opts.message
     check(post, Schemas.Posts)
 
-    var medialistUpdate = {}
-    medialistUpdate['contacts.' + opts.contactSlug] = opts.status
-    _.each(medialists, function (thisMedialistSlug) {
-      App.medialistUpdated(thisMedialistSlug, thisUser._id)
+    var campaignUpdate = {}
+    campaignUpdate['contacts.' + opts.contactSlug] = opts.status
+    _.each(campaigns, function (thisMedialistSlug) {
+      App.campaignUpdated(thisMedialistSlug, thisUser._id)
     })
-    Medialists.update({ slug: opts.medialistSlug }, { $set: medialistUpdate })
+    Campaigns.update({ slug: opts.campaignSlug }, { $set: campaignUpdate })
     App.contactUpdated(opts.contactSlug, thisUser._id)
     return Posts.insert(post)
   },
@@ -57,18 +62,18 @@ Meteor.methods({
   'posts/createCoverage': function (opts) {
     check(opts, {
       contactSlug: String,
-      medialistSlug: String,
+      campaignSlug: String,
       message: Match.Optional(String)
     })
     if (!this.userId) throw new Meteor.Error('Only a logged in user can post coverage')
-    if (!Medialists.find({slug: opts.medialistSlug}).count()) throw new Meteor.Error('Cannot find medialist #' + opts.medialistSlug)
+    if (!Campaigns.find({slug: opts.campaignSlug}).count()) throw new Meteor.Error('Cannot find campaign #' + opts.campaignSlug)
     if (!Contacts.find({slug: opts.contactSlug}).count()) throw new Meteor.Error('Cannot find contact @' + opts.contactSlug)
 
     var thisUser = Meteor.users.findOne(this.userId)
-    var extraMedialists = _.filter(findHashtags(opts.message), function (hashtag) {
-      return Medialists.find({slug: hashtag}).count()
+    var extraCampaigns = _.filter(findHashtags(opts.message), function (hashtag) {
+      return Campaigns.find({slug: hashtag}).count()
     })
-    var medialists = _.uniq(extraMedialists.concat(opts.medialistSlug))
+    var campaigns = _.uniq(extraCampaigns.concat(opts.campaignSlug))
     var extraContacts = _.filter(findHandles(opts.message), function (handle) {
       return Contacts.find({slug: handle}).count()
     })
@@ -89,7 +94,7 @@ Meteor.methods({
           avatar: contact.avatar
         }
       }),
-      medialists: medialists,
+      campaigns: campaigns,
       type: 'coverage'
     }
     // TODO: Do we need this? There is a missing sanitizeHtml dep from cleanFeedback, that needs review.
@@ -97,8 +102,8 @@ Meteor.methods({
     if (opts.message) post.message = opts.message
     check(post, Schemas.Posts)
 
-    _.each(medialists, function (thisMedialistSlug) {
-      App.medialistUpdated(thisMedialistSlug, thisUser._id)
+    _.each(campaigns, function (thisMedialistSlug) {
+      App.campaignUpdated(thisMedialistSlug, thisUser._id)
     })
     App.contactUpdated(opts.contactSlug, thisUser._id)
     return Posts.insert(post)
@@ -128,7 +133,7 @@ Meteor.methods({
         avatar: contact.avatar
       }],
       message: opts.message,
-      medialists: [],
+      campaigns: [],
       type: 'need to know'
     }
     check(post, Schemas.Posts)

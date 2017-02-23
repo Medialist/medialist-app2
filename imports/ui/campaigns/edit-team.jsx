@@ -109,7 +109,7 @@ const AddTeamMateContainer = React.createClass({
     evt.preventDefault()
     const teamMateIds = this.state.selectedTeamMates.map((t) => t._id)
     const _id = this.props.campaign._id
-    if (teamMateIds.length > 0) Meteor.call('Medialists/addTeamMates', { userIds: teamMateIds, _id })
+    if (teamMateIds.length > 0) Meteor.call('Campaigns/addTeamMates', { userIds: teamMateIds, _id })
     this.onReset()
   },
 
@@ -120,7 +120,7 @@ const AddTeamMateContainer = React.createClass({
       selectedTeamMates = selectedTeamMates.filter((t) => t._id !== teamMate._id)
       this.setState({ selectedTeamMates })
     } else {
-      Meteor.call('Medialists/removeTeamMate', { userId: teamMate._id, _id: this.props.campaign._id })
+      Meteor.call('Campaigns/removeTeamMate', { userId: teamMate._id, _id: this.props.campaign._id })
     }
   },
 

@@ -2,7 +2,7 @@ Meteor.publish('posts', function (opts) {
   if (!this.userId) return this.ready()
   opts = opts || {}
   check(opts, {
-    medialist: Match.Optional(String),
+    campaign: Match.Optional(String),
     contact: Match.Optional(String),
     message: Match.Optional(Boolean),
     types: Match.Optional([String]),
@@ -10,7 +10,7 @@ Meteor.publish('posts', function (opts) {
   })
 
   var query = {}
-  if (opts.medialist) query.medialists = opts.medialist
+  if (opts.campaign) query.campaigns = opts.campaign
   if (opts.contact) query['contacts.slug'] = opts.contact
   if (opts.message) query.message = { $exists: true }
   if (opts.types) query.type = { $in: opts.types }
@@ -35,7 +35,7 @@ Meteor.publish('need-to-knows', function (opts) {
     'type': { $in: [
       'need to know',
       'details changed',
-      'medialists changed'
+      'campaigns changed'
     ] }
   }
   var options = {

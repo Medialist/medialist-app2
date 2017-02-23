@@ -206,7 +206,7 @@ const ContactsList = React.createClass({
       <div>
         {contacts.map((contact) => {
           const isActive = this.props.isActive(contact)
-          const {slug, medialists} = contact
+          const {slug, campaigns} = contact
 
           return (
             <div
@@ -217,7 +217,7 @@ const ContactsList = React.createClass({
                 <CampaignContact contact={contact} />
               </div>
               <div className='flex-none px4 f-sm gray40 hover-gray20'>
-                {medialists.length} {medialists.length === 1 ? 'campaign' : 'campaigns'}
+                {campaigns.length} {campaigns.length === 1 ? 'campaign' : 'campaigns'}
               </div>
               <div className={`flex-none pl4 pr2 ${isActive ? '' : 'opacity-0'} hover-opacity-100`}>
                 {isActive ? <SelectedIcon /> : <AddIcon />}

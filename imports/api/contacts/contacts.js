@@ -87,7 +87,7 @@ export const ContactSchema = new SimpleSchema([
       min: 1
     },
     // References to other collections
-    medialists: {
+    campaigns: {
       type: [String],
       regEx: SimpleSchema.RegEx.Id
     },

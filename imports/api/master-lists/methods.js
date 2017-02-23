@@ -12,7 +12,7 @@ import MasterLists, {
   MasterListsSetMasterLists
 } from './master-lists'
 import Contacts from '../contacts/contacts'
-import Medialists from '../medialists/medialists'
+import Campaigns from '../campaigns/campaigns'
 import findUniqueSlug from '/imports/lib/slug'
 import { TypeSchema } from '/imports/lib/schema'
 
@@ -33,7 +33,7 @@ export const batchAddToMasterLists = new ValidatedMethod({
   run ({type, slugs, masterListIds}) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
 
-    const Collection = (type === 'Contacts') ? Contacts : Medialists
+    const Collection = (type === 'Contacts') ? Contacts : Campaigns
 
     const itemIds = Collection
       .find(
@@ -95,7 +95,7 @@ export const del = new ValidatedMethod({
 
     MasterLists.update({ _id: _id }, { $set: { deleted: new Date() } })
 
-    const refCollection = (masterList.type === 'Contacts') ? Contacts : Medialists
+    const refCollection = (masterList.type === 'Contacts') ? Contacts : Campaigns
     return refCollection.update({
       'masterLists._id': _id
     }, {
@@ -117,7 +117,7 @@ export const update = new ValidatedMethod({
 
     MasterLists.update({ _id }, { $set: { name } })
 
-    const refCollection = (masterList.type === 'Contacts') ? Contacts : Medialists
+    const refCollection = (masterList.type === 'Contacts') ? Contacts : Campaigns
     return refCollection.update({
       'masterLists._id': _id
     }, {
@@ -137,7 +137,7 @@ export const addItems = new ValidatedMethod({
     const masterList = MasterLists.findOne({ _id, deleted: null })
     if (!masterList) throw new Meteor.Error('MasterList not found')
 
-    const refCollection = (masterList.type === 'Contacts') ? Contacts : Medialists
+    const refCollection = (masterList.type === 'Contacts') ? Contacts : Campaigns
     if (refCollection.find({ _id: { $in: items } }).count() !== items.length) {
       throw new Meteor.Error('One or more items does not exist in the correct collection for this masterlist')
     }
@@ -162,7 +162,7 @@ export const setMasterLists = new ValidatedMethod({
   run ({type, item, masterLists}) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
 
-    const refCollection = (type === 'Contacts') ? Contacts : Medialists
+    const refCollection = (type === 'Contacts') ? Contacts : Campaigns
     const itemDocument = refCollection.findOne({_id: item})
     if (!itemDocument) throw new Meteor.Error(`${type.substring(0, type.length - 1)} not found`)
 
@@ -193,7 +193,7 @@ export const removeItem = new ValidatedMethod({
     })
     if (!masterList) throw new Meteor.Error('MasterList not found')
 
-    const refCollection = (masterList.type === 'Contacts') ? Contacts : Medialists
+    const refCollection = (masterList.type === 'Contacts') ? Contacts : Campaigns
     MasterLists.update({ _id }, { $pull: { items: item } })
     return refCollection.update({
       _id: item

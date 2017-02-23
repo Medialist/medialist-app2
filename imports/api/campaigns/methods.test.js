@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import assert from 'assert'
 import Faker from 'faker'
 import { create, update, addTeamMates, removeTeamMate } from './methods'
-import Medialists from './medialists'
+import Campaigns from './campaigns'
 import { batchFavouriteCampaigns } from './methods'
 import Clients from '/imports/api/clients/clients'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
@@ -29,13 +29,13 @@ describe('Contacts/batchFavouriteCampaigns', function () {
       name: `${index}`,
       avatar: `${index}`
     }))
-    campaigns.forEach((c) => Medialists.insert(c))
-    Meteor.users.insert({_id: '1', myMedialists: [{slug: 'oldie'}]})
+    campaigns.forEach((c) => Campaigns.insert(c))
+    Meteor.users.insert({_id: '1', myCampaigns: [{slug: 'oldie'}]})
     const campaignSlugs = ['0', '1']
     batchFavouriteCampaigns.run.call({userId: '1'}, {campaignSlugs})
     const user = Meteor.users.findOne('1')
-    assert.equal(user.myMedialists.length, 3)
-    const myCampaingRef = user.myMedialists.find((c) => c.slug === '0')
+    assert.equal(user.myCampaigns.length, 3)
+    const myCampaingRef = user.myCampaigns.find((c) => c.slug === '0')
     delete myCampaingRef.updatedAt
     assert.deepEqual(myCampaingRef, {
       _id: '0',
@@ -53,7 +53,7 @@ describe('Medialist update method', function () {
   })
 
   it('should not allow update if not logged in', function () {
-    const _id = Medialists.insert({})
+    const _id = Campaigns.insert({})
 
     assert.throws(() => {
       update.run.call(
@@ -64,7 +64,7 @@ describe('Medialist update method', function () {
   })
 
   it('should throw if no fields to update', function () {
-    const _id = Medialists.insert({})
+    const _id = Campaigns.insert({})
 
     assert.throws(() => {
       update.run.call({ userId: '123' }, { _id })
@@ -78,12 +78,12 @@ describe('Medialist update method', function () {
         twitter: { profile_image_url_https: 'http://example.org/user.jpg' }
       }
     })
-    const _id = Medialists.insert({ avatar: 'http://example.org/image.jpg' })
+    const _id = Campaigns.insert({ avatar: 'http://example.org/image.jpg' })
     const updatedAvatarUrl = 'http://example.org/new_image.jpg'
 
     update.run.call({ userId }, { _id, avatar: updatedAvatarUrl })
 
-    const updatedMedialist = Medialists.findOne({ _id })
+    const updatedMedialist = Campaigns.findOne({ _id })
     assert.equal(updatedMedialist.avatar, updatedAvatarUrl)
   })
 })
@@ -94,7 +94,7 @@ describe('Medialist create method', function () {
   })
 
   it('should not allow create if not logged in', function () {
-    const _id = Medialists.insert({})
+    const _id = Campaigns.insert({})
 
     assert.throws(() => {
       create.run.call(
@@ -109,51 +109,51 @@ describe('Medialist create method', function () {
     assert.throws(() => create.validate({ name: 123, clientName: 'boz' }), /campaign name must be a string/)
   })
 
-  it('should create a medialist', function () {
+  it('should create a campaign', function () {
     const user = { profile: { name: 'O' }, services: { twitter: {profile_image_url_https: 'bar'} } }
     const userId = Meteor.users.insert(user)
     const payload = { name: 'Foo' }
     const slug = create.run.call({ userId }, payload)
-    const doc = Medialists.findOne({ slug })
+    const doc = Campaigns.findOne({ slug })
     assert.ok(doc)
     assert.equal(doc.name, payload.name)
   })
 
-  it('should create a medialist and client', function () {
+  it('should create a campaign and client', function () {
     const user = { profile: { name: 'O' }, services: { twitter: {profile_image_url_https: 'bar'} } }
     const userId = Meteor.users.insert(user)
     const payload = { name: 'Foo', clientName: 'Bar', purpose: 'Better!' }
     const slug = create.run.call({ userId }, payload)
-    const doc = Medialists.findOne({ slug })
+    const doc = Campaigns.findOne({ slug })
     assert.ok(doc)
     assert.equal(doc.name, payload.name)
     assert.equal(doc.client.name, payload.clientName)
   })
 
-  it('should create a medialist and re-use existing client info', function () {
+  it('should create a campaign and re-use existing client info', function () {
     const user = { profile: { name: 'O'}, services: { twitter: {profile_image_url_https: 'bar'} } }
     const userId = Meteor.users.insert(user)
     const clientName = 'Marmite'
     Clients.insert({name: clientName})
     const payload = { name: 'Foo', purpose: 'Better!', clientName: 'marmite'}
     const slug = create.run.call({ userId }, payload)
-    const doc = Medialists.findOne({ slug })
+    const doc = Campaigns.findOne({ slug })
     assert.ok(doc)
     assert.equal(doc.name, payload.name)
     assert.equal(doc.client.name, clientName)
     assert.equal(Clients.find({}).count(), 1)
   })
 
-  it('should update the myMedialists', function () {
+  it('should update the myCampaigns', function () {
     const user = { profile: { name: 'O'}, services: { twitter: {profile_image_url_https: 'bar'} } }
     const userId = Meteor.users.insert(user)
     const payload = { name: 'Foo', clientName: 'Bar', purpose: 'Better!'}
     const slug = create.run.call({ userId }, payload)
-    const doc = Medialists.findOne({ slug })
+    const doc = Campaigns.findOne({ slug })
     assert.ok(doc)
-    const myMedialists = Meteor.users.findOne(userId).myMedialists
-    assert.equal(myMedialists[0].name, payload.name)
-    assert.equal(myMedialists[0].clientName, payload.clientName)
+    const myCampaigns = Meteor.users.findOne(userId).myCampaigns
+    assert.equal(myCampaigns[0].name, payload.name)
+    assert.equal(myCampaigns[0].clientName, payload.clientName)
   })
 })
 
@@ -163,7 +163,7 @@ describe('Medialist add team members method', function () {
   })
 
   it('should not allow addition of team members if not logged in', function () {
-    const _id = Medialists.insert({})
+    const _id = Campaigns.insert({})
 
     assert.throws(() => {
       addTeamMates.run.call(
@@ -177,11 +177,11 @@ describe('Medialist add team members method', function () {
     const user = { profile: { name: Faker.name.findName() }, services: { twitter: {profile_image_url_https: Faker.image.avatar()} } }
     const userId = Meteor.users.insert(user)
     const campaign = { name: 'Campaign', team: [] }
-    const campaignId = Medialists.insert(campaign)
+    const campaignId = Campaigns.insert(campaign)
     const payload = { _id: campaignId, userIds: ['foobar'] }
 
     addTeamMates.run.call({ userId }, payload)
-    const updatedCampaign = Medialists.findOne(campaignId)
+    const updatedCampaign = Campaigns.findOne(campaignId)
     assert.equal(updatedCampaign.team.length, 0)
   })
 
@@ -189,11 +189,11 @@ describe('Medialist add team members method', function () {
     const users = Array(2).fill(0).map(() => ({ profile: { name: Faker.name.findName() }, services: { twitter: {profile_image_url_https: Faker.image.avatar()} } }))
     const userIds = users.map((user) => Meteor.users.insert(user))
     const campaign = { name: 'Campaign', team: [] }
-    const campaignId = Medialists.insert(campaign)
+    const campaignId = Campaigns.insert(campaign)
     const payload = { _id: campaignId, userIds }
 
     addTeamMates.run.call({ userId: userIds[0] }, payload)
-    const updatedCampaign = Medialists.findOne(campaignId)
+    const updatedCampaign = Campaigns.findOne(campaignId)
     assert.equal(updatedCampaign.team.length, 2)
   })
 
@@ -201,11 +201,11 @@ describe('Medialist add team members method', function () {
     const users = Array(2).fill(0).map(() => ({ profile: { name: Faker.name.findName() }, services: { twitter: {profile_image_url_https: Faker.image.avatar()} } }))
     const userIds = users.map((user) => Meteor.users.insert(user))
     const campaign = { name: 'Campaign', team: [{ _id: userIds[1] }] }
-    const campaignId = Medialists.insert(campaign)
+    const campaignId = Campaigns.insert(campaign)
     const payload = { _id: campaignId, userIds }
 
     addTeamMates.run.call({ userId: userIds[0] }, payload)
-    const updatedCampaign = Medialists.findOne(campaignId)
+    const updatedCampaign = Campaigns.findOne(campaignId)
     assert.equal(updatedCampaign.team.length, 2)
   })
 })
@@ -216,7 +216,7 @@ describe('Medialist remove team members method', function () {
   })
 
   it('should not allow removal of team members if not logged in', function () {
-    const _id = Medialists.insert({})
+    const _id = Campaigns.insert({})
 
     assert.throws(() => {
       removeTeamMate.run.call(
@@ -230,11 +230,11 @@ describe('Medialist remove team members method', function () {
     const users = Array(2).fill(0).map(() => ({ profile: { name: Faker.name.findName() }, services: { twitter: {profile_image_url_https: Faker.image.avatar()} } }))
     const userIds = users.map((user) => Meteor.users.insert(user))
     const campaign = { name: 'Campaign', team: userIds.map((_id) => ({ _id })) }
-    const campaignId = Medialists.insert(campaign)
+    const campaignId = Campaigns.insert(campaign)
     const payload = { _id: campaignId, userId: userIds[1] }
 
     removeTeamMate.run.call({ userId: userIds[0] }, payload)
-    const updatedCampaign = Medialists.findOne(campaignId)
+    const updatedCampaign = Campaigns.findOne(campaignId)
     assert.equal(updatedCampaign.team.length, 1)
   })
 
@@ -242,11 +242,11 @@ describe('Medialist remove team members method', function () {
     const users = Array(3).fill(0).map(() => ({ profile: { name: Faker.name.findName() }, services: { twitter: {profile_image_url_https: Faker.image.avatar()} } }))
     const userIds = users.map((user) => Meteor.users.insert(user))
     const campaign = { name: 'Campaign', team: userIds.slice(0, 2).map((_id) => ({ _id })) }
-    const campaignId = Medialists.insert(campaign)
+    const campaignId = Campaigns.insert(campaign)
     const payload = { _id: campaignId, userId: userIds[2] }
 
     removeTeamMate.run.call({ userId: userIds[0] }, payload)
-    const updatedCampaign = Medialists.findOne(campaignId)
+    const updatedCampaign = Campaigns.findOne(campaignId)
     assert.equal(updatedCampaign.team.length, 2)
   })
 })
