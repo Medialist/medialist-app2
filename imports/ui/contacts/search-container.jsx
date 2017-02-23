@@ -40,7 +40,7 @@ export default (Component, opts = {}) => {
     getMeteorData () {
       const { sort, term, selectedMasterListSlug, userId, campaignSlugs } = this.props
       const subs = [ Meteor.subscribe('contactCount') ]
-      const contactsCount = window.Counter.get('contactCount')
+      const contactsCount = Contacts.allContactsCount()
       const query = {}
 
       if (campaignSlugs && campaignSlugs.length) {

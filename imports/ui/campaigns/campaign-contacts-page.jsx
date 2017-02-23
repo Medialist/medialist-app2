@@ -195,7 +195,7 @@ export default createContainer((props) => {
     campaign: Campaigns.findOne({ slug: campaignSlug }),
     // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
     contacts: Contacts.find({campaigns: campaignSlug}, {sort: {updatedAt: -1}}).fetch(),
-    contactsAllCount: window.Counter.get('contactCount'),
+    contactsAllCount: Contacts.allContactsCount(),
     user: Meteor.user()
   }
 }, CampaignContactsPage)

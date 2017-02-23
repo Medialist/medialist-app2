@@ -1,5 +1,6 @@
 import { Mongo } from 'meteor/mongo'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
+import { Counter } from 'meteor/natestrauser:publish-performant-counts'
 import values from 'lodash.values'
 import nothing from '/imports/lib/nothing'
 import { MasterListRefSchema } from '/imports/api/master-lists/master-lists'
@@ -11,7 +12,24 @@ const Contacts = new Mongo.Collection('contacts')
 
 Contacts.allow(nothing)
 
+Contacts.allContactsCount = () => Counter.get('contactCount')
+
 export default Contacts
+
+Contacts.toRef = ({_id, slug, name, avatar, outlets}) => ({
+  _id,
+  slug,
+  name,
+  avatar,
+  outletName: outlets && outlets.length ? outlets[0].label : ''
+})
+
+Contacts.findRefs = ({contactSlugs}) => {
+  return Contacts.find(
+    { slug: { $in: contactSlugs } },
+    { fields: { _id: 1, slug: 1, name: 1, avatar: 1, outlets: 1 } }
+  ).map(Contacts.toRef)
+}
 
 Contacts.status = StatusMap
 Contacts.phoneTypes = [
@@ -112,11 +130,4 @@ Contacts.fieldNames = function (name) {
     website: 'website',
     address: 'address'
   }[key]
-}
-
-Contacts.findContactRefs = ({contactSlugs}) => {
-  return Contacts.find(
-    { slug: { $in: contactSlugs } },
-    { fields: { _id: 1, slug: 1, name: 1, avatar: 1 } }
-  ).fetch()
 }

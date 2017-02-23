@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor'
+import { check, Match } from 'meteor/check'
+import Posts from '../posts'
+
 Meteor.publish('posts', function (opts) {
   if (!this.userId) return this.ready()
   opts = opts || {}

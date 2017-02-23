@@ -1,9 +1,17 @@
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
+import { StatusValues } from '/imports/api/contacts/status'
 
 export const TypeSchema = new SimpleSchema({
   type: {
     type: String,
     allowedValues: ['Contacts', 'Campaigns']
+  }
+})
+
+export const StatusSchema = new SimpleSchema({
+  status: {
+    type: String,
+    allowedValues: StatusValues
   }
 })
 

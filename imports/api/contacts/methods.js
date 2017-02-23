@@ -71,19 +71,20 @@ export const addContactsToCampaign = new ValidatedMethod({
     )
 
     // Add an entry to the activity feed
-    Posts.createCampaignChange({
-      action: 'addContactsToCampaign',
-      campaignSlug,
+    Posts.create({
+      type: 'AddContactsToCampaign',
       contactSlugs,
-      updatedAt,
-      updatedBy
+      campaignSlugs: [campaignSlug],
+      createdAt: updatedAt,
+      createdBy: updatedBy
     })
 
     // Add the things to the users my<Contact|Campaigns> list
     addToMyFavourites({
       userId: this.userId,
       contactSlugs,
-      campaignSlugs: [campaignSlug]
+      campaignSlugs: [campaignSlug],
+      updatedAt
     })
   }
 })
@@ -135,12 +136,12 @@ export const removeContactsFromCampaign = new ValidatedMethod({
       { multi: true }
     )
 
-    Posts.createCampaignChange({
-      action: 'removeContactsFromCampaign',
-      campaignSlug,
+    Posts.create({
+      type: 'RemoveContactsFromCampaign',
       contactSlugs,
-      updatedAt,
-      updatedBy
+      campaignSlugs: [campaignSlug],
+      createdAt: updatedAt,
+      createdBy: updatedBy
     })
   }
 })
@@ -201,17 +202,13 @@ export const createContact = new ValidatedMethod({
     const existingContact = details.twitter && Contacts.findOne({ 'socials.label': 'Twitter', 'socials.value': details.twitter })
     if (existingContact) return existingContact
 
-    const user = Meteor.users.findOne({_id: this.userId})
-    const createdBy = {
-      _id: user._id,
-      name: user.profile.name,
-      avatar: user.services.twitter && user.services.twitter.profile_image_url_https
-    }
+    const createdBy = findOneUserRef(this.userId)
     const createdAt = new Date()
+    const slug = slugify(details.name, Contacts)
 
     // Merge the provided details with any missing values
     const contact = Object.assign({}, details, {
-      slug: slugify(details.name, Contacts),
+      slug,
       campaigns: [],
       masterLists: [],
       tags: [],
@@ -225,19 +222,18 @@ export const createContact = new ValidatedMethod({
     check(contact, ContactSchema)
     const contactId = Contacts.insert(contact)
 
-    Meteor.users.update(
-      { _id: this.userId },
-      { $push: {
-        'myContacts': {
-          _id: contactId,
-          slug: contact.slug,
-          avatar: contact.avatar,
-          name: contact.name,
-          outlets: contact.outlets,
-          updatedAt: contact.updatedAt
-        }
-      }}
-    )
+    addToMyFavourites({
+      userId: this.userId,
+      contactSlugs: [slug],
+      updatedAt: createdAt
+    })
+
+    Posts.create({
+      type: 'CreateContact',
+      contactSlugs: [slug],
+      updatedAt: createdAt,
+      updatedBy: createdBy
+    })
 
     return contactId
   }

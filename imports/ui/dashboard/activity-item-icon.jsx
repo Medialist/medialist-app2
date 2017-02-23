@@ -8,11 +8,11 @@ import {
 } from '../images/icons'
 
 const iconDir = {
-  'campaign created': FeedCampaignIcon,
-  'coverage': FeedCoverageIcon,
-  'feedback': FeedFeedbackIcon,
-  'need-to-knows': FeedNeedToKnowIcon,
-  'campaigns changed': FeedContactIcon
+  'CampaignCreated': FeedCampaignIcon,
+  'CoveragePost': FeedCoverageIcon,
+  'FeedbackPost': FeedFeedbackIcon,
+  'NeedToKnowPost': FeedNeedToKnowIcon,
+  'CampaignChanged': FeedContactIcon
 }
 
 const ActivityIcon = ({ type }) => {

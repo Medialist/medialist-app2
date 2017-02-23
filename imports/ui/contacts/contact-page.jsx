@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
 import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
+import { createFeedbackPost, createCoveragePost } from '/imports/api/posts/methods'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import MasterLists from '/imports/api/master-lists/master-lists'
@@ -47,22 +48,15 @@ const ContactPage = React.createClass({
   },
 
   onFeedback ({message, campaign, status}, cb) {
-    const post = {
-      contactSlug: this.props.contact.slug,
-      campaignSlug: campaign.slug,
-      message,
-      status
-    }
-    Meteor.call('posts/create', post, cb)
+    const contactSlug = this.props.contact.slug
+    const campaignSlug = campaign.slug
+    createFeedbackPost.call({contactSlug, campaignSlug, message, status}, cb)
   },
 
-  onCoverage ({message, campaign}, cb) {
-    const post = {
-      contactSlug: this.props.contact.slug,
-      campaignSlug: campaign.slug,
-      message
-    }
-    Meteor.call('posts/createCoverage', post, cb)
+  onCoverage ({message, campaign, status}, cb) {
+    const contactSlug = this.props.contact.slug
+    const campaignSlug = campaign.slug
+    createCoveragePost.call({contactSlug, campaignSlug, message, status}, cb)
   },
 
   render () {

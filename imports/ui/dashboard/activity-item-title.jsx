@@ -4,10 +4,15 @@ import YouOrName from '../users/you-or-name'
 import Status from '../feedback/status'
 import { ChevronRight } from '../images/icons'
 
+const ItemLink = ({urlRoot, name, slug}) => {
+  const to = `/${urlRoot}/${encodeURIComponent(slug)}`
+  return <Link className='semibold gray10' to={to}>{name}</Link>
+}
+
 const ActivityItemTitle = ({ item, currentUser }) => {
   const { type, message, contacts, campaigns, status, createdBy } = item
 
-  if (type === 'need to know') {
+  if (type === 'NeedToKnowPost') {
     return (
       <span className='gray10'>
         <YouOrName className='semibold' currentUser={currentUser} user={createdBy} />
@@ -16,7 +21,7 @@ const ActivityItemTitle = ({ item, currentUser }) => {
     )
   }
 
-  if (['details changed', 'campaigns changed', 'campaign created'].includes(type)) {
+  if (['CampaignChanged', 'CampaignCreated'].includes(type)) {
     return (
       <span className='gray10'>
         <YouOrName className='semibold' currentUser={currentUser} user={createdBy} />
@@ -25,7 +30,9 @@ const ActivityItemTitle = ({ item, currentUser }) => {
     )
   }
 
-  if (item.type === 'feedback') {
+  if (item.type === 'FeedbackPost') {
+    const campaign = campaigns[0]
+    const contact = contacts[0]
     return (
       <span className='flex' style={{height: 19}}>
         <YouOrName className='semibold flex-none' currentUser={currentUser} user={createdBy} />
@@ -33,9 +40,9 @@ const ActivityItemTitle = ({ item, currentUser }) => {
           <span className='inline-block truncate align-middle'>
             <span className='gray10 ml1'>logged feedback </span>
             <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
-            <Link className='semibold gray10' to={`/campaigns/${encodeURIComponent(campaigns[0])}`}>{campaigns[0]}</Link>
+            <ItemLink urlRoot='campaign' {...campaign} />
             <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
-            <span className='semibold gray10'>{contacts[0].name}</span>
+            <ItemLink urlRoot='contact' {...contact} />
           </span>
           <span className='inline-block align-middle'><Status status={status} /></span>
         </span>
@@ -43,15 +50,17 @@ const ActivityItemTitle = ({ item, currentUser }) => {
     )
   }
 
-  if (item.type === 'coverage') {
+  if (item.type === 'CoveragePost') {
+    const campaign = campaigns[0]
+    const contact = contacts[0]
     return (
       <span>
         <YouOrName currentUser={currentUser} user={createdBy} />
         <span className='gray10'> logged coverage </span>
         <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
-        <Link className='semibold gray10' to={`/campaigns/${encodeURIComponent(campaigns[0])}`}>{campaigns[0]}</Link>
+        <ItemLink urlRoot='campaign' {...campaign} />
         <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
-        <span className='semibold gray10'>{contacts[0].name}</span>
+        <ItemLink urlRoot='contact' {...contact} />
       </span>
     )
   }

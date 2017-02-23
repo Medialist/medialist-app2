@@ -241,6 +241,7 @@ button {
 .not-interested { color: #E41D1D !important }
 .hot-lead { color: #FA862C !important }
 .completed { color: #35BF77 !important }
+.status-blue { color: var(--status-blue) !important }
 
 .bg-transparent { background-color: transparent !important}
 .bg-black { background-color: var(--black) !important }
