@@ -1,13 +1,14 @@
 import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
 import { CircleAvatar, SquareAvatar } from '../images/avatar'
-import { EmailIcon, FavouritesIconGold, FavouritesIcon } from '../images/icons'
+import { EmailIcon, FavouritesIconGold, FavouritesIcon, PhoneIcon, BioIcon, MobileIcon, AddressIcon } from '../images/icons'
 import { setMasterLists } from '/imports/api/master-lists/methods'
 import QuickAdd from '../lists/quick-add'
 import InfoHeader from '../lists/info-header'
 import AddToMasterList from '../master-lists/add-to-master-list.jsx'
 import AddTags from '../tags/add-tags'
 import Tooltip from '../navigation/tooltip'
+import SocialLinks from './contact-social-links'
 
 const ContactInfo = React.createClass({
   propTypes: {
@@ -19,15 +20,9 @@ const ContactInfo = React.createClass({
 
   getInitialState () {
     return {
-      showMore: false,
       addToMasterListOpen: false,
       addTagsOpen: false
     }
-  },
-
-  onShowMoreToggleClick (e) {
-    e.preventDefault()
-    this.setState({ showMore: !this.state.showMore })
   },
 
   onAddToMasterList () {
@@ -70,36 +65,38 @@ const ContactInfo = React.createClass({
       dismissAddTags,
       onUpdateTags
     } = this
-    const { addToMasterListOpen, addTagsOpen, showMore } = this.state
+    const { addToMasterListOpen, addTagsOpen } = this.state
     const { user: { myContacts }, contact } = this.props
-    const { _id, name, avatar, emails, outlets, campaigns, masterLists, tags } = contact
+    const { _id, name, avatar, outlets, campaigns, masterLists, tags } = contact
     const isFavourite = myContacts.some((c) => c._id === _id)
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
     const tooltip = isFavourite ? 'Remove from My Contacts' : 'Add to My Contacts'
+    const { socials } = contact
+
     return (
       <div>
-        <div className='mb1'>
-          <CircleAvatar className='ml2' size={70} avatar={avatar} name={name} />
-          <div className='ml3 inline-block align-middle'>
+        <div className='mb1 clearfix'>
+          <div className='col col-3'>
+            <CircleAvatar className='ml2' size={70} avatar={avatar} name={name} />
+          </div>
+          <div className='col col-9 pl3'>
             <span className='semibold block f-xl mb1'>
               {name}
               <Tooltip title={tooltip}>
                 <Icon className='mx2 pointer svg-icon-lg align-bottom gray40' onClick={this.onToggleFavourite} />
               </Tooltip>
             </span>
-            <span className='block f-sm'>{(outlets && outlets.length) ? outlets[0].value : null}</span>
-            <span className='block f-sm'>{outlets.map((o) => o.label).join(', ')}</span>
+            <span className='block f-sm  gray10 mt2'>{(outlets && outlets.length) ? outlets[0].value : null}</span>
+            <span className='block f-sm gray10'>{outlets.map((o) => o.label).join(', ')}</span>
+            <span className='block mt3'>{socials.map((social) => <SocialLinks {...social} />)}</span>
           </div>
         </div>
         <div className='clearfix p3 pt4 mt4 border-gray80 border-bottom'>
-          <a href='#' className='f-xs blue right' onClick={this.props.onEditClick}>Edit Contact</a>
+          <a href='#' className='f-md blue right' onClick={this.props.onEditClick}>Edit</a>
           <h1 className='m0 f-md normal gray20 left'>Info</h1>
         </div>
-        <div className='clearfix p3'>
-          <ul className='list-reset'>
-            <ContactEmailItem emails={emails} />
-          </ul>
-          <a href='#' className='f-sm blue my3' onClick={this.onShowMoreToggleClick}>Show {showMore ? 'Less' : 'More'}</a>
+        <div className='clearfix'>
+          <ContactItems contact={contact} />
         </div>
         {campaigns.length > 0 &&
           <section>
@@ -135,16 +132,96 @@ const ContactInfo = React.createClass({
   }
 })
 
-const ContactEmailItem = ({ emails }) => {
-  if (!emails || !emails.length) return null
-  const email = emails[0].value
+const ContactItems = React.createClass({
+  propTypes: {
+    contact: PropTypes.object.isRequired
+  },
+  getInitialState () {
+    return { showMore: false }
+  },
+  toggleShowMore () {
+    this.setState(({showMore}) => ({ showMore: !this.state.showMore }))
+  },
+  render () {
+    const {
+      emails,
+      phones,
+      bio,
+      address
+    } = this.props.contact
+    emails.slice(0, 1) // limit to most recent email address
+    const { showMore } = this.state
 
+    return (
+      <ul className='list-reset'>
+        <li className='mb2'>
+          {emails.map((email) => <ContactItemsEmail email={email} />)}
+        </li>
+        <li className='mb2'>
+          {phones.map((phone) => <ContactItemsPhone phone={phone} />)}
+        </li>
+        <li className='mb2'>
+          <ContactItemBio bio={bio} />
+        </li>
+        {showMore && address && (
+          <li><ContactItemAddress address={address} /></li>
+        )}
+        {address && (
+          <li>
+            <a href='#' className='block f-sm bold blue m3' onClick={this.toggleShowMore}>Show {showMore ? 'Less' : 'More'}</a>
+          </li>
+        )}
+      </ul>
+    )
+  }
+})
+
+const ContactItemsEmail = ({ email }) => {
+  if (!email) return null
+  const { value } = email
   return (
-    <li>
-      <a href={`mailto:${encodeURIComponent(email)}`} className='hover-blue'>
-        <EmailIcon /> {email}
+    <div>
+      <a href={`mailto:${encodeURIComponent(value)}`} className='hover-blue block py1 clearfix'>
+        <div className='col col-2 center'><EmailIcon /></div>
+        <div className='col col-10 gray10'>{value}</div>
       </a>
-    </li>
+    </div>
+  )
+}
+
+const ContactItemsPhone = ({ phone }) => {
+  const { label, value } = phone
+  const Icon = label === 'Mobile' ? MobileIcon : PhoneIcon
+  return (
+    <div className='mb2'>
+      <a href={`tel:${value}`} className='hover-blue block py1 clearfix'>
+        <div className='col col-2 center'><Icon /></div>
+        <div className='col col-10 gray10'>{value}</div>
+      </a>
+    </div>
+  )
+}
+
+const ContactItemBio = ({ bio }) => {
+  if (!bio) return null
+  return (
+    <div>
+      <a className='block py1 clearfix'>
+        <div className='col col-2 center'><BioIcon className='gray60' /></div>
+        <div className='col col-10 gray10' style={{lineHeight: '22px'}}>{bio}</div>
+      </a>
+    </div>
+  )
+}
+
+const ContactItemAddress = ({ address }) => {
+  return (
+    <div>
+      <a className='block py1 clearfix'>
+        <div className='col col-2 center'><AddressIcon className='gray60' /></div>
+        <div className='col col-10 gray10'>{address.split(',').map((line) => <div className='block mb2'>{line}</div>)}</div>
+      </a>
+    </div>
   )
 }
 
