@@ -10,7 +10,8 @@ import {
   FeedContactIcon,
   FeedCoverageIcon,
   FeedFeedbackIcon,
-  FeedNeedToKnowIcon
+  FeedNeedToKnowIcon,
+  StatusUpdateIcon
 } from '../images/icons'
 
 const Post = ({icon, summary, details, createdBy, createdAt, currentUser}) => (
@@ -116,6 +117,19 @@ export const NeedToKnowPost = ({item, currentUser, hideContact}) => (
     }
   />
 )
+
+export const StatusUpdate = ({item, currentUser}) => {
+  const contact = item.contacts[0]
+  const name = contact ? contact.name.split(' ')[0] : 'a contact'
+  return (
+    <Post
+      {...item}
+      currentUser={currentUser}
+      icon={<StatusUpdateIcon className='gray60' />}
+      summary={<PostSummary {...item} label={`updated ${name} for`} hideContact />}
+    />
+  )
+}
 
 export const AddContactsToCampaign = ({item, currentUser}) => {
   const {contacts, campaigns} = item

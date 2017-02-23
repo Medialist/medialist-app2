@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
+import { createFeedbackPost } from '/imports/api/posts/methods'
 import ContactsTable from '../contacts/contacts-table'
 import SearchBox from '../lists/search-box'
 import ContactsActionsToast from '../contacts/contacts-actions-toast'
@@ -77,12 +78,9 @@ const CampaignContactsPage = React.createClass({
   },
 
   onStatusChange ({status, contact}) {
-    const post = {
-      contactSlug: contact.slug,
-      campaignSlug: this.props.campaign.slug,
-      status
-    }
-    Meteor.call('posts/create', post)
+    const contactSlug = contact.slug
+    const campaignSlug = this.props.campaign.slug
+    createFeedbackPost.call({contactSlug, campaignSlug, status})
   },
 
   render () {
