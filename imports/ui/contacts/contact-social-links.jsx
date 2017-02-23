@@ -18,7 +18,7 @@ const socialIcons = {
 }
 
 export default (props) => {
-  const { label, value } = props
+  const { label = 'Website', value } = props
   const Icon = socialIcons[label].icon
   const url = `${socialIcons[label].url}${value}`
   const tooltip = url.split('//').pop()
