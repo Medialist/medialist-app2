@@ -17,7 +17,7 @@ Posts.types = [
   'FeedbackPost',
   'CoveragePost',
   'NeedToKnowPost',
-  'CampaignCreated',
+  'CreateCampaign',
   'CampaignChanged'
 ]
 
