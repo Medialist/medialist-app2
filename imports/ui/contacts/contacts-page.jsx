@@ -234,10 +234,13 @@ const ContactsPage = withSnackbar(React.createClass({
           onSubmit={this.onAddContactSubmit}
           open={this.state.addContactModalOpen} />
         <AddContactsToCampaign
+          title='Add these Contacts to a Campaign'
           contacts={selections}
           onDismiss={() => this.setState({AddContactsToCampaignModalOpen: false})}
           onSubmit={() => this.setState({AddContactsToCampaignModalOpen: false})}
-          open={this.state.AddContactsToCampaignModalOpen} />
+          open={this.state.AddContactsToCampaignModalOpen}>
+          <AbbreviatedAvatarList items={selections} maxTooltip={12} />
+        </AddContactsToCampaign>
         <AddTags
           type='Contacts'
           open={this.state.addTagsOpen}

@@ -17,7 +17,7 @@ const sx = {
     position: 'relative',
     display: 'inline-block',
     cursor: 'pointer',
-    zIndex: 1000
+    zIndex: 99
   },
   box: {
     position: 'absolute',

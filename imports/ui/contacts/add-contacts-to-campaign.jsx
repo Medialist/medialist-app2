@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import Modal from '../navigation/modal'
 import { SearchBlueIcon, AddIcon } from '../images/icons'
-import AbbreviatedAvatarList from '../lists/abbreviated-avatar-list'
 import createSearchContainer from '../campaigns/campaign-search-container'
 import { SquareAvatar } from '../images/avatar'
 import { TimeFromNow } from '../time/time'
@@ -11,11 +10,13 @@ import { addContactsToCampaign } from '/imports/api/contacts/methods'
 
 const AddContactsToCampaigns = createSearchContainer(React.createClass({
   propTypes: {
+    title: PropTypes.string,
     term: PropTypes.string,
     onTermChange: PropTypes.func.isRequired,
     onAdd: PropTypes.func.isRequired,
     contacts: PropTypes.array.isRequired,
-    campaigns: PropTypes.array.isRequired
+    campaigns: PropTypes.array.isRequired,
+    children: PropTypes.node
   },
 
   onChange (e) {
@@ -31,24 +32,24 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
 
   render () {
     const {
+      title,
       term,
-      contacts,
       campaigns,
-      onAdd
+      onAdd,
+      children
     } = this.props
 
     const { onChange, onKeyPress } = this
-    const scrollableHeight = Math.max(window.innerHeight - 380, 80)
 
     return (
       <div>
-        <h1 className='f-xl regular center mt6'>Add these Contacts to a Campaign</h1>
-        <AbbreviatedAvatarList size={30} items={contacts} className='mx-auto my4 px4' />
+        <div className='f-xl regular center mt6'>{title}</div>
+        <div className='mb6'>{children}</div>
         <div className='py3 pl4 flex border-top border-bottom border-gray80'>
           <SearchBlueIcon className='flex-none' />
-          <input className='flex-auto f-lg pa2 mx2' placeholder='Find a campaign...' onChange={onChange} style={{outline: 'none'}} onKeyPress={onKeyPress} value={term} />
+          <input ref={(input) => input && input.focus()} className='flex-auto f-sm pa2 mx2' placeholder='Search campaigns' onChange={onChange} style={{outline: 'none'}} onKeyPress={onKeyPress} value={term} />
         </div>
-        <div style={{height: scrollableHeight, overflowY: 'scroll'}}>
+        <div style={{height: '413px', overflowY: 'scroll'}}>
           <ResultList onAdd={onAdd} results={campaigns} />
         </div>
       </div>
