@@ -143,7 +143,6 @@ const ContactItems = React.createClass({
     this.setState(({showMore}) => ({ showMore: !this.state.showMore }))
   },
   render () {
-    console.log('props.contact', this.props.contact)
     const {
       emails,
       phones,
