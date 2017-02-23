@@ -92,7 +92,7 @@ const ContactInfo = React.createClass({
           </div>
         </div>
         <div className='clearfix p3 pt4 mt4 border-gray80 border-bottom'>
-          <a href='#' className='-md blue right' onClick={this.props.onEditClick}>Edit</a>
+          <a href='#' className='f-md blue right' onClick={this.props.onEditClick}>Edit</a>
           <h1 className='m0 f-md normal gray20 left'>Info</h1>
         </div>
         <div className='clearfix'>
