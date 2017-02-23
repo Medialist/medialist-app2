@@ -18,9 +18,10 @@ const socialIcons = {
 }
 
 export default (props) => {
-  const { label = 'Website', value } = props
-  const Icon = socialIcons[label].icon
-  const url = `${socialIcons[label].url}${value}`
+  const { label, value } = props
+  const social = socialIcons[label] ? socialIcons[label] : socialIcons.Website
+  const Icon = social.icon
+  const url = `${social.url}${value}`
   const tooltip = url.split('//').pop()
   return (
     <a href={url} target='_Blank' className='mr2'>
