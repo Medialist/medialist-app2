@@ -158,7 +158,6 @@ const ContactsPage = withSnackbar(React.createClass({
     const { contactsCount, selectedMasterListSlug, loading, searching, contacts, term, sort, campaigns } = this.props
     const { onSortChange, onSelectionsChange, onMasterListChange, onTermChange, onCampaignRemove } = this
     const { selections } = this.state
-
     if (!loading && contactsCount === 0) return <ContactListEmpty />
     return (
       <div>
