@@ -20,20 +20,25 @@ const Post = ({icon, summary, details, createdBy, createdAt, currentUser}) => (
       {icon}
     </div>
     <div className='flex-auto' style={{paddingLeft: 13}}>
-      <header className='pt2 pb3 f-md'>
-        <span className='f-sm semibold gray60 right'>
+      <header className='pt2 pb3 f-md flex'>
+        <YouOrName className='semibold align-middle' currentUser={currentUser} user={createdBy} />
+        <div className='align-middle flex-auto truncate' style={{paddingLeft: 3}}>{summary}</div>
+        <span className='f-sm semibold gray60 flex-none'>
           <Time date={createdAt} />
         </span>
-        <YouOrName className='semibold align-middle' currentUser={currentUser} user={createdBy} />
-        <div className='align-middle inline-block' style={{paddingLeft: 3}}>{summary}</div>
       </header>
       {details}
     </div>
   </article>
 )
 
-const ContactLink = ({slug, name}) => (
-  <Link className='semibold gray10' to={`/contact/${slug}`}>{name}</Link>
+const ContactLink = ({slug, name, outletName}) => (
+  <Link to={`/contact/${slug}`}>
+    <span className='semibold gray10'>{name}</span>
+    { outletName &&
+      <span className='gray10'>({outletName})</span>
+    }
+  </Link>
 )
 
 const CampaignLink = ({slug, name}) => (
@@ -46,8 +51,8 @@ const ContactNamesOrCount = ({items}) => {
 }
 
 const PostSummary = ({label, campaigns, contacts, status, hideContact, hideCampaign}) => (
-  <span style={{whiteSpace: 'nowrap'}}>
-    <span className='inline-block truncate align-middle'>
+  <span className='nowrap flex'>
+    <span className='truncate align-middle'>
       <span className='gray10'>
         {label}
       </span>
@@ -64,7 +69,7 @@ const PostSummary = ({label, campaigns, contacts, status, hideContact, hideCampa
         </span>
       )}
     </span>
-    <span className='inline-block align-middle'>
+    <span className='flex-none align-middle'>
       <Status status={status} />
     </span>
   </span>
