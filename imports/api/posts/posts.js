@@ -18,6 +18,7 @@ Posts.types = [
   'CoveragePost',
   'NeedToKnowPost',
   'CreateCampaign',
+  'AddContactsToCampaign',
   'CampaignChanged'
 ]
 

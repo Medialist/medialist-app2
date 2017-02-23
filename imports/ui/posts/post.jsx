@@ -41,8 +41,8 @@ const CampaignLink = ({slug, name}) => (
 )
 
 const ContactNamesOrCount = ({items}) => {
-  if (items.length > 2) return items.length + ''
-  return items.map((i) => i.name.split(' ')[0]).join(' and ')
+  const text = items.length > 2 ? items.length : items.map((i) => i.name.split(' ')[0]).join(' and ')
+  return <span>{` ${text} `}</span>
 }
 
 const PostSummary = ({label, campaigns, contacts, status, hideContact, hideCampaign}) => (
@@ -112,7 +112,7 @@ export const NeedToKnowPost = ({item, currentUser, hideContact}) => (
   />
 )
 
-export const ContactsAddedToCampaign = ({item, currentUser}) => {
+export const AddContactsToCampaign = ({item, currentUser}) => {
   const {contacts, campaigns} = item
   return (
     <Post
@@ -121,10 +121,7 @@ export const ContactsAddedToCampaign = ({item, currentUser}) => {
       icon={<FeedContactIcon className='gray40' />}
       summary={
         <span>
-          added
-          <ContactNamesOrCount items={contacts} />
-          to
-          <CampaignLink {...campaigns[0]} />
+          added <ContactNamesOrCount items={contacts} /> to <CampaignLink {...campaigns[0]} />
         </span>
       }
     />
