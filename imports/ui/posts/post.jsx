@@ -41,7 +41,7 @@ const CampaignLink = ({slug, name}) => (
 )
 
 const ContactNamesOrCount = ({items}) => {
-  const text = items.length > 2 ? items.length : items.map((i) => i.name.split(' ')[0]).join(' and ')
+  const text = items.length > 2 ? items.length + ' contacts' : items.map((i) => i.name.split(' ')[0]).join(' and ')
   return <span>{` ${text} `}</span>
 }
 
