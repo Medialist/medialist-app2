@@ -86,8 +86,25 @@ export const ContactCreateSchema = new SimpleSchema({
   phones: {
     type: [LabelValueSchema]
   },
+  bio: {
+    type: String,
+    optional: true
+  },
+  // TODO: Refactor the socials schema to allow for twitterId or other properties
   socials: {
-    type: [LabelValueSchema]
+    type: [Object],
+    optional: true
+  },
+  'socials.$.label': {
+    type: String
+  },
+  'socials.$.value': {
+    type: String,
+    optional: true
+  },
+  'socials.$.twitterId': {
+    type: String,
+    optional: true
   },
   // TODO: Refactor address format
   address: {
