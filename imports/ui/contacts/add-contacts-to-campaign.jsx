@@ -44,7 +44,7 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
     return (
       <div>
         <div className='f-xl regular center mt6'>{title}</div>
-        <div className='mb5'>{children}</div>
+        <div className='mb6'>{children}</div>
         <div className='py3 pl4 flex border-top border-bottom border-gray80'>
           <SearchBlueIcon className='flex-none' />
           <input ref={(input) => input && input.focus()} className='flex-auto f-sm pa2 mx2' placeholder='Search campaigns' onChange={onChange} style={{outline: 'none'}} onKeyPress={onKeyPress} value={term} />
