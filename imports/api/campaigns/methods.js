@@ -153,7 +153,7 @@ export const create = new ValidatedMethod({
 
     // Add an entry to the activity feed
     Posts.create({
-      type: 'AddContactsToCampaign',
+      type: 'CreateCampaign',
       campaignSlugs: [slug],
       createdAt,
       createdBy
