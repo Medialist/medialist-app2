@@ -76,14 +76,15 @@ export const addContactsToCampaign = new ValidatedMethod({
       contactSlugs,
       campaignSlugs: [campaignSlug],
       createdAt: updatedAt,
-      updatedAt: updatedBy
+      createdBy: updatedBy
     })
 
     // Add the things to the users my<Contact|Campaigns> list
     addToMyFavourites({
       userId: this.userId,
       contactSlugs,
-      campaignSlugs: [campaignSlug]
+      campaignSlugs: [campaignSlug],
+      updatedAt
     })
   }
 })
@@ -140,7 +141,7 @@ export const removeContactsFromCampaign = new ValidatedMethod({
       contactSlugs,
       campaignSlugs: [campaignSlug],
       createdAt: updatedAt,
-      updatedAt: updatedBy
+      createdBy: updatedBy
     })
   }
 })
@@ -221,7 +222,11 @@ export const createContact = new ValidatedMethod({
     check(contact, ContactSchema)
     const contactId = Contacts.insert(contact)
 
-    addToMyFavourites({userId: this.userId, contactSlugs: [slug]})
+    addToMyFavourites({
+      userId: this.userId,
+      contactSlugs: [slug],
+      updatedAt: createdAt
+    })
 
     Posts.create({
       type: 'CreateContact',

@@ -12,8 +12,8 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
   const createdBy = findOneUserRef(userId)
   const createdAt = new Date()
   const post = {
-    contacts: Contacts.findContactRefs({contactSlugs: [contactSlug]}),
-    campaigns: Campaigns.findCampaignRefs({campaignSlugs: [campaignSlug]}),
+    contacts: Contacts.findRefs({contactSlugs: [contactSlug]}),
+    campaigns: Campaigns.findRefs({campaignSlugs: [campaignSlug]}),
     type,
     status,
     message,
@@ -49,7 +49,8 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
   addToMyFavourites({
     userId,
     contactSlugs: [contactSlug],
-    campaignSlugs: [campaignSlug]
+    campaignSlugs: [campaignSlug],
+    updatedAt: createdAt
   })
 }
 
@@ -118,7 +119,7 @@ export const createNeedToKnowPost = new ValidatedMethod({
     const createdAt = new Date()
     const post = {
       type: 'NeedToKnowPost',
-      contacts: Contacts.findContactRefs({contactSlugs: [contactSlug]}),
+      contacts: Contacts.findRefs({contactSlugs: [contactSlug]}),
       campaigns: [],
       message,
       createdBy,
@@ -138,7 +139,8 @@ export const createNeedToKnowPost = new ValidatedMethod({
 
     addToMyFavourites({
       userId: this.userId,
-      contactSlugs: [contactSlug]
+      contactSlugs: [contactSlug],
+      updatedAt: createdAt
     })
   }
 })

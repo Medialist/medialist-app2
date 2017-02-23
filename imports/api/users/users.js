@@ -37,14 +37,13 @@ export const findUserRefs = ({userIds}) => {
 /*
  * Add all the contacts and campaigns to the user my<Type> Arrays
  */
-export const addToMyFavourites = ({userId, contactSlugs = [], campaignSlugs = []}) => {
+export const addToMyFavourites = ({userId, contactSlugs = [], campaignSlugs = [], updatedAt = new Date()}) => {
   const user = Meteor.users.findOne(
     { _id: userId },
     { fields: { myContacts: 1, myCampaigns: 1 } }
   )
-  const now = new Date()
-  const myContacts = findMyContactRefs({user, contactSlugs, now})
-  const myCampaigns = findMyCampaignRefs({user, campaignSlugs, now})
+  const myContacts = findMyContactRefs({user, contactSlugs, updatedAt})
+  const myCampaigns = findMyCampaignRefs({user, campaignSlugs, updatedAt})
   const $set = {}
   if (myContacts.length) $set.myContacts = myContacts
   if (myCampaigns.length) $set.myCampaigns = myCampaigns
@@ -55,7 +54,7 @@ export const addToMyFavourites = ({userId, contactSlugs = [], campaignSlugs = []
   )
 }
 
-function findMyContactRefs ({user, contactSlugs, now}) {
+function findMyContactRefs ({user, contactSlugs, updatedAt}) {
   if (contactSlugs.length === 0) return []
 
   const newRefs = Contacts.find(
@@ -67,7 +66,7 @@ function findMyContactRefs ({user, contactSlugs, now}) {
     slug: contact.slug,
     avatar: contact.avatar,
     outlets: contact.outlets,
-    updatedAt: now
+    updatedAt
   }))
 
   // Preserve other favs.
@@ -76,7 +75,7 @@ function findMyContactRefs ({user, contactSlugs, now}) {
   return newRefs.concat(existingRefs)
 }
 
-function findMyCampaignRefs ({user, campaignSlugs, now}) {
+function findMyCampaignRefs ({user, campaignSlugs, updatedAt}) {
   if (campaignSlugs.length === 0) return []
 
   // transform campaigns into refs for user.myCampaigns array.
@@ -89,7 +88,7 @@ function findMyCampaignRefs ({user, campaignSlugs, now}) {
     slug: campaign.slug,
     avatar: campaign.avatar,
     clientName: campaign.client && campaign.client.name || '',
-    updatedAt: now
+    updatedAt
   }))
 
   // Preserve other favs.

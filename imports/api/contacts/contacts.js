@@ -16,6 +16,21 @@ Contacts.allContactsCount = () => Counter.get('contactCount')
 
 export default Contacts
 
+Contacts.toRef = ({_id, slug, name, avatar, outlets}) => ({
+  _id,
+  slug,
+  name,
+  avatar,
+  outletName: outlets && outlets.length ? outlets[0].label : ''
+})
+
+Contacts.findRefs = ({contactSlugs}) => {
+  return Contacts.find(
+    { slug: { $in: contactSlugs } },
+    { fields: { _id: 1, slug: 1, name: 1, avatar: 1, outlets: 1 } }
+  ).map(Contacts.toRef)
+}
+
 Contacts.status = StatusMap
 Contacts.phoneTypes = [
   'Mobile',
@@ -115,11 +130,4 @@ Contacts.fieldNames = function (name) {
     website: 'website',
     address: 'address'
   }[key]
-}
-
-Contacts.findContactRefs = ({contactSlugs}) => {
-  return Contacts.find(
-    { slug: { $in: contactSlugs } },
-    { fields: { _id: 1, slug: 1, name: 1, avatar: 1 } }
-  ).fetch()
 }

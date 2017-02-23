@@ -6,36 +6,43 @@ import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from './posts'
 import { createFeedbackPost, createCoveragePost, createNeedToKnowPost } from './methods'
 
+function insertTestData () {
+  Meteor.users.insert({
+    _id: 'alf',
+    profile: { name: 'Alfonze' },
+    myContacts: [],
+    myCampaigns: [],
+    services: {
+      twitter: {
+        profile_image_url_https: 'http://stat.ic/alfoto.webp'
+      }
+    }
+  })
+
+  const contacts = Array(3).fill(0).map((_, index) => ({
+    _id: `id${index}`,
+    slug: `slug${index}`,
+    name: `name${index}`,
+    avatar: `avatar${index}`,
+    campaigns: []
+  }))
+  contacts.forEach((c) => Contacts.insert(c))
+
+  const campaigns = Array(3).fill(0).map((_, index) => ({
+    _id: `id${index}`,
+    slug: `slug${index}`,
+    avatar: `avatar${index}`,
+    name: `name${index}`,
+    client: { name: `client${index}` },
+    contacts: {}
+  }))
+  campaigns.forEach((c) => Campaigns.insert(c))
+}
+
 describe('createFeedbackPost', function () {
   beforeEach(function () {
     resetDatabase()
-    Meteor.users.insert({
-      _id: 'alf',
-      profile: { name: 'Alfonze' },
-      myContacts: [],
-      myCampaigns: [],
-      services: {
-        twitter: {
-          profile_image_url_https: 'http://stat.ic/alfoto.webp'
-        }
-      }
-    })
-
-    const contacts = Array(3).fill(0).map((_, index) => ({
-      _id: `id${index}`,
-      slug: `slug${index}`,
-      avatar: `avatar${index}`,
-      campaigns: []
-    }))
-    contacts.forEach((c) => Contacts.insert(c))
-
-    const campaigns = Array(3).fill(0).map((_, index) => ({
-      _id: `id${index}`,
-      slug: `slug${index}`,
-      avatar: `avatar${index}`,
-      contacts: {}
-    }))
-    campaigns.forEach((c) => Campaigns.insert(c))
+    insertTestData()
   })
 
   it('should require the user to be logged in', function () {
@@ -84,12 +91,16 @@ describe('createFeedbackPost', function () {
       campaigns: [{
         _id: 'id1',
         slug: campaignSlug,
-        avatar: 'avatar1'
+        avatar: 'avatar1',
+        name: 'name1',
+        clientName: 'client1'
       }],
       contacts: [{
         _id: 'id0',
         slug: contactSlug,
-        avatar: 'avatar0'
+        avatar: 'avatar0',
+        name: 'name0',
+        outletName: ''
       }],
       createdBy: userRef
     })
@@ -109,33 +120,7 @@ describe('createFeedbackPost', function () {
 describe('createCoveragePost', function () {
   beforeEach(function () {
     resetDatabase()
-    Meteor.users.insert({
-      _id: 'alf',
-      profile: { name: 'Alfonze' },
-      myContacts: [],
-      myCampaigns: [],
-      services: {
-        twitter: {
-          profile_image_url_https: 'http://stat.ic/alfoto.webp'
-        }
-      }
-    })
-
-    const contacts = Array(3).fill(0).map((_, index) => ({
-      _id: `id${index}`,
-      slug: `slug${index}`,
-      avatar: `avatar${index}`,
-      campaigns: []
-    }))
-    contacts.forEach((c) => Contacts.insert(c))
-
-    const campaigns = Array(3).fill(0).map((_, index) => ({
-      _id: `id${index}`,
-      slug: `slug${index}`,
-      avatar: `avatar${index}`,
-      contacts: {}
-    }))
-    campaigns.forEach((c) => Campaigns.insert(c))
+    insertTestData()
   })
 
   it('should require the user to be logged in', function () {
@@ -184,12 +169,16 @@ describe('createCoveragePost', function () {
       campaigns: [{
         _id: 'id1',
         slug: campaignSlug,
-        avatar: 'avatar1'
+        avatar: 'avatar1',
+        name: 'name1',
+        clientName: 'client1'
       }],
       contacts: [{
         _id: 'id0',
         slug: contactSlug,
-        avatar: 'avatar0'
+        avatar: 'avatar0',
+        name: 'name0',
+        outletName: ''
       }],
       createdBy: userRef
     })
@@ -209,33 +198,7 @@ describe('createCoveragePost', function () {
 describe('createNeedToKnowPost', function () {
   beforeEach(function () {
     resetDatabase()
-    Meteor.users.insert({
-      _id: 'alf',
-      profile: { name: 'Alfonze' },
-      myContacts: [],
-      myCampaigns: [],
-      services: {
-        twitter: {
-          profile_image_url_https: 'http://stat.ic/alfoto.webp'
-        }
-      }
-    })
-
-    const contacts = Array(3).fill(0).map((_, index) => ({
-      _id: `id${index}`,
-      slug: `slug${index}`,
-      avatar: `avatar${index}`,
-      campaigns: []
-    }))
-    contacts.forEach((c) => Contacts.insert(c))
-
-    const campaigns = Array(3).fill(0).map((_, index) => ({
-      _id: `id${index}`,
-      slug: `slug${index}`,
-      avatar: `avatar${index}`,
-      contacts: {}
-    }))
-    campaigns.forEach((c) => Campaigns.insert(c))
+    insertTestData()
   })
 
   it('should require the user to be logged in', function () {
@@ -278,7 +241,9 @@ describe('createNeedToKnowPost', function () {
       contacts: [{
         _id: 'id0',
         slug: contactSlug,
-        avatar: 'avatar0'
+        avatar: 'avatar0',
+        name: 'name0',
+        outletName: ''
       }],
       createdBy: userRef
     })

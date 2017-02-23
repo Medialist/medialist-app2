@@ -149,9 +149,15 @@ export const create = new ValidatedMethod({
       Uploadcare.store(doc.avatar)
     }
 
-    addToMyFavourites({userId: this.userId, campaignSlugs: [slug]})
+    addToMyFavourites({userId: this.userId, campaignSlugs: [slug], updatedAt: createdAt})
 
-    Posts.createCampaignCreated({campaignSlug: slug, createdBy, createdAt})
+    // Add an entry to the activity feed
+    Posts.create({
+      type: 'AddContactsToCampaign',
+      campaignSlugs: [slug],
+      createdAt,
+      createdBy
+    })
 
     return slug
   }
