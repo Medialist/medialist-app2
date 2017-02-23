@@ -8,7 +8,7 @@ import InfoHeader from '../lists/info-header'
 import AddToMasterList from '../master-lists/add-to-master-list.jsx'
 import AddTags from '../tags/add-tags'
 import Tooltip from '../navigation/tooltip'
-import Socials from './contact-socials'
+import SocialLinks from './contact-social-links'
 
 const ContactInfo = React.createClass({
   propTypes: {
@@ -86,13 +86,13 @@ const ContactInfo = React.createClass({
                 <Icon className='mx2 pointer svg-icon-lg align-bottom gray40' onClick={this.onToggleFavourite} />
               </Tooltip>
             </span>
-            <span className='block f-sm  gray10 mb1'>{(outlets && outlets.length) ? outlets[0].value : null}</span>
+            <span className='block f-sm  gray10 mt2'>{(outlets && outlets.length) ? outlets[0].value : null}</span>
             <span className='block f-sm gray10'>{outlets.map((o) => o.label).join(', ')}</span>
-            <span className='block mt3'>{socials.map((social) => <Socials {...social} />)}</span>
+            <span className='block mt3'>{socials.map((social) => <SocialLinks {...social} />)}</span>
           </div>
         </div>
         <div className='clearfix p3 pt4 mt4 border-gray80 border-bottom'>
-          <a href='#' className='f-xs blue right' onClick={this.props.onEditClick}>Edit</a>
+          <a href='#' className='-md blue right' onClick={this.props.onEditClick}>Edit</a>
           <h1 className='m0 f-md normal gray20 left'>Info</h1>
         </div>
         <div className='clearfix'>
@@ -155,9 +155,13 @@ const ContactItems = React.createClass({
 
     return (
       <ul className='list-reset'>
-        {emails.map((email) => <ContactItemsEmail email={email} />)}
-        <li>
+        <li className='mb2'>
+          {emails.map((email) => <ContactItemsEmail email={email} />)}
+        </li>
+        <li className='mb2'>
           {phones.map((phone) => <ContactItemsPhone phone={phone} />)}
+        </li>
+        <li className='mb2'>
           <ContactItemBio bio={bio} />
         </li>
         {showMore && address && (
@@ -190,7 +194,7 @@ const ContactItemsPhone = ({ phone }) => {
   const { label, value } = phone
   const Icon = label === 'Mobile' ? MobileIcon : PhoneIcon
   return (
-    <div>
+    <div className='mb2'>
       <a href={`tel:${value}`} className='hover-blue block py1 clearfix'>
         <div className='col col-2 center'><Icon /></div>
         <div className='col col-10 gray10'>{value}</div>
@@ -205,7 +209,7 @@ const ContactItemBio = ({ bio }) => {
     <div>
       <a className='block py1 clearfix'>
         <div className='col col-2 center'><BioIcon className='gray60' /></div>
-        <div className='col col-10 gray10'>{bio}</div>
+        <div className='col col-10 gray10' style={{lineHeight: '22px'}}>{bio}</div>
       </a>
     </div>
   )

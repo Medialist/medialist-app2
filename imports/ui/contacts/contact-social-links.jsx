@@ -1,5 +1,6 @@
 import React from 'react'
 import { Twitter, Facebook, WebsiteIcon } from '../images/icons'
+import Tooltip from '../navigation/tooltip'
 
 const socialIcons = {
   Twitter: {
@@ -20,7 +21,12 @@ export default (props) => {
   const { label, value } = props
   const Icon = socialIcons[label].icon
   const url = `${socialIcons[label].url}${value}`
+  const tooltip = url.split('//').pop()
   return (
-    <a href={url} target='_Blank'><Icon size='20' className='mr2 gray60' /></a>
+    <a href={url} target='_Blank' className='mr2'>
+      <Tooltip title={tooltip}>
+        <Icon size='20' className='gray60' />
+      </Tooltip>
+    </a>
   )
 }
