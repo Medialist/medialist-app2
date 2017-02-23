@@ -35,7 +35,7 @@ export const findUserRefs = ({userIds}) => {
 }
 
 /*
- * Add all the contacts and campaigns to the user my<Type> Arrays
+ * Add contacts or campaigns (or both) to the users my<Type> Arrays.
  */
 export const addToMyFavourites = ({userId, contactSlugs = [], campaignSlugs = [], updatedAt = new Date()}) => {
   const user = Meteor.users.findOne(
@@ -54,6 +54,9 @@ export const addToMyFavourites = ({userId, contactSlugs = [], campaignSlugs = []
   )
 }
 
+// Used to update the users myContacts array.
+// Returns a new `myContacts` array by creating new ContactRef-like objects
+// for the `contactSlugs` and merging them with the users existing ones.
 function findMyContactRefs ({user, contactSlugs, updatedAt}) {
   if (contactSlugs.length === 0) return []
 
@@ -75,6 +78,9 @@ function findMyContactRefs ({user, contactSlugs, updatedAt}) {
   return newRefs.concat(existingRefs)
 }
 
+// Used to update the users `myCampaigns` array.
+// Returns a new `myCampaigns` array by creating new ContactRef-like objects
+// for the `campaignSlugs` and merging them with the users existing ones.
 function findMyCampaignRefs ({user, campaignSlugs, updatedAt}) {
   if (campaignSlugs.length === 0) return []
 
