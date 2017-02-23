@@ -48,6 +48,8 @@ const ActivityListContainer = createContainer((props) => {
   const items = Posts.find(query, { sort: { createdAt: -1 }, limit }).fetch()
   return {
     currentUser: Meteor.user(),
+    hideContact: !!props.contact,
+    hideCampaign: !!props.campaign,
     items,
     ...props
   }

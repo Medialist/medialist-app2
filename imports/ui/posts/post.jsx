@@ -13,10 +13,10 @@ import {
   FeedNeedToKnowIcon
 } from '../images/icons'
 
-const Post = ({icon, summary, details, createdBy, createdAt, currentUser}) => {
-  <article className='flex rounded bg-white px4 py2 mb2 shadow-2'>
-    <div className='flex-none'>
-      <CircleAvatar avatar={createdBy.avatar} name={createdBy.name} style={{marginRight: 13}} />
+const Post = ({icon, summary, details, createdBy, createdAt, currentUser}) => (
+  <article className='flex rounded bg-white px4 pt3 pb2 mb2 shadow-2'>
+    <div className='flex-none' style={{paddingTop: 1}}>
+      <CircleAvatar size={38} avatar={createdBy.avatar} name={createdBy.name} style={{marginRight: 13}} />
       {icon}
     </div>
     <div className='flex-auto' style={{paddingLeft: 13}}>
@@ -24,13 +24,13 @@ const Post = ({icon, summary, details, createdBy, createdAt, currentUser}) => {
         <span className='f-sm semibold gray60 right'>
           <Time date={createdAt} />
         </span>
-        <YouOrName className='semibold flex-none' currentUser={currentUser} user={createdBy} />
+        <YouOrName className='semibold align-middle flex-none' currentUser={currentUser} user={createdBy} />
         {summary}
       </header>
       {details}
     </div>
   </article>
-}
+)
 
 const ContactLink = ({slug, name}) => (
   <Link className='semibold gray10' to={`/contact/${slug}`}>{name}</Link>
@@ -45,15 +45,19 @@ const ContactNamesOrCount = ({items}) => {
   return items.map((i) => i.name.split(' ')[0]).join(' and ')
 }
 
-const PostSummary = ({label, campaigns, contacts, status}) => (
+const PostSummary = ({label, campaigns, contacts, status, hideContact, hideCampaign}) => (
   <span className='flex-auto' style={{whiteSpace: 'nowrap'}}>
     <span className='inline-block truncate align-middle'>
       <span className='gray10 ml1'>
         {label}
       </span>
-      <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
-      <ContactLink {...contacts[0]} />
-      { campaigns && (
+      { !hideContact && contacts && (
+        <span>
+          <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
+          <ContactLink {...contacts[0]} />
+        </span>
+      )}
+      { !hideCampaign && campaigns && (
         <span>
           <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
           <CampaignLink {...campaigns[0]} />
@@ -66,53 +70,47 @@ const PostSummary = ({label, campaigns, contacts, status}) => (
   </span>
 )
 
-export const FeedbackPost = ({item, currentUser}) => {
-  return (
-    <Post
-      {...item}
-      currentUser={currentUser}
-      icon={<FeedFeedbackIcon style={{color: 'blue'}} />}
-      summary={<PostSummary {...item} label='logged feedback' />}
-      details={
-        <div className='border-gray80 border-top py3'>
-          {item.message}
-        </div>
-      }
-    />
-  )
-}
+export const FeedbackPost = ({item, currentUser, hideContact, hideCampaign}) => (
+  <Post
+    {...item}
+    currentUser={currentUser}
+    icon={<FeedFeedbackIcon style={{color: 'blue', verticalAlign: -2}} />}
+    summary={<PostSummary {...item} label='logged feedback' hideContact={hideContact} hideCampaign={hideCampaign} />}
+    details={
+      <div className='border-gray80 border-top py3 gray10'>
+        {item.message}
+      </div>
+    }
+  />
+)
 
-export const CoveragePost = ({item, currentUser}) => {
-  return (
-    <Post
-      {...item}
-      currentUser={currentUser}
-      icon={<FeedCoverageIcon style={{color: 'blue'}} />}
-      summary={<PostSummary {...item} label='logged coverage' />}
-      details={
-        <div className='border-gray80 border-top py3'>
-          {item.message}
-        </div>
-      }
-    />
-  )
-}
+export const CoveragePost = ({item, currentUser, hideContact, hideCampaign}) => (
+  <Post
+    {...item}
+    currentUser={currentUser}
+    icon={<FeedCoverageIcon style={{color: 'blue'}} />}
+    summary={<PostSummary {...item} label='logged coverage' hideContact={hideContact} hideCampaign={hideCampaign} />}
+    details={
+      <div className='border-gray80 border-top py3 gray10'>
+        {item.message}
+      </div>
+    }
+  />
+)
 
-export const NeedToKnowPost = ({item, currentUser}) => {
-  return (
-    <Post
-      {...item}
-      currentUser={currentUser}
-      icon={<FeedNeedToKnowIcon style={{color: 'orange'}} />}
-      summary={<PostSummary {...item} label='shared a need-to-know' />}
-      details={
-        <div className='border-gray80 border-top py3'>
-          {item.message}
-        </div>
-      }
-    />
-  )
-}
+export const NeedToKnowPost = ({item, currentUser, hideContact}) => (
+  <Post
+    {...item}
+    currentUser={currentUser}
+    icon={<FeedNeedToKnowIcon style={{color: 'orange'}} />}
+    summary={<PostSummary {...item} label='shared a need-to-know' hideContact={hideContact} />}
+    details={
+      <div className='border-gray80 border-top py3'>
+        {item.message}
+      </div>
+    }
+  />
+)
 
 export const ContactsAddedToCampaign = ({item, currentUser}) => {
   const {contacts, campaigns} = item
