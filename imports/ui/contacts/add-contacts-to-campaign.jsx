@@ -30,10 +30,6 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
     onAdd(campaigns[0])
   },
 
-  componentDidMount () {
-    this.refs.input.focus()
-  },
-
   render () {
     const {
       title,
@@ -52,7 +48,7 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
         {children}
         <div className='py3 pl4 flex border-top border-bottom border-gray80'>
           <SearchBlueIcon className='flex-none' />
-          <input ref='input' className='flex-auto f-lg pa2 mx2' placeholder='Search campaigns' onChange={onChange} style={{outline: 'none'}} onKeyPress={onKeyPress} value={term} />
+          <input ref={(input) => input && input.focus()} className='flex-auto f-lg pa2 mx2' placeholder='Search campaigns' onChange={onChange} style={{outline: 'none'}} onKeyPress={onKeyPress} value={term} />
         </div>
         <div style={{height: scrollableHeight, overflowY: 'scroll'}}>
           <ResultList onAdd={onAdd} results={campaigns} />
