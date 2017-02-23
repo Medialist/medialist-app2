@@ -24,8 +24,8 @@ const Post = ({icon, summary, details, createdBy, createdAt, currentUser}) => (
         <span className='f-sm semibold gray60 right'>
           <Time date={createdAt} />
         </span>
-        <YouOrName className='semibold align-middle flex-none' currentUser={currentUser} user={createdBy} />
-        {summary}
+        <YouOrName className='semibold align-middle' currentUser={currentUser} user={createdBy} />
+        <div className='align-middle inline-block' style={{paddingLeft: 3}}>{summary}</div>
       </header>
       {details}
     </div>
@@ -46,9 +46,9 @@ const ContactNamesOrCount = ({items}) => {
 }
 
 const PostSummary = ({label, campaigns, contacts, status, hideContact, hideCampaign}) => (
-  <span className='flex-auto' style={{whiteSpace: 'nowrap'}}>
+  <span style={{whiteSpace: 'nowrap'}}>
     <span className='inline-block truncate align-middle'>
-      <span className='gray10 ml1'>
+      <span className='gray10'>
         {label}
       </span>
       { !hideContact && contacts && (
@@ -74,7 +74,7 @@ export const FeedbackPost = ({item, currentUser, hideContact, hideCampaign}) => 
   <Post
     {...item}
     currentUser={currentUser}
-    icon={<FeedFeedbackIcon style={{color: 'blue', verticalAlign: -2}} />}
+    icon={<FeedFeedbackIcon className='blue' style={{verticalAlign: -2}} />}
     summary={<PostSummary {...item} label='logged feedback' hideContact={hideContact} hideCampaign={hideCampaign} />}
     details={
       <div className='border-gray80 border-top py3 gray10'>
@@ -88,7 +88,7 @@ export const CoveragePost = ({item, currentUser, hideContact, hideCampaign}) => 
   <Post
     {...item}
     currentUser={currentUser}
-    icon={<FeedCoverageIcon style={{color: 'blue'}} />}
+    icon={<FeedCoverageIcon className='blue' />}
     summary={<PostSummary {...item} label='logged coverage' hideContact={hideContact} hideCampaign={hideCampaign} />}
     details={
       <div className='border-gray80 border-top py3 gray10'>
@@ -102,7 +102,7 @@ export const NeedToKnowPost = ({item, currentUser, hideContact}) => (
   <Post
     {...item}
     currentUser={currentUser}
-    icon={<FeedNeedToKnowIcon style={{color: 'orange'}} />}
+    icon={<FeedNeedToKnowIcon className='orange' />}
     summary={<PostSummary {...item} label='shared a need-to-know' hideContact={hideContact} />}
     details={
       <div className='border-gray80 border-top py3'>
@@ -118,7 +118,7 @@ export const ContactsAddedToCampaign = ({item, currentUser}) => {
     <Post
       {...item}
       currentUser={currentUser}
-      icon={<FeedContactIcon style={{color: 'gray40'}} />}
+      icon={<FeedContactIcon className='gray40' />}
       summary={
         <span>
           added
@@ -137,10 +137,10 @@ export const CreateCampaign = ({item, currentUser}) => {
     <Post
       {...item}
       currentUser={currentUser}
-      icon={<FeedCampaignIcon style={{color: 'blue'}} />}
-      summary={<span>created a campaign</span>}
+      icon={<FeedCampaignIcon className='status-blue' />}
+      summary='created a campaign'
       details={
-        <div className='border-gray80 border-top py3'>
+        <div className='border-gray80 border-top pt2'>
           <Link key={slug} to={`/campaign/${slug}`} className='block py1' title={name}>
             <SquareAvatar size={38} avatar={avatar} name={name} />
             <div className='inline-block align-middle'>
