@@ -110,7 +110,7 @@ const FeedbackInput = React.createClass({
           focused={focused}
           disabled={!message || posting || !status || !campaign}
           onPost={onSubmit} >
-          <CampaignSelector onChange={onCampaignChange} campaigns={campaigns} />
+          <CampaignSelector contact={contact} onChange={onCampaignChange} campaigns={campaigns} />
         </PostBoxButtons>
       </div>
     )
