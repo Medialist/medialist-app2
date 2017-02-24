@@ -47,24 +47,21 @@ const ActivityFilter = React.createClass({
     const { open } = this.state
     const { selected } = this.props
     return (
-      <div className='flex'>
-        <Dropdown>
-          <div className='flex-none p3 pointer' onClick={toggleDropdown}>
-            <span className={`f-sm semibold ${open ? 'blue' : 'gray20'}`}>
-              {selected}
-              <ChevronDown />
-            </span>
-            <DropdownMenu arrowPosition={'30%'} style={dropdownStyle} open={open} onDismiss={toggleDropdown}>
-              <nav className='py1'>
-                {filterNames.map((filterName) => (
-                  <Filter key={filterName} name={filterName} selected={filterName === selected} onClick={() => this.onLinkClick(filterName)} />)
-                )}
-              </nav>
-            </DropdownMenu>
-          </div>
-        </Dropdown>
-        <hr className='flex-auto' style={{height: 1, margin: '25px 0 0 0'}} />
-      </div>
+      <Dropdown>
+        <div className='flex-none p3 pointer' onClick={toggleDropdown}>
+          <span className={`f-sm semibold ${open ? 'blue' : 'gray20'}`}>
+            {selected}
+            <ChevronDown />
+          </span>
+          <DropdownMenu arrowPosition={'30%'} style={dropdownStyle} open={open} onDismiss={toggleDropdown}>
+            <nav className='py1'>
+              {filterNames.map((filterName) => (
+                <Filter key={filterName} name={filterName} selected={filterName === selected} onClick={() => this.onLinkClick(filterName)} />)
+              )}
+            </nav>
+          </DropdownMenu>
+        </div>
+      </Dropdown>
     )
   }
 })
