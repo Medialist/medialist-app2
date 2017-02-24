@@ -32,21 +32,26 @@ const ActivityFeed = React.createClass({
 })
 
 const ActivityListContainer = createContainer((props) => {
-  const limit = props.limit || 10
+  const limit = props.limit || 20
   const typesForFilter = {
     'Top Activity': Posts.types,
     'Coverage': ['CoveragePost'],
     'Need To Know': ['NeedToKnowPost']
   }
-  const types = typesForFilter[props.filter]
-
-  Meteor.subscribe('campaign-favourites')
-  Meteor.subscribe('posts', { limit, types })
-  const query = {}
-  if (props.campaign) query.campaigns = props.campaign.slug
+  const types = typesForFilter[props.filter] || Posts.types
+  const subs = [
+    Meteor.subscribe('campaign-favourites'),
+    Meteor.subscribe('posts', { limit, types })
+  ]
+  const query = {
+    type: { $in: types }
+  }
+  if (props.campaign) query['campaigns.slug'] = props.campaign.slug
   if (props.contact) query['contacts.slug'] = props.contact.slug
   const items = Posts.find(query, { sort: { createdAt: -1 }, limit }).fetch()
+  const loading = subs.some((s) => !s.ready())
   return {
+    loading,
     currentUser: Meteor.user(),
     hideContact: !!props.contact,
     hideCampaign: !!props.campaign,
