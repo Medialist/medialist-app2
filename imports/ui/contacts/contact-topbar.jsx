@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react'
-import { browserHistory } from 'react-router'
+import BackButton from '../navigation/back-button'
 import AddContactsToCampaigns from './add-contacts-to-campaign'
-import { ChevronLeft } from '../images/icons'
 
 const ContactTopbar = React.createClass({
   propTypes: {
@@ -11,11 +10,6 @@ const ContactTopbar = React.createClass({
     onAddContactToCampaign: PropTypes.func.isRequired
   },
 
-  onBackClick (e) {
-    e.preventDefault()
-    browserHistory.go(-1)
-  },
-
   render () {
     const { contact, open, onDismiss, onAddContactToCampaign } = this.props
     if (!contact) return null
@@ -23,10 +17,7 @@ const ContactTopbar = React.createClass({
     return (
       <nav className='block bg-white mb4 flex items-center shadow-inset-2'>
         <div className='flex-auto'>
-          <a className='flex-none py4 pl6 gray40' href='#' onClick={this.onBackClick}>
-            <ChevronLeft className='align-middle' style={{marginTop: '-3px'}} />
-            <span className='align-middle ml1 bold'>Back</span>
-          </a>
+          <BackButton>Back</BackButton>
         </div>
         <div className='flex-none border-left border-gray80 px4 py3'>
           <button type='button' className='btn white bg-blue mx2' onClick={onAddContactToCampaign}>
