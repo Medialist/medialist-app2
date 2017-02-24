@@ -9,9 +9,9 @@ const PostBox = React.createClass({
     loading: PropTypes.bool.isRequired,
     contact: PropTypes.object,
     campaigns: PropTypes.array,
-    onFeedback: PropTypes.func,
-    onCoverage: PropTypes.func,
-    onNeedToKnow: PropTypes.func
+    onFeedback: PropTypes.func.isRequired,
+    onCoverage: PropTypes.func.isRequired,
+    onNeedToKnow: PropTypes.func.isRequired
   },
 
   getInitialState () {
@@ -188,9 +188,11 @@ const NeedToKnowInput = React.createClass({
     this.setState({message: evt.target.value})
   },
   onSubmit () {
-    const {message} = this.state
-    console.log('TODO: Posting "Need to Know"')
-    console.log({message})
+    this.setState({posting: true})
+    this.props.onSubmit(this.state, (err) => {
+      this.setState({message: '', posting: false})
+      if (err) console.error(err)
+    })
   },
   render () {
     const {onSubmit, onMessageChange} = this
@@ -212,7 +214,8 @@ const NeedToKnowInput = React.createClass({
           <button className='btn bg-transparent border-gray80 bold'>B</button>
           <button className='btn bg-transparent border-gray80 italic ml3'>i</button>
         </PostBoxButtons>
-      </div>)
+      </div>
+    )
   }
 })
 

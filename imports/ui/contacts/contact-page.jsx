@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react'
 import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
-import { createFeedbackPost, createCoveragePost } from '/imports/api/posts/methods'
+import { createFeedbackPost, createCoveragePost, createNeedToKnowPost } from '/imports/api/posts/methods'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import MasterLists from '/imports/api/master-lists/master-lists'
@@ -68,6 +68,11 @@ const ContactPage = React.createClass({
     createCoveragePost.call({contactSlug, campaignSlug, message, status}, cb)
   },
 
+  onNeedToKnow ({message}, cb) {
+    const contactSlug = this.props.contact.slug
+    createNeedToKnowPost.call({contactSlug, message}, cb)
+  },
+
   render () {
     const { contact, campaigns, user, masterlists, loading } = this.props
     const { editContactOpen, addContactModalOpen } = this.state
@@ -81,7 +86,14 @@ const ContactPage = React.createClass({
             <ContactInfo contact={contact} onEditClick={this.toggleEditContact} user={user} masterlists={masterlists} />
           </div>
           <div className='flex-auto px2' >
-            <PostBox contact={contact} campaigns={campaigns} onFeedback={this.onFeedback} onCoverage={this.onCoverage} loading={loading} />
+            <PostBox
+              loading={loading}
+              contact={contact}
+              campaigns={campaigns}
+              onFeedback={this.onFeedback}
+              onCoverage={this.onCoverage}
+              onNeedToKnow={this.onNeedToKnow}
+            />
             <ActivityFeed contact={contact} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
