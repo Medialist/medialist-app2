@@ -77,7 +77,6 @@ const FeedbackInput = React.createClass({
     const campaign = campaigns && campaigns[0]
     const contactRef = campaign && campaign.contacts[contact.slug]
     const status = contactRef || StatusMap.toContact
-    console.log({status, campaign})
     return {status, campaign, message: '', posting: false}
   },
   onMessageChange (evt) {
@@ -87,7 +86,6 @@ const FeedbackInput = React.createClass({
     this.setState({campaign: campaign})
   },
   onStatusChange (status) {
-    console.log({status: status})
     this.setState({status: status})
   },
   onSubmit () {
@@ -105,7 +103,7 @@ const FeedbackInput = React.createClass({
     return (
       <div>
         <PostBoxtTextArea
-          placeholder={`What's happening with ${name}?`}
+          placeholder={`What's happening with ${name || 'this contact'}?`}
           value={message}
           focused={focused}
           disabled={posting}
@@ -122,6 +120,7 @@ const FeedbackInput = React.createClass({
   }
 })
 
+// Defaults the status to completed. User can change it.
 const CoverarageInput = React.createClass({
   propTypes: {
     contact: PropTypes.object.isRequired,
@@ -130,7 +129,13 @@ const CoverarageInput = React.createClass({
     onSubmit: PropTypes.func.isRequired
   },
   getInitialState () {
-    return {message: '', posting: false}
+    const { campaigns } = this.props
+    const campaign = campaigns && campaigns[0]
+    const status = StatusMap.completed
+    return {status, campaign, message: '', posting: false}
+  },
+  onStatusChange (status) {
+    this.setState({status: status})
   },
   onMessageChange (evt) {
     this.setState({message: evt.target.value})
@@ -146,14 +151,14 @@ const CoverarageInput = React.createClass({
     })
   },
   render () {
-    const {onMessageChange, onCampaignChange, onSubmit} = this
+    const {onCampaignChange, onStatusChange, onMessageChange, onSubmit} = this
     const {focused, contact, campaigns} = this.props
-    const {message, campaign, posting} = this.state
-    const name = contact && contact.name && contact.name.split(' ')[0] || 'you'
+    const {message, posting, status, campaign} = this.state
+    const name = contact && contact.name && contact.name.split(' ')[0]
     return (
       <div>
         <PostBoxtTextArea
-          placeholder={`Did ${name} post any coverage?`}
+          placeholder={`Has ${name || 'this contact'} shared any coverage?`}
           value={message}
           focused={focused}
           disabled={posting}
@@ -162,7 +167,8 @@ const CoverarageInput = React.createClass({
           focused={focused}
           disabled={!message || posting || !campaign}
           onPost={onSubmit} >
-          <CampaignSelector onChange={onCampaignChange} campaigns={campaigns} />
+          <CampaignSelector contact={contact} onChange={onCampaignChange} campaigns={campaigns} />
+          <StatusSelector status={status} onChange={onStatusChange} border />
         </PostBoxButtons>
       </div>
     )
