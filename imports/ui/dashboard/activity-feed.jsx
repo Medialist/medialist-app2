@@ -17,25 +17,35 @@ const ActivityFeed = React.createClass({
   },
 
   getInitialState () {
-    return { filterName: 'Top Activity' }
+    return {
+      filterName: 'Top Activity',
+      campaignName: null
+    }
   },
 
   onFilterChange (filterName) {
     this.setState({ filterName })
   },
 
+  onCampaignFilter (campaignName) {
+    this.setState({ campaignName })
+  },
+
   render () {
-    const { loading, items, campaign, campaigns, contact } = this.props
-    const { filterName } = this.state
+    const { loading, items, campaign, contact, campaigns } = this.props
+    const { filterName, campaignName } = this.state
+    let filteredItems = campaignName ? items.filter((item) => {
+      return item.campaigns.some((campaigns) => campaigns.name === campaignName)
+    }) : items
     return (
       <div>
         <div className='flex items-center'>
           <ActivityFilter selected={filterName} onChange={this.onFilterChange} />
           <span>|</span>
-          <CampaignFilter loading={loading} contact={contact} campaigns={campaigns} />
+          <CampaignFilter loading={loading} contact={contact} selected={campaignName} campaigns={campaigns} onCampaignFilter={this.onCampaignFilter} />
           <hr className='flex-auto pl2' style={{height: 1}} />
         </div>
-        <ActivityList items={items} filter={filterName} campaign={campaign} contact={contact} />
+        <ActivityList items={filteredItems} filter={filterName} campaign={campaign} contact={contact} />
       </div>
     )
   }
