@@ -5,6 +5,7 @@ import { createFeedbackPost, createCoveragePost, createNeedToKnowPost } from '/i
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import MasterLists from '/imports/api/master-lists/master-lists'
+import Posts from '/imports/api/posts/posts'
 import { createContainer } from 'meteor/react-meteor-data'
 import ContactTopbar from './contact-topbar'
 import ContactInfo from './contact-info'
@@ -20,6 +21,7 @@ const ContactPage = React.createClass({
     contact: PropTypes.object,
     user: PropTypes.object,
     masterlists: PropTypes.array,
+    needToKnows: PropTypes.array,
     loading: PropTypes.bool.isRequired
   },
 
@@ -74,7 +76,7 @@ const ContactPage = React.createClass({
   },
 
   render () {
-    const { contact, campaigns, user, masterlists, loading } = this.props
+    const { contact, campaigns, user, masterlists, needToKnows, loading } = this.props
     const { editContactOpen, addContactModalOpen } = this.state
     const { onDismissAddContactToCampaign, onAddContactToCampaign } = this
     if (!contact) return null
@@ -110,87 +112,19 @@ export default createContainer((props) => {
   const { contactSlug } = props.params
   const subs = [
     Meteor.subscribe('contact', contactSlug),
-    Meteor.subscribe('campaigns')
+    Meteor.subscribe('campaigns'),
+    Meteor.subscribe('need-to-knows', {
+      contact: contactSlug
+    })
   ]
   const contact = Contacts.findOne({ slug: contactSlug })
   const campaigns = contact ? Campaigns.find({ slug: { $in: contact.campaigns } }).fetch() : []
   const user = Meteor.user()
   const masterlists = MasterLists.find({type: 'Contacts'}).fetch()
+  const needToKnows = Posts.find(
+    { type: 'NeedToKnowPost', 'contacts.slug': contactSlug },
+    { sort: { createdAt: -1 } }
+  ).fetch()
   const loading = subs.some((s) => !s.ready())
-  return { ...props, contact, campaigns, user, masterlists, loading }
+  return { ...props, contact, campaigns, user, masterlists, needToKnows, loading }
 }, withRouter(ContactPage))
-
-const needToKnows = [
-  {
-    message: 'Don\'t contact Erik via phone!! He will only respond to emails.',
-    createdAt: new Date(),
-    createdBy: {
-      name: 'Shane Hickey',
-      avatar: 'https://pbs.twimg.com/profile_images/3573378367/18acf749cba48ef23425bf2ee361c413_normal.jpeg'
-    }
-  },
-  {
-    message: 'Had coffee with Will this morning. Stuff.tv is looking for start-up stories for its new business section.',
-    createdAt: new Date(),
-    createdBy: {
-      name: 'Charlotte Meredith',
-      avatar: 'https://pbs.twimg.com/profile_images/662436626975563776/xkXgN7zJ_normal.jpg'
-    }
-  },
-  {
-    message: 'Weekend is sacred to him. Don\'t even try.',
-    createdAt: new Date(),
-    createdBy: {
-      name: 'Sarah Marshall',
-      avatar: 'https://pbs.twimg.com/profile_images/687648874241069056/Hjv0KpcX_normal.jpg'
-    }
-  },
-  {
-    message: 'Don\'t contact Erik via phone!! He will only respond to emails.',
-    createdAt: new Date(),
-    createdBy: {
-      name: 'Shane Hickey',
-      avatar: 'https://pbs.twimg.com/profile_images/3573378367/18acf749cba48ef23425bf2ee361c413_normal.jpeg'
-    }
-  },
-  {
-    message: 'Had coffee with Will this morning. Stuff.tv is looking for start-up stories for its new business section.',
-    createdAt: new Date(),
-    createdBy: {
-      name: 'Charlotte Meredith',
-      avatar: 'https://pbs.twimg.com/profile_images/662436626975563776/xkXgN7zJ_normal.jpg'
-    }
-  },
-  {
-    message: 'Weekend is sacred to him. Don\'t even try.',
-    createdAt: new Date(),
-    createdBy: {
-      name: 'Sarah Marshall',
-      avatar: 'https://pbs.twimg.com/profile_images/687648874241069056/Hjv0KpcX_normal.jpg'
-    }
-  },
-  {
-    message: 'Don\'t contact Erik via phone!! He will only respond to emails.',
-    createdAt: new Date(),
-    createdBy: {
-      name: 'Shane Hickey',
-      avatar: 'https://pbs.twimg.com/profile_images/3573378367/18acf749cba48ef23425bf2ee361c413_normal.jpeg'
-    }
-  },
-  {
-    message: 'Had coffee with Will this morning. Stuff.tv is looking for start-up stories for its new business section.',
-    createdAt: new Date(),
-    createdBy: {
-      name: 'Charlotte Meredith',
-      avatar: 'https://pbs.twimg.com/profile_images/662436626975563776/xkXgN7zJ_normal.jpg'
-    }
-  },
-  {
-    message: 'Weekend is sacred to him. Don\'t even try.',
-    createdAt: new Date(),
-    createdBy: {
-      name: 'Sarah Marshall',
-      avatar: 'https://pbs.twimg.com/profile_images/687648874241069056/Hjv0KpcX_normal.jpg'
-    }
-  }
-]
