@@ -19,7 +19,7 @@ Posts.types = [
   'NeedToKnowPost',
   'CreateCampaign',
   'AddContactsToCampaign',
-  'CampaignChanged'
+  'StatusUpdate'
 ]
 
 Posts.feedLimit = {
