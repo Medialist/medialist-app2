@@ -13,8 +13,8 @@ import {
   FeedNeedToKnowIcon
 } from '../images/icons'
 
-const Post = ({icon, summary, details, createdBy, createdAt, currentUser}) => (
-  <article className='flex rounded bg-white px4 pt3 pb2 mb2 shadow-2'>
+const Post = ({icon, summary, details, createdBy, createdAt, currentUser, bgClass = 'bg-white'}) => (
+  <article className={`flex rounded px4 pt3 pb2 mb2 shadow-2 ${bgClass}`}>
     <div className='flex-none' style={{paddingTop: 1}}>
       <CircleAvatar size={38} avatar={createdBy.avatar} name={createdBy.name} style={{marginRight: 13}} />
       {icon}
@@ -106,11 +106,12 @@ export const CoveragePost = ({item, currentUser, hideContact, hideCampaign}) => 
 export const NeedToKnowPost = ({item, currentUser, hideContact}) => (
   <Post
     {...item}
+    bgClass='bg-yellow-lighter'
     currentUser={currentUser}
     icon={<FeedNeedToKnowIcon className='orange' />}
-    summary={<PostSummary {...item} label='shared a need-to-know' hideContact={hideContact} />}
+    summary='shared a need-to-know'
     details={
-      <div className='border-gray80 border-top py3'>
+      <div className='border-gray80 border-top py3 gray10'>
         {item.message}
       </div>
     }
