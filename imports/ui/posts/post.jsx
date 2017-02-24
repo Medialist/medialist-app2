@@ -62,16 +62,18 @@ const PostSummary = ({label, campaigns, contacts, status, hideContact, hideCampa
           <ContactLink {...contacts[0]} />
         </span>
       )}
-      { !hideCampaign && campaigns && (
+      { !hideCampaign && campaigns && campaigns[0] && (
         <span>
           <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
           <CampaignLink {...campaigns[0]} />
         </span>
       )}
     </span>
-    <span className='flex-none align-middle'>
-      <Status status={status} />
-    </span>
+    { status && (
+      <span className='flex-none align-middle'>
+        <Status status={status} />
+      </span>
+    )}
   </span>
 )
 
@@ -109,7 +111,7 @@ export const NeedToKnowPost = ({item, currentUser, hideContact}) => (
     bgClass='bg-yellow-lighter'
     currentUser={currentUser}
     icon={<FeedNeedToKnowIcon className='orange' />}
-    summary='shared a need-to-know'
+    summary={<PostSummary {...item} label='shared a need-to-know' hideContact={hideContact} />}
     details={
       <div className='border-gray80 border-top py3 gray10'>
         {item.message}
