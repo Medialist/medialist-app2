@@ -4,7 +4,6 @@ import BackButton from '../navigation/back-button'
 const Topbar = React.createClass({
   propTypes: {
     backLinkText: PropTypes.string,
-    onBackClick: PropTypes.func,
     children: PropTypes.node
   },
 
@@ -13,11 +12,10 @@ const Topbar = React.createClass({
   },
 
   render () {
-    const { onBackClick } = this
     const { backLinkText, children } = this.props
     return (
       <nav className='block bg-white mb4 flex items-center width-100'>
-        <BackButton onClick={onBackClick}>{backLinkText}</BackButton>
+        <BackButton>{backLinkText}</BackButton>
         <span className='flex-none inline-block'>{children}</span>
       </nav>
     )

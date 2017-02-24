@@ -5,7 +5,6 @@ import BackButton from '../navigation/back-button'
 const CampaignTopbar = React.createClass({
   propTypes: {
     backLinkText: PropTypes.string,
-    onBackClick: PropTypes.func,
     campaign: PropTypes.object,
     onAddContactClick: PropTypes.func.isRequired
   },
@@ -17,11 +16,11 @@ const CampaignTopbar = React.createClass({
   },
 
   render () {
-    const { backLinkText, campaign, onAddContactClick, onBackClick } = this.props
+    const { backLinkText, campaign, onAddContactClick } = this.props
     return (
       <nav className='block bg-white mb4 flex items-center width-100 border-gray80 border-bottom'>
         <div className='flex-auto'>
-          <BackButton onClick={onBackClick}>{backLinkText}</BackButton>
+          <BackButton>{backLinkText}</BackButton>
         </div>
         <div className='flex-none'>
           <div className='inline-block border-gray80 border-right'>
