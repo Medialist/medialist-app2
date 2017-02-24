@@ -1,7 +1,7 @@
 import React from 'react'
 import { TimeFromNow } from '../time/time'
 import { SquareAvatar } from '../images/avatar.jsx'
-import Status from '../feedback/status-label'
+import StatusLabel from '../feedback/status-label'
 
 export default (props) => {
   const { name, avatar, client, contacts, updatedAt } = props.campaign
@@ -17,8 +17,13 @@ export default (props) => {
         </div>
       </div>
       <div className='flex-none' style={{width: 173}}>
-        {slug ? <Status name={contacts[slug]} /> : null}
+        <Status name={contacts[slug]} />
       </div>
     </div>
   )
+}
+
+const Status = ({ name }) => {
+  if (!name) return null
+  return <StatusLabel name={name} />
 }

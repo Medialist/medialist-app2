@@ -7,7 +7,7 @@ import StatusDot from '../feedback/status-dot'
 const CampaignFilter = React.createClass({
   propTypes: {
     loading: PropTypes.bool.isRequired,
-    contact: PropTypes.object.isRequired,
+    contact: PropTypes.object,
     campaigns: PropTypes.array.isRequired,
     onCampaignFilter: PropTypes.func.isRequired
   },

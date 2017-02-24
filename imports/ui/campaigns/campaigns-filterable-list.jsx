@@ -12,7 +12,7 @@ const CampaignsFilterableList = React.createClass({
     contact: PropTypes.object,
     campaigns: PropTypes.array,
     onFilter: PropTypes.func.isRequired,
-    onClearFilter: PropTypes.func.isRequired
+    onClearFilter: PropTypes.func
   },
   getInitialState () {
     return { filteredCampaigns: this.props.campaigns || [] }
@@ -28,16 +28,26 @@ const CampaignsFilterableList = React.createClass({
   render () {
     const { onFilter, contact, onClearFilter } = this.props
     const { filteredCampaigns } = this.state
-    const styleOverrides = {borderTop: 'solid 0px', borderRight: 'solid 0px', borderLeft: 'solid 0px'}
+    const styleOverrides = {
+      backgroundColor: 'white',
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      borderTop: 'solid 0px',
+      borderRight: 'solid 0px',
+      borderLeft: 'solid 0px'
+    }
     return (
-      <nav className='overflow-scroll' style={{maxHeight: 331}}>
+      <nav className='overflow-scroll' style={{maxHeight: 377}}>
         <SearchBox onTermChange={this.onTermChange} placeholder='Search campaigns' style={styleOverrides} />
-        <div className='f-sm semibold p3 bg-gray90 border-bottom border-gray80 pointer' onClick={onClearFilter}>All campaigns ({filteredCampaigns.length})</div>
-        {filteredCampaigns.map((item, i) => (
-          <div key={item._id} className={`px3 py2 pointer border-transparent border-bottom ${i !== 0 ? 'border-top' : ''} hover-bg-gray90 hover-border-gray80`} onClick={() => onFilter(item)}>
-            <Campaign campaign={item} contact={contact} />
-          </div>
-        ))}
+        <div className='absolute left-0 right-0 f-sm semibold p3 bg-gray90 border-bottom border-gray80 pointer' style={{top: 51}} onClick={onClearFilter}>All campaigns ({filteredCampaigns.length})</div>
+        <div style={{paddingTop: 42}}>
+          {filteredCampaigns.map((item, i) => (
+            <div key={item._id} className={`px3 py2 pointer border-transparent border-bottom ${i !== 0 ? 'border-top' : ''} hover-bg-gray90 hover-border-gray80`} onClick={() => onFilter(item)}>
+              <Campaign campaign={item} contact={contact} />
+            </div>
+          ))}
+        </div>
       </nav>
     )
   }

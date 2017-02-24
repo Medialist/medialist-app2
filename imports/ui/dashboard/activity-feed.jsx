@@ -35,7 +35,7 @@ const ActivityFeed = React.createClass({
     const { loading, items, campaign, contact, campaigns } = this.props
     const { filterName, campaignName } = this.state
     let filteredItems = campaignName ? items.filter((item) => {
-      return item.campaigns.some((campaigns) => campaigns.name === campaignName)
+      return item.campaigns && item.campaigns.some((campaigns) => campaigns.name === campaignName)
     }) : items
     return (
       <div>

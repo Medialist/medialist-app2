@@ -32,17 +32,21 @@ const CampaignSelector = React.createClass({
     this.setState({open: false, campaign: campaign})
     this.props.onChange(campaign)
   },
+  onClearFilter () {
+    this.props.onChange(null)
+  },
   render () {
+    const { onLinkClick, closeDropdown, openDropdown, onClearFilter } = this
     const { campaign } = this.state
     const { contact, campaigns } = this.props
     return (
       <div className='inline-block'>
         <Dropdown>
-          <button className='btn bg-transparent border-gray80' onClick={this.openDropdown} disabled={!campaigns.length}>
+          <button className='btn bg-transparent border-gray80' onClick={openDropdown} disabled={!campaigns.length}>
             { campaign ? <CampaignButton campaign={campaign} /> : 'Select a Campaign' }
           </button>
-          <DropdownMenu left={-73} width={573} open={this.state.open} onDismiss={this.closeDropdown}>
-            <CampaignsFilterableList contact={contact} campaigns={campaigns} onClick={this.onLinkClick} />
+          <DropdownMenu left={-73} width={573} open={this.state.open} onDismiss={closeDropdown}>
+            <CampaignsFilterableList contact={contact} campaigns={campaigns} onFilter={onLinkClick} onClearFilter={onClearFilter} />
           </DropdownMenu>
         </Dropdown>
       </div>
