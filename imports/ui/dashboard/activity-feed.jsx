@@ -49,11 +49,11 @@ const ActivityFeedContainer = createContainer((props) => {
     'Need To Know': ['NeedToKnowPost']
   }
   const types = typesForFilter[props.filter]
-
+  const campaignSlugs = props.contact && props.contact.campaigns || []
   const subs = [
     Meteor.subscribe('campaign-favourites'),
     Meteor.subscribe('posts', { limit, types }),
-    Meteor.subscribe('campaigns-by-slug', props.contact.campaigns)
+    Meteor.subscribe('campaigns-by-slug', campaignSlugs)
   ]
   const loading = subs.some((s) => !s.ready())
   const query = {}

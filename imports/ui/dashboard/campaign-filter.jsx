@@ -22,6 +22,7 @@ const CampaignFilter = React.createClass({
   },
   onFilter (campaign) {
     console.log('filter by', campaign.slug)
+    this.setState(({open}) => ({open: false}))
   },
   render () {
     const { open } = this.state

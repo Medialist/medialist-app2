@@ -5,7 +5,7 @@ import Status from '../feedback/status-label'
 
 export default (props) => {
   const { name, avatar, client, contacts, updatedAt } = props.campaign
-  const { slug } = props.contact
+  const slug = props.contact ? props.contact.slug : null
   return (
     <div className='flex items-center'>
       <SquareAvatar avatar={avatar} name={name} />
@@ -17,7 +17,7 @@ export default (props) => {
         </div>
       </div>
       <div className='flex-none' style={{width: 173}}>
-        <Status name={contacts[slug]} />
+        {slug ? <Status name={contacts[slug]} /> : null}
       </div>
     </div>
   )
