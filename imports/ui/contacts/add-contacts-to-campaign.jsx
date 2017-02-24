@@ -40,8 +40,6 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
       children
     } = this.props
 
-    console.log('AddContactsToCampaigns', campaigns, 'contacts', contacts)
-
     const { onChange, onKeyPress } = this
 
     return (
