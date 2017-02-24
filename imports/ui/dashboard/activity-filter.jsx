@@ -1,17 +1,23 @@
 import React, { PropTypes } from 'react'
-import Dropdown from 'rebass/dist/Dropdown'
-import DropdownMenu from '../lists/dropdown-menu'
-import { AllTypesIcon, FeedCoverageIcon, FeedNeedToKnowIcon, ChevronDown } from '../images/icons'
-
-const dropdownStyle = { width: 180 }
+import { Dropdown, DropdownMenu } from '../navigation/dropdown'
+import {
+  AllTypesIcon,
+  FeedFeedbackIcon,
+  FeedCoverageIcon,
+  FeedNeedToKnowIcon,
+  StatusUpdateIcon,
+  ChevronDown
+} from '../images/icons'
 
 const iconMap = {
-  'Top Activity': AllTypesIcon,
+  'All Activity': AllTypesIcon,
+  'Feedback': FeedFeedbackIcon,
   'Coverage': FeedCoverageIcon,
-  'Need To Know': FeedNeedToKnowIcon
+  'Need-to-knows': FeedNeedToKnowIcon,
+  'Updates': StatusUpdateIcon
 }
 
-const filterNames = Object.keys(iconMap)
+export const filterNames = Object.keys(iconMap)
 
 const Filter = ({name, selected, onClick}) => {
   const Icon = iconMap[name]
@@ -54,7 +60,7 @@ const ActivityFilter = React.createClass({
               {selected}
               <ChevronDown />
             </span>
-            <DropdownMenu arrowPosition={'30%'} style={dropdownStyle} open={open} onDismiss={toggleDropdown}>
+            <DropdownMenu width={213} open={open} onDismiss={toggleDropdown}>
               <nav className='py1'>
                 {filterNames.map((filterName) => (
                   <Filter key={filterName} name={filterName} selected={filterName === selected} onClick={() => this.onLinkClick(filterName)} />)

@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
 import ActivityList from './activity-list'
-import ActivityFilter from './activity-filter'
+import ActivityFilter, { filterNames } from './activity-filter'
 import Posts from '/imports/api/posts/posts'
 
 const ActivityFeed = React.createClass({
@@ -12,7 +12,7 @@ const ActivityFeed = React.createClass({
   },
 
   getInitialState () {
-    return { filterName: 'Top Activity' }
+    return { filterName: filterNames[0] }
   },
 
   onFilterChange (filterName) {
@@ -34,9 +34,11 @@ const ActivityFeed = React.createClass({
 const ActivityListContainer = createContainer((props) => {
   const limit = props.limit || 20
   const typesForFilter = {
-    'Top Activity': Posts.types,
+    'All Activity': Posts.types,
+    'Feedback': ['FeedbackPost'],
     'Coverage': ['CoveragePost'],
-    'Need To Know': ['NeedToKnowPost']
+    'Need-to-knows': ['NeedToKnowPost'],
+    'Updates': ['StatusUpdate']
   }
   const types = typesForFilter[props.filter] || Posts.types
   const subs = [
