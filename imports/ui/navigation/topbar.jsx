@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import { browserHistory } from 'react-router'
+import BackButton from '../navigation/back-button'
 
 const Topbar = React.createClass({
   propTypes: {
@@ -12,17 +12,12 @@ const Topbar = React.createClass({
     return { backLinkText: 'Back' }
   },
 
-  onBackClick () {
-    if (this.props.onBackClick) return this.props.onBackClick()
-    browserHistory.go(-1)
-  },
-
   render () {
     const { onBackClick } = this
     const { backLinkText, children } = this.props
     return (
       <nav className='block bg-white mb4 flex items-center width-100'>
-        <span className='flex-auto pointer inline-block p4' onClick={onBackClick}>{`◀ ${backLinkText}`}</span>
+        <BackButton onClick={onBackClick}>{backLinkText}</BackButton>
         <span className='flex-none inline-block'>{children}</span>
       </nav>
     )
