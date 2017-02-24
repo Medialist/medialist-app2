@@ -26,16 +26,23 @@ const CampaignFilter = React.createClass({
   onFilter (campaign) {
     const { contact, campaigns } = this.props
     const name = campaigns.filter((c) => c.slug === campaign.slug).pop().name
-    const status = campaign.contacts[contact.slug]
+    const status = contact ? campaign.contacts[contact.slug] : null
     this.props.onCampaignFilter(name)
     this.setState({
       open: false,
       selectedFilter: { status, name }
     })
   },
+  onClearFilter () {
+    this.props.onCampaignFilter(null)
+    this.setState({
+      open: false,
+      selectedFilter: null
+    })
+  },
   render () {
     const { open, selectedFilter } = this.state
-    const { openDropDown, closeDropdown, onFilter } = this
+    const { openDropDown, closeDropdown, onFilter, onClearFilter } = this
     const { loading, contact, campaigns } = this.props
 
     return (
@@ -43,7 +50,7 @@ const CampaignFilter = React.createClass({
         <div className='flex-none p3 pointer' onClick={openDropDown}>
           {selectedFilter ? (
             <span className='f-sm semibold flex items-center'>
-              <StatusDot name={selectedFilter.status} size={9} />
+              {selectedFilter.status && <StatusDot name={selectedFilter.status} size={9} style={{marginTop: 1}} />}
               <div className='ml1'>{selectedFilter.name}</div>
               <ChevronDown />
             </span>
@@ -52,7 +59,7 @@ const CampaignFilter = React.createClass({
           )}
         </div>
         <DropdownMenu left={-73} width={573} open={open} onDismiss={closeDropdown}>
-          {loading ? null : <CampaignsFilterableList contact={contact} campaigns={campaigns} onClick={onFilter} />}
+          {loading ? null : <CampaignsFilterableList contact={contact} campaigns={campaigns} onFilter={onFilter} onClearFilter={onClearFilter} />}
         </DropdownMenu>
       </Dropdown>
     )

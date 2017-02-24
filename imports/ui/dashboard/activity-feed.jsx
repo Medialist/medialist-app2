@@ -41,7 +41,7 @@ const ActivityFeed = React.createClass({
       <div>
         <div className='flex items-center'>
           <ActivityFilter selected={filterName} onChange={this.onFilterChange} />
-          <span>|</span>
+          <span className='gray80'>|</span>
           <CampaignFilter loading={loading} contact={contact} selected={campaignName} campaigns={campaigns} onCampaignFilter={this.onCampaignFilter} />
           <hr className='flex-auto pl2' style={{height: 1}} />
         </div>
