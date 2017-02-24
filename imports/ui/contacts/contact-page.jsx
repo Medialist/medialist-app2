@@ -19,7 +19,8 @@ const ContactPage = React.createClass({
     campaigns: PropTypes.array,
     contact: PropTypes.object,
     user: PropTypes.object,
-    masterlists: PropTypes.array
+    masterlists: PropTypes.array,
+    loading: PropTypes.bool.isRequired
   },
 
   getInitialState () {
@@ -57,6 +58,7 @@ const ContactPage = React.createClass({
   onFeedback ({message, campaign, status}, cb) {
     const contactSlug = this.props.contact.slug
     const campaignSlug = campaign.slug
+    console.log({contactSlug, campaignSlug, message, status})
     createFeedbackPost.call({contactSlug, campaignSlug, message, status}, cb)
   },
 
@@ -67,7 +69,7 @@ const ContactPage = React.createClass({
   },
 
   render () {
-    const { contact, campaigns, user, masterlists } = this.props
+    const { contact, campaigns, user, masterlists, loading } = this.props
     const { editContactOpen, addContactModalOpen } = this.state
     const { onDismissAddContactToCampaign, onAddContactToCampaign } = this
     if (!contact) return null
@@ -79,7 +81,7 @@ const ContactPage = React.createClass({
             <ContactInfo contact={contact} onEditClick={this.toggleEditContact} user={user} masterlists={masterlists} />
           </div>
           <div className='flex-auto px2' >
-            <PostBox contact={contact} campaigns={campaigns} onFeedback={this.onFeedback} onCoverage={this.onCoverage} />
+            <PostBox contact={contact} campaigns={campaigns} onFeedback={this.onFeedback} onCoverage={this.onCoverage} loading={loading} />
             <ActivityFeed contact={contact} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
@@ -94,13 +96,16 @@ const ContactPage = React.createClass({
 
 export default createContainer((props) => {
   const { contactSlug } = props.params
-  Meteor.subscribe('contact', contactSlug)
-  Meteor.subscribe('campaigns')
+  const subs = [
+    Meteor.subscribe('contact', contactSlug),
+    Meteor.subscribe('campaigns')
+  ]
   const contact = Contacts.findOne({ slug: contactSlug })
   const campaigns = contact ? Campaigns.find({ slug: { $in: contact.campaigns } }).fetch() : []
   const user = Meteor.user()
   const masterlists = MasterLists.find({type: 'Contacts'}).fetch()
-  return { ...props, contact, campaigns, user, masterlists }
+  const loading = subs.some((s) => !s.ready())
+  return { ...props, contact, campaigns, user, masterlists, loading }
 }, withRouter(ContactPage))
 
 const needToKnows = [

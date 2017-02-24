@@ -1,12 +1,14 @@
 import React, { PropTypes } from 'react'
+import StatusMap from '/imports/api/contacts/status'
 import CampaignSelector from './campaign-selector'
+import StatusSelector from './status-selector.jsx'
 import { FeedbackTab, CoverageTab, NeedToKnowTab, PostBoxTabs } from '../feedback/post-box-nav'
 
 const PostBox = React.createClass({
   propTypes: {
-    campaigns: PropTypes.array,
+    loading: PropTypes.bool.isRequired,
     contact: PropTypes.object,
-    contacts: PropTypes.array,
+    campaigns: PropTypes.array,
     onFeedback: PropTypes.func,
     onCoverage: PropTypes.func,
     onNeedToKnow: PropTypes.func
@@ -17,10 +19,10 @@ const PostBox = React.createClass({
   },
 
   render () {
-    const { contact, contacts, campaigns, onFeedback, onCoverage, onNeedToKnow } = this.props
+    const { contact, campaigns, onFeedback, onCoverage, onNeedToKnow, loading } = this.props
     const { selected, focused } = this.state
-    const childProps = { focused, contact, contacts }
-
+    const childProps = { focused, contact }
+    if (!contact || loading) return null
     return (
       <div className='mb2' onFocus={() => this.setState({focused: true})}>
         <PostBoxTabs>
@@ -44,7 +46,7 @@ export const PostBoxtTextArea = ({placeholder, value, focused, disabled, onChang
   <textarea
     rows={focused ? '3' : '1'}
     className='textarea mb1'
-    style={{border: '0 none', overflowY: 'scroll', resize: 'none', paddingLeft: '3px'}}
+    style={{border: '0 none', overflowY: 'auto', resize: 'none', paddingLeft: '3px'}}
     placeholder={placeholder}
     onChange={onChange}
     value={value}
@@ -71,8 +73,12 @@ const FeedbackInput = React.createClass({
     onSubmit: PropTypes.func.isRequired
   },
   getInitialState () {
-    const campaign = this.props.campaigns && this.props.campaigns[0]
-    return {message: '', status: null, campaign, posting: false}
+    const { contact, campaigns } = this.props
+    const campaign = campaigns && campaigns[0]
+    const contactRef = campaign && campaign.contacts[contact.slug]
+    const status = contactRef || StatusMap.toContact
+    console.log({status, campaign})
+    return {status, campaign, message: '', posting: false}
   },
   onMessageChange (evt) {
     this.setState({message: evt.target.value})
@@ -81,6 +87,7 @@ const FeedbackInput = React.createClass({
     this.setState({campaign: campaign})
   },
   onStatusChange (status) {
+    console.log({status: status})
     this.setState({status: status})
   },
   onSubmit () {
@@ -90,18 +97,15 @@ const FeedbackInput = React.createClass({
       if (err) console.error(err)
     })
   },
-  isValid () {
-    return !!(this.state.status && this.state.campaign)
-  },
   render () {
-    const {onCampaignChange, onMessageChange, onSubmit} = this
+    const {onCampaignChange, onStatusChange, onMessageChange, onSubmit} = this
     const {focused, contact, campaigns} = this.props
     const {message, posting, status, campaign} = this.state
     const name = contact && contact.name && contact.name.split(' ')[0]
     return (
       <div>
         <PostBoxtTextArea
-          placeholder={contact ? `Any updates on ${name}'s work?` : `What's happening with this campaign?`}
+          placeholder={`What's happening with ${name}?`}
           value={message}
           focused={focused}
           disabled={posting}
@@ -111,6 +115,7 @@ const FeedbackInput = React.createClass({
           disabled={!message || posting || !status || !campaign}
           onPost={onSubmit} >
           <CampaignSelector contact={contact} onChange={onCampaignChange} campaigns={campaigns} />
+          <StatusSelector status={status} onChange={onStatusChange} border />
         </PostBoxButtons>
       </div>
     )
