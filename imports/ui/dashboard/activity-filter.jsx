@@ -1,17 +1,25 @@
 import React, { PropTypes } from 'react'
-import Dropdown from 'rebass/dist/Dropdown'
-import DropdownMenu from '../lists/dropdown-menu'
-import { AllTypesIcon, FeedCoverageIcon, FeedNeedToKnowIcon, ChevronDown } from '../images/icons'
+import { Dropdown, DropdownMenu } from '../navigation/dropdown'
+import {
+  AllTypesIcon,
+  FeedFeedbackIcon,
+  FeedCoverageIcon,
+  FeedNeedToKnowIcon,
+  StatusUpdateIcon,
+  ChevronDown
+} from '../images/icons'
+
+const iconMap = {
+  'All Activity': AllTypesIcon,
+  'Feedback': FeedFeedbackIcon,
+  'Coverage': FeedCoverageIcon,
+  'Need-to-knows': FeedNeedToKnowIcon,
+  'Updates': StatusUpdateIcon
+}
 
 const dropdownStyle = { width: 180 }
 
-const iconMap = {
-  'Top Activity': AllTypesIcon,
-  'Coverage': FeedCoverageIcon,
-  'Need To Know': FeedNeedToKnowIcon
-}
-
-const filterNames = Object.keys(iconMap)
+export const filterNames = Object.keys(iconMap)
 
 const Filter = ({name, selected, onClick}) => {
   const Icon = iconMap[name]

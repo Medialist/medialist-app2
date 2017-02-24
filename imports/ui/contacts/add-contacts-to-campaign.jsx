@@ -35,7 +35,6 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
       title,
       term,
       campaigns,
-      contacts,
       onAdd,
       children
     } = this.props

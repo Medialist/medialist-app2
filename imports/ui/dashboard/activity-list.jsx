@@ -1,8 +1,10 @@
 import React, { PropTypes } from 'react'
+import Loading from '../lists/loading'
 import * as PostMap from '../posts/post'
 
 const ActivityList = React.createClass({
   propTypes: {
+    loading: PropTypes.bool.isRequired,
     currentUser: PropTypes.object,
     items: PropTypes.array.isRequired,
     hideContact: PropTypes.bool,
@@ -10,8 +12,8 @@ const ActivityList = React.createClass({
   },
 
   render () {
-    const { items, currentUser, hideContact, hideCampaign } = this.props
-    if (!items.length) return <p className='p4 mb2 f-xl semibold center'>No items yet</p>
+    const { items, currentUser, hideContact, hideCampaign, loading } = this.props
+    if (!loading && !items.length) return <p className='p4 mb2 f-xl semibold center'>No items yet</p>
     return (
       <div>
         {items.map((item) => {
@@ -30,6 +32,7 @@ const ActivityList = React.createClass({
             />
           )
         })}
+        { loading && <div className='center p4'><Loading /></div> }
       </div>
     )
   }

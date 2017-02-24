@@ -12,9 +12,10 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
   const createdBy = findOneUserRef(userId)
   const createdAt = new Date()
   const post = {
+    // Feedback without a message is rendered as a different post type.
+    type: message ? type : 'StatusUpdate',
     contacts: Contacts.findRefs({contactSlugs: [contactSlug]}),
     campaigns: Campaigns.findRefs({campaignSlugs: [campaignSlug]}),
-    type,
     status,
     message,
     createdBy,
@@ -58,7 +59,7 @@ const FeedbackOrCoverageSchema = new SimpleSchema([
   {
     contactSlug: { type: String },
     campaignSlug: { type: String },
-    message: { type: String }
+    message: { type: String, optional: true }
   },
   StatusSchema
 ])
@@ -144,3 +145,4 @@ export const createNeedToKnowPost = new ValidatedMethod({
     })
   }
 })
+

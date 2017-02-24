@@ -36,12 +36,9 @@ Meteor.publish('need-to-knows', function (opts) {
 
   var query = {
     'contacts.slug': opts.contact,
-    'type': { $in: [
-      'need to know',
-      'details changed',
-      'campaigns changed'
-    ] }
+    'type': 'NeedToKnowPost'
   }
+
   var options = {
     sort: { createdAt: -1 },
     limit: opts.limit || 1

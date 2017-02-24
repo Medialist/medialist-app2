@@ -10,11 +10,12 @@ import {
   FeedContactIcon,
   FeedCoverageIcon,
   FeedFeedbackIcon,
-  FeedNeedToKnowIcon
+  FeedNeedToKnowIcon,
+  StatusUpdateIcon
 } from '../images/icons'
 
-const Post = ({icon, summary, details, createdBy, createdAt, currentUser}) => (
-  <article className='flex rounded bg-white px4 pt3 pb2 mb2 shadow-2'>
+const Post = ({icon, summary, details, createdBy, createdAt, currentUser, bgClass = 'bg-white'}) => (
+  <article className={`flex rounded px4 pt3 pb2 mb2 shadow-2 ${bgClass}`}>
     <div className='flex-none' style={{paddingTop: 1}}>
       <CircleAvatar size={38} avatar={createdBy.avatar} name={createdBy.name} style={{marginRight: 13}} />
       {icon}
@@ -62,16 +63,18 @@ const PostSummary = ({label, campaigns, contacts, status, hideContact, hideCampa
           <ContactLink {...contacts[0]} />
         </span>
       )}
-      { !hideCampaign && campaigns && (
+      { !hideCampaign && campaigns && campaigns[0] && (
         <span>
           <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
           <CampaignLink {...campaigns[0]} />
         </span>
       )}
     </span>
-    <span className='flex-none align-middle'>
-      <Status status={status} />
-    </span>
+    { status && (
+      <span className='flex-none align-middle'>
+        <Status status={status} />
+      </span>
+    )}
   </span>
 )
 
@@ -106,16 +109,30 @@ export const CoveragePost = ({item, currentUser, hideContact, hideCampaign}) => 
 export const NeedToKnowPost = ({item, currentUser, hideContact}) => (
   <Post
     {...item}
+    bgClass='bg-yellow-lighter'
     currentUser={currentUser}
     icon={<FeedNeedToKnowIcon className='orange' />}
     summary={<PostSummary {...item} label='shared a need-to-know' hideContact={hideContact} />}
     details={
-      <div className='border-gray80 border-top py3'>
+      <div className='border-gray80 border-top py3 gray10'>
         {item.message}
       </div>
     }
   />
 )
+
+export const StatusUpdate = ({item, currentUser}) => {
+  const contact = item.contacts[0]
+  const name = contact ? contact.name.split(' ')[0] : 'a contact'
+  return (
+    <Post
+      {...item}
+      currentUser={currentUser}
+      icon={<StatusUpdateIcon className='gray60' />}
+      summary={<PostSummary {...item} label={`updated ${name} for`} hideContact />}
+    />
+  )
+}
 
 export const AddContactsToCampaign = ({item, currentUser}) => {
   const {contacts, campaigns} = item

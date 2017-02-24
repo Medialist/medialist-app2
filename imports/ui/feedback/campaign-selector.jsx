@@ -20,7 +20,9 @@ const CampaignSelector = React.createClass({
     onChange: PropTypes.func.isRequired
   },
   getInitialState () {
-    return {open: false, campaign: null}
+    const { campaigns } = this.props
+    const campaign = campaigns && campaigns[0]
+    return {open: false, campaign}
   },
   openDropdown () {
     this.setState({open: true})

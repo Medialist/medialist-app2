@@ -147,7 +147,7 @@ const ContactsTable = React.createClass({
                     <div className='normal f-sm'>by <YouOrName user={updatedBy} /></div>
                   </td>
                   {campaign && (
-                    <td className='left-align'>
+                    <td className='left-align' style={{overflow: 'visible'}}>
                       <StatusSelector status={status} onChange={(status) => onStatusChange({status, contact})} />
                     </td>
                   )}
