@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import { Link } from 'react-router'
 import { Meteor } from 'meteor/meteor'
 import { CircleAvatar, SquareAvatar } from '../images/avatar'
 import { EmailIcon, FavouritesIconGold, FavouritesIcon, PhoneIcon, BioIcon, MobileIcon, AddressIcon } from '../images/icons'
@@ -12,6 +13,7 @@ import SocialLinks from './contact-social-links'
 
 const ContactInfo = React.createClass({
   propTypes: {
+    campaigns: PropTypes.array,
     contact: PropTypes.object,
     user: PropTypes.object,
     onEditClick: PropTypes.func,
@@ -66,8 +68,8 @@ const ContactInfo = React.createClass({
       onUpdateTags
     } = this
     const { addToMasterListOpen, addTagsOpen } = this.state
-    const { user: { myContacts }, contact } = this.props
-    const { _id, name, avatar, outlets, campaigns, masterLists, tags } = contact
+    const { user: { myContacts }, contact, campaigns } = this.props
+    const { _id, name, avatar, outlets, masterLists, tags } = contact
     const isFavourite = myContacts.some((c) => c._id === _id)
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
     const tooltip = isFavourite ? 'Remove from My Contacts' : 'Add to My Contacts'
@@ -98,16 +100,20 @@ const ContactInfo = React.createClass({
         <div className='clearfix'>
           <ContactItems contact={contact} />
         </div>
-        {campaigns.length > 0 &&
-          <section>
-            <InfoHeader name='Campaigns' />
-            <div className='px2 py3'>
-              {campaigns.map((campaign) => {
-                return <SquareAvatar name={campaign} size={38} style={{marginRight: '2px', marginBottom: '2px'}} key={campaign.slug} />
-              })}
-            </div>
-          </section>
-        }
+        <section>
+          <InfoHeader name='Campaigns' />
+          <div className='px2 py3'>
+            {campaigns.map(({slug, avatar, name}) => (
+              <Link
+                key={slug}
+                to={`/campaign/${slug}`}
+                style={{marginRight: '2px', marginBottom: '2px'}}
+              >
+                <SquareAvatar name={name} avatar={avatar} size={38} />
+              </Link>
+            ))}
+          </div>
+        </section>
         <AddToMasterList
           open={addToMasterListOpen}
           onDismiss={dismissAddToMasterList}
