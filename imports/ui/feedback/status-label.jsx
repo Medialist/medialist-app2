@@ -1,21 +1,20 @@
 import React, { PropTypes } from 'react'
 import StatusDot from './status-dot'
-import { ChevronDown } from '../images/icons'
 
-const Status = (props) => {
-  const { name, chevron } = props
+const Status = ({name, className, ...props}) => {
+  const attributes = {
+    className: className || 'gray20 semibold'
+  }
   return (
-    <div>
+    <div {...attributes} {...props}>
       <StatusDot name={name} />
-      <span className='ml2 uppercase f-xxs semibold gray20 letter-spacing-1'>{name}</span>
-      {chevron && <ChevronDown className='ml1 gray40' />}
+      <span className='ml2 uppercase f-xxs letter-spacing-1'>{name}</span>
     </div>
   )
 }
 
 Status.PropTypes = {
-  name: PropTypes.string.isRequired,
-  chevron: PropTypes.bool
+  name: PropTypes.string.isRequired
 }
 
 export default Status

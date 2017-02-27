@@ -113,7 +113,7 @@ const FeedbackInput = React.createClass({
           disabled={!message || posting || !status || !campaign}
           onPost={onSubmit} >
           <CampaignSelector contact={contact} onChange={onCampaignChange} campaigns={campaigns} />
-          <StatusSelector status={status} onChange={onStatusChange} border />
+          <StatusSelector className='ml3' status={status} onChange={onStatusChange} border />
         </PostBoxButtons>
       </div>
     )
@@ -168,7 +168,7 @@ const CoverarageInput = React.createClass({
           disabled={!message || posting || !campaign}
           onPost={onSubmit} >
           <CampaignSelector contact={contact} onChange={onCampaignChange} campaigns={campaigns} />
-          <StatusSelector status={status} onChange={onStatusChange} border />
+          <StatusSelector className='ml3' status={status} onChange={onStatusChange} border />
         </PostBoxButtons>
       </div>
     )
@@ -211,8 +211,8 @@ const NeedToKnowInput = React.createClass({
           focused={focused}
           disabled={!message || posting}
           onPost={onSubmit} >
-          <button className='btn bg-transparent border-gray80 bold'>B</button>
-          <button className='btn bg-transparent border-gray80 italic ml3'>i</button>
+          <button style={{padding: '7px 15px'}} className='btn bg-transparent border-gray80 bold'>B</button>
+          <button style={{padding: '7px 15px'}} className='btn bg-transparent border-gray80 italic ml3'>i</button>
         </PostBoxButtons>
       </div>
     )

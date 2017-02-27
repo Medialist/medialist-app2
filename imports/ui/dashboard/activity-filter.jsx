@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
 import { Dropdown, DropdownMenu } from '../navigation/dropdown'
+import { Option } from '../navigation/select.jsx'
 import {
   AllTypesIcon,
   FeedFeedbackIcon,
@@ -22,10 +23,10 @@ export const filterNames = Object.keys(iconMap)
 const Filter = ({name, selected, onClick}) => {
   const Icon = iconMap[name]
   return (
-    <div className='px3 py2 pointer gray20 hover-bg-blue hover-color-trigger' onClick={onClick}>
-      <Icon className='gray60 hover-white' />
-      <span className={`ml2 gray20 hover-white ${selected ? 'semibold' : 'regular'}`}>{name}</span>
-    </div>
+    <Option onClick={onClick} selected={selected}>
+      <Icon className='gray60 ml1' />
+      <span className={`ml2 gray20 ${selected ? 'semibold' : 'regular'}`}>{name}</span>
+    </Option>
   )
 }
 
@@ -55,7 +56,7 @@ const ActivityFilter = React.createClass({
     return (
       <Dropdown>
         <div className='flex-none p3 pointer gray20' onClick={toggleDropdown}>
-          <span className={`f-sm semibold ${open ? 'blue' : 'gray20'}`}>
+          <span className={`f-sm select-none semibold ${open ? 'blue' : 'gray20'}`}>
             {selected}
             <ChevronDown className='gray40' />
           </span>

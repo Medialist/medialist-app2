@@ -42,7 +42,7 @@ const CampaignsFilterableList = React.createClass({
       <nav>
         <SearchBox onTermChange={this.onTermChange} placeholder='Search campaigns' style={styleOverrides} />
         <div className='f-sm semibold p3 bg-gray90 border-bottom border-gray80 pointer' onClick={onClearFilter}>All campaigns ({filteredCampaigns.length})</div>
-        <div className='overflow-scroll' style={{maxHeight: 278}}>
+        <div style={{maxHeight: 278, overflowY: 'auto'}}>
           {filteredCampaigns.map((item, i) => (
             <div
               key={item._id}
