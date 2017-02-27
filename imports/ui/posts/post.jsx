@@ -21,7 +21,7 @@ const Post = ({icon, summary, details, createdBy, createdAt, currentUser, bgClas
       {icon}
     </div>
     <div className='flex-auto' style={{paddingLeft: 13}}>
-      <header className='pt2 pb3 f-md flex'>
+      <header className='pt2 pb3 f-md flex nowrap'>
         <YouOrName className='semibold align-middle' currentUser={currentUser} user={createdBy} />
         <div className='align-middle flex-auto truncate' style={{paddingLeft: 3}}>{summary}</div>
         <span className='f-sm semibold gray60 flex-none'>
@@ -37,7 +37,7 @@ const ContactLink = ({slug, name, outletName}) => (
   <Link to={`/contact/${slug}`}>
     <span className='semibold gray10'>{name}</span>
     { outletName &&
-      <span className='gray10'>({outletName})</span>
+      <span className='gray10'> ({outletName})</span>
     }
   </Link>
 )
