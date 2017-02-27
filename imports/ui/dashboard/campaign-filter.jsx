@@ -40,7 +40,8 @@ const CampaignFilter = React.createClass({
     this.props.onCampaignFilter(null)
     this.setState({
       open: false,
-      selectedFilter: null
+      campaign: null,
+      status: null
     })
   },
   render () {
