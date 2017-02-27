@@ -14,9 +14,13 @@ const Topbar = React.createClass({
   render () {
     const { backLinkText, children } = this.props
     return (
-      <nav className='block bg-white mb4 flex items-center width-100'>
-        <BackButton>{backLinkText}</BackButton>
-        <span className='flex-none inline-block'>{children}</span>
+      <nav className='block bg-white mb4 flex items-center shadow-inset-2' style={{height: 58, overflow: 'hidden'}}>
+        <div className='flex-auto'>
+          <BackButton>{backLinkText}</BackButton>
+        </div>
+        <div className='flex-none border-left border-gray80 px4 py3'>
+          {children}
+        </div>
       </nav>
     )
   }
