@@ -25,7 +25,7 @@ const CampaignFilter = React.createClass({
   },
   onFilter (campaign) {
     const { contact, campaigns } = this.props
-    const name = campaigns.filter((c) => c.slug === campaign.slug).pop().name
+    const name = campaigns.find((c) => c.slug === campaign.slug).name
     const status = contact ? campaign.contacts[contact.slug] : null
     this.props.onCampaignFilter(campaign)
     this.setState({
@@ -58,7 +58,7 @@ const CampaignFilter = React.createClass({
           )}
         </div>
         <DropdownMenu left={-73} width={573} open={open} onDismiss={closeDropdown}>
-          {loading ? <CampaignsFilterableList contact={contact} campaigns={campaigns} onFilter={onFilter} onClearFilter={onClearFilter} /> : null}
+          {loading ? null : <CampaignsFilterableList contact={contact} campaigns={campaigns} onFilter={onFilter} onClearFilter={onClearFilter} />}
         </DropdownMenu>
       </Dropdown>
     )

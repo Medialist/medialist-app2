@@ -56,7 +56,7 @@ const CampaignFilterContainer = createContainer((props) => {
   if (props.contact) query.slug = {$in: props.contact.campaigns}
   const campaigns = Campaigns.find(query).fetch()
   return {
-    loading: sub.ready(),
+    loading: !sub.ready(),
     campaigns,
     ...props
   }
