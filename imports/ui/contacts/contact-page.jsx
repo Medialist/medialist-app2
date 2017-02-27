@@ -86,7 +86,7 @@ const ContactPage = React.createClass({
         <ContactTopbar contact={contact} open={addContactModalOpen} onAddContactToCampaign={onAddContactToCampaign} onDismiss={onDismissAddContactToCampaign} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
-            <ContactInfo contact={contact} onEditClick={this.toggleEditContact} user={user} masterlists={masterlists} />
+            <ContactInfo campaigns={campaigns} contact={contact} onEditClick={this.toggleEditContact} user={user} masterlists={masterlists} />
           </div>
           <div className='flex-auto px2' >
             <PostBox
