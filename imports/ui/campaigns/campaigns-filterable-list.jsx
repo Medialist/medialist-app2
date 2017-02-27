@@ -22,7 +22,11 @@ const CampaignsFilterableList = React.createClass({
   },
   onTermChange (term) {
     const { campaigns } = this.props
-    const filteredCampaigns = campaigns.filter((c) => itemMatchesTerm(c.name, term) || itemMatchesTerm(c.client.name, term))
+    const filteredCampaigns = campaigns.filter((c) => {
+      let itemMatch = itemMatchesTerm(c.name, term)
+      if (!itemMatch && c.client && c.client.name) itemMatch = itemMatchesTerm(c.client.name, term)
+      return itemMatch
+    })
     this.setState({ filteredCampaigns })
   },
   render () {
