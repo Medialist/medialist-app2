@@ -76,7 +76,7 @@ const MasterListBtn = ({item, type, selected, onSelect, onDeselect}) => {
   return (
     <div className='p2' style={{width: '25%'}}>
       <div className={`width-100 relative border hover-border-blue ${selectedClasses}`} style={{borderRadius: 8}}>
-        {selected && <Check className='absolute top-0 right-0' style={{marginRight: 6}} />}
+        {selected && <Check className='absolute top-0 right-0 white' style={{marginRight: 6}} />}
         <div className='center overflow-hidden' style={{height: 80}}>
           <div
             className='flex flex-column justify-center normal f-lg pointer px1 hover-display-trigger'

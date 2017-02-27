@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
 import { Dropdown, DropdownMenu } from '../navigation/dropdown'
+import { Option } from '../navigation/select.jsx'
 import {
   AllTypesIcon,
   FeedFeedbackIcon,
@@ -22,10 +23,10 @@ export const filterNames = Object.keys(iconMap)
 const Filter = ({name, selected, onClick}) => {
   const Icon = iconMap[name]
   return (
-    <div className='px3 py2 pointer gray20 hover-bg-blue hover-color-trigger' onClick={onClick}>
-      <Icon className='gray60 hover-white' />
-      <span className={`ml2 gray20 hover-white ${selected ? 'semibold' : 'regular'}`}>{name}</span>
-    </div>
+    <Option onClick={onClick} selected={selected}>
+      <Icon className='gray60 ml1' />
+      <span className={`ml2 gray20 ${selected ? 'semibold' : 'regular'}`}>{name}</span>
+    </Option>
   )
 }
 
@@ -53,24 +54,21 @@ const ActivityFilter = React.createClass({
     const { open } = this.state
     const { selected } = this.props
     return (
-      <div className='flex'>
-        <Dropdown>
-          <div className='flex-none p3 pointer' onClick={toggleDropdown}>
-            <span className={`f-sm semibold ${open ? 'blue' : 'gray20'}`}>
-              {selected}
-              <ChevronDown />
-            </span>
-            <DropdownMenu width={213} open={open} onDismiss={toggleDropdown}>
-              <nav className='py1'>
-                {filterNames.map((filterName) => (
-                  <Filter key={filterName} name={filterName} selected={filterName === selected} onClick={() => this.onLinkClick(filterName)} />)
-                )}
-              </nav>
-            </DropdownMenu>
-          </div>
-        </Dropdown>
-        <hr className='flex-auto' style={{height: 1, margin: '25px 0 0 0'}} />
-      </div>
+      <Dropdown>
+        <div className='flex-none p3 pointer gray20' onClick={toggleDropdown}>
+          <span className={`f-sm select-none semibold ${open ? 'blue' : 'gray20'}`}>
+            {selected}
+            <ChevronDown className='gray40' />
+          </span>
+          <DropdownMenu width={213} open={open} onDismiss={toggleDropdown}>
+            <nav className='py1'>
+              {filterNames.map((filterName) => (
+                <Filter key={filterName} name={filterName} selected={filterName === selected} onClick={() => this.onLinkClick(filterName)} />)
+              )}
+            </nav>
+          </DropdownMenu>
+        </div>
+      </Dropdown>
     )
   }
 })

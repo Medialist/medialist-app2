@@ -61,8 +61,9 @@ const ContactSelector = React.createClass({
             </DropdownMenu>
           </Dropdown>
         </div>
-        {showStatus
+        {showStatus && selectedContact
           ? <StatusSelector
+            className='ml3'
             status={selectedStatus}
             border
             chevron

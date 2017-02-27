@@ -411,7 +411,7 @@ button {
 .btn:focus {
   outline: none;
   border-color: var(--darken-2);
-  box-shadow: inset 0 0 0 1px var(--darken-3);
+  box-shadow: inset 0 0 6px 0px rgba(0, 0, 0, .1);
 }
 
 .btn[disabled] {
@@ -438,6 +438,7 @@ button {
   /* BYO font-size, bg-color */
   display: inline-block;
   color: var(--white);
+
   padding: 2px var(--space-1);
   border-radius: 2em;
   min-width: 2em;
