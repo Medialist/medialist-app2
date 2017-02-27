@@ -113,7 +113,7 @@ const FeedbackInput = React.createClass({
           disabled={!message || posting || !status || !campaign}
           onPost={onSubmit} >
           <CampaignSelector contact={contact} onChange={onCampaignChange} campaigns={campaigns} />
-          <StatusSelector status={status} onChange={onStatusChange} border />
+          <StatusSelector className='ml1' status={status} onChange={onStatusChange} border />
         </PostBoxButtons>
       </div>
     )
@@ -168,7 +168,7 @@ const CoverarageInput = React.createClass({
           disabled={!message || posting || !campaign}
           onPost={onSubmit} >
           <CampaignSelector contact={contact} onChange={onCampaignChange} campaigns={campaigns} />
-          <StatusSelector status={status} onChange={onStatusChange} border />
+          <StatusSelector className='ml1' status={status} onChange={onStatusChange} border />
         </PostBoxButtons>
       </div>
     )

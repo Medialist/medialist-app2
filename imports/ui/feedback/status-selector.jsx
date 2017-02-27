@@ -1,75 +1,41 @@
 import React, { PropTypes } from 'react'
+import { Select, Option } from '../navigation/select'
 import { StatusValues } from '/imports/api/contacts/status'
-import { Check, ChevronDown } from '../images/icons'
-import { Dropdown, DropdownMenu } from '../navigation/dropdown'
 import StatusLabel from './status-label'
+import StatusDot from './status-dot'
 
 const StatusSelector = React.createClass({
   propTypes: {
     onChange: PropTypes.func.isRequired,
     status: PropTypes.string,
     border: PropTypes.bool,
-    disabled: PropTypes.bool
-  },
-  getInitialState () {
-    return {open: false}
-  },
-  openDropdown () {
-    this.setState({open: true})
-  },
-  closeDropdown () {
-    this.setState({open: false})
+    disabled: PropTypes.bool,
+    hideLabel: PropTypes.bool
   },
   onLinkClick (status) {
-    this.setState({open: false})
     this.props.onChange(status)
   },
   render () {
-    const { status, border, disabled } = this.props
-    const style = {
-      height: 34,
-      borderRadius: 2,
-      paddingTop: 6
-    }
+    const { status, border, disabled, className, hideLabel } = this.props
     return (
-      <div className='inline-block'>
-        <Dropdown>
-          { status ? (
-            <button className={`btn text-left bg-transparent ${border ? 'border-gray80' : ''}`} onClick={this.openDropdown} style={style}>
-              <StatusLabel name={status} className='inline-block' />
-              <ChevronDown className='ml1 gray40' />
-            </button>
-        ) : (
-          <button className='btn ml3 bg-transparent border-gray80' onClick={this.openDropdown} disabled={disabled} style={style}>
-            Select status
-            <ChevronDown className='ml1 gray40' />
-          </button>
-        )}
-          <DropdownMenu width={223} open={this.state.open} onDismiss={this.closeDropdown}>
-            <nav className='py3'>
-              {StatusValues.map((item) => (
-                <StatusItem
-                  selected={status === item}
-                  status={item}
-                  onClick={() => this.onLinkClick(item)}
-                />
-              ))}
-            </nav>
-          </DropdownMenu>
-        </Dropdown>
-      </div>
+      <Select
+        className={className}
+        border={border}
+        disabled={disabled}
+        buttonText={
+          hideLabel
+          ? <StatusDot name={status} />
+          : <StatusLabel name={status} className='inline-block' />
+        }
+      >
+        {StatusValues.map((item) => (
+          <Option selected={item === status} onClick={() => this.onLinkClick(item)}>
+            <StatusLabel name={item} className={`${item === status ? 'gray10 semibold' : 'gray20'}`} />
+          </Option>
+        ))}
+      </Select>
     )
   }
 })
-
-export const StatusItem = ({selected, status, onClick}) => (
-  <div className='flex px3 py2 pointer hover-bg-gray90' onClick={onClick}>
-    <StatusLabel
-      name={status}
-      className={`flex-auto ${selected ? 'gray10 semibold' : 'gray20'}`}
-    />
-    { selected && <Check className='flex-none blue' /> }
-  </div>
-)
 
 export default StatusSelector
