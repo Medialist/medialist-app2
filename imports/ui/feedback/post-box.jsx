@@ -119,7 +119,7 @@ const FeedbackInput = React.createClass({
           focused={focused}
           disabled={!message || posting || !status || !campaign}
           onPost={onSubmit} >
-          <CampaignSelector contact={contact} onChange={onCampaignChange} campaigns={campaigns} />
+          <CampaignSelector contact={contact} onChange={onCampaignChange} campaigns={campaigns} campaign={campaign} />
           <StatusSelector className='ml3' status={status} onChange={onStatusChange} border />
         </PostBoxButtons>
       </div>
@@ -137,10 +137,13 @@ const CoverarageInput = React.createClass({
     onSubmit: PropTypes.func.isRequired
   },
   getInitialState () {
-    const { campaigns } = this.props
-    const campaign = campaigns && campaigns[0]
-    const status = StatusMap.completed
-    return {status, campaign, message: '', posting: false}
+    const { campaign } = this.props
+    return {
+      status: StatusMap.completed,
+      campaign,
+      message: '',
+      posting: false
+    }
   },
   onStatusChange (status) {
     this.setState({status: status})
@@ -175,7 +178,7 @@ const CoverarageInput = React.createClass({
           focused={focused}
           disabled={!message || posting || !campaign}
           onPost={onSubmit} >
-          <CampaignSelector contact={contact} onChange={onCampaignChange} campaigns={campaigns} />
+          <CampaignSelector contact={contact} onChange={onCampaignChange} campaigns={campaigns} campaign={campaign} />
           <StatusSelector className='ml3' status={status} onChange={onStatusChange} border />
         </PostBoxButtons>
       </div>
