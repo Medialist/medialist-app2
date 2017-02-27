@@ -52,6 +52,6 @@ export const Option = ({selected, onClick, children}) => (
     <div className='flex-auto'>
       {children}
     </div>
-    { selected && <Check className='flex-none blue' /> }
+    { selected && <Check className='flex-none blue' style={{transform: 'scale(1.5)'}} /> }
   </div>
 )

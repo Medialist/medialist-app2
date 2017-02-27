@@ -24,7 +24,7 @@ const Filter = ({name, selected, onClick}) => {
   const Icon = iconMap[name]
   return (
     <Option onClick={onClick} selected={selected}>
-      <Icon className='gray60' />
+      <Icon className='gray60 ml1' />
       <span className={`ml2 gray20 ${selected ? 'semibold' : 'regular'}`}>{name}</span>
     </Option>
   )
@@ -56,7 +56,7 @@ const ActivityFilter = React.createClass({
     return (
       <Dropdown>
         <div className='flex-none p3 pointer gray20' onClick={toggleDropdown}>
-          <span className={`f-sm semibold ${open ? 'blue' : 'gray20'}`}>
+          <span className={`f-sm select-none semibold ${open ? 'blue' : 'gray20'}`}>
             {selected}
             <ChevronDown className='gray40' />
           </span>

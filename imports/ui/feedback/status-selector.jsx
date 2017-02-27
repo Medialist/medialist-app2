@@ -16,12 +16,11 @@ const StatusSelector = React.createClass({
     this.props.onChange(status)
   },
   render () {
-    const { status, border, disabled, className, hideLabel } = this.props
+    const { status, hideLabel, ...props } = this.props
     return (
       <Select
-        className={className}
-        border={border}
-        disabled={disabled}
+        {...props}
+        style={{padding: '6px 15px 7px'}}
         buttonText={
           hideLabel
           ? <StatusDot name={status} />

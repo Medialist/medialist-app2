@@ -39,7 +39,11 @@ const ActivityFeed = React.createClass({
           {!campaign &&
             <div>
               <span className='gray80'>|</span>
-              <CampaignFilterContainer contact={contact} onCampaignFilter={onCampaignFilterChange} />
+              <CampaignFilterContainer
+                disabled={filterType === filterNames[3]}
+                contact={contact}
+                onCampaignFilter={onCampaignFilterChange}
+              />
             </div>
           }
           <hr className='flex-auto pl2' style={{height: 1}} />
