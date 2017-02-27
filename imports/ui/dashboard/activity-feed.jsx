@@ -15,13 +15,13 @@ const ActivityFeed = React.createClass({
 
   getInitialState () {
     return {
-      filterName: filterNames[0],
+      filterType: filterNames[0],
       filterCampaign: null
     }
   },
 
-  onFilterChange (filterName) {
-    this.setState({ filterName })
+  onFilterChange (filterType) {
+    this.setState({ filterType })
   },
 
   onCampaignFilterChange (filterCampaign) {
@@ -31,18 +31,20 @@ const ActivityFeed = React.createClass({
   render () {
     const { onFilterChange, onCampaignFilterChange } = this
     const { contact, campaign } = this.props
-    const { filterName, filterCampaign } = this.state
+    const { filterType, filterCampaign } = this.state
     return (
       <div>
         <div className='flex justify-start items-center'>
-          <ActivityFilter selected={filterName} onChange={onFilterChange} />
-          {!campaign && <div>
-            <span className='gray80'>|</span>
-            <CampaignFilterContainer contact={contact} onCampaignFilter={onCampaignFilterChange} />
-          </div>}
+          <ActivityFilter selected={filterType} onChange={onFilterChange} />
+          {!campaign &&
+            <div>
+              <span className='gray80'>|</span>
+              <CampaignFilterContainer contact={contact} onCampaignFilter={onCampaignFilterChange} />
+            </div>
+          }
           <hr className='flex-auto pl2' style={{height: 1}} />
         </div>
-        <ActivityListContainer filter={filterName} campaign={filterCampaign || campaign} contact={contact} />
+        <ActivityListContainer filter={filterType} campaign={filterCampaign || campaign} contact={contact} />
       </div>
     )
   }

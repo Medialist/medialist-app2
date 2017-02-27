@@ -54,10 +54,10 @@ const ActivityFilter = React.createClass({
     const { selected } = this.props
     return (
       <Dropdown>
-        <div className='flex-none p3 pointer' onClick={toggleDropdown}>
+        <div className='flex-none p3 pointer gray20' onClick={toggleDropdown}>
           <span className={`f-sm semibold ${open ? 'blue' : 'gray20'}`}>
             {selected}
-            <ChevronDown />
+            <ChevronDown className='gray40' />
           </span>
           <DropdownMenu width={213} open={open} onDismiss={toggleDropdown}>
             <nav className='py1'>

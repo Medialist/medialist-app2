@@ -46,15 +46,15 @@ const CampaignFilter = React.createClass({
     const { loading, contact, campaigns } = this.props
     return (
       <Dropdown>
-        <div className='flex-none p3 pointer' onClick={openDropDown}>
+        <div className='flex-none p3 pointer gray20' onClick={openDropDown}>
           {selectedFilter ? (
             <span className='f-sm semibold flex items-center'>
               {selectedFilter.status && <StatusDot name={selectedFilter.status} size={9} style={{marginTop: 1}} />}
               <div className='ml1'>{selectedFilter.name}</div>
-              <ChevronDown />
+              <ChevronDown className='gray40' />
             </span>
           ) : (
-            <span className='f-sm semibold'>All Campaigns <ChevronDown /></span>
+            <span className='f-sm semibold'>All Campaigns <ChevronDown className='gray40' /></span>
           )}
         </div>
         <DropdownMenu left={-73} width={573} open={open} onDismiss={closeDropdown}>
