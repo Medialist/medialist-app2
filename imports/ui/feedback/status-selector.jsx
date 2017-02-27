@@ -1,14 +1,14 @@
 import React, { PropTypes } from 'react'
+import { StatusValues } from '/imports/api/contacts/status'
+import { Check, ChevronDown } from '../images/icons'
 import { Dropdown, DropdownMenu } from '../navigation/dropdown'
 import StatusLabel from './status-label'
-import { StatusValues } from '/imports/api/contacts/status'
 
 const StatusSelector = React.createClass({
   propTypes: {
     onChange: PropTypes.func.isRequired,
     status: PropTypes.string,
     border: PropTypes.bool,
-    chevron: PropTypes.bool,
     disabled: PropTypes.bool
   },
   getInitialState () {
@@ -25,7 +25,7 @@ const StatusSelector = React.createClass({
     this.props.onChange(status)
   },
   render () {
-    const { status, border, chevron, disabled } = this.props
+    const { status, border, disabled } = this.props
     const style = {
       height: 34,
       borderRadius: 2,
@@ -35,20 +35,24 @@ const StatusSelector = React.createClass({
       <div className='inline-block'>
         <Dropdown>
           { status ? (
-            <button className={`btn ml3 bg-transparent ${border ? 'border-gray80' : ''}`} onClick={this.openDropdown} style={style}>
-              <StatusLabel name={status} chevron={chevron} />
+            <button className={`btn text-left bg-transparent ${border ? 'border-gray80' : ''}`} onClick={this.openDropdown} style={style}>
+              <StatusLabel name={status} className='inline-block' />
+              <ChevronDown className='ml1 gray40' />
             </button>
         ) : (
           <button className='btn ml3 bg-transparent border-gray80' onClick={this.openDropdown} disabled={disabled} style={style}>
             Select status
+            <ChevronDown className='ml1 gray40' />
           </button>
         )}
           <DropdownMenu width={223} open={this.state.open} onDismiss={this.closeDropdown}>
             <nav className='py3'>
               {StatusValues.map((item) => (
-                <div key={item} className='px3 py2 pointer hover-bg-gray90' onClick={() => this.onLinkClick(item)}>
-                  <StatusLabel name={item} />
-                </div>
+                <StatusItem
+                  selected={status === item}
+                  status={item}
+                  onClick={() => this.onLinkClick(item)}
+                />
               ))}
             </nav>
           </DropdownMenu>
@@ -57,5 +61,15 @@ const StatusSelector = React.createClass({
     )
   }
 })
+
+export const StatusItem = ({selected, status, onClick}) => (
+  <div className='flex px3 py2 pointer hover-bg-gray90' onClick={onClick}>
+    <StatusLabel
+      name={status}
+      className={`flex-auto ${selected ? 'gray10 semibold' : 'gray20'}`}
+    />
+    { selected && <Check className='flex-none blue' /> }
+  </div>
+)
 
 export default StatusSelector
