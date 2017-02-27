@@ -8,6 +8,7 @@ const PostBox = React.createClass({
   propTypes: {
     loading: PropTypes.bool.isRequired,
     contact: PropTypes.object,
+    campaign: PropTypes.object,
     campaigns: PropTypes.array,
     onFeedback: PropTypes.func.isRequired,
     onCoverage: PropTypes.func.isRequired,
@@ -19,10 +20,11 @@ const PostBox = React.createClass({
   },
 
   render () {
-    const { contact, campaigns, onFeedback, onCoverage, onNeedToKnow, loading } = this.props
     const { selected, focused } = this.state
+    const { contact, campaigns, onFeedback, onCoverage, onNeedToKnow, loading } = this.props
+    const campaign = this.props.campaign || campaigns[0]
+    if (loading) return null
     const childProps = { focused, contact }
-    if (!contact || loading) return null
     return (
       <div className='mb2' onFocus={() => this.setState({focused: true})}>
         <PostBoxTabs>
@@ -32,8 +34,8 @@ const PostBox = React.createClass({
         </PostBoxTabs>
         <div style={{padding: '0 1px'}}>
           <div className='bg-white shadow-2 p3 pb0'>
-            { selected === 'Feedback' && <FeedbackInput {...childProps} campaigns={campaigns} onSubmit={onFeedback} /> }
-            { selected === 'Coverage' && <CoverarageInput {...childProps} campaigns={campaigns} onSubmit={onCoverage} /> }
+            { selected === 'Feedback' && <FeedbackInput {...childProps} campaigns={campaigns} campaign={campaign} onSubmit={onFeedback} /> }
+            { selected === 'Coverage' && <CoverarageInput {...childProps} campaigns={campaigns} campaign={campaign} onSubmit={onCoverage} /> }
             { selected === 'Need to Know' && <NeedToKnowInput {...childProps} onSubmit={onNeedToKnow} /> }
           </div>
         </div>
@@ -69,15 +71,20 @@ const FeedbackInput = React.createClass({
   propTypes: {
     contact: PropTypes.object,
     campaigns: PropTypes.array,
+    campaign: PropTypes.object,
     focused: PropTypes.bool.isRequired,
     onSubmit: PropTypes.func.isRequired
   },
   getInitialState () {
-    const { contact, campaigns } = this.props
-    const campaign = campaigns && campaigns[0]
+    const { contact, campaign } = this.props
     const contactRef = campaign && campaign.contacts[contact.slug]
     const status = contactRef || StatusMap.toContact
-    return {status, campaign, message: '', posting: false}
+    return {
+      status,
+      campaign,
+      message: '',
+      posting: false
+    }
   },
   onMessageChange (evt) {
     this.setState({message: evt.target.value})
@@ -124,6 +131,7 @@ const FeedbackInput = React.createClass({
 const CoverarageInput = React.createClass({
   propTypes: {
     contact: PropTypes.object.isRequired,
+    campaign: PropTypes.object,
     focused: PropTypes.bool,
     campaigns: PropTypes.array.isRequired,
     onSubmit: PropTypes.func.isRequired

@@ -19,6 +19,7 @@ const ContactPage = React.createClass({
     router: PropTypes.object,
     campaigns: PropTypes.array,
     contact: PropTypes.object,
+    campaign: PropTypes.object,
     user: PropTypes.object,
     masterlists: PropTypes.array,
     needToKnows: PropTypes.array,
@@ -76,7 +77,7 @@ const ContactPage = React.createClass({
   },
 
   render () {
-    const { contact, campaigns, user, masterlists, needToKnows, loading } = this.props
+    const { contact, campaigns, campaign, user, masterlists, needToKnows, loading } = this.props
     const { editContactOpen, addContactModalOpen } = this.state
     const { onDismissAddContactToCampaign, onAddContactToCampaign } = this
     if (!contact) return null
@@ -92,6 +93,7 @@ const ContactPage = React.createClass({
               loading={loading}
               contact={contact}
               campaigns={campaigns}
+              campaign={campaign}
               onFeedback={this.onFeedback}
               onCoverage={this.onCoverage}
               onNeedToKnow={this.onNeedToKnow}
@@ -109,7 +111,7 @@ const ContactPage = React.createClass({
 })
 
 export default createContainer((props) => {
-  const { contactSlug } = props.params
+  const { contactSlug, campaignSlug } = props.params
   const subs = [
     Meteor.subscribe('contact', contactSlug),
     Meteor.subscribe('campaigns'),
@@ -117,14 +119,15 @@ export default createContainer((props) => {
       contact: contactSlug
     })
   ]
-  const contact = Contacts.findOne({ slug: contactSlug })
-  const campaigns = contact ? Campaigns.find({ slug: { $in: contact.campaigns } }).fetch() : []
   const user = Meteor.user()
+  const contact = Contacts.findOne({ slug: contactSlug })
+  const campaign = Campaigns.findOne({ slug: campaignSlug })
+  const campaigns = contact ? Campaigns.find({ slug: { $in: contact.campaigns } }).fetch() : []
   const masterlists = MasterLists.find({type: 'Contacts'}).fetch()
   const needToKnows = Posts.find(
     { type: 'NeedToKnowPost', 'contacts.slug': contactSlug },
     { sort: { createdAt: -1 } }
   ).fetch()
   const loading = subs.some((s) => !s.ready())
-  return { ...props, contact, campaigns, user, masterlists, needToKnows, loading }
+  return { ...props, contact, campaigns, campaign, user, masterlists, needToKnows, loading }
 }, withRouter(ContactPage))
