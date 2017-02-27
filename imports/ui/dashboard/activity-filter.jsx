@@ -17,8 +17,6 @@ const iconMap = {
   'Updates': StatusUpdateIcon
 }
 
-const dropdownStyle = { width: 180 }
-
 export const filterNames = Object.keys(iconMap)
 
 const Filter = ({name, selected, onClick}) => {
@@ -61,7 +59,7 @@ const ActivityFilter = React.createClass({
             {selected}
             <ChevronDown />
           </span>
-          <DropdownMenu arrowPosition={'30%'} style={dropdownStyle} open={open} onDismiss={toggleDropdown}>
+          <DropdownMenu width={213} open={open} onDismiss={toggleDropdown}>
             <nav className='py1'>
               {filterNames.map((filterName) => (
                 <Filter key={filterName} name={filterName} selected={filterName === selected} onClick={() => this.onLinkClick(filterName)} />)

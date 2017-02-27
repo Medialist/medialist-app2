@@ -9,17 +9,14 @@ import Campaigns from '/imports/api/campaigns/campaigns'
 
 const ActivityFeed = React.createClass({
   propTypes: {
-    loading: PropTypes.bool,
-    items: PropTypes.array,
     campaign: PropTypes.object,
-    campaigns: PropTypes.array,
     contact: PropTypes.object
   },
 
   getInitialState () {
     return {
       filterName: filterNames[0],
-      campaignName: null
+      filterCampaign: null
     }
   },
 
@@ -27,33 +24,44 @@ const ActivityFeed = React.createClass({
     this.setState({ filterName })
   },
 
-  onCampaignFilter (campaignName) {
-    this.setState({ campaignName })
+  onCampaignFilterChange (filterCampaign) {
+    this.setState({ filterCampaign })
   },
 
   render () {
-    const { loading, items, campaign, contact, campaigns } = this.props
-    const { filterName, campaignName } = this.state
-    let filteredItems = campaignName ? items.filter((item) => {
-      return item.campaigns && item.campaigns.some((campaigns) => campaigns.name === campaignName)
-    }) : items
+    const { onFilterChange, onCampaignFilterChange } = this
+    const { contact, campaign } = this.props
+    const { filterName, filterCampaign } = this.state
     return (
       <div>
-        <div className='flex items-center'>
-          <ActivityFilter selected={filterName} onChange={this.onFilterChange} />
-          <span className='gray80'>|</span>
-          <CampaignFilter loading={loading} contact={contact} selected={campaignName} campaigns={campaigns} onCampaignFilter={this.onCampaignFilter} />
+        <div className='flex justify-start items-center'>
+          <ActivityFilter selected={filterName} onChange={onFilterChange} />
+          {!campaign && <div>
+            <span className='gray80'>|</span>
+            <CampaignFilterContainer contact={contact} onCampaignFilter={onCampaignFilterChange} />
+          </div>}
           <hr className='flex-auto pl2' style={{height: 1}} />
         </div>
-        <ActivityList loading={loading} items={filteredItems} filter={filterName} campaign={campaign} contact={contact} />
+        <ActivityListContainer filter={filterName} campaign={filterCampaign || campaign} contact={contact} />
       </div>
     )
   }
 })
 
-const ActivityFeedContainer = createContainer((props) => {
-  const limit = props.limit || 20
+const CampaignFilterContainer = createContainer((props) => {
+  const sub = Meteor.subscribe('campaigns')
+  const query = {}
+  if (props.contact) query.slug = {$in: props.contact.campaigns}
+  const campaigns = Campaigns.find(query).fetch()
+  return {
+    loading: sub.ready(),
+    campaigns,
+    ...props
+  }
+}, CampaignFilter)
 
+const ActivityListContainer = createContainer((props) => {
+  const limit = props.limit || 20
   const typesForFilter = {
     'All Activity': Posts.types,
     'Feedback': ['FeedbackPost'],
@@ -62,30 +70,25 @@ const ActivityFeedContainer = createContainer((props) => {
     'Updates': ['StatusUpdate']
   }
   const types = typesForFilter[props.filter] || Posts.types
-  const campaignSlugs = props.contact && props.contact.campaigns || []
   const subs = [
     Meteor.subscribe('campaign-favourites'),
-    Meteor.subscribe('posts', { limit, types }),
-    Meteor.subscribe('campaigns-by-slug', campaignSlugs)
+    Meteor.subscribe('posts', { limit, types })
   ]
   const query = {
     type: { $in: types }
   }
   if (props.campaign) query['campaigns.slug'] = props.campaign.slug
   if (props.contact) query['contacts.slug'] = props.contact.slug
-  const campaigns = Campaigns.find().fetch()
   const items = Posts.find(query, { sort: { createdAt: -1 }, limit }).fetch()
   const loading = subs.some((s) => !s.ready())
-
   return {
     loading,
     currentUser: Meteor.user(),
     hideContact: !!props.contact,
     hideCampaign: !!props.campaign,
-    campaigns,
     items,
     ...props
   }
-}, ActivityFeed)
+}, ActivityList)
 
-export default ActivityFeedContainer
+export default ActivityFeed
