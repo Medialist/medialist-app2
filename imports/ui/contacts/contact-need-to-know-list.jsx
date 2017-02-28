@@ -25,7 +25,7 @@ const ContactNeedToKnowList = React.createClass({
       <aside className='bg-orange-light mb4 shadow-2' style={{minHeight: 120}}>
         <header className='border-gray80 border-bottom'>
           <h1 className='m0 p4 f-md semibold gray20'>
-            <span className='bg-orange white mr1 pill f-xxs'>{items.length}</span> Need-to-Knows
+            <span className='bg-tangerine white mr1 pill f-xxs'>{items.length}</span> Need-to-Knows
           </h1>
         </header>
         <ul className='list-reset px4 pb4 m0'>
@@ -33,7 +33,7 @@ const ContactNeedToKnowList = React.createClass({
         </ul>
         {showAll === false && items.length > displayItems.length &&
           <footer className='center border-gray80 border-top pt2 pb3'>
-            <a href='#' className='block orange semibold f-sm' onClick={this.onShowAllClick}>Show all</a>
+            <a href='#' className='block tangerine semibold f-sm' onClick={this.onShowAllClick}>Show all</a>
           </footer>}
       </aside>
     )
