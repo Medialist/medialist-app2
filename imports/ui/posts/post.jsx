@@ -114,7 +114,7 @@ export const NeedToKnowPost = ({item, currentUser, contact}) => (
     {...item}
     bgClass='bg-yellow-lighter'
     currentUser={currentUser}
-    icon={<FeedNeedToKnowIcon className='orange' />}
+    icon={<FeedNeedToKnowIcon className='tangerine' />}
     summary={<PostSummary {...item} label='shared a need-to-know' contact={contact} />}
     details={
       <div className='border-gray80 border-top py3 gray10'>
