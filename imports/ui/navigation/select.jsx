@@ -48,7 +48,7 @@ export const Select = React.createClass({
 })
 
 export const Option = ({selected, onClick, children}) => (
-  <div className='flex px3 py2 pointer hover-bg-gray90 hover-color-trigger' onClick={onClick}>
+  <div className='flex px3 py2 pointer hover-bg-gray90 hover-color-trigger hover-box-shadow-x-gray80' onClick={onClick}>
     <div className='flex-auto'>
       {children}
     </div>
