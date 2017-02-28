@@ -4,6 +4,10 @@ import CampaignSelector from './campaign-selector'
 import StatusSelector from './status-selector.jsx'
 import { FeedbackTab, CoverageTab, NeedToKnowTab, PostBoxTabs } from '../feedback/post-box-nav'
 
+const Divider = ({show}) => (
+  <div style={{width: 1, height: 14}} className={`inline-block align-middle ${show ? 'bg-gray80' : ''}`} />
+)
+
 const PostBox = React.createClass({
   propTypes: {
     loading: PropTypes.bool.isRequired,
@@ -29,7 +33,9 @@ const PostBox = React.createClass({
       <div className='mb2' onFocus={() => this.setState({focused: true})}>
         <PostBoxTabs>
           <FeedbackTab onClick={() => this.setState({selected: 'Feedback'})} selected={selected === 'Feedback'} />
+          <Divider show={selected === 'Need to Know'} />
           <CoverageTab onClick={() => this.setState({selected: 'Coverage'})} selected={selected === 'Coverage'} />
+          <Divider show={selected === 'Feedback'} />
           <NeedToKnowTab onClick={() => this.setState({selected: 'Need to Know'})} selected={selected === 'Need to Know'} />
         </PostBoxTabs>
         <div style={{padding: '0 1px'}}>
@@ -47,7 +53,7 @@ const PostBox = React.createClass({
 export const PostBoxtTextArea = ({placeholder, value, focused, disabled, onChange}) => (
   <textarea
     rows={focused ? '3' : '1'}
-    className='textarea mb1'
+    className='textarea mb1 placeholder-gray60 caret-blue'
     style={{border: '0 none', overflowY: 'auto', resize: 'none', paddingLeft: '3px'}}
     placeholder={placeholder}
     onChange={onChange}
@@ -59,7 +65,7 @@ export const PostBoxButtons = ({focused, disabled, onPost, children}) => (
   <div style={{display: focused ? null : 'none'}}>
     <button
       onClick={onPost}
-      className={`btn bg-gray80 right active-bg-blue ${disabled ? '' : 'active'}`}
+      className={`btn opacity-100 bg-gray80 right active-bg-blue ${disabled ? 'white' : 'active'}`}
       disabled={disabled}>
       Post
     </button>
