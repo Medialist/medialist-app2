@@ -35,15 +35,15 @@ const Post = ({icon, summary, details, createdBy, createdAt, currentUser, bgClas
 
 const ContactLink = ({slug, name, outletName}) => (
   <Link to={`/contact/${slug}`}>
-    <span className='semibold gray10'>{name}</span>
+    <span className='semibold gray10'> {name} </span>
     { outletName &&
-      <span className='gray10'> ({outletName})</span>
+      <span className='gray10'> ({outletName}) </span>
     }
   </Link>
 )
 
 const CampaignLink = ({slug, name}) => (
-  <Link className='semibold gray10' to={`/campaign/${slug}`}>{name}</Link>
+  <Link className='semibold gray10' to={`/campaign/${slug}`}> {name} </Link>
 )
 
 const firstName = ({name}) => name.split(' ')[0]
@@ -54,31 +54,37 @@ const contactNamesOrCount = ({contacts, contact}) => {
   return contacts.map(firstName).join(' and ')
 }
 
-const PostSummary = ({label, campaigns, contacts, status, contact, campaign}) => (
+const PostSummary = ({children, status}) => (
   <span className='nowrap flex'>
     <span className='truncate align-middle'>
-      <span className='gray10'>
-        {label}
-      </span>
-      { !contact && contacts && (
-        <span>
-          <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
-          <ContactLink {...contacts[0]} />
-        </span>
-      )}
-      { !campaign && campaigns && campaigns[0] && (
-        <span>
-          <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
-          <CampaignLink {...campaigns[0]} />
-        </span>
-      )}
+      {children}
     </span>
-    { status && (
+    { status &&
       <span className='flex-none align-middle'>
         <Status status={status} />
       </span>
-    )}
+    }
   </span>
+)
+
+const FeedbackPostSummary = ({label, campaigns, contacts, status, contact, campaign}) => (
+  <PostSummary status={status}>
+    <span className='gray10'>
+      {label}
+    </span>
+    { !campaign && campaigns && campaigns[0] && (
+      <span>
+        <ChevronRight className='f-xxxs gray60' />
+        <CampaignLink {...campaigns[0]} />
+      </span>
+    )}
+    { !contact && contacts && (
+      <span>
+        <ChevronRight className='f-xxxs gray60' />
+        <ContactLink {...contacts[0]} />
+      </span>
+    )}
+  </PostSummary>
 )
 
 export const FeedbackPost = ({item, currentUser, contact, campaign}) => (
@@ -86,7 +92,7 @@ export const FeedbackPost = ({item, currentUser, contact, campaign}) => (
     {...item}
     currentUser={currentUser}
     icon={<FeedFeedbackIcon className='blue-dark' style={{verticalAlign: -2}} />}
-    summary={<PostSummary {...item} label='logged feedback' contact={contact} campaign={campaign} />}
+    summary={<FeedbackPostSummary {...item} label='logged feedback' contact={contact} campaign={campaign} />}
     details={
       <div className='border-gray80 border-top py3 gray10'>
         {item.message}
@@ -100,7 +106,7 @@ export const CoveragePost = ({item, currentUser, contact, campaign}) => (
     {...item}
     currentUser={currentUser}
     icon={<FeedCoverageIcon className='blue' />}
-    summary={<PostSummary {...item} label='logged coverage' contact={contact} campaign={campaign} />}
+    summary={<FeedbackPostSummary {...item} label='logged coverage' contact={contact} campaign={campaign} />}
     details={
       <div className='border-gray80 border-top py3 gray10'>
         {item.message}
@@ -115,7 +121,7 @@ export const NeedToKnowPost = ({item, currentUser, contact}) => (
     bgClass='bg-yellow-lighter'
     currentUser={currentUser}
     icon={<FeedNeedToKnowIcon className='tangerine' />}
-    summary={<PostSummary {...item} label='shared a need-to-know' contact={contact} />}
+    summary={<FeedbackPostSummary {...item} label='shared a need-to-know' contact={contact} />}
     details={
       <div className='border-gray80 border-top py3 gray10'>
         {item.message}
@@ -124,7 +130,7 @@ export const NeedToKnowPost = ({item, currentUser, contact}) => (
   />
 )
 
-export const StatusUpdate = ({item, currentUser}) => {
+export const StatusUpdate = ({item, currentUser, campaign}) => {
   const contact = item.contacts[0]
   const name = contact ? contact.name.split(' ')[0] : 'a contact'
   return (
@@ -132,7 +138,11 @@ export const StatusUpdate = ({item, currentUser}) => {
       {...item}
       currentUser={currentUser}
       icon={<StatusUpdateIcon className='gray60' />}
-      summary={<PostSummary {...item} label={`updated ${name} for`} contact />}
+      summary={
+        <PostSummary {...item}>
+          updated {name} for <CampaignLink {...item.campaigns[0]} />
+        </PostSummary>
+      }
     />
   )
 }
