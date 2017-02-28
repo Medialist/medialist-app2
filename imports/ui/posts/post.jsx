@@ -35,15 +35,15 @@ const Post = ({icon, summary, details, createdBy, createdAt, currentUser, bgClas
 
 const ContactLink = ({slug, name, outletName}) => (
   <Link to={`/contact/${slug}`}>
-    <span className='semibold gray10'>{name}</span>
+    <span className='semibold gray10'> {name} </span>
     { outletName &&
-      <span className='gray10'> ({outletName})</span>
+      <span className='gray10'> ({outletName}) </span>
     }
   </Link>
 )
 
 const CampaignLink = ({slug, name}) => (
-  <Link className='semibold gray10' to={`/campaign/${slug}`}>{name}</Link>
+  <Link className='semibold gray10' to={`/campaign/${slug}`}> {name} </Link>
 )
 
 const firstName = ({name}) => name.split(' ')[0]
@@ -60,16 +60,13 @@ const PostSummary = ({label, campaigns, contacts, status, contact, campaign}) =>
       <span className='gray10'>
         {label}
       </span>
+      { !campaign && campaigns && campaigns[0] && (
+        <CampaignLink {...campaigns[0]} />
+      )}
       { !contact && contacts && (
         <span>
-          <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
+          <ChevronRight className='f-xxxs gray60' />
           <ContactLink {...contacts[0]} />
-        </span>
-      )}
-      { !campaign && campaigns && campaigns[0] && (
-        <span>
-          <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
-          <CampaignLink {...campaigns[0]} />
         </span>
       )}
     </span>
@@ -100,7 +97,7 @@ export const CoveragePost = ({item, currentUser, contact, campaign}) => (
     {...item}
     currentUser={currentUser}
     icon={<FeedCoverageIcon className='blue' />}
-    summary={<PostSummary {...item} label='logged coverage' contact={contact} campaign={campaign} />}
+    summary={<PostSummary contacts={item.contacts} campaigns={item.campaigns} label='logged coverage' contact={contact} campaign={campaign} />}
     details={
       <div className='border-gray80 border-top py3 gray10'>
         {item.message}
