@@ -55,11 +55,11 @@ const CampaignFilter = React.createClass({
             <span className={`f-sm semibold flex items-center select-none ${open ? 'blue' : ''}`}>
               {status && <StatusDot name={status} size={9} style={{marginTop: 1}} />}
               <div className='ml1'>{campaign.name}</div>
-              <ChevronDown className='gray40' />
+              <ChevronDown className={open ? 'blue' : 'gray40'} />
             </span>
           ) : (
             <span className={`f-sm semibold flex items-center select-none ${open && 'blue'}`}>
-              All Campaigns <ChevronDown className='gray40' />
+              All campaigns <ChevronDown className={open ? 'blue' : 'gray40'} />
             </span>
           )}
         </div>
