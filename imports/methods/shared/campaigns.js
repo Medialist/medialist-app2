@@ -19,7 +19,7 @@ Meteor.methods({
       name: campaign.name,
       slug: campaign.slug,
       avatar: campaign.avatar,
-      clientName: campaign.client.name,
+      clientName: campaign.client && campaign.client.name,
       updatedAt: new Date()
     } } })
   }
