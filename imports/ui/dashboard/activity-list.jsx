@@ -7,12 +7,12 @@ const ActivityList = React.createClass({
     loading: PropTypes.bool.isRequired,
     currentUser: PropTypes.object,
     items: PropTypes.array.isRequired,
-    hideContact: PropTypes.bool,
-    hideCampaign: PropTypes.bool
+    contact: PropTypes.object,
+    campaign: PropTypes.object
   },
 
   render () {
-    const { items, currentUser, hideContact, hideCampaign, loading } = this.props
+    const { items, currentUser, contact, campaign, loading } = this.props
     if (!loading && !items.length) return <p className='p4 mb2 f-xl semibold center'>No items yet</p>
     return (
       <div>
@@ -27,8 +27,8 @@ const ActivityList = React.createClass({
               key={item._id}
               item={item}
               currentUser={currentUser}
-              hideContact={hideContact}
-              hideCampaign={hideCampaign}
+              contact={contact}
+              campaign={campaign}
             />
           )
         })}
