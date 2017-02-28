@@ -82,7 +82,7 @@ export const FeedbackPost = ({item, currentUser, contact, campaign}) => (
   <Post
     {...item}
     currentUser={currentUser}
-    icon={<FeedFeedbackIcon className='blue' style={{verticalAlign: -2}} />}
+    icon={<FeedFeedbackIcon className='blue-dark' style={{verticalAlign: -2}} />}
     summary={<PostSummary {...item} label='logged feedback' contact={contact} campaign={campaign} />}
     details={
       <div className='border-gray80 border-top py3 gray10'>
@@ -150,15 +150,15 @@ export const AddContactsToCampaign = ({item, currentUser, contact}) => {
   )
 }
 
-export const CreateCampaign = ({item, currentUser}) => {
+export const CreateCampaign = ({item, currentUser, campaign}) => {
   const {slug, avatar, name, clientName} = item.campaigns[0]
   return (
     <Post
       {...item}
       currentUser={currentUser}
       icon={<FeedCampaignIcon className='status-blue' />}
-      summary='created a campaign'
-      details={
+      summary='created this campaign'
+      details={!campaign &&
         <div className='border-gray80 border-top pt2'>
           <Link key={slug} to={`/campaign/${slug}`} className='block py1' title={name}>
             <SquareAvatar size={38} avatar={avatar} name={name} />
@@ -174,4 +174,3 @@ export const CreateCampaign = ({item, currentUser}) => {
     />
   )
 }
-

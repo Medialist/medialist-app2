@@ -40,8 +40,10 @@ Meteor.publish('need-to-knows', function (opts) {
   }
 
   var options = {
-    sort: { createdAt: -1 },
-    limit: opts.limit || 1
+    sort: { createdAt: -1 }
+  }
+  if (opts.limit) {
+    options.limit = opts.limit
   }
 
   return Posts.find(query, options)

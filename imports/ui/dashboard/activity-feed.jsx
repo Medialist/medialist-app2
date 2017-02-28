@@ -68,13 +68,13 @@ const CampaignFilterContainer = createContainer((props) => {
 
 const ActivityListContainer = createContainer((props) => {
   const { campaign, contact, filter } = props
-  const limit = props.limit || 20
+  const limit = props.limit || 40
   const typesForFilter = {
     'All Activity': Posts.types,
     'Feedback': ['FeedbackPost'],
     'Coverage': ['CoveragePost'],
     'Need-to-knows': ['NeedToKnowPost'],
-    'Updates': ['StatusUpdate']
+    'Updates': ['StatusUpdate', 'AddContactsToCampaign']
   }
   const types = typesForFilter[filter] || Posts.types
   const subs = [

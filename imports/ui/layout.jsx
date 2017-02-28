@@ -31,16 +31,6 @@ export default createContainer(() => {
     Meteor.subscribe('my-contacts-and-campaigns'),
     Meteor.subscribe('master-lists')
   ]
-
-  // Prefetch recent posts for my campaigns
-  if (user) {
-    subs = subs.concat(
-      (user.myCampaigns || []).map((c) => (
-        Meteor.subscribe('posts', { campaign: c.slug, limit: 5 })
-      ))
-    )
-  }
-
   const loading = !subs.every((sub) => sub.ready())
   const notifications = notificationsDummyData
   return { user, notifications, loading }
