@@ -40,7 +40,7 @@ const CampaignsActionsToast = React.createClass({
               <span className='gray20'>campaign{campaigns.length === 1 ? '' : 's'} selected</span>
             </div>
             <div className='flex-auto center'>
-              <Tooltip title='View Contacts'>
+              <Tooltip title='View Campaigns'>
                 <ViewIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onViewClick(campaigns)} />
               </Tooltip>
               <Tooltip title='Add to Master list'>
@@ -52,7 +52,7 @@ const CampaignsActionsToast = React.createClass({
               <Tooltip title='Add Tags'>
                 <TagIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onTagClick(campaigns)} />
               </Tooltip>
-              <Tooltip title='Delete Contacts'>
+              <Tooltip title='Delete Campaigns'>
                 <DeleteIcon className='svg-icon-lg px3 pointer gray60 hover-red' onClick={() => onDeleteClick(campaigns)} />
               </Tooltip>
             </div>

@@ -46,24 +46,27 @@ const CampaignLink = ({slug, name}) => (
   <Link className='semibold gray10' to={`/campaign/${slug}`}>{name}</Link>
 )
 
-const ContactNamesOrCount = ({items}) => {
-  const text = items.length > 2 ? items.length + ' contacts' : items.map((i) => i.name.split(' ')[0]).join(' and ')
-  return <span>{` ${text} `}</span>
+const firstName = ({name}) => name.split(' ')[0]
+
+const contactNamesOrCount = ({contacts, contact}) => {
+  if (contact) return firstName(contact)
+  if (contacts.length > 2) return `${contacts.length} contacts`
+  return contacts.map(firstName).join(' and ')
 }
 
-const PostSummary = ({label, campaigns, contacts, status, hideContact, hideCampaign}) => (
+const PostSummary = ({label, campaigns, contacts, status, contact, campaign}) => (
   <span className='nowrap flex'>
     <span className='truncate align-middle'>
       <span className='gray10'>
         {label}
       </span>
-      { !hideContact && contacts && (
+      { !contact && contacts && (
         <span>
           <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
           <ContactLink {...contacts[0]} />
         </span>
       )}
-      { !hideCampaign && campaigns && campaigns[0] && (
+      { !campaign && campaigns && campaigns[0] && (
         <span>
           <span className='f-xxxs gray60 mx1'><ChevronRight /></span>
           <CampaignLink {...campaigns[0]} />
@@ -78,12 +81,12 @@ const PostSummary = ({label, campaigns, contacts, status, hideContact, hideCampa
   </span>
 )
 
-export const FeedbackPost = ({item, currentUser, hideContact, hideCampaign}) => (
+export const FeedbackPost = ({item, currentUser, contact, campaign}) => (
   <Post
     {...item}
     currentUser={currentUser}
     icon={<FeedFeedbackIcon className='blue' style={{verticalAlign: -2}} />}
-    summary={<PostSummary {...item} label='logged feedback' hideContact={hideContact} hideCampaign={hideCampaign} />}
+    summary={<PostSummary {...item} label='logged feedback' contact={contact} campaign={campaign} />}
     details={
       <div className='border-gray80 border-top py3 gray10'>
         {item.message}
@@ -92,12 +95,12 @@ export const FeedbackPost = ({item, currentUser, hideContact, hideCampaign}) => 
   />
 )
 
-export const CoveragePost = ({item, currentUser, hideContact, hideCampaign}) => (
+export const CoveragePost = ({item, currentUser, contact, campaign}) => (
   <Post
     {...item}
     currentUser={currentUser}
     icon={<FeedCoverageIcon className='blue' />}
-    summary={<PostSummary {...item} label='logged coverage' hideContact={hideContact} hideCampaign={hideCampaign} />}
+    summary={<PostSummary {...item} label='logged coverage' contact={contact} campaign={campaign} />}
     details={
       <div className='border-gray80 border-top py3 gray10'>
         {item.message}
@@ -106,13 +109,13 @@ export const CoveragePost = ({item, currentUser, hideContact, hideCampaign}) => 
   />
 )
 
-export const NeedToKnowPost = ({item, currentUser, hideContact}) => (
+export const NeedToKnowPost = ({item, currentUser, contact}) => (
   <Post
     {...item}
     bgClass='bg-yellow-lighter'
     currentUser={currentUser}
     icon={<FeedNeedToKnowIcon className='orange' />}
-    summary={<PostSummary {...item} label='shared a need-to-know' hideContact={hideContact} />}
+    summary={<PostSummary {...item} label='shared a need-to-know' contact={contact} />}
     details={
       <div className='border-gray80 border-top py3 gray10'>
         {item.message}
@@ -129,12 +132,12 @@ export const StatusUpdate = ({item, currentUser}) => {
       {...item}
       currentUser={currentUser}
       icon={<StatusUpdateIcon className='gray60' />}
-      summary={<PostSummary {...item} label={`updated ${name} for`} hideContact />}
+      summary={<PostSummary {...item} label={`updated ${name} for`} contact />}
     />
   )
 }
 
-export const AddContactsToCampaign = ({item, currentUser}) => {
+export const AddContactsToCampaign = ({item, currentUser, contact}) => {
   const {contacts, campaigns} = item
   return (
     <Post
@@ -143,7 +146,7 @@ export const AddContactsToCampaign = ({item, currentUser}) => {
       icon={<FeedContactIcon className='gray40' />}
       summary={
         <span>
-          added <ContactNamesOrCount items={contacts} /> to <CampaignLink {...campaigns[0]} />
+          added {contactNamesOrCount({contacts, contact})} to <CampaignLink {...campaigns[0]} />
         </span>
       }
     />
