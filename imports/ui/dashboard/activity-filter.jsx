@@ -11,7 +11,7 @@ import {
 } from '../images/icons'
 
 const iconMap = {
-  'All Activity': AllTypesIcon,
+  'All activity': AllTypesIcon,
   'Feedback': FeedFeedbackIcon,
   'Coverage': FeedCoverageIcon,
   'Need-to-knows': FeedNeedToKnowIcon,
@@ -58,7 +58,7 @@ const ActivityFilter = React.createClass({
         <div className='flex-none p3 pointer gray20' onClick={toggleDropdown}>
           <span className={`f-sm select-none semibold ${open ? 'blue' : 'gray20'}`}>
             {selected}
-            <ChevronDown className='gray40' />
+            <ChevronDown className={open ? 'blue' : 'gray40'} />
           </span>
           <DropdownMenu width={213} open={open} onDismiss={toggleDropdown}>
             <nav className='py1'>
