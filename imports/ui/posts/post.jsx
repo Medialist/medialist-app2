@@ -153,7 +153,7 @@ export const AddContactsToCampaign = ({item, currentUser, contact}) => {
   )
 }
 
-export const CreateCampaign = ({item, currentUser, hideCampaign}) => {
+export const CreateCampaign = ({item, currentUser, campaign}) => {
   const {slug, avatar, name, clientName} = item.campaigns[0]
   return (
     <Post
@@ -161,7 +161,7 @@ export const CreateCampaign = ({item, currentUser, hideCampaign}) => {
       currentUser={currentUser}
       icon={<FeedCampaignIcon className='status-blue' />}
       summary='created this campaign'
-      details={!hideCampaign &&
+      details={!campaign &&
         <div className='border-gray80 border-top pt2'>
           <Link key={slug} to={`/campaign/${slug}`} className='block py1' title={name}>
             <SquareAvatar size={38} avatar={avatar} name={name} />
