@@ -16,8 +16,7 @@ const sx = {
   root: {
     position: 'relative',
     display: 'inline-block',
-    cursor: 'pointer',
-    zIndex: 99
+    cursor: 'pointer'
   },
   box: {
     position: 'absolute',
@@ -31,7 +30,8 @@ const sx = {
     paddingRight: 15,
     color: '#fff',
     backgroundColor: '#25364b',
-    borderRadius: '2px'
+    borderRadius: '2px',
+    zIndex: 99
   },
   boxBottom: {
     bottom: 'inherit',
