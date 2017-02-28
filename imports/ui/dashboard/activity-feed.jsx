@@ -67,6 +67,7 @@ const CampaignFilterContainer = createContainer((props) => {
 }, CampaignFilter)
 
 const ActivityListContainer = createContainer((props) => {
+  const { campaign, contact, filter } = props
   const limit = props.limit || 20
   const typesForFilter = {
     'All Activity': Posts.types,
@@ -75,7 +76,7 @@ const ActivityListContainer = createContainer((props) => {
     'Need-to-knows': ['NeedToKnowPost'],
     'Updates': ['StatusUpdate']
   }
-  const types = typesForFilter[props.filter] || Posts.types
+  const types = typesForFilter[filter] || Posts.types
   const subs = [
     Meteor.subscribe('campaign-favourites'),
     Meteor.subscribe('posts', { limit, types })
@@ -83,15 +84,15 @@ const ActivityListContainer = createContainer((props) => {
   const query = {
     type: { $in: types }
   }
-  if (props.campaign) query['campaigns.slug'] = props.campaign.slug
-  if (props.contact) query['contacts.slug'] = props.contact.slug
+  if (campaign) query['campaigns.slug'] = campaign.slug
+  if (contact) query['contacts.slug'] = contact.slug
   const items = Posts.find(query, { sort: { createdAt: -1 }, limit }).fetch()
   const loading = subs.some((s) => !s.ready())
   return {
     loading,
     currentUser: Meteor.user(),
-    hideContact: !!props.contact,
-    hideCampaign: !!props.campaign,
+    contact,
+    campaign,
     items,
     ...props
   }

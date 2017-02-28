@@ -10,6 +10,19 @@ import isSameItems from '../lists/is-same-items'
 import StatusSelector from '../feedback/status-selector'
 import Loading from '../lists/loading'
 
+const ContactLink = ({contact, campaign}) => {
+  const {slug, name, avatar} = contact
+  const contactUrl = `/contact/${slug}`
+  const campaignUrl = campaign ? `/campaign/${campaign.slug}` : ''
+  const to = campaignUrl + contactUrl
+  return (
+    <Link to={to} className='nowrap'>
+      <CircleAvatar avatar={avatar} name={name} />
+      <span className='ml3 semibold'>{name}</span>
+    </Link>
+  )
+}
+
 const ContactsTable = React.createClass({
   propTypes: {
     // e.g. { updatedAt: -1 }
@@ -81,29 +94,30 @@ const ContactsTable = React.createClass({
               <SortableHeader
                 className='left-align'
                 sortDirection={sort['name']}
-                style={{width: '20%'}}
+                style={{width: '14%'}}
                 onSortChange={(d) => onSortChange({ name: d })}>
                 Name
               </SortableHeader>
               <SortableHeader
                 className='left-align'
                 sortDirection={sort['outlets.value']}
+                style={{width: '12%'}}
                 onSortChange={(d) => onSortChange({ 'outlets.value': d })}>
                 Title
               </SortableHeader>
               <SortableHeader
                 className='left-align'
                 sortDirection={sort['outlets.label']}
-                style={{width: '20%'}}
+                style={{width: '12%'}}
                 onSortChange={(d) => onSortChange({ 'outlets.label': d })}>
                 Media Outlet
               </SortableHeader>
-              <th className='left-align' style={{width: '15%'}}>Email</th>
-              <th className='left-align' style={{width: '15%'}}>Phone</th>
+              <th className='left-align' style={{width: '12%'}}>Email</th>
+              <th className='left-align' style={{width: '12%'}}>Phone</th>
               <SortableHeader
                 className='left-align'
                 sortDirection={sort['updatedAt']}
-                style={{width: '11%'}}
+                style={{width: '12%'}}
                 onSortChange={(d) => onSortChange({ updatedAt: d })}>
                 Updated
               </SortableHeader>
@@ -116,8 +130,6 @@ const ContactsTable = React.createClass({
             {contacts.map((contact) => {
               const {
                 _id,
-                name,
-                avatar,
                 slug,
                 emails,
                 outlets,
@@ -129,10 +141,7 @@ const ContactsTable = React.createClass({
               return (
                 <SelectableRow data={contact} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id}>
                   <td className='left-align'>
-                    <Link to={`/contact/${slug}`} className='nowrap'>
-                      <CircleAvatar avatar={avatar} name={name} />
-                      <span className='ml3 semibold'>{name}</span>
-                    </Link>
+                    <ContactLink contact={contact} campaign={campaign} />
                   </td>
                   <td className='left-align'>{(outlets && outlets.length) ? outlets[0].value : null}</td>
                   <td className='left-align'>{(outlets && outlets.length) ? outlets[0].label : null}</td>
