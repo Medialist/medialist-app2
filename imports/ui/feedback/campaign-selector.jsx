@@ -56,7 +56,7 @@ const CampaignSelector = React.createClass({
             { campaign ? <CampaignButton campaign={campaign} /> : 'Select a Campaign' }
           </button>
           <DropdownMenu left={-73} width={573} open={this.state.open} onDismiss={closeDropdown}>
-            <CampaignsFilterableList contact={contact} campaigns={campaigns} onFilter={onLinkClick} onClearFilter={onClearFilter} />
+            <CampaignsFilterableList contact={contact} campaigns={campaigns} onFilter={onLinkClick} onClearFilter={onClearFilter} hideAllFilter />
           </DropdownMenu>
         </Dropdown>
       </div>
