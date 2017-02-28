@@ -85,7 +85,7 @@ export const FeedbackPost = ({item, currentUser, contact, campaign}) => (
   <Post
     {...item}
     currentUser={currentUser}
-    icon={<FeedFeedbackIcon className='blue' style={{verticalAlign: -2}} />}
+    icon={<FeedFeedbackIcon className='blue-dark' style={{verticalAlign: -2}} />}
     summary={<PostSummary {...item} label='logged feedback' contact={contact} campaign={campaign} />}
     details={
       <div className='border-gray80 border-top py3 gray10'>
