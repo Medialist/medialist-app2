@@ -82,7 +82,7 @@ const ContactInfo = React.createClass({
             <CircleAvatar className='ml2' size={70} avatar={avatar} name={name} />
           </div>
           <div className='col col-9 pl3'>
-            <span className='semibold block f-xl mb1'>
+            <span className='semibold block f-xl mb1 gray10'>
               {name}
               <Tooltip title={tooltip}>
                 <Icon className='mx2 pointer svg-icon-lg align-bottom gray40' onClick={this.onToggleFavourite} />
