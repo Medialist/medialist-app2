@@ -74,7 +74,7 @@ const ActivityListContainer = createContainer((props) => {
     'Feedback': ['FeedbackPost'],
     'Coverage': ['CoveragePost'],
     'Need-to-knows': ['NeedToKnowPost'],
-    'Updates': ['StatusUpdate']
+    'Updates': ['StatusUpdate', 'AddContactsToCampaign']
   }
   const types = typesForFilter[filter] || Posts.types
   const subs = [

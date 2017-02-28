@@ -12,7 +12,8 @@ const CampaignsFilterableList = React.createClass({
     contact: PropTypes.object,
     campaigns: PropTypes.array,
     onFilter: PropTypes.func.isRequired,
-    onClearFilter: PropTypes.func
+    onClearFilter: PropTypes.func,
+    hideAllFilter: PropTypes.bool
   },
   getInitialState () {
     return { filteredCampaigns: this.props.campaigns || [] }
@@ -30,7 +31,7 @@ const CampaignsFilterableList = React.createClass({
     this.setState({ filteredCampaigns })
   },
   render () {
-    const { onFilter, contact, onClearFilter } = this.props
+    const { onFilter, contact, onClearFilter, hideAllFilter } = this.props
     const { filteredCampaigns } = this.state
     const styleOverrides = {
       backgroundColor: 'white',
@@ -41,7 +42,7 @@ const CampaignsFilterableList = React.createClass({
     return (
       <nav>
         <SearchBox onTermChange={this.onTermChange} placeholder='Search campaigns' style={styleOverrides} />
-        <div className='f-sm semibold p3 bg-gray90 border-bottom border-gray80 pointer' onClick={onClearFilter}>All campaigns ({filteredCampaigns.length})</div>
+        {!hideAllFilter && <div className='f-sm semibold p3 bg-gray90 border-bottom border-gray80 pointer' onClick={onClearFilter}>All campaigns ({filteredCampaigns.length})</div>}
         <div style={{maxHeight: 278, overflowY: 'auto'}}>
           {filteredCampaigns.map((item, i) => (
             <div
