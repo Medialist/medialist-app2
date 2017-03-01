@@ -21,7 +21,7 @@ const CampaignPostBox = React.createClass({
     const childProps = { focused, contacts, campaign }
 
     return (
-      <div className='mb2' onFocus={() => this.setState({focused: true})}>
+      <div className='pb3' onFocus={() => this.setState({focused: true})}>
         <PostBoxTabs>
           <FeedbackTab onClick={() => this.setState({selected: 'Feedback'})} selected={selected === 'Feedback'} />
           <CoverageTab onClick={() => this.setState({selected: 'Coverage'})} selected={selected === 'Coverage'} />

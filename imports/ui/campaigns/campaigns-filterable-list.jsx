@@ -33,6 +33,7 @@ const CampaignsFilterableList = React.createClass({
   render () {
     const { onFilter, contact, onClearFilter, hideAllFilter } = this.props
     const { filteredCampaigns } = this.state
+    const allCampaignCount = this.props.campaigns.length
     const styleOverrides = {
       backgroundColor: 'white',
       borderTop: 'solid 0px',
@@ -42,12 +43,16 @@ const CampaignsFilterableList = React.createClass({
     return (
       <nav>
         <SearchBox onTermChange={this.onTermChange} placeholder='Search campaigns' style={styleOverrides} />
-        {!hideAllFilter && <div className='f-sm semibold p3 bg-white border-bottom border-gray80 pointer' onClick={onClearFilter}>All campaigns ({filteredCampaigns.length})</div>}
+        {!hideAllFilter &&
+          <div className='f-sm semibold p3 pointer hover-bg-gray90 hover-box-shadow-x-gray80' onClick={onClearFilter}>
+            All campaigns ({allCampaignCount})
+          </div>
+        }
         <div style={{maxHeight: 278, overflowY: 'auto'}}>
           {filteredCampaigns.map((item, i) => (
             <div
               key={item._id}
-              className={`px3 py2 pointer border-transparent border-bottom ${i !== 0 ? 'border-top' : ''} hover-bg-gray90 hover-border-gray80`}
+              className={`px3 py2 pointer hover-bg-gray90 hover-box-shadow-x-gray80`}
               onClick={() => onFilter(item)}>
               <Campaign campaign={item} contact={contact} />
             </div>

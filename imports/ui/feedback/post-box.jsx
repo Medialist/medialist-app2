@@ -30,7 +30,7 @@ const PostBox = React.createClass({
     if (loading) return null
     const childProps = { focused, contact }
     return (
-      <div className='mb2' onFocus={() => this.setState({focused: true})}>
+      <div className='pb3' onFocus={() => this.setState({focused: true})}>
         <PostBoxTabs>
           <FeedbackTab onClick={() => this.setState({selected: 'Feedback'})} selected={selected === 'Feedback'} />
           <Divider show={selected === 'Need to Know'} />
