@@ -153,7 +153,7 @@ export const AddContactsToCampaign = ({item, currentUser, contact}) => {
     <Post
       {...item}
       currentUser={currentUser}
-      icon={<FeedContactIcon className='gray40' />}
+      icon={<FeedContactIcon className='gray60' />}
       summary={
         <span>
           added {contactNamesOrCount({contacts, contact})} to <CampaignLink {...campaigns[0]} />
