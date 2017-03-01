@@ -6,16 +6,16 @@ Meteor.publish('posts', function (opts) {
   if (!this.userId) return this.ready()
   opts = opts || {}
   check(opts, {
-    campaign: Match.Optional(String),
-    contact: Match.Optional(String),
+    campaignSlug: Match.Optional(String),
+    contactSlug: Match.Optional(String),
     message: Match.Optional(Boolean),
     types: Match.Optional([String]),
     limit: Match.Optional(Number)
   })
 
   var query = {}
-  if (opts.campaign) query.campaigns = opts.campaign
-  if (opts.contact) query['contacts.slug'] = opts.contact
+  if (opts.campaignSlug) query['campaigns.slug'] = opts.campaignSlug
+  if (opts.contactSlug) query['contacts.slug'] = opts.contactSlug
   if (opts.message) query.message = { $exists: true }
   if (opts.types) query.type = { $in: opts.types }
 
