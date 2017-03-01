@@ -82,15 +82,17 @@ const ContactInfo = React.createClass({
             <CircleAvatar className='ml2' size={70} avatar={avatar} name={name} />
           </div>
           <div className='col col-9 pl3'>
-            <span className='semibold block f-xl mb1 gray10'>
+            <div className='semibold f-xl gray10'>
               {name}
               <Tooltip title={tooltip}>
                 <Icon className='mx2 pointer svg-icon-lg align-bottom gray40' onClick={this.onToggleFavourite} />
               </Tooltip>
-            </span>
-            <span className='block f-sm  gray10 mt2'>{(outlets && outlets.length) ? outlets[0].value : null}</span>
-            <span className='block f-sm gray10'>{outlets.map((o) => o.label).join(', ')}</span>
-            <span className='block mt3'>{socials.map((social) => <SocialLinks {...social} />)}</span>
+            </div>
+            <div style={{paddingTop: 4}}>
+              <div className='f-sm gray10'>{(outlets && outlets.length) ? outlets[0].value : null}</div>
+              <div className='f-sm gray10'>{outlets.map((o) => o.label).join(', ')}</div>
+            </div>
+            <div className='mt3'>{socials.map((social) => <SocialLinks {...social} />)}</div>
           </div>
         </div>
         <div className='clearfix p3 pt4 mt4 border-gray80 border-bottom'>
