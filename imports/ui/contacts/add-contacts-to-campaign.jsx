@@ -49,7 +49,7 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
           <SearchBlueIcon className='flex-none' />
           <input ref={(input) => input && input.focus()} className='flex-auto f-sm pa2 mx2' placeholder='Search campaigns' onChange={onChange} style={{outline: 'none'}} onKeyPress={onKeyPress} value={term} />
         </div>
-        <div style={{height: '413px', overflowY: 'scroll'}}>
+        <div style={{height: '413px', overflowY: 'auto'}}>
           <ResultList onAdd={onAdd} results={campaigns} />
         </div>
       </div>
@@ -154,10 +154,10 @@ const ResultList = React.createClass({
               <div className='flex-auto'>
                 <CampaignResult {...res} />
               </div>
-              <div className='flex-none px4 f-sm gray40 hover-gray20'>
-                {contactCount} {contactCount === 1 ? 'contact' : 'contacts'} involved
+              <div className='flex-none f-sm gray40 hover-gray20'>
+                {contactCount} {contactCount === 1 ? 'contact' : 'contacts'}
               </div>
-              <div className='flex-none pl4 pr2 opacity-0 hover-opacity-100'>
+              <div className='flex-none opacity-0 hover-opacity-100' style={{padding: '0 50px'}}>
                 <AddIcon />
               </div>
             </div>
