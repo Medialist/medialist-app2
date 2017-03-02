@@ -132,19 +132,19 @@ const EditCampaign = React.createClass({
         <ValidationBanner error={validationErrors.name || validationErrors.links} />
         <div className='px4 py6 center'>
           <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError}>
-            <div className='bg-gray40 center rounded mx-auto' style={{height: '123px', width: '123px', lineHeight: '123px'}}>
-              { avatar ? <img src={avatar} width='100%' height='100%' /> : <CameraIcon /> }
+            <div className='bg-gray60 center rounded mx-auto' style={{height: '110px', width: '110px', lineHeight: '110px'}}>
+              { avatar ? <img src={avatar} width='100%' height='100%' /> : <CameraIcon className='svg-icon-xl' /> }
             </div>
           </EditableAvatar>
           <div>
             <input
               ref={(input) => { this.nameInput = input }}
               autoComplete='off'
-              className={`center gray10 input-inline mt4 f-xxxl semibold ${validationErrors.name ? 'error' : ''}`}
+              className={`center gray10 input-inline mt4 f-xxxl semibold placeholder-gray60 ${validationErrors.name ? 'error' : ''}`}
               type='text'
               name='name'
               value={name}
-              placeholder='Campaign Name'
+              placeholder='Campaign name'
               size={name.length === 0 ? 15 : name.length + 2}
               onChange={onChange('name')}
               onBlur={validate}
@@ -155,7 +155,7 @@ const EditCampaign = React.createClass({
         <div className='bg-gray90 border-top border-gray80 py5 overflow-auto' style={{ maxHeight: '400px' }}>
           <div style={{ padding: '0 100px' }}>
             <div>
-              <label className='block gray40 f-m mb2'>Client</label>
+              <label className='block gray40 f-sm mb2 bold'>Client</label>
               <div className='relative'>
                 <div style={iconStyle}>
                   <FilledCircle className={this.focusState('clientName')} />
@@ -164,7 +164,7 @@ const EditCampaign = React.createClass({
                   onFocus={this.addFocus('clientName')}
                   onBlur={this.removeFocus}
                   clients={clients}
-                  className='input block'
+                  className='input block placeholder-gray60'
                   name='clientName'
                   placeholder='Client'
                   clientName={clientName}
@@ -173,7 +173,7 @@ const EditCampaign = React.createClass({
               </div>
             </div>
             <div className='mt4'>
-              <label className='block gray40 f-m mb2'>Key Message</label>
+              <label className='block gray40 f-sm mb2 bold'>Key Message</label>
               <div className='relative'>
                 <div style={iconStyle}>
                   <BioIcon className={this.focusState('purpose')} />
@@ -182,7 +182,7 @@ const EditCampaign = React.createClass({
                   onFocus={this.addFocus('purpose')}
                   onBlur={this.removeFocus}
                   style={{ ...inputStyle, height: '70px' }}
-                  className='input block textarea'
+                  className='input block textarea placeholder-gray60'
                   type='text'
                   rows='5'
                   name='purpose'
@@ -192,7 +192,7 @@ const EditCampaign = React.createClass({
               </div>
             </div>
             <div className='mt4'>
-              <label className='block gray40 f-m mb2'>Links</label>
+              <label className='block gray40 f-sm mb2 bold'>Links</label>
               {links.map((link, ind) => (
                 <div key={ind} className='relative mt1 icon-blue-highlight'>
                   <div style={iconStyle}>
@@ -202,7 +202,7 @@ const EditCampaign = React.createClass({
                     onFocus={this.addFocus(`link-${ind}`)}
                     onBlur={callAll([this.removeFocus, this.checkLinkEmpty(ind), validate])}
                     style={inputStyle}
-                    className='input block'
+                    className='input block placeholder-gray60'
                     type='text'
                     value={links[ind].url}
                     placeholder='Links'
