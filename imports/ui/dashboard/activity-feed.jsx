@@ -6,6 +6,8 @@ import CampaignFilter from './campaign-filter'
 import ActivityFilter, { filterNames } from './activity-filter'
 import Posts from '/imports/api/posts/posts'
 import Campaigns from '/imports/api/campaigns/campaigns'
+import NearBottomContainer from '../navigation/near-bottom-container'
+import SubscriptionLimitContainer from '../navigation/subscription-limit-container'
 
 const ActivityFeed = React.createClass({
   propTypes: {
@@ -48,7 +50,15 @@ const ActivityFeed = React.createClass({
           }
           <hr className='flex-auto pl2' style={{height: 1}} />
         </div>
-        <ActivityListContainer filter={filterType} campaign={filterCampaign || campaign} contact={contact} />
+        <NearBottomContainer>
+          {(nearBottom) => (
+            <SubscriptionLimitContainer wantMore={nearBottom}>
+              {(limit) => (
+                <ActivityListContainer limit={limit} filter={filterType} campaign={filterCampaign || campaign} contact={contact} />
+              )}
+            </SubscriptionLimitContainer>
+          )}
+        </NearBottomContainer>
       </div>
     )
   }
@@ -67,8 +77,8 @@ const CampaignFilterContainer = createContainer((props) => {
 }, CampaignFilter)
 
 const ActivityListContainer = createContainer((props) => {
-  const { campaign, contact, filter } = props
-  const limit = props.limit || 40
+  const { campaign, contact, filter, limit } = props
+  console.log({limit})
   const typesForFilter = {
     'All Activity': Posts.types,
     'Feedback': ['FeedbackPost'],

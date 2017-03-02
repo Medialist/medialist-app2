@@ -28,7 +28,6 @@ const Layout = React.createClass({
 export default createContainer(() => {
   const user = Meteor.user()
   let subs = [
-    Meteor.subscribe('my-contacts-and-campaigns'),
     Meteor.subscribe('master-lists')
   ]
   const loading = !subs.every((sub) => sub.ready())

@@ -23,6 +23,7 @@ export default (Component, opts = {}) => {
 
   return React.createClass({
     propTypes: {
+      limit: PropTypes.number,
       term: PropTypes.string.isRequired,
       // http://docs.meteor.com/api/collections.html#sortspecifiers
       sort: PropTypes.oneOfType([ PropTypes.object, PropTypes.array ]),
@@ -38,44 +39,22 @@ export default (Component, opts = {}) => {
     mixins: [ReactMeteorData],
 
     getMeteorData () {
-      const { sort, term, selectedMasterListSlug, userId, campaignSlugs } = this.props
+      const { term, selectedMasterListSlug, userId, campaignSlugs, sort, limit } = this.props
+      console.log('getMeteorData', sort)
       const subs = [ Meteor.subscribe('contactCount') ]
       const contactsCount = Contacts.allContactsCount()
-      const query = {}
-
-      if (campaignSlugs && campaignSlugs.length) {
-        query.campaigns = { $in: campaignSlugs }
-        subs.push(Meteor.subscribe('contacts', {campaignSlugs}))
+      const opts = {
+        term,
+        campaignSlugs,
+        masterListSlug: selectedMasterListSlug,
+        userId,
+        sort,
+        limit
       }
-      if (selectedMasterListSlug) {
-        query['masterLists.slug'] = selectedMasterListSlug
-        subs.push(Meteor.subscribe('contacts', {masterListSlug: selectedMasterListSlug}))
-      }
-      if (userId) {
-        subs.push(Meteor.subscribe('contacts', {userId: userId}))
-        if (userId !== Meteor.userId()) {
-          subs.push(Meteor.subscribe('users-by-id', {userIds: [userId]}))
-        }
-        const user = Meteor.users.findOne({_id: userId})
-        const myContacts = user && user.myContacts || []
-        query.slug = { $in: myContacts.map((c) => c.slug) }
-      }
-
-      const searching = term.length >= opts.minSearchLength
-      if (searching) {
-        const filterRegExp = new RegExp(term, 'gi')
-        query.$or = [
-          { name: filterRegExp },
-          { 'outlets.value': filterRegExp },
-          { 'outlets.label': filterRegExp }
-        ]
-        subs.push(
-          Meteor.subscribe('contacts', { regex: term.substr(0, opts.minSearchLength) })
-        )
-      }
-      const contacts = Contacts.find(query, { sort }).fetch()
+      subs.push(Meteor.subscribe('contacts-search', opts))
+      const contacts = Contacts.search(opts).fetch()
       const loading = !subs.every((sub) => sub.ready())
-      return { contacts, contactsCount, loading, searching }
+      return { contacts, contactsCount, loading, searching: term.length > 2 }
     },
 
     render () {

@@ -13,62 +13,29 @@ Meteor.publish('contactCount', function () {
 Meteor.publish('my-contacts-and-campaigns', function () {
   if (!this.userId) return this.ready()
   return [
-    Contacts.find({}, { sort: { updatedAt: -1 }, limit: 100 }),
-    Campaigns.find({}, { sort: { updatedAt: -1 }, limit: 10 })
+    Contacts.find({}, { sort: { updatedAt: -1 }, limit: 2000 }),
+    Campaigns.find({}, { sort: { updatedAt: -1 }, limit: 1 })
   ]
 })
 
-Meteor.publish('contacts', function (opts) {
+Meteor.publish('contacts-search', function (opts) {
   if (!this.userId) return this.ready()
-
-  opts = opts || {}
   check(opts, {
-    regex: Match.Optional(String),
+    term: Match.Optional(String),
     campaignSlugs: Match.Optional(Array),
     masterListSlug: Match.Optional(String),
     userId: Match.Optional(String),
+    sort: Match.Optional(Object),
     limit: Match.Optional(Number)
   })
-
-  var query = {}
-
-  if (opts.campaignSlugs) {
-    query.campaigns = {
-      $in: opts.campaignSlugs
-    }
-  }
-
-  if (opts.masterListSlug) {
-    query['masterLists.slug'] = opts.masterListSlug
-  }
-
+  const cursors = [Contacts.search(opts)]
   if (opts.userId) {
-    const user = Meteor.users.findOne({_id: opts.userId}, {fields: { myContacts: 1 }})
-    if (!user) {
-      console.log(`'contacts' publication failed to find user for provided userId ${opts.userId}`)
-      return this.ready()
-    }
-    query.slug = { $in: user.myContacts.map((c) => c.slug) }
+    cursors.push(Meteor.users.find(
+      {_id: opts.userId},
+      {fields: {_id: 1, myContacts: 1}}
+    ))
   }
-
-  if (opts.regex) {
-    var regex = new RegExp(opts.regex, 'gi')
-    query = { $or: [
-      { name: regex },
-      { 'outlets.value': regex },
-      { 'outlets.label': regex }
-    ]}
-  }
-
-  var options = {
-    sort: { createdAt: -1 },
-    fields: { importedData: 0 }
-  }
-
-  if (opts.limit) {
-    options.limit = opts.limit
-  }
-  return Contacts.find(query, options)
+  return cursors
 })
 
 Meteor.publish('contact', function (slug) {
