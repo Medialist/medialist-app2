@@ -54,7 +54,6 @@ const EditableAvatar = React.createClass({
     )
     const { onImageChange, onImageError, onAvatarClick, onDropdownDismiss } = this
     const { left = '-50%', top = '5rem', width = 250 } = dropdownStyle
-    console.log({ left, top, width })
     return (
       <div className={className} style={style} onClick={onAvatarClick}>
         {children}
