@@ -131,7 +131,7 @@ const EditCampaign = React.createClass({
       <form onSubmit={onSubmit} onReset={onReset} className='relative'>
         <ValidationBanner error={validationErrors.name || validationErrors.links} />
         <div className='px4 py6 center'>
-          <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError}>
+          <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError} dropdownStyle={{left: '-60%', top: '117px'}}>
             <div className='bg-gray60 center rounded mx-auto' style={{height: '110px', width: '110px', lineHeight: '110px'}}>
               { avatar ? <img src={avatar} width='100%' height='100%' /> : <CameraIcon className='svg-icon-xl' /> }
             </div>

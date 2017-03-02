@@ -9,6 +9,7 @@ const EditableAvatar = React.createClass({
     arrowPosition: PropTypes.string,
     className: PropTypes.string,
     style: PropTypes.object,
+    dropdownStyle: PropTypes.onject,
     onChange: PropTypes.func.isRequired,
     onError: PropTypes.func.isRequired
   },
@@ -44,7 +45,7 @@ const EditableAvatar = React.createClass({
   },
 
   render () {
-    const { avatar, children, style, arrowPosition } = this.props
+    const { avatar, children, style, arrowPosition, dropdownStyle = {} } = this.props
     const { isDropdownOpen } = this.state
     const className = classNames(
       'relative inline-block',
@@ -52,12 +53,13 @@ const EditableAvatar = React.createClass({
       this.props.className
     )
     const { onImageChange, onImageError, onAvatarClick, onDropdownDismiss } = this
-
+    const { left = '-50%', top = '5rem', width = 250 } = dropdownStyle
+    console.log({ left, top, width })
     return (
       <div className={className} style={style} onClick={onAvatarClick}>
         {children}
         <DropdownMenu
-          style={{ left: '-50%', top: '5rem', width: 250 }}
+          style={{ left, top, width }}
           arrowPosition={arrowPosition}
           open={isDropdownOpen}
           onDismiss={onDropdownDismiss}>
