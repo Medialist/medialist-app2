@@ -1,8 +1,7 @@
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
-import moment from 'moment'
-import { SquareAvatar } from '../images/avatar'
 import { MenuCampaignIcon, ChevronRight } from '../images/icons'
+import CampaignPreview from '../campaigns/campaign-preview'
 
 const RecentCampaignsList = React.createClass({
   propTypes: {
@@ -21,15 +20,9 @@ const RecentCampaignsList = React.createClass({
         </header>
         <nav className='p3'>
           {campaigns.length
-            ? campaigns.map(({ name, avatar, clientName, updatedAt, slug }) => (
-              <Link key={slug} to={`/campaign/${slug}`} className='block py1 mb2' title={name}>
-                <SquareAvatar size={38} avatar={avatar} name={name} />
-                <div className='inline-block align-middle'>
-                  <div className='ml3 semibold f-md gray10'>{name}</div>
-                  <div className='ml3 regular f-sm gray20' style={{marginTop: 2}}>
-                    {clientName} <span className='gray40'>&ndash; Updated {moment(updatedAt).fromNow()}</span>
-                  </div>
-                </div>
+            ? campaigns.map((campaign) => (
+              <Link key={campaign.slug} to={`/campaign/${campaign.slug}`} className='block py1 mb2' title={campaign.name}>
+                <CampaignPreview {...campaign} />
               </Link>
             ))
             : (
