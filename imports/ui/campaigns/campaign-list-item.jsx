@@ -1,23 +1,17 @@
 import React from 'react'
-import { TimeFromNow } from '../time/time'
-import { SquareAvatar } from '../images/avatar.jsx'
+import CampaignPreview from './campaign-preview'
 import StatusLabel from '../feedback/status-label'
 
-export default (props) => {
-  const { name, avatar, client, contacts, updatedAt } = props.campaign
-  const slug = props.contact ? props.contact.slug : null
+export default ({campaign, contact}) => {
+  const slug = contact ? contact.slug : null
+  const status = campaign.contacts[slug]
   return (
     <div className='flex items-center'>
-      <SquareAvatar avatar={avatar} name={name} />
-      <div className='flex-auto ml3'>
-        <div className='semibold f-md gray10'>{name}</div>
-        <div className='normal f-sm gray20'>
-          {client && client.name}
-          <span className='ml1 gray40'>- updated <TimeFromNow date={updatedAt} /></span>
-        </div>
+      <div className='flex-auto pr3'>
+        <CampaignPreview {...campaign} />
       </div>
       <div className='flex-none' style={{width: 173}}>
-        <Status name={contacts[slug]} />
+        <Status name={status} />
       </div>
     </div>
   )

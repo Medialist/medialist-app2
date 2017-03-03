@@ -1,9 +1,10 @@
 import React from 'react'
 import { Link } from 'react-router'
-import { CircleAvatar, SquareAvatar } from '../images/avatar'
+import { CircleAvatar } from '../images/avatar'
 import Time from '../time/time'
 import YouOrName from '../users/you-or-name'
 import Status from '../feedback/status'
+import CampaignPreview from '../campaigns/campaign-preview'
 import {
   ChevronRight,
   FeedCampaignIcon,
@@ -174,13 +175,7 @@ export const CreateCampaign = ({item, currentUser, campaign}) => {
       details={!campaign &&
         <div className='border-gray80 border-top pt2'>
           <Link key={slug} to={`/campaign/${slug}`} className='block py1' title={name}>
-            <SquareAvatar size={38} avatar={avatar} name={name} />
-            <div className='inline-block align-middle'>
-              <div className='ml3 semibold f-md gray10'>{name}</div>
-              <div className='ml3 regular f-sm gray20' style={{marginTop: 2}}>
-                {clientName}
-              </div>
-            </div>
+            <CampaignPreview name={name} avatar={avatar} clientName={clientName} />
           </Link>
         </div>
       }
