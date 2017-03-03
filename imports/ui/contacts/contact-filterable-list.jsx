@@ -12,10 +12,16 @@ export default React.createClass({
   },
   render () {
     const { term, onTermChange, campaign, contacts, onSelectContact } = this.props
+    const styleOverrides = {
+      backgroundColor: 'white',
+      borderTop: 'solid 0px',
+      borderRight: 'solid 0px',
+      borderLeft: 'solid 0px'
+    }
     return (
       <div>
-        <SearchBox term={term} onTermChange={onTermChange} />
-        <div className='overflow-scroll' style={{maxHeight: 307}}>
+        <SearchBox term={term} onTermChange={onTermChange} style={styleOverrides} placeholder='Search contacts' />
+        <div className='overflow-scroll' style={{maxHeight: 299}}>
           <CampaignContacts campaign={campaign} contacts={contacts} onSelectContact={onSelectContact} />
         </div>
       </div>

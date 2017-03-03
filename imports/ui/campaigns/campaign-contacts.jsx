@@ -11,7 +11,8 @@ const CampaignContacts = ({campaign, contacts, onSelectContact}) => {
         const status = campaign.contacts[slug]
         return (
           <div
-            className={'flex items-center pointer border-bottom border-top border-transparent hover-border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger active-bg-green-light'}
+            className={'flex items-center pointer border-bottom border-top border-transparent hover-border-gray80 pl4 hover-bg-gray90 hover-opacity-trigger active-bg-green-light'}
+            style={{height: 75}}
             onClick={() => onSelectContact(contact)}
             key={slug} >
             <div className='flex-auto'>

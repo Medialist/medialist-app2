@@ -64,7 +64,7 @@ const ContactSelector = React.createClass({
             <button className='btn bg-transparent border-gray80' style={{height: 34, padding: '0 12px', borderRadius: 2}} onClick={this.openDropdown} disabled={!contacts || !contacts.length}>
               { selectedContact ? <ContactButton contact={selectedContact} /> : 'Select a Contact' }
             </button>
-            <DropdownMenu width={520} left={-50} open={open} onDismiss={closeDropdown}>
+            <DropdownMenu width={573} left={-50} open={open} onDismiss={closeDropdown}>
               <ContactFilterableList
                 term={term}
                 onTermChange={onTermChange}
