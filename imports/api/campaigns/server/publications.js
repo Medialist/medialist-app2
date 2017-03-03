@@ -1,13 +1,16 @@
+import { Meteor } from 'meteor/meteor'
+import { Counter } from 'meteor/natestrauser:publish-performant-counts'
+import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
+import { publishAllForLoggedInUser } from '/imports/lib/publish-all'
+import * as Queries from '../queries'
+
+publishAllForLoggedInUser(Queries)
+
 const campaignCounter = new Counter('campaignCount', Campaigns.find({}))
 
 Meteor.publish('campaignCount', function () {
   return campaignCounter
-})
-
-Meteor.publish('campaigns', function (opts) {
-  if (!this.userId) return this.ready()
-  return Campaigns.search(opts) || this.ready()
 })
 
 Meteor.publish('campaigns-by-slug', function (slugs) {
@@ -25,5 +28,5 @@ Meteor.publish('campaign', function (slug) {
 
 Meteor.publish('campaign-favourites', function () {
   if (!this.userId) return []
-  return Campaigns.find({}, { limit:7, sort: [['createdAt', 'desc']] })
+  return Campaigns.find({}, { limit: 7, sort: [['createdAt', 'desc']] })
 })

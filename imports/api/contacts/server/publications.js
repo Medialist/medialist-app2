@@ -3,6 +3,10 @@ import { check, Match } from 'meteor/check'
 import { Counter } from 'meteor/natestrauser:publish-performant-counts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from './contacts'
+import { publishAllForLoggedInUser } from '/imports/lib/publish-all'
+import * as Queries from '../queries'
+
+publishAllForLoggedInUser(Queries)
 
 const contactCounter = new Counter('contactCount', Contacts.find({}), 3000)
 

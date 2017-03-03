@@ -1,21 +1,28 @@
 import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
 import { ReactMeteorData } from 'meteor/react-meteor-data'
-import Campaigns from '../../api/campaigns/campaigns'
+import Campaigns from '/imports/api/campaigns/campaigns'
+import { searchCampaigns } from '/imports/api/campaigns/queries'
 
 /**
 * CampaignSearchContainer
+* Find campaings by a search term and other criteria.
 *
-* Pass in a Component to wrap along with sort and search options.
+* You can pass in:
+* - `term` - The Search term
+* - `sort` - a mongo sort sort specifier
+* - `limit` - maximum number of docs to fetch.
+* - `masterListSlug` - to search a in a specific list
+* - `userId` to search in the `myContacts` for a given user
 *
-* Wrapped Component is given additional props:
-* `campaigns` - search results
-* `campaignsCount` - count of all contacts available
-* `loading` - search subscription is loading
-* `searching` - true if the term is long enough to trigger a search subscription
+* Your component will recieve these additional props:
+* - `contacts` - search results
+* - `contactsCount` - count of all contacts available
+* - `loading` - search subscription is loading
+* - `searching` - true if the term is long enough to trigger a search subscription
 */
 export default (Component, opts = {}) => {
-  opts.minSearchLength = opts.minSearchLength || 3
+  const minSearchLength = opts.minSearchLength || 3
 
   return React.createClass({
     propTypes: {
@@ -33,38 +40,26 @@ export default (Component, opts = {}) => {
     mixins: [ReactMeteorData],
 
     getMeteorData () {
-      const { sort, term, selectedMasterListSlug, userId } = this.props
-      const subs = [ Meteor.subscribe('campaignCount') ]
-      const campaignCount = Campaigns.allCampaignsCount()
-      const query = {}
-
-      if (selectedMasterListSlug) {
-        query['masterLists.slug'] = selectedMasterListSlug
-        subs.push(Meteor.subscribe('campaigns', {masterListSlug: selectedMasterListSlug}))
+      const { term, selectedMasterListSlug, userId, sort, limit } = this.props
+      const opts = {
+        masterListSlug: selectedMasterListSlug,
+        userId,
+        sort,
+        limit
       }
-      if (userId) {
-        subs.push(Meteor.subscribe('campaigns', {userId: userId}))
-        if (userId !== Meteor.userId()) {
-          subs.push(Meteor.subscribe('users-by-id', {userIds: [userId]}))
-        }
-        const user = Meteor.users.findOne({_id: userId})
-        const myCampaigns = user && user.myCampaigns || []
-        query.slug = { $in: myCampaigns.map((c) => c.slug) }
-      }
-
-      const searching = term.length >= opts.minSearchLength
+      const searching = !!(term && term.length >= minSearchLength)
       if (searching) {
-        const filterRegExp = new RegExp(term, 'gi')
-        query.$or = [
-          { name: filterRegExp },
-          { purpose: filterRegExp },
-          { 'client.name': filterRegExp }
-        ]
-        subs.push(
-          Meteor.subscribe('campaigns', { regex: term.substr(0, opts.minSearchLength) })
-        )
+        opts.term = term
       }
-      const campaigns = Campaigns.find(query, { sort }).fetch()
+      const subs = [
+        Meteor.subscribe('campaignCount'),
+        Meteor.subscribe('searchCampaigns', opts)
+      ]
+      if (userId && userId !== Meteor.userId()) {
+        subs.push(Meteor.subscribe('users-by-id', {userIds: [userId]}))
+      }
+      const campaigns = searchCampaigns(opts).fetch()
+      const campaignCount = Campaigns.allCampaignsCount()
       const loading = !subs.every((sub) => sub.ready())
       return { campaigns, campaignCount, loading, searching }
     },

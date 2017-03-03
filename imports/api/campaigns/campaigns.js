@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { Counter } from 'meteor/natestrauser:publish-performant-counts'
-import { check, Match } from 'meteor/check'
 import nothing from '/imports/lib/nothing'
 import { MasterListRefSchema } from '/imports/api/master-lists/master-lists'
 import { UserRefSchema } from '/imports/api/users/users'
@@ -33,48 +32,6 @@ Campaigns.findRefs = ({campaignSlugs}) => {
     { slug: { $in: campaignSlugs } },
     { fields: { _id: 1, slug: 1, name: 1, avatar: 1, client: 1 } }
   ).map(Campaigns.toRef)
-}
-
-Campaigns.search = (opts) => {
-  opts = opts || {}
-
-  check(opts, {
-    regex: Match.Optional(String),
-    masterListSlug: Match.Optional(String),
-    userId: Match.Optional(String),
-    limit: Match.Optional(Number)
-  })
-
-  const query = {}
-
-  if (opts.masterListSlug) {
-    query['masterLists.slug'] = opts.masterListSlug
-  }
-
-  if (opts.userId) {
-    const user = Meteor.users.findOne({_id: opts.userId}, {fields: { myCampaigns: 1 }})
-    if (!user) {
-      console.log(`'contacts' publication failed to find user for provided userId ${opts.userId}`)
-      return null
-    }
-    query.slug = { $in: user.myCampaigns.map((c) => c.slug) }
-  }
-
-  if (opts.regex) {
-    const filterRegExp = new RegExp(opts.regex, 'gi')
-    query.$or = [
-      { name: filterRegExp },
-      { purpose: filterRegExp },
-      { 'client.name': filterRegExp }
-    ]
-  }
-
-  const options = {
-    sort: { createdAt: -1 },
-    limit: opts.limit || 100
-  }
-
-  return Campaigns.find(query, options)
 }
 
 export const CampaignRefSchema = new SimpleSchema([

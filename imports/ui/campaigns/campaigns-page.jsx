@@ -18,6 +18,9 @@ import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import AddTags from '../tags/add-tags'
 import AbbreviatedAvatarList from '../lists/abbreviated-avatar-list.jsx'
 import AddToMasterList from '../master-lists/add-to-master-list.jsx'
+import NearBottomContainer from '../navigation/near-bottom-container'
+import SubscriptionLimitContainer from '../navigation/subscription-limit-container'
+import Loading from '../lists/loading'
 
 const CampaignsPage = React.createClass({
   propTypes: {
@@ -140,7 +143,7 @@ const CampaignsPage = React.createClass({
     }
 
     return (
-      <div>
+      <div style={{paddingBottom: 100}}>
         <div style={{height: 58}} className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
           <div className='flex-auto border-right border-gray80'>
             <MasterListsSelectorContainer
@@ -171,31 +174,32 @@ const CampaignsPage = React.createClass({
             selections={selections}
             onSortChange={onSortChange}
             onSelectionsChange={onSelectionsChange} />
-          <CampaignsActionsToast
-            campaigns={selections}
-            onViewClick={onViewSelection}
-            onSectorClick={() => this.setState({addToMasterListsOpen: true})}
-            onFavouriteClick={onFavouriteAll}
-            onTagClick={() => this.setState({addTagsOpen: true})}
-            onDeleteClick={() => snackbar.show('TODO: delete campaigns')}
-            onDeselectAllClick={this.onDeselectAllClick} />
-          <AddTags
-            type='Campaigns'
-            open={this.state.addTagsOpen}
-            onDismiss={() => this.setState({addTagsOpen: false})}
-            onUpdateTags={this.onTagAll}
-            title='Tag these Campaigns'>
-            <AbbreviatedAvatarList items={selections} shape='square' />
-          </AddTags>
-          <AddToMasterList
-            type='Campaigns'
-            open={this.state.addToMasterListsOpen}
-            onDismiss={() => this.setState({addToMasterListsOpen: false})}
-            onSave={this.onAddAllToMasterLists}
-            title='Add Campaigns to a Master List'>
-            <AbbreviatedAvatarList items={selections} maxTooltip={12} shape='square' />
-          </AddToMasterList>
         </div>
+        { loading && <div className='center p4'><Loading /></div> }
+        <CampaignsActionsToast
+          campaigns={selections}
+          onViewClick={onViewSelection}
+          onSectorClick={() => this.setState({addToMasterListsOpen: true})}
+          onFavouriteClick={onFavouriteAll}
+          onTagClick={() => this.setState({addTagsOpen: true})}
+          onDeleteClick={() => snackbar.show('TODO: delete campaigns')}
+          onDeselectAllClick={this.onDeselectAllClick} />
+        <AddTags
+          type='Campaigns'
+          open={this.state.addTagsOpen}
+          onDismiss={() => this.setState({addTagsOpen: false})}
+          onUpdateTags={this.onTagAll}
+          title='Tag these Campaigns'>
+          <AbbreviatedAvatarList items={selections} shape='square' />
+        </AddTags>
+        <AddToMasterList
+          type='Campaigns'
+          open={this.state.addToMasterListsOpen}
+          onDismiss={() => this.setState({addToMasterListsOpen: false})}
+          onSave={this.onAddAllToMasterLists}
+          title='Add Campaigns to a Master List'>
+          <AbbreviatedAvatarList items={selections} maxTooltip={12} shape='square' />
+        </AddToMasterList>
       </div>
     )
   }
@@ -260,14 +264,22 @@ const CampaignsPageContainer = withSnackbar(withRouter(React.createClass({
   render () {
     const { location } = this.props
     return (
-      <SearchableCampaignsPage
-        {...this.props}
-        {...this.data}
-        {...this.parseQuery(location)}
-        setQuery={this.setQuery} />
+      <NearBottomContainer>
+        {(nearBottom) => (
+          <SubscriptionLimitContainer wantMore={nearBottom}>
+            {(limit) => (
+              <SearchableCampaignsPage
+                limit={limit}
+                {...this.props}
+                {...this.data}
+                {...this.parseQuery(location)}
+                setQuery={this.setQuery} />
+            )}
+          </SubscriptionLimitContainer>
+        )}
+      </NearBottomContainer>
     )
   }
-
 })))
 
 export default CampaignsPageContainer
