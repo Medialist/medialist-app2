@@ -78,7 +78,6 @@ const CampaignFilterContainer = createContainer((props) => {
 
 const ActivityListContainer = createContainer((props) => {
   const { campaign, contact, filter, limit } = props
-  console.log({limit})
   const typesForFilter = {
     'All Activity': Posts.types,
     'Feedback': ['FeedbackPost'],
