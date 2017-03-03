@@ -24,6 +24,9 @@ import withSnackbar from '../snackbar/with-snackbar'
 import AddTags from '../tags/add-tags'
 import AbbreviatedAvatarList from '../lists/abbreviated-avatar-list.jsx'
 import AddToMasterList from '../master-lists/add-to-master-list.jsx'
+import NearBottomContainer from '../navigation/near-bottom-container'
+import SubscriptionLimitContainer from '../navigation/subscription-limit-container'
+import Loading from '../lists/loading'
 
 /*
  * ContactPage and ContactsPageContainer
@@ -163,7 +166,7 @@ const ContactsPage = withSnackbar(React.createClass({
     const { selections } = this.state
     if (!loading && contactsCount === 0) return <ContactListEmpty />
     return (
-      <div>
+      <div style={{paddingBottom: 100}}>
         <div style={{height: 58}} className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
           <div className='flex-auto border-right border-gray80'>
             <MasterListsSelectorContainer
@@ -220,6 +223,7 @@ const ContactsPage = withSnackbar(React.createClass({
             onSortChange={onSortChange}
             onSelectionsChange={onSelectionsChange} />
         </div>
+        { loading && <div className='center p4'><Loading /></div> }
         <ContactsActionsToast
           contacts={selections}
           onCampaignClick={() => this.setState({AddContactsToCampaignModalOpen: true})}
@@ -326,11 +330,20 @@ const ContactsPageContainer = withRouter(React.createClass({
   render () {
     const { location } = this.props
     return (
-      <SearchableContactsPage
-        {...this.props}
-        {...this.data}
-        {...this.parseQuery(location)}
-        setQuery={this.setQuery} />
+      <NearBottomContainer>
+        {(nearBottom) => (
+          <SubscriptionLimitContainer wantMore={nearBottom}>
+            {(limit) => (
+              <SearchableContactsPage
+                limit={limit}
+                {...this.props}
+                {...this.data}
+                {...this.parseQuery(location)}
+                setQuery={this.setQuery} />
+            )}
+          </SubscriptionLimitContainer>
+        )}
+      </NearBottomContainer>
     )
   }
 }))

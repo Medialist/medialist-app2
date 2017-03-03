@@ -8,7 +8,6 @@ import YouOrName from '../users/you-or-name'
 import { CircleAvatar } from '../images/avatar'
 import isSameItems from '../lists/is-same-items'
 import StatusSelector from '../feedback/status-selector'
-import Loading from '../lists/loading'
 
 const ContactLink = ({contact, campaign}) => {
   const {slug, name, avatar} = contact
@@ -165,7 +164,6 @@ const ContactsTable = React.createClass({
             })}
           </tbody>
         </table>
-        { loading && <div className='center p4'><Loading /></div> }
       </div>
     )
   }

@@ -28,7 +28,6 @@ const DashboardPage = React.createClass({
 })
 
 export default createContainer(() => {
-  Meteor.subscribe('contacts')
   return {
     recentCampaigns: Meteor.user().myCampaigns.sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 3),
     recentContacts: Meteor.user().myContacts.sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 5)

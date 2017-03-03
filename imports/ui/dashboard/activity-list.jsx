@@ -15,7 +15,7 @@ const ActivityList = React.createClass({
     const { items, currentUser, contact, campaign, loading } = this.props
     if (!loading && !items.length) return <p className='p4 mb2 f-xl semibold center'>No items yet</p>
     return (
-      <div>
+      <div style={{paddingBottom: 100}}>
         {items.map((item) => {
           const Post = PostMap[item.type]
           if (!Post) {
