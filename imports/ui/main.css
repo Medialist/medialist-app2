@@ -299,6 +299,10 @@ button {
   width: 21px;
   height: 21px;
 }
+.svg-icon-xl svg {
+  width: 28px;
+  height: 28px;
+}
 
 .stroke-gray20 { stroke: var(--gray20) }
 
@@ -330,7 +334,7 @@ button {
 
 .label {
   font-size: .875rem;
-  font-weight: bold;
+  font-weight: 600;
   display: block;
   margin-bottom: .5rem;
 }
