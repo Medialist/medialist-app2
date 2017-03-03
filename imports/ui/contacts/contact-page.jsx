@@ -113,8 +113,7 @@ const ContactPage = React.createClass({
 export default createContainer((props) => {
   const { contactSlug, campaignSlug } = props.params
   const subs = [
-    Meteor.subscribe('contact', contactSlug),
-    Meteor.subscribe('campaigns'),
+    Meteor.subscribe('contact-page', contactSlug),
     Meteor.subscribe('need-to-knows', {
       contact: contactSlug
     })

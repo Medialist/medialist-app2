@@ -65,7 +65,7 @@ const ActivityFeed = React.createClass({
 })
 
 const CampaignFilterContainer = createContainer((props) => {
-  const sub = Meteor.subscribe('campaigns')
+  const sub = Meteor.subscribe('campaign-refs')
   const query = {}
   if (props.contact) query.slug = {$in: props.contact.campaigns}
   const campaigns = Campaigns.find(query).fetch()

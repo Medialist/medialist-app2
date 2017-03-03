@@ -13,6 +13,14 @@ Meteor.publish('campaignCount', function () {
   return campaignCounter
 })
 
+// TODO: replace with campaign-search for filter dropdown.
+Meteor.publish('campaign-refs', function () {
+  return Campaigns.find(
+    {},
+    { fields: { _id: 1, slug: 1, name: 1, avatar: 1, client: 1 } }
+  )
+})
+
 Meteor.publish('campaigns-by-slug', function (slugs) {
   if (!this.userId) return this.ready()
   return Campaigns.find({ slug: { $in: slugs } })

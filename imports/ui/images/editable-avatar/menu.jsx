@@ -14,17 +14,17 @@ const EditableAvatarMenu = React.createClass({
   },
 
   onUploadcareClick (e) {
-    e.preventDefault()
+    e.stopPropagation()
     this.setState({ uploader: 'uploadcare' })
   },
 
   onTwitterClick (e) {
-    e.preventDefault()
+    e.stopPropagation()
     this.setState({ uploader: 'twitter' })
   },
 
   onRemoveClick (e) {
-    e.preventDefault()
+    e.stopPropagation()
     this.props.onChange({ url: null })
   },
 
