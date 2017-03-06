@@ -5,7 +5,7 @@ import Contacts from '../contacts/contacts'
 import { searchCampaigns } from './queries'
 import Campaigns from './campaigns'
 
-describe.only('searchCampaigns', function () {
+describe('searchCampaigns', function () {
   beforeEach(function () {
     resetDatabase()
 
