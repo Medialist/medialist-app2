@@ -85,7 +85,7 @@ const ContactsTable = React.createClass({
         <table className='table'>
           <thead>
             <tr className='bg-gray90'>
-              <th className='center' style={{width: 55}}>
+              <th className='right-align' style={{width: 34, paddingRight: 0, borderRight: '0 none'}}>
                 <Checkbox
                   checked={isSameItems(selections, contacts)}
                   onChange={this.onSelectAllChange} />
@@ -93,35 +93,32 @@ const ContactsTable = React.createClass({
               <SortableHeader
                 className='left-align'
                 sortDirection={sort['name']}
-                style={{width: '14%'}}
+                style={{borderLeft: '0 none'}}
                 onSortChange={(d) => onSortChange({ name: d })}>
                 Name
               </SortableHeader>
               <SortableHeader
                 className='left-align'
                 sortDirection={sort['outlets.value']}
-                style={{width: '12%'}}
                 onSortChange={(d) => onSortChange({ 'outlets.value': d })}>
                 Title
               </SortableHeader>
               <SortableHeader
                 className='left-align'
                 sortDirection={sort['outlets.label']}
-                style={{width: '12%'}}
                 onSortChange={(d) => onSortChange({ 'outlets.label': d })}>
                 Media Outlet
               </SortableHeader>
-              <th className='left-align' style={{width: '12%'}}>Email</th>
-              <th className='left-align' style={{width: '12%'}}>Phone</th>
+              <th className='left-align'>Email</th>
+              <th className='left-align'>Phone</th>
               <SortableHeader
                 className='left-align'
                 sortDirection={sort['updatedAt']}
-                style={{width: '12%'}}
                 onSortChange={(d) => onSortChange({ updatedAt: d })}>
                 Updated
               </SortableHeader>
               {campaign && (
-                <th className='left-align' style={{width: '15%'}}>Status</th>
+                <th className='left-align'>Status</th>
               )}
             </tr>
           </thead>
@@ -152,7 +149,7 @@ const ContactsTable = React.createClass({
                   </td>
                   <td className='left-align'>
                     <TimeFromNow className='semibold f-sm' date={updatedAt} />
-                    <div className='normal f-sm'>by <YouOrName user={updatedBy} /></div>
+                    <span className='normal f-sm'> by <YouOrName user={updatedBy} /></span>
                   </td>
                   {campaign && (
                     <td className='left-align' style={{overflow: 'visible'}}>

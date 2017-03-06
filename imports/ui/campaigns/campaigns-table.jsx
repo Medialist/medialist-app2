@@ -64,13 +64,14 @@ const CampaignsTable = React.createClass({
       <table className='table'>
         <thead>
           <tr className='bg-gray90'>
-            <th className='center' style={{width: 55}}>
+            <th className='right-align' style={{width: 34, paddingRight: 0, borderRight: '0 none'}}>
               <Checkbox
                 checked={isSameItems(selections, campaigns)}
                 onChange={this.onSelectAllChange} />
             </th>
             <SortableHeader
               className='left-align'
+              style={{borderLeft: '0 none'}}
               sortDirection={sort['name']}
               onSortChange={(d) => onSortChange({ name: d })}>
               Name

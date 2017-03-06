@@ -1,9 +1,9 @@
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import { MenuContactIcon, ChevronRight } from '../images/icons'
-import RecentContact from './recent-contact'
+import ContactPreview from '../contacts/contact-preview'
 
-const RecentContactsList = (props) => {
+const ContactPreviewsList = (props) => {
   const { contacts } = props
   return (
     <section className='block'>
@@ -14,26 +14,28 @@ const RecentContactsList = (props) => {
           <span className='ml1'>My Recent Contacts</span>
         </h1>
       </header>
-      <div className='p3'>
-        {contacts.length
-          ? contacts.map((contact) => <RecentContact key={contact.slug} {...contact} />)
-          : (
-            <Link
-              to='/contacts?editContactOpen=true'
-              className='block py1 pl1 underline semibold blue'
-              style={{ marginLeft: '21px' }}
-              title='Create a new contact'>
-                Create a new contact
-            </Link>
-          )
-        }
+      <div className='pb3 px3'>
+        {contacts.map((contact) => (
+          <Link to={`/contact/${contact.slug}`} key={contact.slug} className='block mt4'>
+            <ContactPreview {...contact} />
+          </Link>
+        ))}
+        {!contacts.length && (
+          <Link
+            to='/contacts?editContactOpen=true'
+            className='block py1 pl1 underline semibold blue'
+            style={{ marginLeft: '21px' }}
+            title='Create a new contact'>
+              Create a new contact
+          </Link>
+        )}
       </div>
     </section>
   )
 }
 
-RecentContactsList.PropTypes = {
+ContactPreviewsList.PropTypes = {
   contacts: PropTypes.array
 }
 
-export default RecentContactsList
+export default ContactPreviewsList
