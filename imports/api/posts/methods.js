@@ -3,7 +3,9 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { StatusSchema } from '/imports/lib/schema'
 import { checkAllSlugsExist } from '/imports/lib/slug'
+import findUrl from '/imports/lib/find-url'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
+import Embeds from '/imports/api/embeds/embeds'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from './posts'
@@ -11,11 +13,14 @@ import Posts from './posts'
 function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, message, status}) {
   const createdBy = findOneUserRef(userId)
   const createdAt = new Date()
+  const url = findUrl(message)
+  const embed = Embeds.findOneEmbedRef(url)
   const post = {
     // Feedback without a message is rendered as a different post type.
     type: message ? type : 'StatusUpdate',
     contacts: Contacts.findRefs({contactSlugs: [contactSlug]}),
     campaigns: Campaigns.findRefs({campaignSlugs: [campaignSlug]}),
+    embeds: embed ? [embed] : [],
     status,
     message,
     createdBy,

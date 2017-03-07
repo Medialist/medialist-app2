@@ -5,9 +5,15 @@ import {
   createEmbed
 } from './methods'
 
-describe.only('createEmbed', function () {
+describe('createEmbed', function () {
   beforeEach(function () {
     resetDatabase()
+    Meteor.users.insert({
+      _id: 'alf',
+      profile: { name: 'Alfonze' },
+      myContacts: [],
+      myCampaigns: []
+    })
   })
 
   it('should require the user to be logged in', function () {
@@ -22,12 +28,13 @@ describe.only('createEmbed', function () {
   })
 
   it('should scrape the url and insert the result into the Embeds collection', function (done) {
-    this.timeout(10000)
-    const url = 'http://www.wired.co.uk/article/nintendo-switch-no-save-data-transfer'
-    // const url = 'https://www.theguardian.com/technology/2016/may/04/gmail-yahoo-email-password-hack-hold-security'
+    this.timeout(20000)
+    const url = 'http://www.theguardian.com/world/2017/mar/06/why-do-sheep-get-horny-in-winter-because-the-light-is-baaad-says-study'
     const res = createEmbed.run.call({userId: 'alf'}, {url})
-    console.log(res)
+    assert.ok(res)
+    const embeds = Embeds.find({}).fetch()
+    assert.equal(embeds.length, 1)
+    assert.equal(embeds[0].canonicalUrl, url)
     done()
   })
-
 })

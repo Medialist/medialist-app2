@@ -4,6 +4,7 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import values from 'lodash.values'
 import nothing from '/imports/lib/nothing'
 import { CreatedAtSchema } from '/imports/lib/schema'
+import { EmbedRefSchema } from '/imports/api/embeds/embeds'
 import Contacts, { ContactRefSchema } from '/imports/api/contacts/contacts'
 import Campaigns, { CampaignRefSchema } from '/imports/api/campaigns/campaigns'
 
@@ -36,6 +37,10 @@ export const PostSchema = new SimpleSchema([
     },
     campaigns: {
       type: [CampaignRefSchema],
+      minCount: 0
+    },
+    embeds: {
+      type: [EmbedRefSchema],
       minCount: 0
     },
     message: {
