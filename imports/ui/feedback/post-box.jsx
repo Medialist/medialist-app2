@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react'
 import StatusMap from '/imports/api/contacts/status'
 import CampaignSelector from './campaign-selector'
 import StatusSelector from './status-selector.jsx'
+import PostBoxtTextArea from './post-box-textarea'
 import { FeedbackTab, CoverageTab, NeedToKnowTab, PostBoxTabs } from '../feedback/post-box-nav'
 
 const Divider = ({show}) => (
@@ -49,17 +50,6 @@ const PostBox = React.createClass({
     )
   }
 })
-
-export const PostBoxtTextArea = ({placeholder, value, focused, disabled, onChange}) => (
-  <textarea
-    rows={focused ? '3' : '1'}
-    className='textarea mb1 placeholder-gray60 caret-blue'
-    style={{border: '0 none', overflowY: 'auto', resize: 'none', paddingLeft: '3px'}}
-    placeholder={placeholder}
-    onChange={onChange}
-    value={value}
-    disabled={disabled} />
-)
 
 export const PostBoxButtons = ({focused, disabled, onPost, children}) => (
   <div style={{display: focused ? null : 'none'}}>

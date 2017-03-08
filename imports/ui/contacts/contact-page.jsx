@@ -61,7 +61,6 @@ const ContactPage = React.createClass({
   onFeedback ({message, campaign, status}, cb) {
     const contactSlug = this.props.contact.slug
     const campaignSlug = campaign.slug
-    console.log({contactSlug, campaignSlug, message, status})
     createFeedbackPost.call({contactSlug, campaignSlug, message, status}, cb)
   },
 

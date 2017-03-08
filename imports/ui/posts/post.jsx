@@ -4,6 +4,7 @@ import { CircleAvatar } from '../images/avatar'
 import Time from '../time/time'
 import YouOrName from '../users/you-or-name'
 import Status from '../feedback/status'
+import LinkPreview from '../feedback/link-preview'
 import CampaignPreview from '../campaigns/campaign-preview'
 import {
   ChevronRight,
@@ -97,6 +98,11 @@ export const FeedbackPost = ({item, currentUser, contact, campaign}) => (
     details={
       <div className='border-gray80 border-top py3 gray10'>
         {item.message}
+        {item.embeds && item.embeds[0] ? (
+          <div className='pt3'>
+            <LinkPreview {...item.embeds[0]} />
+          </div>
+        ) : null}
       </div>
     }
   />
@@ -111,6 +117,11 @@ export const CoveragePost = ({item, currentUser, contact, campaign}) => (
     details={
       <div className='border-gray80 border-top py3 gray10'>
         {item.message}
+        {item.embeds && item.embeds[0] ? (
+          <div className='pt3'>
+            <LinkPreview {...item.embeds[0]} />
+          </div>
+        ) : null}
       </div>
     }
   />

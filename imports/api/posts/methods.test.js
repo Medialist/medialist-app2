@@ -72,12 +72,13 @@ describe('createFeedbackPost', function () {
     const contactSlug = 'slug0'
     const message = 'Tip top'
     const status = 'Hot Lead'
-    createFeedbackPost.run.call({userId: 'alf'}, {
+    const user = Meteor.users.findOne()
+    createFeedbackPost.run.call({userId: user._id}, {
       contactSlug, campaignSlug, message, status
     })
 
     const userRef = {
-      _id: 'alf',
+      _id: user._id,
       name: 'Alfonze',
       avatar: 'http://stat.ic/alfoto.webp'
     }
@@ -102,6 +103,7 @@ describe('createFeedbackPost', function () {
         name: 'name0',
         outletName: ''
       }],
+      embeds: [],
       createdBy: userRef
     })
 
@@ -180,6 +182,7 @@ describe('createCoveragePost', function () {
         name: 'name0',
         outletName: ''
       }],
+      embeds: [],
       createdBy: userRef
     })
 
