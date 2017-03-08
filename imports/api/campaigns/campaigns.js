@@ -4,8 +4,24 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { Counter } from 'meteor/natestrauser:publish-performant-counts'
 import nothing from '/imports/lib/nothing'
 import { MasterListRefSchema } from '/imports/api/master-lists/master-lists'
-import { UserRefSchema } from '/imports/api/users/users'
+// import { UserRefSchema } from '/imports/api/users/users'
 import { TagRefSchema } from '/imports/api/tags/tags'
+
+// TODO: figure out why this fails to validate if imported from the users file.
+const UserRefSchema = new SimpleSchema({
+  _id: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id
+  },
+  name: {
+    type: String,
+    min: 1
+  },
+  avatar: {
+    type: String,
+    optional: true
+  }
+})
 
 const Campaigns = new Mongo.Collection('campaigns')
 

@@ -1,6 +1,5 @@
 import { Mongo } from 'meteor/mongo'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
-// import { check } from 'meteor/check'
 import values from 'lodash.values'
 import nothing from '/imports/lib/nothing'
 import { CreatedAtSchema } from '/imports/lib/schema'
