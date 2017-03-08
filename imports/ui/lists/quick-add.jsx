@@ -3,7 +3,7 @@ import Tag from '../tags/tag'
 import InfoHeader from '../lists/info-header'
 
 const QuickAdd = (props) => {
-  const { selectedMasterLists, tags, onAddToMasterList, onAddTags } = props
+  const { selectedMasterLists, tags, onAddToMasterList, onAddTags, onTagClick } = props
   return (
     <div>
       <section>
@@ -17,7 +17,14 @@ const QuickAdd = (props) => {
         <div className='px2 py3'>
           {tags.map((tag) => {
             const { _id, name, count } = tag
-            return <Tag name={name} count={count} onClick={() => removeTag(_id)} key={name} />
+            return (
+              <Tag
+                name={name}
+                count={count}
+                onClick={() => onTagClick(tag)}
+                onRemove={() => removeTag(_id)}
+                key={_id} />
+            )
           })}
         </div>
       </section>

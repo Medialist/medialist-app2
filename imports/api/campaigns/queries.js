@@ -8,6 +8,7 @@ import Campaigns from './campaigns'
  */
 export const searchCampaigns = ({
   term,
+  tagSlugs,
   masterListSlug,
   userId,
   sort,
@@ -15,6 +16,7 @@ export const searchCampaigns = ({
   minSearchLength = 3
 }) => {
   check(term, Match.Maybe(String))
+  check(tagSlugs, Match.Maybe(Array))
   check(masterListSlug, Match.Maybe(String))
   check(userId, Match.Maybe(String))
   check(sort, Object)
@@ -23,6 +25,9 @@ export const searchCampaigns = ({
   const query = {}
   if (masterListSlug) {
     query['masterLists.slug'] = masterListSlug
+  }
+  if (tagSlugs && tagSlugs.length) {
+    query['tags.slug'] = { $in: tagSlugs }
   }
   if (userId) {
     const user = Meteor.users.findOne({_id: userId})

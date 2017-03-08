@@ -17,7 +17,8 @@ const ContactInfo = React.createClass({
     contact: PropTypes.object,
     user: PropTypes.object,
     onEditClick: PropTypes.func,
-    masterlists: PropTypes.array
+    masterlists: PropTypes.array,
+    onTagClick: PropTypes.func
   },
 
   getInitialState () {
@@ -68,7 +69,7 @@ const ContactInfo = React.createClass({
       onUpdateTags
     } = this
     const { addToMasterListOpen, addTagsOpen } = this.state
-    const { user: { myContacts }, contact, campaigns } = this.props
+    const { user: { myContacts }, contact, campaigns, onTagClick } = this.props
     const { _id, name, avatar, outlets, masterLists, tags } = contact
     const isFavourite = myContacts.some((c) => c._id === _id)
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
@@ -134,7 +135,8 @@ const ContactInfo = React.createClass({
           selectedMasterLists={masterLists}
           tags={tags}
           onAddTags={onAddTags}
-          onAddToMasterList={onAddToMasterList} />
+          onAddToMasterList={onAddToMasterList}
+          onTagClick={onTagClick} />
       </div>
     )
   }
