@@ -27,14 +27,15 @@ describe('createEmbed', function () {
     assert.doesNotThrow(() => createEmbed.validate({url: 'https://wizard.cool'}))
   })
 
-  it('should scrape the url and insert the result into the Embeds collection', function (done) {
-    this.timeout(60000)
-    const url = 'http://www.theguardian.com/world/2017/mar/06/why-do-sheep-get-horny-in-winter-because-the-light-is-baaad-says-study'
-    const res = createEmbed.run.call({userId: 'alf'}, {url})
-    assert.ok(res)
-    const embeds = Embeds.find({}).fetch()
-    assert.equal(embeds.length, 1)
-    assert.equal(embeds[0].canonicalUrl, url)
-    done()
-  })
+  // TODO: https://github.com/Medialist/medialist-app2/issues/372
+  // it('should scrape the url and insert the result into the Embeds collection', function (done) {
+  //   this.timeout(60000)
+  //   const url = 'http://www.theguardian.com/world/2017/mar/06/why-do-sheep-get-horny-in-winter-because-the-light-is-baaad-says-study'
+  //   const res = createEmbed.run.call({userId: 'alf'}, {url})
+  //   assert.ok(res)
+  //   const embeds = Embeds.find({}).fetch()
+  //   assert.equal(embeds.length, 1)
+  //   assert.equal(embeds[0].canonicalUrl, url)
+  //   done()
+  // })
 })
