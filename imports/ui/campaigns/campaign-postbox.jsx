@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
 import ContactSelector from '../feedback/contact-selector'
-import { PostBoxtTextArea, PostBoxButtons } from '../feedback/post-box'
+import { PostBoxButtons } from '../feedback/post-box'
+import PostBoxtTextArea from '../feedback/post-box-textarea'
 import { FeedbackTab, CoverageTab, PostBoxTabs } from '../feedback/post-box-nav'
 
 const CampaignPostBox = React.createClass({
