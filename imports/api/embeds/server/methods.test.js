@@ -28,7 +28,7 @@ describe('createEmbed', function () {
   })
 
   it('should scrape the url and insert the result into the Embeds collection', function (done) {
-    this.timeout(20000)
+    this.timeout(60000)
     const url = 'http://www.theguardian.com/world/2017/mar/06/why-do-sheep-get-horny-in-winter-because-the-light-is-baaad-says-study'
     const res = createEmbed.run.call({userId: 'alf'}, {url})
     assert.ok(res)
