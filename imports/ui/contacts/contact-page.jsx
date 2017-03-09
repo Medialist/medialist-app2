@@ -28,7 +28,7 @@ const ContactPage = React.createClass({
 
   getInitialState () {
     return {
-      editContactOpen: false,
+      editContactOpen: true,
       addContactModalOpen: false
     }
   },

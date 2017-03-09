@@ -1,8 +1,24 @@
 import React, { PropTypes } from 'react'
 import cloneDeep from 'lodash.clonedeep'
 import { CircleAvatar } from '../images/avatar'
-import { EmailIcon, PhoneIcon, AddressIcon } from '../images/icons'
+import EditableAvatar from '../images/editable-avatar/editable-avatar'
+import { FilledCircle, EmailIcon, PhoneIcon } from '../images/icons'
 import Modal from '../navigation/modal'
+import {SocialMap, SocialIcon} from '../social/social'
+
+const FormSection = ({label, addLinkText, onAdd, children}) => (
+  <section className='pl6 pb3'>
+    <label className='block gray40 semibold f-sm pt4'>{label}</label>
+    <div style={{marginLeft: -32}}>
+      {children}
+    </div>
+    <div className='mt2'>
+      <span className='pointer inline-block blue f-xs underline' onClick={onAdd}>
+        {addLinkText}
+      </span>
+    </div>
+  </section>
+)
 
 const EditContact = React.createClass({
   propTypes: {
@@ -26,10 +42,34 @@ const EditContact = React.createClass({
       phones: [],
       socials: []
     }
-    state.jobTitles = state.outlets.map((o) => o.value).join(', ')
-    state.primaryOutlets = state.outlets.map((o) => o.label).join(', ')
-    delete state.outlets
+    Object.keys(SocialMap).forEach((k, i) => {
+      if (state.socials.find((s) => s.label === k)) return
+      state.socials.splice(i, 0, {label: k, value: ''})
+    })
+    // TODO: merge socials with existing.
     return Object.assign(state, this.props.prefill)
+  },
+
+  onAvatarChange (evt) {
+    console.log('onAvatarChange', evt)
+  },
+
+  onAvatarError (err) {
+    console.log('onAvatarError', err)
+  },
+
+  onJobTitleChange (evt) {
+    const {name, value} = evt.target
+    const outlets = cloneDeep(this.state.outlets)
+    outlets[name].value = value
+    this.setState({outlets})
+  },
+
+  onJobOrgChange (evt) {
+    const {name, value} = evt.target
+    const outlets = cloneDeep(this.state.outlets)
+    outlets[name].label = value
+    this.setState({outlets})
   },
 
   onProfileChange (evt) {
@@ -44,22 +84,10 @@ const EditContact = React.createClass({
     this.setState({emails})
   },
 
-  onAddEmail () {
-    const emails = Array.from(this.state.emails)
-    emails.push({label: 'Email', value: ''})
-    this.setState({emails})
-  },
-
   onPhoneChange (evt) {
     const {name, value} = evt.target
     const phones = cloneDeep(this.state.phones)
     phones[name].value = value
-    this.setState({phones})
-  },
-
-  onAddPhone (evt) {
-    const phones = Array.from(this.state.phones)
-    phones.push({label: 'Phone', value: ''})
     this.setState({phones})
   },
 
@@ -70,18 +98,30 @@ const EditContact = React.createClass({
     this.setState({socials})
   },
 
-  onAddSocial (evt) {
-    const socials = Array.from(this.state.socials)
-    socials.push({label: 'Social', value: ''})
-    this.setState({socials})
-  },
-
-  onAddressChange (evt) {
-    console.log('TODO: onAddressChange')
-  },
-
   onDelete (evt) {
     console.log('TODO: onDelete')
+  },
+
+  onAdd (prop, item) {
+    this.setState((s) => ({
+      [prop]: s.concat([item])
+    }))
+  },
+
+  onAddJob () {
+    this.onAdd('outlets', {label: '', value: ''})
+  },
+
+  onAddEmail () {
+    this.onAdd('emails', {label: 'Email', value: ''})
+  },
+
+  onAddPhone (evt) {
+    this.onAdd('phones', {label: 'Phone', value: ''})
+  },
+
+  onAddSocial (evt) {
+    this.onAdd('socials', {label: 'Website', value: ''})
   },
 
   onSubmit (evt) {
@@ -100,168 +140,118 @@ const EditContact = React.createClass({
   },
 
   render () {
-    const { onProfileChange, onEmailChange, onAddEmail, onPhoneChange, onAddPhone, onSocialChange, onAddSocial, onAddressChange, onSubmit, onDelete, inputSize } = this
+    const { onAvatarChange, onAvatarError, onJobTitleChange, onJobOrgChange, onAddJob, onProfileChange, onEmailChange, onAddEmail, onPhoneChange, onAddPhone, onSocialChange, onAddSocial, onSubmit, onDelete, inputSize } = this
     const { onDismiss } = this.props
     const contact = this.state
     // TODO: migrate contact address format. Currently is a string.
+    const outlets = this.atLeastOne(contact.outlets, '')
     const emails = this.atLeastOne(contact.emails, 'Email')
     const phones = this.atLeastOne(contact.phones, 'Phone')
     const socials = this.atLeastOne(contact.socials, 'Social')
-    const scrollableHeight = window.innerHeight - 380
-    const inputWidth = 270
-    const iconWidth = 30
-    const inputStyle = { width: inputWidth }
-    const iconStyle = { width: iconWidth }
-    const linkStyle = { marginLeft: iconWidth }
+    const iconStyle = { width: 30 }
     return (
       <div>
-        <div className='py6 center'>
-          <CircleAvatar size={110} avatar={contact.avatar} name={contact.name} />
-          <div>
-            <input
-              className='center input-inline mt4 f-xxxl semibold'
-              placeholder='Contact Name'
-              type='text'
-              name='name'
-              value={contact.name}
-              size={inputSize(contact.name)}
-              onChange={onProfileChange} />
-          </div>
-          <div>
-            <input
-              className='center input-inline mt1 f-lg gray10'
-              placeholder='Title'
-              type='text'
-              name='jobTitles'
-              value={contact.jobTitles}
-              size={inputSize(contact.jobTitles)}
-              onChange={onProfileChange} />
-          </div>
-          <div>
-            <input
-              className='center input-inline mt1 f-lg gray10'
-              placeholder='Outlets'
-              type='text'
-              name='primaryOutlets'
-              value={contact.primaryOutlets}
-              size={inputSize(contact.primaryOutlets)}
-              onChange={onProfileChange} />
-          </div>
-        </div>
-        <div style={{height: scrollableHeight, overflowY: 'scroll'}}>
-          <div className='bg-gray90 border-top border-gray80'>
-            <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft: 70}}>Details</label>
-            <div className='mx-auto py2' style={{width: inputWidth + iconWidth}}>
-              {emails.map((email, index) => (
-                <div key={index} className='pt3'>
-                  <EmailIcon style={iconStyle} className='inline-block' />
-                  <div className='inline-block align-middle'>
-                    <input
-                      style={inputStyle}
-                      className='input'
-                      type='text'
-                      value={email.value}
-                      name={index}
-                      onChange={onEmailChange}
-                      placeholder='Email' />
-                  </div>
-                </div>
-              ))}
-              <div className='py2' style={linkStyle}>
-                <span className='pointer inline-block blue f-xs underline' onClick={onAddEmail}>Add new email</span>
-              </div>
-              {phones.map((phone, index) => (
-                <div key={index} className='pt3'>
-                  <PhoneIcon style={iconStyle} className='inline-block' />
-                  <div className='inline-block align-middle'>
-                    <input
-                      style={inputStyle}
-                      className='input'
-                      type='text'
-                      value={phone.value}
-                      onChange={onPhoneChange}
-                      placeholder='Phone number' />
-                  </div>
-                </div>
-              ))}
-              <div className='py2' style={linkStyle}>
-                <span className='pointer inline-block blue f-xs underline' onClick={onAddPhone}>Add new phone number</span>
-              </div>
+        <div style={{maxHeight: 'calc(95vh - 76px)', overflowY: 'auto'}}>
+          <div className='py6 center'>
+            <EditableAvatar avatar={contact.avatar} onChange={onAvatarChange} onError={onAvatarError} menuTop={-20}>
+              <CircleAvatar size={110} avatar={contact.avatar} name={contact.name} />
+            </EditableAvatar>
+            <div>
+              <input
+                className='center input-inline mt4 f-xxxl semibold'
+                placeholder='Contact Name'
+                type='text'
+                name='name'
+                value={contact.name}
+                size={inputSize(contact.name)}
+                onChange={onProfileChange} />
             </div>
           </div>
-          <div className='bg-gray90 border-top border-gray80'>
-            <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft: 70}}>Social</label>
-            <div className='mx-auto py2' style={{width: inputWidth + iconWidth}}>
-              {socials.map((social, index) => (
-                <div key={index} className='pt3'>
-                  <EmailIcon style={iconStyle} className='inline-block' />
-                  <div className='inline-block align-middle'>
-                    <input
-                      style={inputStyle}
-                      className='input'
-                      type='text'
-                      name={index}
-                      value={social.value}
-                      onChange={onSocialChange}
-                      placeholder='Enter social or website url' />
-                  </div>
-                </div>
-              ))}
-              <div className='py2' style={linkStyle}>
-                <span className='pointer inline-block blue f-xs underline' onClick={onAddSocial}>Add new social or website</span>
-              </div>
-            </div>
-          </div>
-          <div className='bg-gray90 border-top border-gray80 pb6'>
-            <label className='xs-hide left gray40 semibold f-sm mt4' style={{marginLeft: 70}}>Address</label>
-            <div className='mx-auto py2' style={{width: inputWidth + iconWidth}}>
-              <div className='pt3'>
-                <AddressIcon style={iconStyle} className='inline-block' />
-                <div className='inline-block align-middle'>
-                  <input
-                    style={inputStyle}
-                    className='input'
-                    type='text'
-                    name='street'
-                    onChange={onAddressChange}
-                    placeholder='Street' />
-                </div>
-              </div>
-              <div className='pt3'>
-                <AddressIcon style={iconStyle} className='inline-block invisible' />
-                <div className='inline-block align-middle'>
-                  <input
-                    style={inputStyle}
-                    className='input'
-                    type='text'
-                    name='city'
-                    onChange={onAddressChange}
-                    placeholder='City' />
-                </div>
-              </div>
-              <div className='pt3'>
-                <AddressIcon style={iconStyle} className='inline-block invisible' />
-                <div className='inline-block align-middle'>
-                  <input
-                    style={inputStyle}
-                    className='input'
-                    type='text'
-                    name='postcode'
-                    onChange={onAddressChange}
-                    placeholder='Postcode' />
-                </div>
-              </div>
-              <div className='pt3'>
-                <AddressIcon style={iconStyle} className='inline-block invisible' />
-                <div className='inline-block align-middle'>
-                  <input
-                    style={inputStyle}
-                    className='input'
-                    type='text'
-                    name='country'
-                    onChange={onAddressChange}
-                    placeholder='Country' />
-                </div>
+          <div>
+            <div className='bg-gray90 border-top border-gray80'>
+              <div className='mx-auto pb6' style={{maxWidth: 500}}>
+
+                <FormSection label='Jobs' addLinkText='Add another job' onAdd={onAddJob}>
+                  {outlets.map((outlet, index) => (
+                    <div key={index} className='pt2'>
+                      <FilledCircle style={iconStyle} className='inline-block gray60' />
+                      <div className='inline-block align-middle'>
+                        <input
+                          style={{width: 225}}
+                          className='input'
+                          type='text'
+                          value={outlet.value}
+                          name={index}
+                          onChange={onJobTitleChange}
+                          placeholder='Title' />
+                      </div>
+                      <div className='inline-block align-middle ml4'>
+                        <input
+                          style={{width: 225}}
+                          className='input'
+                          type='text'
+                          value={outlet.label}
+                          name={index}
+                          onChange={onJobOrgChange}
+                          placeholder='Outlet' />
+                      </div>
+                    </div>
+                  ))}
+                </FormSection>
+
+                <FormSection label='Emails' addLinkText='Add another email' onAdd={onAddEmail}>
+                  {emails.map((email, index) => (
+                    <div key={index} className='pt2'>
+                      <EmailIcon style={iconStyle} className='inline-block' />
+                      <div className='inline-block align-middle'>
+                        <input
+                          style={{width: 350}}
+                          className='input'
+                          type='text'
+                          value={email.value}
+                          name={index}
+                          onChange={onEmailChange}
+                          placeholder='Email' />
+                      </div>
+                    </div>
+                  ))}
+                </FormSection>
+
+                <FormSection label='Phones' addLinkText='Add another phone' onAdd={onAddPhone}>
+                  {phones.map((phone, index) => (
+                    <div key={index} className='pt2'>
+                      <PhoneIcon style={iconStyle} className='inline-block' />
+                      <div className='inline-block align-middle'>
+                        <input
+                          style={{width: 350}}
+                          className='input'
+                          type='text'
+                          value={phone.value}
+                          onChange={onPhoneChange}
+                          placeholder='Phone number' />
+                      </div>
+                    </div>
+                  ))}
+                </FormSection>
+
+                <FormSection label='Websites & Social Links' addLinkText='Add another social' onAdd={onAddSocial}>
+                  {socials.map(({label, value}, index) => (
+                    <div key={index} className='pt2'>
+                      <SocialIcon label={label} value={value} style={iconStyle} className='inline-block' />
+                      <div className='inline-block align-middle'>
+                        <input
+                          style={{width: 472}}
+                          className='input'
+                          type='text'
+                          name={index}
+                          value={value}
+                          onChange={onSocialChange}
+                          placeholder={label} />
+                      </div>
+                    </div>
+                  ))}
+                </FormSection>
+
               </div>
             </div>
           </div>
