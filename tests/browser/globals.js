@@ -41,12 +41,9 @@ module.exports = {
   },
 
   beforeEach: (t, done) => {
-    mongo(MONGO_URL)
-    .then(mongo => {
-      t.db = mongo
+    t.db = mongo(MONGO_URL)
 
-      done()
-    })
+    done()
   },
 
   afterEach: (t, done) => {
