@@ -88,24 +88,24 @@ const CampaignInfo = React.createClass({
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
     const tooltip = isFavourite ? 'Remove from My Campaigns' : 'Add to My Campaigns'
     return (
-      <div>
+      <div id='campaign-details'>
         <div className='flex items-start mb1'>
           <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError} menuLeft={0} menuTop={-20}>
             <SquareAvatar size={70} avatar={avatar} name={name} />
           </EditableAvatar>
           <div className='ml3 flex-auto'>
             <div className='semibold block f-xl mb1' style={{ marginTop: '-3px' }}>
-              {name}
+              <span id='campaign-name'>{name}</span>
               <Tooltip title={tooltip}>
                 <Icon className='mx1 pointer svg-icon-lg align-bottom' onClick={onToggleFavourite} />
               </Tooltip>
             </div>
-            <div className='f-sm gray10 mb2'>{client && client.name}</div>
+            <div className='f-sm gray10 mb2' id='campaign-client'>{client && client.name}</div>
             <div>
               {(links || []).map((link, ind) => (
                 <span className='mr2' key={ind}>
                   <Tooltip title={prettyUrl(link.url)} key={link.url}>
-                    <a href={link.url} target='_blank' className='gray60 hover-gray50'>
+                    <a href={link.url} target='_blank' className='gray60 hover-gray50 campaign-link'>
                       <WebsiteIcon className='svg-icon-md' />
                     </a>
                   </Tooltip>
@@ -118,7 +118,7 @@ const CampaignInfo = React.createClass({
           <InfoHeader name='Key Message' linkText='Edit campaign' onClick={onEditClick} />
           <div className='px2 py3 flex'>
             <BioIcon className='inline-block flex-none gray60' />
-            <div className='inline-block pl3 f-sm gray10 flex-auto'>{purpose}</div>
+            <div className='inline-block pl3 f-sm gray10 flex-auto' id='campaign-key-message'>{purpose}</div>
           </div>
         </section>
         <section>

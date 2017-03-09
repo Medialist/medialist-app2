@@ -148,6 +148,7 @@ const EditCampaign = React.createClass({
               size={name.length === 0 ? 15 : name.length + 2}
               onChange={onChange('name')}
               onBlur={validate}
+              id='campaign-name-input'
                />
             {validationErrors.name ? <div className='absolute left-0 right-0 mt1 red'>{validationErrors.name}</div> : null}
           </div>
@@ -169,7 +170,8 @@ const EditCampaign = React.createClass({
                   placeholder='Client'
                   clientName={clientName}
                   onSelect={onClientSelect}
-                  onChange={onClientNameChange} />
+                  onChange={onClientNameChange}
+                  id='client-input' />
               </div>
             </div>
             <div className='mt4'>
@@ -188,7 +190,8 @@ const EditCampaign = React.createClass({
                   name='purpose'
                   value={purpose}
                   placeholder='Key Message'
-                  onChange={onChange('purpose')} />
+                  onChange={onChange('purpose')}
+                  id='key-message-input' />
               </div>
             </div>
             <div className='mt4'>
@@ -202,19 +205,19 @@ const EditCampaign = React.createClass({
                     onFocus={this.addFocus(`link-${ind}`)}
                     onBlur={callAll([this.removeFocus, this.checkLinkEmpty(ind), validate])}
                     style={inputStyle}
-                    className='input block placeholder-gray60'
+                    className='input block placeholder-gray60 links-input'
                     type='text'
                     value={links[ind].url}
                     placeholder='Links'
                     onChange={onChangeLink(ind)} />
                 </div>
               ))}
-              <div className='mt1'><a href='#' className='f-xs blue underline' onClick={this.addLink}>Add another link</a></div>
+              <div className='mt1'><a href='#' className='f-xs blue underline' onClick={this.addLink} id='add-links-button'>Add another link</a></div>
             </div>
           </div>
         </div>
         <div className='p4 right'>
-          <button className='btn bg-completed white right' type='submit' disabled={!isValid}>
+          <button className='btn bg-completed white right' type='submit' disabled={!isValid} id='save-campaign-button'>
             {campaign ? 'Save Changes' : 'Create Campaign'}
           </button>
           <button className='btn bg-transparent gray40 right mr2' type='reset'>Cancel</button>

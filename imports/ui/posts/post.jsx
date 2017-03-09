@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router'
+import dasherise from 'dasherize'
 import { CircleAvatar } from '../images/avatar'
 import Time from '../time/time'
 import YouOrName from '../users/you-or-name'
@@ -16,14 +17,14 @@ import {
   StatusUpdateIcon
 } from '../images/icons'
 
-const Post = ({icon, summary, details, createdBy, createdAt, currentUser, bgClass = 'bg-white'}) => (
-  <article className={`flex rounded px4 pt3 pb2 mb2 shadow-2 ${bgClass}`}>
+const Post = ({icon, summary, details, createdBy, createdAt, currentUser, type, bgClass = 'bg-white'}) => (
+  <article className={`flex rounded px4 pt3 pb2 mb2 shadow-2 ${bgClass} ${dasherise(type)} activity-feed-post`}>
     <div className='flex-none' style={{paddingTop: 1}}>
       <CircleAvatar size={38} avatar={createdBy.avatar} name={createdBy.name} style={{marginRight: 13}} />
       {icon}
     </div>
     <div className='flex-auto' style={{paddingLeft: 13}}>
-      <header className='pt2 pb3 f-md flex nowrap'>
+      <header className='pt2 pb3 f-md flex nowrap post-text'>
         <YouOrName className='semibold align-middle' currentUser={currentUser} user={createdBy} />
         <div className='align-middle flex-auto truncate' style={{paddingLeft: 3}}>{summary}</div>
         <span className='f-sm semibold gray60 flex-none'>

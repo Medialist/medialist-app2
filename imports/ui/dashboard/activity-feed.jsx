@@ -35,7 +35,7 @@ const ActivityFeed = React.createClass({
     const { contact, campaign } = this.props
     const { filterType, filterCampaign } = this.state
     return (
-      <div>
+      <div id='activity-feed'>
         <div className='flex justify-start items-center pb3'>
           <ActivityFilter selected={filterType} onChange={onFilterChange} />
           {!campaign &&

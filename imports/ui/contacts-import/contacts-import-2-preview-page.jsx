@@ -33,7 +33,7 @@ export default withRouter(React.createClass({
     return (
       <div>
         <Topbar backLinkText='Cancel'>
-          <button className='btn bg-completed white mx4' onClick={onSave}>
+          <button className='btn bg-completed white mx4' onClick={onSave} id='save-and-import-contacts-button'>
             Save and import contacts
           </button>
         </Topbar>

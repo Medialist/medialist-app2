@@ -177,14 +177,14 @@ const ContactsPage = withSnackbar(React.createClass({
               onChange={onMasterListChange} />
           </div>
           <div className='flex-none bg-white center px4' style={{width: 240}}>
-            <button className='btn bg-completed white mr1' onClick={this.toggleAddContactModal}>New Contact</button>
+            <button className='btn bg-completed white mr1' onClick={this.toggleAddContactModal} id='new-contact-button'>New Contact</button>
             <Dropdown>
-              <button className='btn bg-completed white' onClick={this.onDropdownArrowClick} >
+              <button className='btn bg-completed white' onClick={this.onDropdownArrowClick} id='contact-actions-button'>
                 <Arrow direction='down' style={{ marginLeft: 0 }} />
               </button>
               <DropdownMenu width={210} left={-165} top={0} open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
                 <nav className='block py1'>
-                  <Link to='/contacts/import' className='block px3 py2 f-md normal gray20 hover-bg-gray90' activeClassName='active' onClick={this.onLinkClick}>
+                  <Link to='/contacts/import' className='block px3 py2 f-md normal gray20 hover-bg-gray90' activeClassName='active' onClick={this.onLinkClick} id='import-contacts-button'>
                     <FeedContactIcon />
                     <span className='ml2'>Import Contacts</span>
                   </Link>

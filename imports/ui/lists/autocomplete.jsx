@@ -7,6 +7,7 @@ const dropdownStyle = { maxWidth: 300 }
 
 export default React.createClass({
   propTypes: {
+    id: PropTypes.string,
     className: PropTypes.string,
     name: PropTypes.string.isRequired,
     value: PropTypes.string.isRequired,
@@ -63,6 +64,7 @@ export default React.createClass({
   },
   render () {
     const {
+      id,
       style,
       className,
       name,
@@ -86,6 +88,7 @@ export default React.createClass({
           onKeyDown={onKeyDown}
           onFocus={onFocus}
           onBlur={this.onBlur}
+          id={id}
         />
         <DropdownMenu open={open} onDismiss={onDismiss} style={dropdownStyle} arrowPosition={false}>
           <ol className='list-reset'>{suggestions.map((s, ind) => {

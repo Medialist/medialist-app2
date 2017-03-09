@@ -154,7 +154,7 @@ const CampaignsPage = React.createClass({
               onChange={onMasterListChange} />
           </div>
           <div className='flex-none bg-white center px4'>
-            <button className='btn bg-completed white mx4' onClick={this.toggleEditCampaign}>New Campaign</button>
+            <button className='btn bg-completed white mx4' onClick={this.toggleEditCampaign} id='create-campaign-button'>New Campaign</button>
           </div>
         </div>
         <EditCampaignContainer onDismiss={this.toggleEditCampaign} open={editCampaignOpen} />
