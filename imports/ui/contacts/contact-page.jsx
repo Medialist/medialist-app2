@@ -75,21 +75,17 @@ const ContactPage = React.createClass({
     createNeedToKnowPost.call({contactSlug, message}, cb)
   },
 
-  onTagClick (tag) {
-    this.props.router.push(`/contacts?tag=${tag.slug}`)
-  },
-
   render () {
     const { contact, campaigns, campaign, user, masterlists, needToKnows, loading } = this.props
     const { editContactOpen, addContactModalOpen } = this.state
-    const { onDismissAddContactToCampaign, onAddContactToCampaign, onTagClick } = this
+    const { onDismissAddContactToCampaign, onAddContactToCampaign } = this
     if (!contact) return null
     return (
       <div>
         <ContactTopbar contact={contact} open={addContactModalOpen} onAddContactToCampaign={onAddContactToCampaign} onDismiss={onDismissAddContactToCampaign} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
-            <ContactInfo campaigns={campaigns} contact={contact} onEditClick={this.toggleEditContact} user={user} masterlists={masterlists} onTagClick={onTagClick} />
+            <ContactInfo campaigns={campaigns} contact={contact} onEditClick={this.toggleEditContact} user={user} masterlists={masterlists} />
           </div>
           <div className='flex-auto px2' >
             <PostBox

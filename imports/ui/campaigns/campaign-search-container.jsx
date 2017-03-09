@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
 import { ReactMeteorData } from 'meteor/react-meteor-data'
+import Tags from '/imports/api/tags/tags'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import { searchCampaigns } from '/imports/api/campaigns/queries'
 
@@ -40,8 +41,9 @@ export default (Component, opts = {}) => {
     mixins: [ReactMeteorData],
 
     getMeteorData () {
-      const { term, selectedMasterListSlug, userId, sort, limit } = this.props
+      const { term, tagSlugs, selectedMasterListSlug, userId, sort, limit } = this.props
       const opts = {
+        tagSlugs,
         masterListSlug: selectedMasterListSlug,
         userId,
         sort,
@@ -58,10 +60,14 @@ export default (Component, opts = {}) => {
       if (userId && userId !== Meteor.userId()) {
         subs.push(Meteor.subscribe('users-by-id', {userIds: [userId]}))
       }
+      if (tagSlugs && tagSlugs.length) {
+        subs.push(Meteor.subscribe('tags-by-slug', {tagSlugs}))
+      }
+      const selectedTags = Tags.find({slug: { $in: tagSlugs }}).fetch()
       const campaigns = searchCampaigns(opts).fetch()
       const campaignCount = Campaigns.allCampaignsCount()
       const loading = !subs.every((sub) => sub.ready())
-      return { campaigns, campaignCount, loading, searching }
+      return { campaigns, campaignCount, selectedTags, loading, searching }
     },
 
     render () {

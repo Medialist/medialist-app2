@@ -321,7 +321,7 @@ const ContactsPageContainer = withRouter(React.createClass({
         newQuery.list = opts.selectedMasterListSlug
       }
     }
-    if (opts.tagSlug) newQuery.tag = opts.tagSlug
+    if (opts.tagSlugs) newQuery.tag = opts.tagSlugs
     if (opts.campaignSlugs) newQuery.campaign = opts.campaignSlugs
     const query = Object.assign({}, location.query, newQuery)
     if (query.q === '') delete query.q

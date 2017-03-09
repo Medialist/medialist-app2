@@ -6,6 +6,7 @@ import { createContainer } from 'meteor/react-meteor-data'
 import querystring from 'querystring'
 import CampaignsTable from './campaigns-table'
 import SearchBox from '../lists/search-box'
+import CountTag from '../tags/tag'
 import MasterListsSelector from './masterlists-selector.jsx'
 import CampaignsActionsToast from './campaigns-actions-toast'
 import EditCampaign from './edit-campaign'
@@ -27,6 +28,8 @@ const CampaignsPage = React.createClass({
     campaigns: PropTypes.arrayOf(PropTypes.object),
     campaignCount: PropTypes.number,
     selectedMasterListSlug: PropTypes.string,
+    tagSlugs: PropTypes.arrayOf(PropTypes.string),
+    selectedTags: PropTypes.arrayOf(PropTypes.object),
     loading: PropTypes.bool,
     searching: PropTypes.bool,
     sort: PropTypes.object,
@@ -130,9 +133,16 @@ const CampaignsPage = React.createClass({
     })
   },
 
+  onTagRemove (tag) {
+    const { setQuery, tagSlugs } = this.props
+    setQuery({
+      tagSlugs: tagSlugs.filter((str) => str !== tag.slug)
+    })
+  },
+
   render () {
-    const { campaignCount, campaigns, selectedMasterListSlug, loading, total, sort, term, snackbar } = this.props
-    const { onSortChange, onSelectionsChange, onMasterListChange, onViewSelection, onFavouriteAll } = this
+    const { campaignCount, campaigns, selectedMasterListSlug, loading, total, sort, term, snackbar, selectedTags } = this.props
+    const { onSortChange, onSelectionsChange, onMasterListChange, onViewSelection, onFavouriteAll, onTagRemove } = this
     const { selections, editCampaignOpen } = this.state
 
     if (!loading && campaignCount === 0) {
@@ -161,7 +171,17 @@ const CampaignsPage = React.createClass({
         <div className='bg-white shadow-2 m4 mt8'>
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
-              <SearchBox onTermChange={this.onTermChange} placeholder='Search campaigns...' />
+              <SearchBox onTermChange={this.onTermChange} placeholder='Search campaigns...'>
+                {selectedTags && selectedTags.map((t) => (
+                  <CountTag
+                    style={{marginBottom: 0}}
+                    key={t.slug}
+                    name={t.name}
+                    count={t.contactsCount}
+                    onRemove={() => onTagRemove(t)}
+                  />
+                ))}
+              </SearchBox>
             </div>
             <div className='flex-none pl4 f-xs'>
               <CampaignsTotal total={total} />
@@ -245,6 +265,7 @@ const CampaignsPageContainer = withSnackbar(withRouter(React.createClass({
         newQuery.list = opts.selectedMasterListSlug
       }
     }
+    if (opts.tagSlugs) newQuery.tag = opts.tagSlugs
     const query = Object.assign({}, location.query, newQuery)
     if (query.q === '') delete query.q
     if (query.list === 'all' || newQuery.my) delete query.list
@@ -257,8 +278,9 @@ const CampaignsPageContainer = withSnackbar(withRouter(React.createClass({
   parseQuery ({query}) {
     const sort = query.sort ? JSON.parse(query.sort) : { updatedAt: -1 }
     const term = query.q || ''
+    const tagSlugs = query.tag ? [query.tag] : []
     const { list, my } = query
-    return { sort, term, selectedMasterListSlug: list, userId: my }
+    return { sort, term, selectedMasterListSlug: list, userId: my, tagSlugs }
   },
 
   render () {
