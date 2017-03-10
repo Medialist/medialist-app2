@@ -1,10 +1,10 @@
 import React, { PropTypes } from 'react'
 import cloneDeep from 'lodash.clonedeep'
-import { CircleAvatar } from '../images/avatar'
 import EditableAvatar from '../images/editable-avatar/editable-avatar'
-import { FilledCircle, EmailIcon, PhoneIcon } from '../images/icons'
+import { CameraIcon, FilledCircle, EmailIcon, PhoneIcon } from '../images/icons'
 import Modal from '../navigation/modal'
 import {SocialMap, SocialIcon} from '../social/social'
+import OutletAutocomplete from './outlet-autocomplete'
 
 const FormSection = ({label, addLinkText, onAdd, children}) => (
   <section className='pl6 pb3'>
@@ -33,25 +33,33 @@ const EditContact = React.createClass({
     })
   },
 
+  atLeastOne (arr, label) {
+    if (!arr || !arr.length) return [{ label: label, value: '' }]
+    return cloneDeep(arr)
+  },
+
   getInitialState () {
-    const state = cloneDeep(this.props.contact) || {
-      avatar: '',
-      name: '',
-      outlets: [],
-      emails: [],
-      phones: [],
-      socials: []
-    }
-    Object.keys(SocialMap).forEach((k, i) => {
-      if (state.socials.find((s) => s.label === k)) return
-      state.socials.splice(i, 0, {label: k, value: ''})
+    const contact = this.props.contact || {}
+    // Create the full socials list, setting any existing social values.
+    const socials = Object.keys(SocialMap).map((label, i) => {
+      const existing = contact.socials && contact.socials.find((s) => s.label === label)
+      if (existing) return Object.assign({}, existing)
+      return {label, value: ''}
     })
-    // TODO: merge socials with existing.
+    const state = {
+      avatar: contact.avatar || '',
+      name: contact.avatar || '',
+      outlets: this.atLeastOne(contact.outlets, ''),
+      emails: this.atLeastOne(contact.emails, 'Email'),
+      phones: this.atLeastOne(contact.phones, 'Phone'),
+      socials
+    }
     return Object.assign(state, this.props.prefill)
   },
 
   onAvatarChange (evt) {
-    console.log('onAvatarChange', evt)
+    const avatar = evt.url
+    this.setState({avatar})
   },
 
   onAvatarError (err) {
@@ -69,6 +77,18 @@ const EditContact = React.createClass({
     const {name, value} = evt.target
     const outlets = cloneDeep(this.state.outlets)
     outlets[name].label = value
+    this.setState({outlets})
+  },
+
+  onJobOrgSelect ({name, value}) {
+    const outlets = cloneDeep(this.state.outlets)
+    outlets[name].label = value
+    this.setState({outlets})
+  },
+
+  onJobTitleSelect ({name, value}) {
+    const outlets = cloneDeep(this.state.outlets)
+    outlets[name].value = value
     this.setState({outlets})
   },
 
@@ -104,7 +124,7 @@ const EditContact = React.createClass({
 
   onAdd (prop, item) {
     this.setState((s) => ({
-      [prop]: s.concat([item])
+      [prop]: s[prop].concat([item])
     }))
   },
 
@@ -134,27 +154,21 @@ const EditContact = React.createClass({
     return value.length + 2
   },
 
-  atLeastOne (arr, label) {
-    if (!arr || !arr.length) return [{ label: label, value: '' }]
-    return arr
-  },
-
   render () {
-    const { onAvatarChange, onAvatarError, onJobTitleChange, onJobOrgChange, onAddJob, onProfileChange, onEmailChange, onAddEmail, onPhoneChange, onAddPhone, onSocialChange, onAddSocial, onSubmit, onDelete, inputSize } = this
+    const { onAvatarChange, onAvatarError, onJobTitleChange, onJobOrgChange, onJobOrgSelect, onJobTitleSelect, onAddJob, onProfileChange, onEmailChange, onAddEmail, onPhoneChange, onAddPhone, onSocialChange, onAddSocial, onSubmit, onDelete, inputSize } = this
     const { onDismiss } = this.props
     const contact = this.state
+    const { avatar, outlets, emails, phones, socials } = this.state
     // TODO: migrate contact address format. Currently is a string.
-    const outlets = this.atLeastOne(contact.outlets, '')
-    const emails = this.atLeastOne(contact.emails, 'Email')
-    const phones = this.atLeastOne(contact.phones, 'Phone')
-    const socials = this.atLeastOne(contact.socials, 'Social')
     const iconStyle = { width: 30 }
     return (
       <div>
         <div style={{maxHeight: 'calc(95vh - 76px)', overflowY: 'auto'}}>
           <div className='py6 center'>
-            <EditableAvatar avatar={contact.avatar} onChange={onAvatarChange} onError={onAvatarError} menuTop={-20}>
-              <CircleAvatar size={110} avatar={contact.avatar} name={contact.name} />
+            <EditableAvatar avatar={avatar} onChange={onAvatarChange} onError={onAvatarError} menuTop={-20}>
+              <div className='bg-gray60 center circle mx-auto' style={{height: '110px', width: '110px', lineHeight: '110px', overflowY: 'hidden'}}>
+                { avatar ? <img src={avatar} width='110' height='110' /> : <CameraIcon className='svg-icon-xl' /> }
+              </div>
             </EditableAvatar>
             <div>
               <input
@@ -176,24 +190,30 @@ const EditContact = React.createClass({
                     <div key={index} className='pt2'>
                       <FilledCircle style={iconStyle} className='inline-block gray60' />
                       <div className='inline-block align-middle'>
-                        <input
+                        <OutletAutocomplete
                           style={{width: 225}}
+                          menuWidth={225}
                           className='input'
-                          type='text'
                           value={outlet.value}
                           name={index}
+                          field='value'
+                          placeholder='Title'
+                          onSelect={onJobTitleSelect}
                           onChange={onJobTitleChange}
-                          placeholder='Title' />
+                        />
                       </div>
                       <div className='inline-block align-middle ml4'>
-                        <input
+                        <OutletAutocomplete
                           style={{width: 225}}
+                          menuWidth={225}
                           className='input'
-                          type='text'
                           value={outlet.label}
                           name={index}
+                          field='label'
+                          placeholder='Outlet'
+                          onSelect={onJobOrgSelect}
                           onChange={onJobOrgChange}
-                          placeholder='Outlet' />
+                        />
                       </div>
                     </div>
                   ))}
@@ -226,6 +246,7 @@ const EditContact = React.createClass({
                           style={{width: 350}}
                           className='input'
                           type='text'
+                          name={index}
                           value={phone.value}
                           onChange={onPhoneChange}
                           placeholder='Phone number' />

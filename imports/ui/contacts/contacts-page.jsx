@@ -46,7 +46,7 @@ const ContactsPage = withSnackbar(React.createClass({
     return {
       selections: [],
       isDropdownOpen: false,
-      addContactModalOpen: false,
+      addContactModalOpen: true,
       AddContactsToCampaignModalOpen: false,
       addTagsOpen: false,
       addToMasterListsOpen: false

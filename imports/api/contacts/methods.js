@@ -238,3 +238,27 @@ export const createContact = new ValidatedMethod({
     return contactId
   }
 })
+
+export const searchOutlets = new ValidatedMethod({
+  name: 'searchOutlets',
+
+  validate: new SimpleSchema({
+    term: { type: String },
+    field: { type: String }
+  }).validator(),
+
+  run ({term, field}) {
+    if (!this.userId) throw new Meteor.Error('You must be logged in')
+    const termRegExp = new RegExp('^' + term, 'i')
+    const suggestions = Contacts
+      .find(
+        {[`outlets.${field}`]: termRegExp},
+        {fields: {outlets: 1}, limit: 10}
+      )
+      .map((contact) => contact.outlets)
+      .reduce((res, arr) => res.concat(arr), [])
+      .map((outlet) => outlet[field])
+      .filter((s) => s.match(termRegExp))
+    return suggestions
+  }
+})

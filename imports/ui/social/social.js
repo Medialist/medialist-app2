@@ -1,5 +1,5 @@
 import React from 'react'
-import { Twitter, Facebook, WebsiteIcon } from '../images/icons'
+import { Twitter, Facebook, Linkedin, Youtube, Instagram, Medium, Pinterest, WebsiteIcon } from '../images/icons'
 import Tooltip from '../navigation/tooltip'
 
 export const SocialMap = {
@@ -12,27 +12,27 @@ export const SocialMap = {
     url: 'https://twitter.com/'
   },
   LinkedIn: {
-    icon: Facebook,
+    icon: Linkedin,
     url: ''
   },
   Facebook: {
-    icon: WebsiteIcon,
+    icon: Facebook,
     url: 'https://facebook.com/public/'
   },
   YouTube: {
-    icon: WebsiteIcon,
+    icon: Youtube,
     url: ''
   },
   Instagram: {
-    icon: WebsiteIcon,
+    icon: Instagram,
     url: ''
   },
   Medium: {
-    icon: WebsiteIcon,
+    icon: Medium,
     url: ''
   },
-  Pintrest: {
-    icon: WebsiteIcon,
+  Pinterest: {
+    icon: Pinterest,
     url: ''
   }
 }

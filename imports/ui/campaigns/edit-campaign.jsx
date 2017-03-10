@@ -44,8 +44,8 @@ const EditCampaign = React.createClass({
   onClientNameChange (clientName) {
     this.setState({clientName})
   },
-  onClientSelect (name) {
-    this.setState({clientName: name})
+  onClientSelect ({name, value}) {
+    this.setState({clientName: value})
   },
   onChange (field) {
     return ({ target: { value } }) => {
