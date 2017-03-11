@@ -25,8 +25,8 @@ module.exports = {
   },
   commands: [{
     uploadCsvFile: function (path) {
-      this.waitForElementVisible('@contactActionsButton')
-      this.click('@contactActionsButton')
+      // this.waitForElementVisible('@contactActionsButton')
+      // this.click('@contactActionsButton')
       this.waitForElementVisible('@importContactsButton')
       this.click('@importContactsButton')
       this.section.upload.setValue('@fileInput', path)

@@ -3,7 +3,6 @@ npm-debug*
 .DS_Store
 client/bundle.css
 settings.json
-settings.test.json
 imports/ui/images/icons/*
-reports
+.reports
 *.log

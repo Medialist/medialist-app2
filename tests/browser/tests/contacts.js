@@ -21,7 +21,7 @@ const test = {
       .completeImport()
 
     contactsPage.section.importComplete.waitForElementVisible('@status')
-    contactsPage.section.importComplete.assert.containsText('@status', 'Created 0 contacts and updated 1 contacts.')
+    contactsPage.section.importComplete.assert.containsText('@status', 'Created 1 contacts and updated 0 contacts.')
 
     t.end()
   }

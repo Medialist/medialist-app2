@@ -13,14 +13,12 @@ module.exports = {
 
   before: (done) => {
     http.get(APP_URL, result => {
-      console.info('App was running')
+      result.resume()
       done()
     })
     .on('error', () => {
-      console.info('Starting app')
       app()
       .then(app => {
-        console.info('Started app')
         server = app
 
         done()
@@ -30,14 +28,17 @@ module.exports = {
 
   after: (done) => {
     if (!server) {
-      console.info('App was already running')
       return done()
     }
 
-    console.info('Stopping app')
     server.stop()
-    .then(done)
-    .catch(done)
+    .then(() => {
+      done()
+    })
+    .catch(error => {
+      console.error('Could not stop app!', error.stack)
+      done(error)
+    })
   },
 
   beforeEach: (t, done) => {
@@ -47,8 +48,8 @@ module.exports = {
   },
 
   afterEach: (t, done) => {
-    t.db.connection.close()
-
-    done()
+    t.db.connection.close(true, () => {
+      done()
+    })
   }
 }

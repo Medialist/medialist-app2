@@ -9,6 +9,7 @@
     "test:server": "meteor test --once --driver-package dispatch:mocha --port 3100",
     "test:server:watch": "TEST_WATCH=1 meteor test --driver-package dispatch:mocha --port 3100",
     "test:browser": "nightwatch -c tests/browser/nightwatch.conf.js tests/browser/tests",
+    "test:browser:ci": "RESET_APP=true nightwatch -c tests/browser/nightwatch.conf.js tests/browser/tests",
     "ava": "NODE_ENV=test ava --verbose tests/ui",
     "lint": "standard | snazzy",
     "lint:fix": "standard --fix",

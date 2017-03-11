@@ -14,12 +14,13 @@ const defaults = configure({
   SELENIUM_PORT: 4444,
   SELENIUM_HOST: '127.0.0.1',
   BROWSER: 'chrome',
-  PARALLEL: true
+  PARALLEL: true,
+  REPORTS_DIR: '.reports'
 })
 
 const config = {
   src_folders: ['tests/browser'],
-  output_folder: 'reports',
+  output_folder: defaults.REPORTS_DIR,
   page_objects_path: 'tests/browser/pages',
   globals_path: 'tests/browser/globals',
 
@@ -44,7 +45,7 @@ const config = {
         enabled: true,
         on_failure: true,
         on_error: true,
-        path: 'reports/browser/screenshots'
+        path: `${defaults.REPORTS_DIR}/browser/screenshots`
       },
       desiredCapabilities: {
         browserName: defaults.BROWSER,
