@@ -1,5 +1,7 @@
 import React, { PropTypes } from 'react'
 import cloneDeep from 'lodash.clonedeep'
+import ValidationBanner from '../errors/validation-banner'
+import FormError from '../errors/form-error'
 import EditableAvatar from '../images/editable-avatar/editable-avatar'
 import { CameraIcon, FilledCircle, EmailIcon, PhoneIcon } from '../images/icons'
 import Modal from '../navigation/modal'
@@ -33,11 +35,6 @@ const EditContact = React.createClass({
     })
   },
 
-  atLeastOne (arr, label) {
-    if (!arr || !arr.length) return [{ label: label, value: '' }]
-    return cloneDeep(arr)
-  },
-
   getInitialState () {
     const contact = this.props.contact || {}
     // Create the full socials list, setting any existing social values.
@@ -46,15 +43,22 @@ const EditContact = React.createClass({
       if (existing) return Object.assign({}, existing)
       return {label, value: ''}
     })
-    const state = {
+    const state = Object.assign({
       avatar: contact.avatar || '',
       name: contact.avatar || '',
       outlets: this.atLeastOne(contact.outlets, ''),
       emails: this.atLeastOne(contact.emails, 'Email'),
       phones: this.atLeastOne(contact.phones, 'Phone'),
-      socials
-    }
-    return Object.assign(state, this.props.prefill)
+      socials,
+      showErrors: false
+    }, this.props.prefill)
+    state.errors = this.validate(state)
+    return state
+  },
+
+  atLeastOne (arr, label) {
+    if (!arr || !arr.length) return [{ label: label, value: '' }]
+    return cloneDeep(arr)
   },
 
   onAvatarChange (evt) {
@@ -95,6 +99,9 @@ const EditContact = React.createClass({
   onProfileChange (evt) {
     const {name, value} = evt.target
     this.setState({[name]: value})
+    this.setState((s) => ({
+      errors: this.validate(s)
+    }))
   },
 
   onEmailChange (evt) {
@@ -102,6 +109,9 @@ const EditContact = React.createClass({
     const emails = cloneDeep(this.state.emails)
     emails[name].value = value
     this.setState({emails})
+    this.setState((s) => ({
+      errors: this.validate(s)
+    }))
   },
 
   onPhoneChange (evt) {
@@ -144,8 +154,41 @@ const EditContact = React.createClass({
     this.onAdd('socials', {label: 'Website', value: ''})
   },
 
+  validate ({name, emails}) {
+    const errors = {}
+    if (!name) errors.name = 'Please add a contact name'
+    const emailRegEx = /.+@.{2,}\..{2,}/
+    const emailErrors = emails.map((e, i) => {
+      const {value} = e
+      if (value && !value.match(emailRegEx)) return 'Looks like this isn’t a valid email'
+      return false
+    })
+    console.log({emailErrors})
+    const hasEmailErrors = Object.keys(emailErrors).length > 0
+    if (hasEmailErrors) {
+      errors.emails = emailErrors
+    }
+    if (errors.name && hasEmailErrors) {
+      errors.headline = 'Let’s add a little more detail'
+    } else if (errors.name) {
+      errors.headline = 'Please add a contact name'
+    } else if (hasEmailErrors) {
+      errors.headline = 'Looks like that isn’t a valid email'
+    }
+    return errors
+  },
+
+  isValid (errors) {
+    return Object.keys(errors) > 0
+  },
+
   onSubmit (evt) {
     evt.preventDefault()
+    const isValid = this.isValid(this.state.errors)
+    console.log({isValid})
+    if (!isValid) {
+      return this.setState({showErrors: true})
+    }
     this.props.onSubmit(cloneDeep(this.state))
   },
 
@@ -158,11 +201,11 @@ const EditContact = React.createClass({
     const { onAvatarChange, onAvatarError, onJobTitleChange, onJobOrgChange, onJobOrgSelect, onJobTitleSelect, onAddJob, onProfileChange, onEmailChange, onAddEmail, onPhoneChange, onAddPhone, onSocialChange, onAddSocial, onSubmit, onDelete, inputSize } = this
     const { onDismiss } = this.props
     const contact = this.state
-    const { avatar, outlets, emails, phones, socials } = this.state
-    // TODO: migrate contact address format. Currently is a string.
+    const { avatar, outlets, emails, phones, socials, errors, showErrors } = this.state
     const iconStyle = { width: 30 }
     return (
       <div>
+        <ValidationBanner show={showErrors} error={errors.headline} />
         <div style={{maxHeight: 'calc(95vh - 76px)', overflowY: 'auto'}}>
           <div className='py6 center'>
             <EditableAvatar avatar={avatar} onChange={onAvatarChange} onError={onAvatarError} menuTop={-20}>
@@ -179,6 +222,7 @@ const EditContact = React.createClass({
                 value={contact.name}
                 size={inputSize(contact.name)}
                 onChange={onProfileChange} />
+              <FormError show={showErrors} error={errors.name} className='' />
             </div>
           </div>
           <div>
@@ -220,21 +264,26 @@ const EditContact = React.createClass({
                 </FormSection>
 
                 <FormSection label='Emails' addLinkText='Add another email' onAdd={onAddEmail}>
-                  {emails.map((email, index) => (
-                    <div key={index} className='pt2'>
-                      <EmailIcon style={iconStyle} className='inline-block' />
-                      <div className='inline-block align-middle'>
-                        <input
-                          style={{width: 350}}
-                          className='input'
-                          type='text'
-                          value={email.value}
-                          name={index}
-                          onChange={onEmailChange}
-                          placeholder='Email' />
+                  {emails.map((email, index) => {
+                    const error = errors.emails && errors.emails[index]
+                    console.log({error})
+                    return (
+                      <div key={index} className='pt2'>
+                        <EmailIcon style={iconStyle} className='inline-block' />
+                        <div className='inline-block align-middle'>
+                          <input
+                            style={{width: 350}}
+                            className={`input ${error && 'border-red'}`}
+                            type='text'
+                            value={email.value}
+                            name={index}
+                            onChange={onEmailChange}
+                            placeholder='Email' />
+                          <FormError show={showErrors} error={error} />
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </FormSection>
 
                 <FormSection label='Phones' addLinkText='Add another phone' onAdd={onAddPhone}>
