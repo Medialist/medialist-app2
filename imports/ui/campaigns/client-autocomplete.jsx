@@ -1,40 +1,17 @@
-import React, { PropTypes } from 'react'
+import { Meteor } from 'meteor/meteor'
+import { createContainer } from 'meteor/react-meteor-data'
+import Clients from '/imports/api/clients/clients'
 import Autocomplete from '../lists/autocomplete'
 
-export default React.createClass({
-  propTypes: {
-    clients: PropTypes.array.isRequired,
-    clientName: PropTypes.string,
-    onSelect: PropTypes.func.isRequired,
-    onChange: PropTypes.func.isRequired
-  },
-  getInitialState () {
-    const { clientName } = this.props
-    const { getSuggestions } = this
-    return {
-      suggestions: getSuggestions(clientName)
-    }
-  },
-  getSuggestions (value) {
-    const regex = new RegExp(value, 'i')
-    return this.props.clients
-      .map((c) => c.name)
-      .filter((clientName) => {
-        return regex.test(clientName)
-      })
-  },
-  onChange (value) {
-    this.setState({
-      suggestions: this.getSuggestions(value)
-    })
-    this.props.onChange(value)
-  },
-  render () {
-    const { onChange } = this
-    const { suggestions } = this.state
-    const { onSelect, clientName } = this.props
-    return (
-      <Autocomplete {...this.props} suggestions={suggestions} value={clientName} onSelect={onSelect} onChange={onChange} />
-    )
-  }
-})
+const ClientAutocomplete = createContainer((props) => {
+  const sub = Meteor.subscribe('clients')
+  const {value: term} = props
+  if (!term || term.length < 1) return {suggestions: []}
+  const termRegExp = new RegExp('^' + term, 'i')
+  const suggestions = Clients
+    .find({name: termRegExp})
+    .map((c) => c.name)
+  return {suggestions, loading: !sub.ready()}
+}, Autocomplete)
+
+export default ClientAutocomplete

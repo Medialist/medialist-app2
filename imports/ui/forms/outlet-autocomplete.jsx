@@ -1,6 +1,4 @@
-// import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
-// import { searchOutlets } from '/imports/api/contacts/queries'
 import { searchOutlets } from '/imports/api/contacts/methods'
 import Autocomplete from '../lists/autocomplete'
 

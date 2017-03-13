@@ -138,7 +138,7 @@ const CampaignsPage = React.createClass({
     if (!loading && campaignCount === 0) {
       return (<div>
         <CampaignListEmpty onAddCampaign={this.toggleEditCampaign} />
-        <EditCampaignContainer onDismiss={this.toggleEditCampaign} open={editCampaignOpen} />
+        <EditCampaign onDismiss={this.toggleEditCampaign} open={editCampaignOpen} />
       </div>)
     }
 
@@ -157,7 +157,7 @@ const CampaignsPage = React.createClass({
             <button className='btn bg-completed white mx4' onClick={this.toggleEditCampaign}>New Campaign</button>
           </div>
         </div>
-        <EditCampaignContainer onDismiss={this.toggleEditCampaign} open={editCampaignOpen} />
+        <EditCampaign onDismiss={this.toggleEditCampaign} open={editCampaignOpen} />
         <div className='bg-white shadow-2 m4 mt8'>
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
@@ -208,11 +208,6 @@ const CampaignsPage = React.createClass({
 const CampaignsTotal = ({ total }) => (
   <div>{total} campaign{total === 1 ? '' : 's'} total</div>
 )
-
-const EditCampaignContainer = createContainer((props) => {
-  Meteor.subscribe('clients')
-  return { ...props, clients: window.Clients.find().fetch() }
-}, EditCampaign)
 
 const MasterListsSelectorContainer = createContainer((props) => {
   const { selectedMasterListSlug, userId } = props

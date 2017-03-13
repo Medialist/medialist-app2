@@ -2,7 +2,9 @@ import React, { PropTypes } from 'react'
 import { withRouter } from 'react-router'
 import { CameraIcon, BioIcon, WebsiteIcon, FilledCircle } from '../images/icons'
 import Modal from '../navigation/modal'
-import ValidationBanner from '../errors/validation-banner'
+import ValidationBanner from '../forms/validation-banner'
+import FormSection from '../forms/form-section'
+import FormError from '../forms/form-error'
 import EditableAvatar from '../images/editable-avatar'
 import ClientAutocomplete from './client-autocomplete'
 import { create, update } from '/imports/api/campaigns/methods'
@@ -14,7 +16,6 @@ const EditCampaign = React.createClass({
     router: PropTypes.object.isRequired,
     open: PropTypes.bool.isRequired,
     onDismiss: PropTypes.func.isRequired,
-    clients: PropTypes.array.isRequired,
     campaign: PropTypes.object
   },
   getInitialState () {
@@ -123,14 +124,13 @@ const EditCampaign = React.createClass({
   render () {
     if (!this.props.open) return null
     const { onChange, onChangeLink, onSubmit, onReset, onClientNameChange, onClientSelect, onAvatarChange, onAvatarError, validate } = this
-    const { campaign, clients } = this.props
+    const { campaign } = this.props
     const { avatar, name, purpose, clientName, links, validationErrors, isValid } = this.state
     const inputStyle = { resize: 'none' }
-    const iconStyle = { position: 'absolute', left: '-32px', top: '10px' }
     return (
       <form onSubmit={onSubmit} onReset={onReset} className='relative'>
         <ValidationBanner error={validationErrors.name || validationErrors.links} />
-        <div className='px4 py6 center'>
+        <div className='px4 py6 center border-bottom border-gray80'>
           <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError} menuTop={-50}>
             <div className='bg-gray60 center rounded mx-auto' style={{height: '110px', width: '110px', lineHeight: '110px'}}>
               { avatar ? <img src={avatar} width='100%' height='100%' /> : <CameraIcon className='svg-icon-xl' /> }
@@ -149,21 +149,20 @@ const EditCampaign = React.createClass({
               onChange={onChange('name')}
               onBlur={validate}
                />
-            {validationErrors.name ? <div className='absolute left-0 right-0 mt1 red'>{validationErrors.name}</div> : null}
+            <FormError error={validationErrors.name} />
           </div>
         </div>
-        <div className='bg-gray90 border-top border-gray80 py5 overflow-auto' style={{ maxHeight: '400px' }}>
-          <div style={{ padding: '0 100px' }}>
-            <div>
-              <label className='block gray40 f-sm mb2 bold'>Client</label>
-              <div className='relative'>
-                <div style={iconStyle}>
-                  <FilledCircle className={this.focusState('clientName')} />
-                </div>
+
+        <div className='bg-gray90 pb6'>
+          <FormSection label='Client'>
+            <div className='flex items-center'>
+              <FilledCircle className={`flex-none mr2 ${this.focusState('clientName')}`} />
+              <div className='flex-auto'>
                 <ClientAutocomplete
+                  style={{width: 225}}
+                  menuWidth={255}
                   onFocus={this.addFocus('clientName')}
                   onBlur={this.removeFocus}
-                  clients={clients}
                   className='input block placeholder-gray60'
                   name='clientName'
                   placeholder='Client'
@@ -172,46 +171,39 @@ const EditCampaign = React.createClass({
                   onChange={onClientNameChange} />
               </div>
             </div>
-            <div className='mt4'>
-              <label className='block gray40 f-sm mb2 bold'>Key Message</label>
-              <div className='relative'>
-                <div style={iconStyle}>
-                  <BioIcon className={this.focusState('purpose')} />
-                </div>
-                <textarea
-                  onFocus={this.addFocus('purpose')}
-                  onBlur={this.removeFocus}
-                  style={{ ...inputStyle, height: '70px' }}
-                  className='input block textarea placeholder-gray60'
+          </FormSection>
+          <FormSection label='Key Message'>
+            <div className='flex items-top'>
+              <BioIcon className={`flex-none mt2 mr2 ${this.focusState('purpose')}`} />
+              <textarea
+                onFocus={this.addFocus('purpose')}
+                onBlur={this.removeFocus}
+                style={{ ...inputStyle, height: '70px' }}
+                className='input block textarea placeholder-gray60'
+                type='text'
+                rows='5'
+                name='purpose'
+                value={purpose}
+                placeholder='Key Message'
+                onChange={onChange('purpose')} />
+            </div>
+          </FormSection>
+          <FormSection label='Links' addLinkText='Add another link' onAdd={this.addLink}>
+            {links.map((link, ind) => (
+              <div key={ind} className='flex items-center mb2'>
+                <WebsiteIcon className={`flex-none mr2 ${this.focusState(`link-${ind}`)}`} />
+                <input
+                  onFocus={this.addFocus(`link-${ind}`)}
+                  onBlur={callAll([this.removeFocus, this.checkLinkEmpty(ind), validate])}
+                  style={inputStyle}
+                  className='input flex-auto placeholder-gray60'
                   type='text'
-                  rows='5'
-                  name='purpose'
-                  value={purpose}
-                  placeholder='Key Message'
-                  onChange={onChange('purpose')} />
+                  value={links[ind].url}
+                  placeholder='Links'
+                  onChange={onChangeLink(ind)} />
               </div>
-            </div>
-            <div className='mt4'>
-              <label className='block gray40 f-sm mb2 bold'>Links</label>
-              {links.map((link, ind) => (
-                <div key={ind} className='relative mt1 icon-blue-highlight'>
-                  <div style={iconStyle}>
-                    <WebsiteIcon className={this.focusState(`link-${ind}`)} />
-                  </div>
-                  <input
-                    onFocus={this.addFocus(`link-${ind}`)}
-                    onBlur={callAll([this.removeFocus, this.checkLinkEmpty(ind), validate])}
-                    style={inputStyle}
-                    className='input block placeholder-gray60'
-                    type='text'
-                    value={links[ind].url}
-                    placeholder='Links'
-                    onChange={onChangeLink(ind)} />
-                </div>
-              ))}
-              <div className='mt1'><a href='#' className='f-xs blue underline' onClick={this.addLink}>Add another link</a></div>
-            </div>
-          </div>
+            ))}
+          </FormSection>
         </div>
         <div className='p4 right'>
           <button className='btn bg-completed white right' type='submit' disabled={!isValid}>

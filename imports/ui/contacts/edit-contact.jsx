@@ -1,28 +1,15 @@
 import React, { PropTypes } from 'react'
 import cloneDeep from 'lodash.clonedeep'
 import { ContactCreateSchema } from '/imports/api/contacts/contacts'
-import ValidationBanner from '../errors/validation-banner'
-import FormError from '../errors/form-error'
-import EditableAvatar from '../images/editable-avatar/editable-avatar'
+import ValidationBanner from '../forms/validation-banner'
+import FormError from '../forms/form-error'
+import FormSection from '../forms/form-section'
+import OutletAutocomplete from '../forms/outlet-autocomplete'
 import { CameraIcon, FilledCircle, EmailIcon, PhoneIcon } from '../images/icons'
-import Modal from '../navigation/modal'
-import {SocialMap, SocialIcon} from '../social/social'
-import OutletAutocomplete from './outlet-autocomplete'
+import { SocialMap, SocialIcon } from '../social/social'
+import EditableAvatar from '../images/editable-avatar/editable-avatar'
 import Scroll from '../navigation/scroll'
-
-const FormSection = ({label, addLinkText, onAdd, children}) => (
-  <section className='pl6 pb3'>
-    <label className='block gray40 semibold f-sm pt4'>{label}</label>
-    <div style={{marginLeft: -32}}>
-      {children}
-    </div>
-    <div className='mt2'>
-      <span className='pointer inline-block blue f-xs underline' onClick={onAdd}>
-        {addLinkText}
-      </span>
-    </div>
-  </section>
-)
+import Modal from '../navigation/modal'
 
 const EditContact = React.createClass({
   propTypes: {
@@ -217,10 +204,15 @@ const EditContact = React.createClass({
     return value.length + 2
   },
 
+  onDismissErrorBanner () {
+    const errors = cloneDeep(this.state.errors)
+    delete errors.headline
+    this.setState({errors})
+  },
+
   onScrollChange ({scrollTop}) {
     const {fixHeaderPosition} = this.state
-    const threashold = 180
-    console.log({scrollTop, fixHeaderPosition})
+    const threashold = 162
     if (scrollTop > threashold && !fixHeaderPosition) {
       this.setState({fixHeaderPosition: true})
     }
@@ -230,14 +222,14 @@ const EditContact = React.createClass({
   },
 
   render () {
-    const { onAvatarChange, onAvatarError, onJobTitleChange, onJobOrgChange, onJobOrgSelect, onJobTitleSelect, onAddJob, onProfileChange, onEmailChange, onAddEmail, onPhoneChange, onAddPhone, onSocialChange, onAddSocial, onSubmit, onDelete, inputSize, onScrollChange } = this
+    const { onAvatarChange, onAvatarError, onJobTitleChange, onJobOrgChange, onJobOrgSelect, onJobTitleSelect, onAddJob, onProfileChange, onEmailChange, onAddEmail, onPhoneChange, onAddPhone, onSocialChange, onAddSocial, onSubmit, onDelete, inputSize, onScrollChange, onDismissErrorBanner } = this
     const { onDismiss } = this.props
     const { name, avatar, outlets, emails, phones, socials, errors, showErrors, fixHeaderPosition } = this.state
-    const iconStyle = { width: 30 }
     return (
       <div className='relative'>
-        <ValidationBanner show={showErrors} error={errors.headline} />
+        <ValidationBanner show={showErrors} error={errors.headline} onDismiss={onDismissErrorBanner} />
         <div className='absolute top-0 left-0 right-0' style={{transition: 'opacity 1s', zIndex: 1, display: fixHeaderPosition ? 'block' : 'none'}}>
+          <ValidationBanner show={showErrors} error={errors.headline} onDismiss={onDismissErrorBanner} />
           <div className='py3 center bg-white border-bottom border-gray80'>
             <div className='center f-xl gray20'>{name || 'Create Contact'}</div>
           </div>
@@ -262,111 +254,105 @@ const EditContact = React.createClass({
             </div>
           </div>
 
-          <div>
-            <div className='bg-gray90'>
-              <div className='mx-auto pb6' style={{maxWidth: 500}}>
+          <div className='bg-gray90 pb6'>
+            <FormSection label='Jobs' addLinkText='Add another job' onAdd={onAddJob}>
+              {outlets.map((outlet, index) => (
+                <div key={index} className='flex items-center mb2'>
+                  <FilledCircle className='flex-none mr2 gray60' />
+                  <div className='flex-auto'>
+                    <OutletAutocomplete
+                      style={{width: 225}}
+                      menuWidth={225}
+                      className='input'
+                      value={outlet.value}
+                      name={index}
+                      field='value'
+                      placeholder='Title'
+                      onSelect={onJobTitleSelect}
+                      onChange={onJobTitleChange}
+                    />
+                  </div>
+                  <div className='flex-auto ml4'>
+                    <OutletAutocomplete
+                      style={{width: 225}}
+                      menuWidth={225}
+                      className='input'
+                      value={outlet.label}
+                      name={index}
+                      field='label'
+                      placeholder='Outlet'
+                      onSelect={onJobOrgSelect}
+                      onChange={onJobOrgChange}
+                    />
+                  </div>
+                </div>
+              ))}
+            </FormSection>
 
-                <FormSection label='Jobs' addLinkText='Add another job' onAdd={onAddJob}>
-                  {outlets.map((outlet, index) => (
-                    <div key={index} className='pt2'>
-                      <FilledCircle style={iconStyle} className='inline-block gray60' />
-                      <div className='inline-block align-middle'>
-                        <OutletAutocomplete
-                          style={{width: 225}}
-                          menuWidth={225}
-                          className='input'
-                          value={outlet.value}
-                          name={index}
-                          field='value'
-                          placeholder='Title'
-                          onSelect={onJobTitleSelect}
-                          onChange={onJobTitleChange}
-                        />
-                      </div>
-                      <div className='inline-block align-middle ml4'>
-                        <OutletAutocomplete
-                          style={{width: 225}}
-                          menuWidth={225}
-                          className='input'
-                          value={outlet.label}
-                          name={index}
-                          field='label'
-                          placeholder='Outlet'
-                          onSelect={onJobOrgSelect}
-                          onChange={onJobOrgChange}
-                        />
-                      </div>
+            <FormSection label='Emails' addLinkText='Add another email' onAdd={onAddEmail}>
+              {emails.map((email, index) => {
+                const error = errors.emails && errors.emails[index]
+                return (
+                  <div key={index} className='flex items-center mb2'>
+                    <EmailIcon className='flex-none mr2' />
+                    <div className='flex-auto'>
+                      <input
+                        style={{width: 350}}
+                        className={`input ${error && 'border-red'}`}
+                        type='text'
+                        value={email.value}
+                        name={index}
+                        onChange={onEmailChange}
+                        placeholder='Email' />
+                      <FormError show={showErrors} error={error} />
                     </div>
-                  ))}
-                </FormSection>
+                  </div>
+                )
+              })}
+            </FormSection>
 
-                <FormSection label='Emails' addLinkText='Add another email' onAdd={onAddEmail}>
-                  {emails.map((email, index) => {
-                    const error = errors.emails && errors.emails[index]
-                    return (
-                      <div key={index} className='pt2'>
-                        <EmailIcon style={iconStyle} className='inline-block' />
-                        <div className='inline-block align-middle'>
-                          <input
-                            style={{width: 350}}
-                            className={`input ${error && 'border-red'}`}
-                            type='text'
-                            value={email.value}
-                            name={index}
-                            onChange={onEmailChange}
-                            placeholder='Email' />
-                          <FormError show={showErrors} error={error} />
-                        </div>
-                      </div>
-                    )
-                  })}
-                </FormSection>
+            <FormSection label='Phones' addLinkText='Add another phone' onAdd={onAddPhone}>
+              {phones.map((phone, index) => (
+                <div key={index} className='flex items-center mb2'>
+                  <PhoneIcon className='flex-none mr2' />
+                  <div className='flex-auto'>
+                    <input
+                      style={{width: 350}}
+                      className='input'
+                      type='text'
+                      name={index}
+                      value={phone.value}
+                      onChange={onPhoneChange}
+                      placeholder='Phone number' />
+                  </div>
+                </div>
+              ))}
+            </FormSection>
 
-                <FormSection label='Phones' addLinkText='Add another phone' onAdd={onAddPhone}>
-                  {phones.map((phone, index) => (
-                    <div key={index} className='pt2'>
-                      <PhoneIcon style={iconStyle} className='inline-block' />
-                      <div className='inline-block align-middle'>
-                        <input
-                          style={{width: 350}}
-                          className='input'
-                          type='text'
-                          name={index}
-                          value={phone.value}
-                          onChange={onPhoneChange}
-                          placeholder='Phone number' />
-                      </div>
-                    </div>
-                  ))}
-                </FormSection>
-
-                <FormSection label='Websites & Social Links' addLinkText='Add another social' onAdd={onAddSocial}>
-                  {socials.map(({label, value}, index) => (
-                    <div key={index} className='pt2'>
-                      <SocialIcon label={label} value={value} style={iconStyle} className='inline-block' />
-                      <div className='inline-block align-middle'>
-                        <input
-                          style={{width: 472}}
-                          className='input'
-                          type='text'
-                          name={index}
-                          value={value}
-                          onChange={onSocialChange}
-                          placeholder={label} />
-                      </div>
-                    </div>
-                  ))}
-                </FormSection>
-
-              </div>
-            </div>
+            <FormSection label='Websites & Social Links' addLinkText='Add another social' onAdd={onAddSocial}>
+              {socials.map(({label, value}, index) => (
+                <div key={index} className='flex items-center mb2'>
+                  <SocialIcon label={label} value={value} className=' mr2 flex-none' />
+                  <div className='flex-auto'>
+                    <input
+                      style={{width: 472}}
+                      className='input'
+                      type='text'
+                      name={index}
+                      value={value}
+                      onChange={onSocialChange}
+                      placeholder={label} />
+                  </div>
+                </div>
+              ))}
+            </FormSection>
           </div>
         </Scroll>
-        <div className='p4 bg-white border-top border-gray80'>
-          <div className='clearfix'>
-            <button className='btn bg-completed white right' onClick={onSubmit}>Save Changes</button>
-            <button className='btn bg-transparent gray40 right mr2' onClick={onDismiss}>Cancel</button>
-            {this.props.contact && <button className='btn bg-transparent not-interested' onClick={onDelete}>Delete Contact</button>}
+        <div className='flex items-center p4 bg-white border-top border-gray80'>
+          {this.props.contact && <button className='flex-none btn bg-transparent not-interested' onClick={onDelete}>Delete Contact</button>}
+          <div className='flex-auto right-align'>
+            <button className='btn bg-transparent gray40 mr2' onClick={onDismiss}>Cancel</button>
+            <button className='btn bg-completed white' onClick={onSubmit}>Save Changes</button>
           </div>
         </div>
       </div>
