@@ -198,7 +198,7 @@ export const createContact = new ValidatedMethod({
 
   run ({details}) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
-      // return if a matching twitter handle already exists
+    // return if a matching twitter handle already exists
     const existingContact = details.twitter && Contacts.findOne({ 'socials.label': 'Twitter', 'socials.value': details.twitter })
     if (existingContact) return existingContact
 
@@ -228,12 +228,46 @@ export const createContact = new ValidatedMethod({
       updatedAt: createdAt
     })
 
-    Posts.create({
-      type: 'CreateContact',
-      contactSlugs: [slug],
-      updatedAt: createdAt,
-      updatedBy: createdBy
+    return contactId
+  }
+})
+
+/*
+ * Create a new contact.
+ * Check for duplicates first and add to the users `myContacts` array.
+ */
+export const updateContact = new ValidatedMethod({
+  name: 'updateContact',
+
+  validate: new SimpleSchema({
+    contactId: { type: String },
+    details: { type: ContactCreateSchema }
+  }).validator(),
+
+  run ({contactId, details}) {
+    if (!this.userId) throw new Meteor.Error('You must be logged in')
+
+    const existingContact = Contacts.findOne({ _id: contactId })
+    if (!existingContact) throw new Meteor.Error('updateContact.nosuchcontact', `Could not find a contact ${contactId}`)
+
+    const updatedBy = findOneUserRef(this.userId)
+    const updatedAt = new Date()
+
+    // Merge the provided details with any missing values
+    const $set = Object.assign(details, {
+      updatedBy,
+      updatedAt
     })
+
+    Contacts.update({_id: contactId}, {$set})
+
+    addToMyFavourites({
+      userId: this.userId,
+      contactSlugs: [existingContact.slug],
+      updatedAt
+    })
+
+    // TODO: if any props are in the contact ref, update all refs...
 
     return contactId
   }

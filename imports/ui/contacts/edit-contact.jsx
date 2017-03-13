@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
 import cloneDeep from 'lodash.clonedeep'
+import { ContactCreateSchema } from '/imports/api/contacts/contacts'
 import ValidationBanner from '../errors/validation-banner'
 import FormError from '../errors/form-error'
 import EditableAvatar from '../images/editable-avatar/editable-avatar'
@@ -45,7 +46,7 @@ const EditContact = React.createClass({
     })
     const state = Object.assign({
       avatar: contact.avatar || '',
-      name: contact.avatar || '',
+      name: contact.name || '',
       outlets: this.atLeastOne(contact.outlets, ''),
       emails: this.atLeastOne(contact.emails, 'Email'),
       phones: this.atLeastOne(contact.phones, 'Phone'),
@@ -56,14 +57,69 @@ const EditContact = React.createClass({
     return state
   },
 
+  validate ({name, emails}) {
+    const errors = {}
+    if (!name) errors.name = 'Please add a contact name'
+    const emailRegEx = /.+@.{2,}\..{2,}/
+    const emailErrors = emails.map((e, i) => {
+      const {value} = e
+      if (!value || value.match(emailRegEx)) return false
+      return 'Looks like this isn’t a valid email'
+    })
+    const hasEmailErrors = emailErrors.filter((e) => e).length > 0
+    if (hasEmailErrors) {
+      errors.emails = emailErrors
+    }
+    if (errors.name && hasEmailErrors) {
+      errors.headline = 'Let’s add a little more detail'
+    } else if (errors.name) {
+      errors.headline = 'Please add a contact name'
+    } else if (hasEmailErrors) {
+      errors.headline = 'Looks like that isn’t a valid email'
+    }
+    return errors
+  },
+
+  onSubmit (evt) {
+    evt.preventDefault()
+    const isValid = this.isValid(this.state.errors)
+    if (!isValid) {
+      return this.setState({showErrors: true})
+    }
+    const data = cloneDeep(this.state)
+    ContactCreateSchema.clean(data)
+    data.outlets = data.outlets.filter((o) => o.label || o.value)
+    data.emails = data.emails.filter((o) => o.value)
+    data.phones = data.phones.filter((o) => o.value)
+    data.socials = data.socials.filter((o) => o.value)
+    this.props.onSubmit(data)
+  },
+
   atLeastOne (arr, label) {
     if (!arr || !arr.length) return [{ label: label, value: '' }]
     return cloneDeep(arr)
   },
 
+  isValid (errors) {
+    return Object.keys(errors).length < 1
+  },
+
   onAvatarChange (evt) {
-    const avatar = evt.url
-    this.setState({avatar})
+    const {url, screenName} = evt
+    this.setState((s) => {
+      const newState = {avatar: url}
+      if (!screenName) return newState
+
+      const socials = cloneDeep(s.socials)
+      const i = socials.findIndex((so) => so.label === 'Twitter')
+      const {value} = socials[i]
+      // avoid overwriting and exiting twitter screenName
+      if (!value) {
+        socials[i].value = screenName
+        newState.socials = socials
+      }
+      return newState
+    })
   },
 
   onAvatarError (err) {
@@ -154,44 +210,6 @@ const EditContact = React.createClass({
     this.onAdd('socials', {label: 'Website', value: ''})
   },
 
-  validate ({name, emails}) {
-    const errors = {}
-    if (!name) errors.name = 'Please add a contact name'
-    const emailRegEx = /.+@.{2,}\..{2,}/
-    const emailErrors = emails.map((e, i) => {
-      const {value} = e
-      if (value && !value.match(emailRegEx)) return 'Looks like this isn’t a valid email'
-      return false
-    })
-    console.log({emailErrors})
-    const hasEmailErrors = Object.keys(emailErrors).length > 0
-    if (hasEmailErrors) {
-      errors.emails = emailErrors
-    }
-    if (errors.name && hasEmailErrors) {
-      errors.headline = 'Let’s add a little more detail'
-    } else if (errors.name) {
-      errors.headline = 'Please add a contact name'
-    } else if (hasEmailErrors) {
-      errors.headline = 'Looks like that isn’t a valid email'
-    }
-    return errors
-  },
-
-  isValid (errors) {
-    return Object.keys(errors) > 0
-  },
-
-  onSubmit (evt) {
-    evt.preventDefault()
-    const isValid = this.isValid(this.state.errors)
-    console.log({isValid})
-    if (!isValid) {
-      return this.setState({showErrors: true})
-    }
-    this.props.onSubmit(cloneDeep(this.state))
-  },
-
   inputSize (value) {
     if (!value || value.length < 11) return 12
     return value.length + 2
@@ -266,7 +284,6 @@ const EditContact = React.createClass({
                 <FormSection label='Emails' addLinkText='Add another email' onAdd={onAddEmail}>
                   {emails.map((email, index) => {
                     const error = errors.emails && errors.emails[index]
-                    console.log({error})
                     return (
                       <div key={index} className='pt2'>
                         <EmailIcon style={iconStyle} className='inline-block' />
