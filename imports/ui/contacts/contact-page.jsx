@@ -51,7 +51,6 @@ const ContactPage = withSnackbar(React.createClass({
 
   onEditContact (details) {
     const {snackbar, contact} = this.props
-    console.log('submit', details, contact)
     updateContact.call({details, contactId: contact._id}, (err, res) => {
       if (err) {
         console.log(err)

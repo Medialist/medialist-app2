@@ -8,6 +8,7 @@ import { CameraIcon, FilledCircle, EmailIcon, PhoneIcon } from '../images/icons'
 import Modal from '../navigation/modal'
 import {SocialMap, SocialIcon} from '../social/social'
 import OutletAutocomplete from './outlet-autocomplete'
+import Scroll from '../navigation/scroll'
 
 const FormSection = ({label, addLinkText, onAdd, children}) => (
   <section className='pl6 pb3'>
@@ -51,7 +52,8 @@ const EditContact = React.createClass({
       emails: this.atLeastOne(contact.emails, 'Email'),
       phones: this.atLeastOne(contact.phones, 'Phone'),
       socials,
-      showErrors: false
+      showErrors: false,
+      fixHeaderPosition: false
     }, this.props.prefill)
     state.errors = this.validate(state)
     return state
@@ -215,17 +217,33 @@ const EditContact = React.createClass({
     return value.length + 2
   },
 
+  onScrollChange ({scrollTop}) {
+    const {fixHeaderPosition} = this.state
+    const threashold = 180
+    console.log({scrollTop, fixHeaderPosition})
+    if (scrollTop > threashold && !fixHeaderPosition) {
+      this.setState({fixHeaderPosition: true})
+    }
+    if (scrollTop < threashold && fixHeaderPosition) {
+      this.setState({fixHeaderPosition: false})
+    }
+  },
+
   render () {
-    const { onAvatarChange, onAvatarError, onJobTitleChange, onJobOrgChange, onJobOrgSelect, onJobTitleSelect, onAddJob, onProfileChange, onEmailChange, onAddEmail, onPhoneChange, onAddPhone, onSocialChange, onAddSocial, onSubmit, onDelete, inputSize } = this
+    const { onAvatarChange, onAvatarError, onJobTitleChange, onJobOrgChange, onJobOrgSelect, onJobTitleSelect, onAddJob, onProfileChange, onEmailChange, onAddEmail, onPhoneChange, onAddPhone, onSocialChange, onAddSocial, onSubmit, onDelete, inputSize, onScrollChange } = this
     const { onDismiss } = this.props
-    const contact = this.state
-    const { avatar, outlets, emails, phones, socials, errors, showErrors } = this.state
+    const { name, avatar, outlets, emails, phones, socials, errors, showErrors, fixHeaderPosition } = this.state
     const iconStyle = { width: 30 }
     return (
-      <div>
+      <div className='relative'>
         <ValidationBanner show={showErrors} error={errors.headline} />
-        <div style={{maxHeight: 'calc(95vh - 76px)', overflowY: 'auto'}}>
-          <div className='py6 center'>
+        <div className='absolute top-0 left-0 right-0' style={{transition: 'opacity 1s', zIndex: 1, display: fixHeaderPosition ? 'block' : 'none'}}>
+          <div className='py3 center bg-white border-bottom border-gray80'>
+            <div className='center f-xl gray20'>{name || 'Create Contact'}</div>
+          </div>
+        </div>
+        <Scroll height={'calc(95vh - 76px)'} onScrollChange={onScrollChange} className='relative'>
+          <div className={`py6 center bg-white border-bottom border-gray80`}>
             <EditableAvatar avatar={avatar} onChange={onAvatarChange} onError={onAvatarError} menuTop={-20}>
               <div className='bg-gray60 center circle mx-auto' style={{height: '110px', width: '110px', lineHeight: '110px', overflowY: 'hidden'}}>
                 { avatar ? <img src={avatar} width='110' height='110' /> : <CameraIcon className='svg-icon-xl' /> }
@@ -237,14 +255,15 @@ const EditContact = React.createClass({
                 placeholder='Contact Name'
                 type='text'
                 name='name'
-                value={contact.name}
-                size={inputSize(contact.name)}
+                value={name}
+                size={inputSize(name)}
                 onChange={onProfileChange} />
               <FormError show={showErrors} error={errors.name} className='' />
             </div>
           </div>
+
           <div>
-            <div className='bg-gray90 border-top border-gray80'>
+            <div className='bg-gray90'>
               <div className='mx-auto pb6' style={{maxWidth: 500}}>
 
                 <FormSection label='Jobs' addLinkText='Add another job' onAdd={onAddJob}>
@@ -342,8 +361,8 @@ const EditContact = React.createClass({
               </div>
             </div>
           </div>
-        </div>
-        <div className='p4 bg-white'>
+        </Scroll>
+        <div className='p4 bg-white border-top border-gray80'>
           <div className='clearfix'>
             <button className='btn bg-completed white right' onClick={onSubmit}>Save Changes</button>
             <button className='btn bg-transparent gray40 right mr2' onClick={onDismiss}>Cancel</button>
