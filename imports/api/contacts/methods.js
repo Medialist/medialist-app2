@@ -240,7 +240,7 @@ export const updateContact = new ValidatedMethod({
   name: 'updateContact',
 
   validate: new SimpleSchema({
-    contactId: { type: String },
+    contactId: { type: String, regEx: SimpleSchema.RegEx.Id },
     details: { type: ContactCreateSchema }
   }).validator(),
 
