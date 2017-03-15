@@ -8,6 +8,7 @@ import Contacts from './contacts'
  */
 export const searchContacts = ({
   term,
+  tagSlugs,
   masterListSlug,
   userId,
   campaignSlugs,
@@ -16,15 +17,19 @@ export const searchContacts = ({
   minSearchLength = 3
 }) => {
   check(term, Match.Maybe(String))
-  check(campaignSlugs, Match.Maybe(Array))
+  check(tagSlugs, Match.Maybe(Array))
   check(masterListSlug, Match.Maybe(String))
   check(userId, Match.Maybe(String))
+  check(campaignSlugs, Match.Maybe(Array))
   check(sort, Object)
   check(limit, Number)
 
   const query = {}
   if (campaignSlugs && campaignSlugs.length) {
     query.campaigns = { $in: campaignSlugs }
+  }
+  if (tagSlugs && tagSlugs.length) {
+    query['tags.slug'] = { $in: tagSlugs }
   }
   if (masterListSlug) {
     query['masterLists.slug'] = masterListSlug

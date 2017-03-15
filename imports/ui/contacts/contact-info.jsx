@@ -2,9 +2,9 @@ import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import { Meteor } from 'meteor/meteor'
 import { CircleAvatar, SquareAvatar } from '../images/avatar'
+import CountTag from '../tags/tag.jsx'
 import { EmailIcon, FavouritesIconGold, FavouritesIcon, PhoneIcon, BioIcon, MobileIcon, AddressIcon } from '../images/icons'
 import { setMasterLists } from '/imports/api/master-lists/methods'
-import QuickAdd from '../lists/quick-add'
 import InfoHeader from '../lists/info-header'
 import AddToMasterList from '../master-lists/add-to-master-list.jsx'
 import AddTags from '../tags/add-tags'
@@ -17,7 +17,8 @@ const ContactInfo = React.createClass({
     contact: PropTypes.object,
     user: PropTypes.object,
     onEditClick: PropTypes.func,
-    masterlists: PropTypes.array
+    masterlists: PropTypes.array,
+    onTagClick: PropTypes.func
   },
 
   getInitialState () {
@@ -57,6 +58,10 @@ const ContactInfo = React.createClass({
     })
   },
 
+  onTagRemove (tag) {
+    console.log('TODO: remove tags from contact info')
+  },
+
   render () {
     if (!this.props.contact) return null
     const {
@@ -65,7 +70,8 @@ const ContactInfo = React.createClass({
       onAddContactToMasterLists,
       onAddTags,
       dismissAddTags,
-      onUpdateTags
+      onUpdateTags,
+      onTagRemove
     } = this
     const { addToMasterListOpen, addTagsOpen } = this.state
     const { user: { myContacts }, contact, campaigns } = this.props
@@ -116,6 +122,32 @@ const ContactInfo = React.createClass({
             ))}
           </div>
         </section>
+        <section>
+          <InfoHeader name='Master Lists' onClick={onAddToMasterList} />
+          <div className='py3'>
+            {masterLists.map((m) => (
+              <Link to={`/contacts?list=${m.slug}`} className='pointer p2 blue f-sm' key={m._id}>
+                {m.name}
+              </Link>
+            ))}
+          </div>
+        </section>
+        <section>
+          <InfoHeader name='Tags' onClick={onAddTags} />
+          <div className='px2 py3'>
+            {tags.map((t) => {
+              return (
+                <Link to={`/contacts?tag=${t.slug}`} key={t.slug}>
+                  <CountTag
+                    name={t.name}
+                    count={t.count}
+                    onRemove={onTagRemove}
+                  />
+                </Link>
+              )
+            })}
+          </div>
+        </section>
         <AddToMasterList
           open={addToMasterListOpen}
           onDismiss={dismissAddToMasterList}
@@ -130,11 +162,6 @@ const ContactInfo = React.createClass({
           title={`Tag ${name.split(' ')[0]}`}
           selectedTags={tags}
           onUpdateTags={onUpdateTags} />
-        <QuickAdd
-          selectedMasterLists={masterLists}
-          tags={tags}
-          onAddTags={onAddTags}
-          onAddToMasterList={onAddToMasterList} />
       </div>
     )
   }
@@ -163,10 +190,10 @@ const ContactItems = React.createClass({
     return (
       <ul className='list-reset'>
         <li className='mb2'>
-          {emails.map((email) => <ContactItemsEmail email={email} />)}
+          {emails.map((email) => <ContactItemsEmail key={email} email={email} />)}
         </li>
         <li className='mb2'>
-          {phones.map((phone) => <ContactItemsPhone phone={phone} />)}
+          {phones.map((phone) => <ContactItemsPhone key={phone} phone={phone} />)}
         </li>
         <li className='mb2'>
           <ContactItemBio bio={bio} />
