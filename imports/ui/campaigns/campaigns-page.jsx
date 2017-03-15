@@ -3,9 +3,7 @@ import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
 import MasterLists from '../../api/master-lists/master-lists'
 import { createContainer } from 'meteor/react-meteor-data'
-import CampaignsTable from './campaigns-table'
-import SearchBox from '../lists/search-box'
-import CountTag from '../tags/tag'
+import CampaignSearch from './campaign-search'
 import MasterListsSelector from './masterlists-selector.jsx'
 import CampaignsActionsToast from './campaigns-actions-toast'
 import EditCampaign from './edit-campaign'
@@ -17,7 +15,6 @@ import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import AddTags from '../tags/add-tags'
 import AbbreviatedAvatarList from '../lists/abbreviated-avatar-list.jsx'
 import AddToMasterList from '../master-lists/add-to-master-list.jsx'
-import Loading from '../lists/loading'
 import campaignsSearchQueryContainer from './campaign-search-query-container'
 
 const CampaignsPage = withSnackbar(withRouter(React.createClass({
@@ -139,7 +136,7 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
 
   render () {
     const { campaignCount, campaigns, selectedMasterListSlug, loading, total, sort, term, snackbar, selectedTags } = this.props
-    const { onSortChange, onSelectionsChange, onMasterListChange, onViewSelection, onFavouriteAll, onTagRemove } = this
+    const { onTermChange, onSortChange, onSelectionsChange, onMasterListChange, onViewSelection, onFavouriteAll, onTagRemove } = this
     const { selections, editCampaignOpen } = this.state
 
     if (!loading && campaignCount === 0) {
@@ -165,34 +162,19 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
           </div>
         </div>
         <EditCampaign onDismiss={this.toggleEditCampaign} open={editCampaignOpen} />
-        <div className='bg-white shadow-2 m4 mt8'>
-          <div className='p4 flex items-center'>
-            <div className='flex-auto'>
-              <SearchBox onTermChange={this.onTermChange} placeholder='Search campaigns...'>
-                {selectedTags && selectedTags.map((t) => (
-                  <CountTag
-                    style={{marginBottom: 0}}
-                    key={t.slug}
-                    name={t.name}
-                    count={t.contactsCount}
-                    onRemove={() => onTagRemove(t)}
-                  />
-                ))}
-              </SearchBox>
-            </div>
-            <div className='flex-none pl4 f-xs'>
-              <CampaignsTotal total={total} />
-            </div>
-          </div>
-          <CampaignsTable
-            term={term}
-            sort={sort}
-            campaigns={campaigns}
-            selections={selections}
-            onSortChange={onSortChange}
-            onSelectionsChange={onSelectionsChange} />
-        </div>
-        { loading && <div className='center p4'><Loading /></div> }
+        <CampaignSearch {...{
+          onTermChange,
+          selectedTags,
+          onTagRemove,
+          total,
+          term,
+          sort,
+          campaigns,
+          selections,
+          onSortChange,
+          onSelectionsChange,
+          loading
+        }} />
         <CampaignsActionsToast
           campaigns={selections}
           onViewClick={onViewSelection}
@@ -221,10 +203,6 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
     )
   }
 })))
-
-const CampaignsTotal = ({ total }) => (
-  <div>{total} campaign{total === 1 ? '' : 's'} total</div>
-)
 
 const MasterListsSelectorContainer = createContainer((props) => {
   const { selectedMasterListSlug, userId } = props
