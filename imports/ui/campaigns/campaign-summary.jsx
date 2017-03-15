@@ -2,9 +2,9 @@ import React, { PropTypes } from 'react'
 import values from 'lodash.values'
 import { SquareAvatar } from '../images/avatar'
 import EditableAvatar from '../images/editable-avatar'
-import { StatusValues } from '/imports/api/contacts/status'
 import { update } from '../../api/campaigns/methods'
 import withSnackbar from '../snackbar/with-snackbar'
+import StatusStats from '../contacts/status-stats'
 
 const CamapignSummary = withSnackbar(React.createClass({
   propTypes: {
@@ -49,14 +49,7 @@ const CamapignSummary = withSnackbar(React.createClass({
             </div>
           </div>
         </div>
-        <div className='flex-none'>
-          {StatusValues.map((status, i) => (
-            <div key={status} className={`inline-block px3 border-left ${i > 0 ? 'border-gray80' : 'border-transparent'}`}>
-              <div className='gray20 normal center pb1' style={{fontSize: 20}}>{counts[status] || 0}</div>
-              <div className='gray40 semibold f-xxs caps center'>{status}</div>
-            </div>
-          ))}
-        </div>
+        <StatusStats className='flex-none' counts={counts} onStatusClick={(status) => console.log(status)} />
       </div>
     )
   }

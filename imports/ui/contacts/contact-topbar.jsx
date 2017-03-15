@@ -5,13 +5,16 @@ import AddContactsToCampaigns from './add-contacts-to-campaign'
 
 const ContactTopbar = React.createClass({
   propTypes: {
-    contact: PropTypes.object,
-    open: PropTypes.bool.isRequired,
-    onDismiss: PropTypes.func.isRequired,
-    onAddContactToCampaign: PropTypes.func.isRequired
+    contact: PropTypes.object
+  },
+  getInitialState () {
+    return {
+      addContactModalOpen: false
+    }
   },
   render () {
-    const { contact, open, onDismiss, onAddContactToCampaign } = this.props
+    const { contact } = this.props
+    const { addContactModalOpen } = this.state
     if (!contact) return null
     return (
       <Topbar>
@@ -20,14 +23,14 @@ const ContactTopbar = React.createClass({
           <NavLink to={`/contact/${contact.slug}/campaigns`}>Campaigns</NavLink>
         </div>
         <div className='px4 py3'>
-          <button type='button' className='btn white bg-blue mx2' onClick={onAddContactToCampaign}>
+          <button className='btn white bg-blue mx2' onClick={() => this.setState({addContactModalOpen: true})}>
             Add <FirstName contact={contact} /> to Campaign
           </button>
         </div>
         <AddContactsToCampaigns
           title={`Add ${contact.name.split(' ')[0]} to a Campaign`}
-          open={open}
-          onDismiss={onDismiss}
+          onDismiss={() => this.setState({addContactModalOpen: false})}
+          open={addContactModalOpen}
           contacts={[contact]} />
       </Topbar>
     )
