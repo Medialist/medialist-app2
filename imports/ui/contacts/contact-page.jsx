@@ -31,7 +31,7 @@ const ContactPage = withSnackbar(React.createClass({
 
   getInitialState () {
     return {
-      editContactOpen: true,
+      editContactOpen: false,
       addContactModalOpen: false
     }
   },
