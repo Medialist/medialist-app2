@@ -17,7 +17,7 @@ import createSearchContainer from './search-container'
 import AddContactsToCampaign from './add-contacts-to-campaign'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import CountTag, { AvatarTag } from '../tags/tag'
-import { batchFavouriteContacts, batchRemoveContacts } from '/imports/api/contacts/methods'
+import { batchFavouriteContacts, batchRemoveContacts, createContact } from '/imports/api/contacts/methods'
 import { batchAddTags } from '/imports/api/tags/methods'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import withSnackbar from '../snackbar/with-snackbar'
@@ -149,8 +149,16 @@ const ContactsPage = withSnackbar(React.createClass({
     console.log('change', contact)
   },
 
-  onAddContactSubmit (contact) {
-    console.log('submit', contact)
+  onAddContactSubmit (details) {
+    const {snackbar} = this.props
+    createContact.call({details}, (err, res) => {
+      if (err) {
+        console.log(err)
+        return snackbar.show('Sorry, that didn\'t work')
+      }
+      snackbar.show(`Added ${details.name.split(' ')[0]}`)
+      this.setState({ addContactModalOpen: false })
+    })
   },
 
   onCampaignRemove (campaign) {

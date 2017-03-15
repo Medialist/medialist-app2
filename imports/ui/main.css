@@ -276,6 +276,7 @@ button {
 .border-gray60 { border-color:var(--gray60) !important }
 .border-gray80 { border-color:var(--gray80) !important }
 .border-blue { border-color: var(--blue) !important }
+.border-red { border-color: var(--status-red) !important }
 
 .placeholder-gray60::placeholder {
   color: var(--gray60);

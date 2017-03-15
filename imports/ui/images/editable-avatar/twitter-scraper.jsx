@@ -81,7 +81,7 @@ const TwitterScraper = React.createClass({
       })
       .done((fileInfo) => {
         this.setState({ uploading: false, progress: 0 })
-        onSuccess({ url: fileInfo.cdnUrl, fileInfo })
+        onSuccess({ screenName, url: fileInfo.cdnUrl, fileInfo })
       })
       .fail((err) => {
         this.setState({ uploading: false, progress: 0 })

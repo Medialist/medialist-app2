@@ -12,7 +12,7 @@ import ContactsImportPreview from './contacts-import/contacts-import-2-preview-p
 import ContactsImportProcessing from './contacts-import/contacts-import-3-processing-page'
 import ContactPage from './contacts/contact-page'
 import SettingsPage from './users/settings/settings-page'
-import NotFoundPage from './errors/not-found-page'
+import NotFoundPage from './not-found-page'
 import LogoutPage from './users/logout-page'
 
 const Routes = ({ store, history }) => {

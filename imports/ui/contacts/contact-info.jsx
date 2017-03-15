@@ -9,7 +9,7 @@ import InfoHeader from '../lists/info-header'
 import AddToMasterList from '../master-lists/add-to-master-list.jsx'
 import AddTags from '../tags/add-tags'
 import Tooltip from '../navigation/tooltip'
-import SocialLinks from './contact-social-links'
+import { SocialIcon } from '../social/social'
 
 const ContactInfo = React.createClass({
   propTypes: {
@@ -98,9 +98,7 @@ const ContactInfo = React.createClass({
               <div className='f-sm gray10'>{(outlets && outlets.length) ? outlets[0].value : null}</div>
               <div className='f-sm gray10' style={{paddingTop: 2}}>{outlets.map((o) => o.label).join(', ')}</div>
             </div>
-            <div className='pt4'>
-              {socials.map((social) => <SocialLinks key={social.value} {...social} />)}
-            </div>
+            <div className='pt4'>{socials.map((social) => <SocialIcon {...social} />)}</div>
           </div>
         </div>
         <div className='clearfix p3 pt4 mt4 border-gray80 border-bottom'>
