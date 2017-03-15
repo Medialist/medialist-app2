@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
 import cloneDeep from 'lodash.clonedeep'
+import immutable from 'object-path-immutable'
 import { ContactCreateSchema } from '/imports/api/contacts/contacts'
 import ValidationBanner from '../forms/validation-banner'
 import FormError from '../forms/form-error'
@@ -115,32 +116,6 @@ const EditContact = React.createClass({
     console.log('onAvatarError', err)
   },
 
-  onJobTitleChange (evt) {
-    const {name, value} = evt.target
-    const outlets = cloneDeep(this.state.outlets)
-    outlets[name].value = value
-    this.setState({outlets})
-  },
-
-  onJobOrgChange (evt) {
-    const {name, value} = evt.target
-    const outlets = cloneDeep(this.state.outlets)
-    outlets[name].label = value
-    this.setState({outlets})
-  },
-
-  onJobOrgSelect ({name, value}) {
-    const outlets = cloneDeep(this.state.outlets)
-    outlets[name].label = value
-    this.setState({outlets})
-  },
-
-  onJobTitleSelect ({name, value}) {
-    const outlets = cloneDeep(this.state.outlets)
-    outlets[name].value = value
-    this.setState({outlets})
-  },
-
   onProfileChange (evt) {
     const {name, value} = evt.target
     this.setState({[name]: value})
@@ -149,28 +124,38 @@ const EditContact = React.createClass({
     }))
   },
 
+  onJobTitleSelect ({name: i, value}) {
+    this.setState((s) => immutable.set(s, `outlets.${i}.value`, value))
+  },
+
+  onJobTitleChange (evt) {
+    this.onJobTitleSelect(evt.target)
+  },
+
+  onJobOrgSelect ({name: i, value}) {
+    this.setState((s) => immutable.set(s, `outlets.${i}.label`, value))
+  },
+
+  onJobOrgChange (evt) {
+    this.onJobOrgSelect(evt.target)
+  },
+
   onEmailChange (evt) {
-    const {name, value} = evt.target
-    const emails = cloneDeep(this.state.emails)
-    emails[name].value = value
-    this.setState({emails})
+    const {name: i, value} = evt.target
+    this.setState((s) => immutable.set(s, `emails.${i}.value`, value))
     this.setState((s) => ({
       errors: this.validate(s)
     }))
   },
 
   onPhoneChange (evt) {
-    const {name, value} = evt.target
-    const phones = cloneDeep(this.state.phones)
-    phones[name].value = value
-    this.setState({phones})
+    const {name: i, value} = evt.target
+    this.setState((s) => immutable.set(s, `phones.${i}.value`, value))
   },
 
   onSocialChange (evt) {
-    const {name, value} = evt.target
-    const socials = Array.from(this.state.socials)
-    socials[name].value = value
-    this.setState({socials})
+    const {name: i, value} = evt.target
+    this.setState((s) => immutable.set(s, `socials.${i}.value`, value))
   },
 
   onDelete (evt) {
@@ -243,6 +228,7 @@ const EditContact = React.createClass({
             </EditableAvatar>
             <div>
               <input
+                autoComplete='off'
                 className='center input-inline mt4 f-xxxl semibold'
                 placeholder='Contact Name'
                 type='text'
@@ -257,8 +243,8 @@ const EditContact = React.createClass({
           <div className='bg-gray90 pb6'>
             <FormSection label='Jobs' addLinkText='Add another job' onAdd={onAddJob}>
               {outlets.map((outlet, index) => (
-                <div key={index} className='flex items-center mb2'>
-                  <FilledCircle className='flex-none mr2 gray60' />
+                <div key={index} className='flex items-top mb2'>
+                  <FilledCircle className='flex-none mr2 mt2 gray60' />
                   <div className='flex-auto'>
                     <OutletAutocomplete
                       style={{width: 225}}
@@ -293,8 +279,8 @@ const EditContact = React.createClass({
               {emails.map((email, index) => {
                 const error = errors.emails && errors.emails[index]
                 return (
-                  <div key={index} className='flex items-center mb2'>
-                    <EmailIcon className='flex-none mr2' />
+                  <div key={index} className='flex items-top mb2'>
+                    <EmailIcon className='flex-none mr2 mt2' />
                     <div className='flex-auto'>
                       <input
                         style={{width: 350}}
@@ -313,8 +299,8 @@ const EditContact = React.createClass({
 
             <FormSection label='Phones' addLinkText='Add another phone' onAdd={onAddPhone}>
               {phones.map((phone, index) => (
-                <div key={index} className='flex items-center mb2'>
-                  <PhoneIcon className='flex-none mr2' />
+                <div key={index} className='flex items-top mb2'>
+                  <PhoneIcon className='flex-none mr2 mt2' />
                   <div className='flex-auto'>
                     <input
                       style={{width: 350}}
@@ -331,8 +317,8 @@ const EditContact = React.createClass({
 
             <FormSection label='Websites & Social Links' addLinkText='Add another social' onAdd={onAddSocial}>
               {socials.map(({label, value}, index) => (
-                <div key={index} className='flex items-center mb2'>
-                  <SocialIcon label={label} value={value} className=' mr2 flex-none' />
+                <div key={index} className='flex items-top mb2'>
+                  <SocialIcon label={label} value={value} className='flex-none mr2 mt2' />
                   <div className='flex-auto'>
                     <input
                       style={{width: 472}}

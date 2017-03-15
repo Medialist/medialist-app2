@@ -4,8 +4,8 @@ import throttle from '/imports/lib/raf-throttle'
 const Scroll = React.createClass({
   propTypes: {
     test: PropTypes.func,
-    height: PropTypes.func.isRequired,
-    children: PropTypes.func.isRequired,
+    height: PropTypes.string.isRequired,
+    children: PropTypes.node.isRequired,
     onScrollChange: PropTypes.func.isRequired
   },
   lastScrollTop: false,
@@ -14,6 +14,7 @@ const Scroll = React.createClass({
     const { scrollTop } = this.containerEl
     if (scrollTop === lastScrollTop) return
     this.props.onScrollChange({lastScrollTop, scrollTop})
+    this.lastScrollTop = scrollTop
   },
   render () {
     const {height, className} = this.props
