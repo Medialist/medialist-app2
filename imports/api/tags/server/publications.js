@@ -15,3 +15,8 @@ Meteor.publish('tags', function (props) {
   const { type, searchTerm } = props
   return Tags.suggest({type, userId: this.userId, searchTerm})
 })
+
+Meteor.publish('tags-by-slug', function ({tagSlugs}) {
+  if (!this.userId) return this.ready()
+  return Tags.find({slug: {$in: tagSlugs}})
+})
