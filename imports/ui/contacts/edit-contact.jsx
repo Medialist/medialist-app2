@@ -220,7 +220,7 @@ const EditContact = React.createClass({
             <div className='center f-xl gray20'>{name || 'Create Contact'}</div>
           </div>
         </div>
-        <Scroll height={'calc(95vh - 76px)'} onScrollChange={onScrollChange} className='relative'>
+        <Scroll height={'calc(95vh - 76px)'} onScrollChange={onScrollChange}>
           <div className={`py6 center bg-white border-bottom border-gray80`}>
             <EditableAvatar avatar={avatar} onChange={onAvatarChange} onError={onAvatarError} menuTop={-20}>
               <div className='bg-gray60 center circle mx-auto' style={{height: '110px', width: '110px', lineHeight: '110px', overflowY: 'hidden'}}>
