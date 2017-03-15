@@ -3,7 +3,7 @@ import React from 'react'
 const FormSection = ({label, addLinkText, onAdd, children}) => (
   <section className='pl6 pb3 mx-auto' style={{maxWidth: 500}}>
     <label className='block gray40 semibold f-sm pt4 mb2'>{label}</label>
-    <div style={{marginLeft: -32}}>
+    <div>
       {children}
     </div>
     {addLinkText && (

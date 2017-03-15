@@ -6,6 +6,7 @@ import { CameraIcon, BioIcon, WebsiteIcon, FilledCircle } from '../images/icons'
 import Modal from '../navigation/modal'
 import ValidationBanner from '../forms/validation-banner'
 import FormSection from '../forms/form-section'
+import FormField from '../forms/form-field'
 import FormError from '../forms/form-error'
 import EditableAvatar from '../images/editable-avatar'
 import ClientAutocomplete from './client-autocomplete'
@@ -131,9 +132,8 @@ const EditCampaign = React.createClass({
           </EditableAvatar>
           <div>
             <input
-              ref={(input) => { this.nameInput = input }}
               autoComplete='off'
-              className={`center gray10 input-inline mt4 f-xxxl semibold placeholder-gray60 ${errors.name ? 'error' : ''}`}
+              className={`center gray10 input-inline mt4 f-xxxl semibold placeholder-gray60 ${errors.name && showErrors ? 'error' : ''}`}
               type='text'
               name='name'
               value={name}
@@ -146,25 +146,21 @@ const EditCampaign = React.createClass({
 
         <div className='bg-gray90 pb6'>
           <FormSection label='Client'>
-            <div className='flex items-center'>
-              <FilledCircle className='flex-none mr2 gray60' />
-              <div className='flex-auto'>
-                <ClientAutocomplete
-                  style={{width: 350}}
-                  menuWidth={350}
-                  className='input block placeholder-gray60'
-                  name='clientName'
-                  placeholder='Client'
-                  value={clientName}
-                  onSelect={onClientSelect}
-                  onChange={onClientNameChange} />
-              </div>
-            </div>
+            <FormField icon={<FilledCircle />}>
+              <ClientAutocomplete
+                style={{width: 472}}
+                menuWidth={472}
+                className='input block placeholder-gray60'
+                name='clientName'
+                placeholder='Client'
+                value={clientName}
+                onSelect={onClientSelect}
+                onChange={onClientNameChange} />
+            </FormField>
           </FormSection>
 
           <FormSection label='Key Message'>
-            <div className='flex items-top'>
-              <BioIcon className='flex-none mt2 mr2' />
+            <FormField icon={<BioIcon />}>
               <textarea
                 style={{height: '70px'}}
                 className='input block textarea placeholder-gray60'
@@ -174,22 +170,20 @@ const EditCampaign = React.createClass({
                 value={purpose}
                 placeholder='Key Message'
                 onChange={onChange} />
-            </div>
+            </FormField>
           </FormSection>
+
           <FormSection label='Links' addLinkText='Add another link' onAdd={this.addLink}>
             {links.map((link, i) => (
-              <div key={i} className='flex items-center mb2'>
-                <WebsiteIcon className='flex-none mr2' />
-                <div className='flex-auto'>
-                  <input
-                    className='input flex-auto placeholder-gray60'
-                    type='text'
-                    value={links[i].url}
-                    placeholder='Links'
-                    onChange={onLinkChange} />
-                  <FormError error={errors[`link-${i}`]} show={showErrors} />
-                </div>
-              </div>
+              <FormField icon={<WebsiteIcon />} key={i}>
+                <input
+                  className='input flex-auto placeholder-gray60'
+                  type='text'
+                  value={links[i].url}
+                  placeholder='Links'
+                  onChange={onLinkChange} />
+                <FormError error={errors[`link-${i}`]} show={showErrors} />
+              </FormField>
             ))}
           </FormSection>
         </div>

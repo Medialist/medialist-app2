@@ -4,6 +4,7 @@ import immutable from 'object-path-immutable'
 import { ContactCreateSchema } from '/imports/api/contacts/contacts'
 import ValidationBanner from '../forms/validation-banner'
 import FormError from '../forms/form-error'
+import FormField from '../forms/form-field'
 import FormSection from '../forms/form-section'
 import OutletAutocomplete from '../forms/outlet-autocomplete'
 import { CameraIcon, FilledCircle, EmailIcon, PhoneIcon } from '../images/icons'
@@ -243,22 +244,19 @@ const EditContact = React.createClass({
           <div className='bg-gray90 pb6'>
             <FormSection label='Jobs' addLinkText='Add another job' onAdd={onAddJob}>
               {outlets.map((outlet, index) => (
-                <div key={index} className='flex items-top mb2'>
-                  <FilledCircle className='flex-none mr2 mt2 gray60' />
-                  <div className='flex-auto'>
-                    <OutletAutocomplete
-                      style={{width: 225}}
-                      menuWidth={225}
-                      className='input'
-                      value={outlet.value}
-                      name={index}
-                      field='value'
-                      placeholder='Title'
-                      onSelect={onJobTitleSelect}
-                      onChange={onJobTitleChange}
-                    />
-                  </div>
-                  <div className='flex-auto ml4'>
+                <FormField key={index} icon={<FilledCircle />}>
+                  <OutletAutocomplete
+                    style={{width: 225}}
+                    menuWidth={225}
+                    className='input'
+                    value={outlet.value}
+                    name={index}
+                    field='value'
+                    placeholder='Title'
+                    onSelect={onJobTitleSelect}
+                    onChange={onJobTitleChange}
+                  />
+                  <div className='ml4 inline-block'>
                     <OutletAutocomplete
                       style={{width: 225}}
                       menuWidth={225}
@@ -271,7 +269,7 @@ const EditContact = React.createClass({
                       onChange={onJobOrgChange}
                     />
                   </div>
-                </div>
+                </FormField>
               ))}
             </FormSection>
 
@@ -279,61 +277,53 @@ const EditContact = React.createClass({
               {emails.map((email, index) => {
                 const error = errors.emails && errors.emails[index]
                 return (
-                  <div key={index} className='flex items-top mb2'>
-                    <EmailIcon className='flex-none mr2 mt2' />
-                    <div className='flex-auto'>
-                      <input
-                        style={{width: 350}}
-                        className={`input ${error && 'border-red'}`}
-                        type='text'
-                        value={email.value}
-                        name={index}
-                        onChange={onEmailChange}
-                        placeholder='Email' />
-                      <FormError show={showErrors} error={error} />
-                    </div>
-                  </div>
+                  <FormField key={index} icon={<EmailIcon />}>
+                    <input
+                      style={{width: 350}}
+                      className={`input ${error && 'border-red'}`}
+                      type='text'
+                      value={email.value}
+                      name={index}
+                      onChange={onEmailChange}
+                      placeholder='Email' />
+                    <FormError show={showErrors} error={error} />
+                  </FormField>
                 )
               })}
             </FormSection>
 
             <FormSection label='Phones' addLinkText='Add another phone' onAdd={onAddPhone}>
               {phones.map((phone, index) => (
-                <div key={index} className='flex items-top mb2'>
-                  <PhoneIcon className='flex-none mr2 mt2' />
-                  <div className='flex-auto'>
-                    <input
-                      style={{width: 350}}
-                      className='input'
-                      type='text'
-                      name={index}
-                      value={phone.value}
-                      onChange={onPhoneChange}
-                      placeholder='Phone number' />
-                  </div>
-                </div>
+                <FormField key={index} icon={<PhoneIcon />}>
+                  <input
+                    style={{width: 350}}
+                    className='input'
+                    type='text'
+                    name={index}
+                    value={phone.value}
+                    onChange={onPhoneChange}
+                    placeholder='Phone number' />
+                </FormField>
               ))}
             </FormSection>
 
             <FormSection label='Websites & Social Links' addLinkText='Add another social' onAdd={onAddSocial}>
               {socials.map(({label, value}, index) => (
-                <div key={index} className='flex items-top mb2'>
-                  <SocialIcon label={label} value={value} className='flex-none mr2 mt2' />
-                  <div className='flex-auto'>
-                    <input
-                      style={{width: 472}}
-                      className='input'
-                      type='text'
-                      name={index}
-                      value={value}
-                      onChange={onSocialChange}
-                      placeholder={label} />
-                  </div>
-                </div>
+                <FormField key={index} icon={<SocialIcon label={label} value={value} />}>
+                  <input
+                    style={{width: 472}}
+                    className='input'
+                    type='text'
+                    name={index}
+                    value={value}
+                    onChange={onSocialChange}
+                    placeholder={label} />
+                </FormField>
               ))}
             </FormSection>
           </div>
         </Scroll>
+
         <div className='flex items-center p4 bg-white border-top border-gray80'>
           {this.props.contact && <button className='flex-none btn bg-transparent not-interested' onClick={onDelete}>Delete Contact</button>}
           <div className='flex-auto right-align'>
