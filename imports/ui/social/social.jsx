@@ -17,7 +17,7 @@ export const SocialMap = {
   },
   Facebook: {
     icon: Facebook,
-    url: 'https://facebook.com/public/'
+    url: 'https://facebook.com/'
   },
   YouTube: {
     icon: Youtube,
