@@ -233,8 +233,8 @@ export const createContact = new ValidatedMethod({
 })
 
 /*
- * Create a new contact.
- * Check for duplicates first and add to the users `myContacts` array.
+ * Update a contact.
+ * Add to the users `myContacts` array.
  */
 export const updateContact = new ValidatedMethod({
   name: 'updateContact',
