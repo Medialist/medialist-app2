@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react'
 import cloneDeep from 'lodash.clonedeep'
 import immutable from 'object-path-immutable'
 import { ContactCreateSchema } from '/imports/api/contacts/contacts'
+import { hasErrors, atLeastOne } from '/imports/lib/forms'
 import ValidationBanner from '../forms/validation-banner'
 import FormError from '../forms/form-error'
 import FormField from '../forms/form-field'
@@ -37,9 +38,9 @@ const EditContact = React.createClass({
     const state = Object.assign({
       avatar: contact.avatar || '',
       name: contact.name || '',
-      outlets: this.atLeastOne(contact.outlets, ''),
-      emails: this.atLeastOne(contact.emails, 'Email'),
-      phones: this.atLeastOne(contact.phones, 'Phone'),
+      outlets: atLeastOne(contact.outlets, {label: '', value: ''}),
+      emails: atLeastOne(contact.emails, {label: 'Email', value: ''}),
+      phones: atLeastOne(contact.phones, {label: 'Phone', value: ''}),
       socials,
       showErrors: false,
       fixHeaderPosition: false
@@ -48,7 +49,7 @@ const EditContact = React.createClass({
     return state
   },
 
-  validate ({name, emails}) {
+  validate ({name, emails, socials}) {
     const errors = {}
     if (!name) errors.name = 'Please add a contact name'
     const emailRegEx = /.+@.{2,}\..{2,}/
@@ -60,6 +61,15 @@ const EditContact = React.createClass({
     const hasEmailErrors = emailErrors.filter((e) => e).length > 0
     if (hasEmailErrors) {
       errors.emails = emailErrors
+    }
+    const socialErrors = socials.map(({label, value}) => {
+      if (label === 'Website') return false
+      if (!value.match(/^https?/)) return false
+      return `Please enter their ${label} username`
+    })
+    const hasSocialErrors = socialErrors.filter((e) => e).length > 0
+    if (hasSocialErrors) {
+      errors.socials = socialErrors
     }
     if (errors.name && hasEmailErrors) {
       errors.headline = 'Let’s add a little more detail'
@@ -73,8 +83,7 @@ const EditContact = React.createClass({
 
   onSubmit (evt) {
     evt.preventDefault()
-    const isValid = this.isValid(this.state.errors)
-    if (!isValid) {
+    if (hasErrors(this.state)) {
       return this.setState({showErrors: true})
     }
     const data = cloneDeep(this.state)
@@ -84,15 +93,6 @@ const EditContact = React.createClass({
     data.phones = data.phones.filter((o) => o.value)
     data.socials = data.socials.filter((o) => o.value)
     this.props.onSubmit(data)
-  },
-
-  atLeastOne (arr, label) {
-    if (!arr || !arr.length) return [{ label: label, value: '' }]
-    return cloneDeep(arr)
-  },
-
-  isValid (errors) {
-    return Object.keys(errors).length < 1
   },
 
   onAvatarChange (evt) {
@@ -156,7 +156,16 @@ const EditContact = React.createClass({
 
   onSocialChange (evt) {
     const {name: i, value} = evt.target
-    this.setState((s) => immutable.set(s, `socials.${i}.value`, value))
+    this.setState((s) => {
+      const socials = cloneDeep(s.socials)
+      const social = socials[i]
+      if (social.label === 'Website') return {socials}
+      social.value = value.replace(SocialMap[social.label].url, '')
+      return {socials}
+    })
+    this.setState((s) => ({
+      errors: this.validate(s)
+    }))
   },
 
   onDelete (evt) {
@@ -318,6 +327,7 @@ const EditContact = React.createClass({
                     value={value}
                     onChange={onSocialChange}
                     placeholder={label} />
+                  <FormError show={showErrors} error={errors.socials && errors.socials[index]} />
                 </FormField>
               ))}
             </FormSection>

@@ -13,7 +13,7 @@ export const SocialMap = {
   },
   LinkedIn: {
     icon: Linkedin,
-    url: ''
+    url: 'https://www.linkedin.com/in/'
   },
   Facebook: {
     icon: Facebook,
@@ -21,19 +21,19 @@ export const SocialMap = {
   },
   YouTube: {
     icon: Youtube,
-    url: ''
+    url: 'https://www.youtube.com/user/'
   },
   Instagram: {
     icon: Instagram,
-    url: ''
+    url: 'https://www.instagram.com/'
   },
   Medium: {
     icon: Medium,
-    url: ''
+    url: 'https://medium.com/'
   },
   Pinterest: {
     icon: Pinterest,
-    url: ''
+    url: 'https://www.pinterest.com/'
   }
 }
 

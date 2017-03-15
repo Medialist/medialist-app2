@@ -4,6 +4,7 @@ import cloneDeep from 'lodash.clonedeep'
 import immutable from 'object-path-immutable'
 import { CameraIcon, BioIcon, WebsiteIcon, FilledCircle } from '../images/icons'
 import Modal from '../navigation/modal'
+import { hasErrors, atLeastOne } from '/imports/lib/forms'
 import ValidationBanner from '../forms/validation-banner'
 import FormSection from '../forms/form-section'
 import FormField from '../forms/form-field'
@@ -21,13 +22,13 @@ const EditCampaign = React.createClass({
     campaign: PropTypes.object
   },
   getInitialState () {
-    const { campaign } = this.props
+    const campaign = this.props.campaign || {}
     const state = {
-      avatar: campaign && campaign.avatar || '',
-      name: campaign && campaign.name || '',
-      purpose: campaign && campaign.purpose || '',
-      clientName: campaign && campaign.client && campaign.client.name || '',
-      links: campaign && campaign.links || [{ url: '' }],
+      avatar: campaign.avatar || '',
+      name: campaign.name || '',
+      purpose: campaign.purpose || '',
+      clientName: campaign.client && campaign.client.name || '',
+      links: atLeastOne(campaign.links, { url: '' }),
       showErrors: false
     }
     state.errors = this.validate(state)
@@ -68,7 +69,9 @@ const EditCampaign = React.createClass({
   },
   onSubmit (evt) {
     evt.preventDefault()
-    if (!this.isValid()) return this.setState({showErrors: true})
+    if (hasErrors(this.state)) {
+      return this.setState({showErrors: true})
+    }
     const { campaign, router, onDismiss } = this.props
     const { avatar, name, purpose, clientName, links } = this.state
     const payload = { avatar, name, purpose, clientName, links: links.filter((l) => l.url) }
@@ -106,10 +109,6 @@ const EditCampaign = React.createClass({
       errors.headline = errorsCount > 1 ? 'Let\'s add a little more detail' : errors[Object.keys(errors)[0]]
     }
     return errors
-  },
-  isValid () {
-    const {errors} = this.state
-    return Object.keys(errors).length < 1
   },
   onDismissErrorBanner () {
     const errors = cloneDeep(this.state.errors)
