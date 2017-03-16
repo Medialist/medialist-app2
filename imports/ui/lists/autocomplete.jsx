@@ -1,9 +1,5 @@
 import React, { PropTypes } from 'react'
-import Dropdown from 'rebass/dist/Dropdown'
-import DropdownMenu from '../lists/dropdown-menu'
-import isEqual from 'lodash.isequal'
-
-const dropdownStyle = { maxWidth: 300 }
+import { Dropdown, DropdownMenu } from '../navigation/dropdown'
 
 export default React.createClass({
   propTypes: {
@@ -12,22 +8,32 @@ export default React.createClass({
     name: PropTypes.string.isRequired,
     value: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
-    suggestions: PropTypes.array.isRequired
+    onSelect: PropTypes.func.isRequired,
+    suggestions: PropTypes.array.isRequired,
+    menuWidth: PropTypes.number.isRequired
+  },
+  getDefaultProps () {
+    return {
+      menuWidth: 200
+    }
   },
   getInitialState () {
     return { open: false, activeInd: 0 }
   },
   componentWillReceiveProps (props) {
     const { suggestions, value } = props
-    if (isEqual(suggestions, this.props.suggestions) && value === props.value) return
     this.setState({open: suggestions.length > 0 && suggestions[0] !== value})
   },
   onBlur () {
     this.setState({ open: false, activeInd: 0 }, this.props.onBlur)
   },
   onChange (evt) {
-    this.props.onChange(evt.target.value)
+    this.props.onChange(evt)
     this.setState({open: true})
+  },
+  onSelect (value) {
+    const {name, onSelect} = this.props
+    onSelect({name, value})
   },
   onKeyDown (evt) {
     const { key } = evt
@@ -48,7 +54,7 @@ export default React.createClass({
       case 'Tab':
       case 'Enter':
         if (open) evt.preventDefault()
-        this.props.onSelect(suggestions[activeInd])
+        this.onSelect(suggestions[activeInd])
         this.setState({ open: false, activeInd: 0 })
     }
   },
@@ -56,7 +62,7 @@ export default React.createClass({
     this.setState({ open: false, activeInd: 0 })
   },
   onClick (suggestion) {
-    this.props.onSelect(suggestion)
+    this.onSelect(suggestion)
     this.setState({ open: false, activeInd: 0 })
   },
   onActivate (ind) {
@@ -71,14 +77,16 @@ export default React.createClass({
       value,
       placeholder,
       suggestions,
-      onFocus
+      onFocus,
+      menuWidth
     } = this.props
     const { onChange, onDismiss, onClick, onKeyDown, onActivate } = this
     const { open, activeInd } = this.state
     return (
-      <Dropdown style={style}>
+      <Dropdown>
         <input
           type='text'
+          style={style}
           className={className}
           name={name}
           value={value}
@@ -90,8 +98,8 @@ export default React.createClass({
           onBlur={this.onBlur}
           id={id}
         />
-        <DropdownMenu open={open} onDismiss={onDismiss} style={dropdownStyle} arrowPosition={false}>
-          <ol className='list-reset'>{suggestions.map((s, ind) => {
+        <DropdownMenu open={open} onDismiss={onDismiss} width={menuWidth} arrowHeight={0}>
+          <ol className='list-reset m0'>{suggestions.map((s, ind) => {
             const activeClass = (activeInd === ind) ? 'bg-blue white' : ''
             return (
               <li

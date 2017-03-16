@@ -81,6 +81,7 @@ body {
   margin: 0;
   color: var(--gray20);
   background-color: var(--gray90);
+  overflow-y: scroll;
 
   /* Disable subpixel font rendering as it makes our font appear too bold
     compared to the designs... It's questionable if it's an impromvement, but
@@ -276,6 +277,7 @@ button {
 .border-gray60 { border-color:var(--gray60) !important }
 .border-gray80 { border-color:var(--gray80) !important }
 .border-blue { border-color: var(--blue) !important }
+.border-red { border-color: var(--status-red) !important }
 
 .placeholder-gray60::placeholder {
   color: var(--gray60);

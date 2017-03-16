@@ -16,8 +16,8 @@ import { FeedContactIcon } from '../images/icons'
 import createSearchContainer from './search-container'
 import AddContactsToCampaign from './add-contacts-to-campaign'
 import Campaigns from '/imports/api/campaigns/campaigns'
-import { AvatarTag } from '../tags/tag'
-import { batchFavouriteContacts, batchRemoveContacts } from '/imports/api/contacts/methods'
+import CountTag, { AvatarTag } from '../tags/tag'
+import { batchFavouriteContacts, batchRemoveContacts, createContact } from '/imports/api/contacts/methods'
 import { batchAddTags } from '/imports/api/tags/methods'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import withSnackbar from '../snackbar/with-snackbar'
@@ -149,8 +149,16 @@ const ContactsPage = withSnackbar(React.createClass({
     console.log('change', contact)
   },
 
-  onAddContactSubmit (contact) {
-    console.log('submit', contact)
+  onAddContactSubmit (details) {
+    const {snackbar} = this.props
+    createContact.call({details}, (err, res) => {
+      if (err) {
+        console.log(err)
+        return snackbar.show('Sorry, that didn\'t work')
+      }
+      snackbar.show(`Added ${details.name.split(' ')[0]}`)
+      this.setState({ addContactModalOpen: false })
+    })
   },
 
   onCampaignRemove (campaign) {
@@ -160,9 +168,16 @@ const ContactsPage = withSnackbar(React.createClass({
     })
   },
 
+  onTagRemove (tag) {
+    const { setQuery, tagSlugs } = this.props
+    setQuery({
+      tagSlugs: tagSlugs.filter((str) => str !== tag.slug)
+    })
+  },
+
   render () {
-    const { contactsCount, selectedMasterListSlug, loading, searching, contacts, term, sort, campaigns } = this.props
-    const { onSortChange, onSelectionsChange, onMasterListChange, onTermChange, onCampaignRemove } = this
+    const { contactsCount, selectedMasterListSlug, loading, searching, contacts, term, sort, campaigns, selectedTags } = this.props
+    const { onSortChange, onSelectionsChange, onMasterListChange, onTermChange, onCampaignRemove, onTagRemove } = this
     const { selections } = this.state
     if (!loading && contactsCount === 0) return <ContactListEmpty />
     return (
@@ -204,6 +219,14 @@ const ContactsPage = withSnackbar(React.createClass({
                       name={c.name}
                       avatar={c.avatar}
                       onRemove={() => onCampaignRemove(c)}
+                    />
+                  ))}
+                  {selectedTags && selectedTags.map((t) => (
+                    <CountTag
+                      key={t.slug}
+                      name={t.name}
+                      count={t.contactsCount}
+                      onRemove={() => onTagRemove(t)}
                     />
                   ))}
                 </div>
@@ -306,6 +329,7 @@ const ContactsPageContainer = withRouter(React.createClass({
         newQuery.list = opts.selectedMasterListSlug
       }
     }
+    if (opts.tagSlugs) newQuery.tag = opts.tagSlugs
     if (opts.campaignSlugs) newQuery.campaign = opts.campaignSlugs
     const query = Object.assign({}, location.query, newQuery)
     if (query.q === '') delete query.q
@@ -319,12 +343,13 @@ const ContactsPageContainer = withRouter(React.createClass({
   parseQuery ({query}) {
     const sort = query.sort ? JSON.parse(query.sort) : { updatedAt: -1 }
     const term = query.q || ''
+    const tagSlugs = query.tag ? [query.tag] : []
     const { campaign, list, my } = query
-    if (!campaign) return { sort, term, selectedMasterListSlug: list, userId: my, campaignSlugs: [], campaigns: [] }
+    if (!campaign) return { sort, term, selectedMasterListSlug: list, userId: my, campaignSlugs: [], campaigns: [], tagSlugs }
 
     const campaignSlugs = Array.isArray(campaign) ? campaign : [campaign]
     const campaigns = Campaigns.find({slug: {$in: campaignSlugs}}).fetch()
-    return { sort, term, list, selectedMasterListSlug: list, userId: my, campaignSlugs, campaigns }
+    return { sort, term, list, selectedMasterListSlug: list, userId: my, campaignSlugs, campaigns, tagSlugs }
   },
 
   render () {

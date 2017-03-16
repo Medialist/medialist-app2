@@ -3,6 +3,7 @@ import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
 import { createFeedbackPost, createCoveragePost, createNeedToKnowPost } from '/imports/api/posts/methods'
 import Contacts from '/imports/api/contacts/contacts'
+import { updateContact } from '/imports/api/contacts/methods'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import Posts from '/imports/api/posts/posts'
@@ -13,8 +14,9 @@ import ContactNeedToKnowList from './contact-need-to-know-list'
 import PostBox from '../feedback/post-box'
 import ActivityFeed from '../dashboard/activity-feed'
 import EditContact from './edit-contact'
+import withSnackbar from '../snackbar/with-snackbar'
 
-const ContactPage = React.createClass({
+const ContactPage = withSnackbar(React.createClass({
   propTypes: {
     router: PropTypes.object,
     campaigns: PropTypes.array,
@@ -23,7 +25,8 @@ const ContactPage = React.createClass({
     user: PropTypes.object,
     masterlists: PropTypes.array,
     needToKnows: PropTypes.array,
-    loading: PropTypes.bool.isRequired
+    loading: PropTypes.bool.isRequired,
+    snackbar: PropTypes.object.isRequired
   },
 
   getInitialState () {
@@ -46,16 +49,16 @@ const ContactPage = React.createClass({
     this.setState({ editContactOpen })
   },
 
-  onEditContact (contact) {
-    console.log('onEditContact', contact)
-  },
-
-  onAddContactToCampaign () {
-    this.setState(({ addContactModalOpen }) => ({ addContactModalOpen: true }))
-  },
-
-  onDismissAddContactToCampaign () {
-    this.setState(({ addContactModalOpen }) => ({ addContactModalOpen: false }))
+  onEditContact (details) {
+    const {snackbar, contact} = this.props
+    updateContact.call({details, contactId: contact._id}, (err, res) => {
+      if (err) {
+        console.log(err)
+        return snackbar.show('Sorry, that didn\'t work')
+      }
+      snackbar.show(`Updated ${details.name.split(' ')[0]}`)
+      this.setState({ editContactOpen: false })
+    })
   },
 
   onFeedback ({message, campaign, status}, cb) {
@@ -77,12 +80,11 @@ const ContactPage = React.createClass({
 
   render () {
     const { contact, campaigns, campaign, user, masterlists, needToKnows, loading } = this.props
-    const { editContactOpen, addContactModalOpen } = this.state
-    const { onDismissAddContactToCampaign, onAddContactToCampaign } = this
+    const { editContactOpen } = this.state
     if (!contact) return null
     return (
       <div>
-        <ContactTopbar contact={contact} open={addContactModalOpen} onAddContactToCampaign={onAddContactToCampaign} onDismiss={onDismissAddContactToCampaign} />
+        <ContactTopbar contact={contact} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
             <ContactInfo campaigns={campaigns} contact={contact} onEditClick={this.toggleEditContact} user={user} masterlists={masterlists} />
@@ -107,7 +109,7 @@ const ContactPage = React.createClass({
       </div>
     )
   }
-})
+}))
 
 export default createContainer((props) => {
   const { contactSlug, campaignSlug } = props.params

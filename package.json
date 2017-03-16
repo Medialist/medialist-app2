@@ -38,6 +38,7 @@
     "lodash.values": "^4.3.0",
     "meteor-node-stubs": "~0.2.0",
     "moment": "^2.15.1",
+    "object-path-immutable": "^0.5.1",
     "papaparse": "^4.1.2",
     "react": "^15.4.2",
     "react-addons-css-transition-group": "^15.4.2",

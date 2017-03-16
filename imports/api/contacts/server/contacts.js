@@ -30,14 +30,19 @@ function changeScreenName (id, screenName) {
 }
 
 function updateWithTwitterInfo (id, twitterUser) {
-  return Contacts.update({ _id: id, 'socials.label': 'Twitter' }, {
-    $set: {
-      avatar: twitterUser.profile_image_url_https,
-      bio: twitterUser.description,
-      'socials.$.twitterId': twitterUser.id_str,
-      'socials.$.value': twitterUser.screen_name
-    }
-  })
+  const $set = {
+    bio: twitterUser.description,
+    'socials.$.twitterId': twitterUser.id_str,
+    'socials.$.value': twitterUser.screen_name
+  }
+  const contact = Contacts.findOne({ _id: id }, {fields: { avatar: 1 }})
+  // only update their avatar if it came from twitter previously.
+  if (contact.avatar && contact.avatar.match(/twimg/)) {
+    const url = twitterUser.profile_image_url_https
+    // https://dev.twitter.com/basics/user-profile-images-and-banners#alternative-image-sizes-for-user-profile-images
+    $set.avatar = url.replace('_normal.', '_bigger.')
+  }
+  return Contacts.update({ _id: id }, {$set})
 }
 
 export default Contacts

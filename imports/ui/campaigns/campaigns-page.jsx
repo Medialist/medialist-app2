@@ -3,30 +3,27 @@ import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
 import MasterLists from '../../api/master-lists/master-lists'
 import { createContainer } from 'meteor/react-meteor-data'
-import querystring from 'querystring'
-import CampaignsTable from './campaigns-table'
-import SearchBox from '../lists/search-box'
+import CampaignSearch from './campaign-search'
 import MasterListsSelector from './masterlists-selector.jsx'
 import CampaignsActionsToast from './campaigns-actions-toast'
 import EditCampaign from './edit-campaign'
 import CampaignListEmpty from './campaign-list-empty'
 import withSnackbar from '../snackbar/with-snackbar'
-import createSearchContainer from './campaign-search-container'
 import { batchAddTags } from '/imports/api/tags/methods'
 import { batchFavouriteCampaigns } from '/imports/api/campaigns/methods'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import AddTags from '../tags/add-tags'
 import AbbreviatedAvatarList from '../lists/abbreviated-avatar-list.jsx'
 import AddToMasterList from '../master-lists/add-to-master-list.jsx'
-import NearBottomContainer from '../navigation/near-bottom-container'
-import SubscriptionLimitContainer from '../navigation/subscription-limit-container'
-import Loading from '../lists/loading'
+import campaignsSearchQueryContainer from './campaign-search-query-container'
 
-const CampaignsPage = React.createClass({
+const CampaignsPage = withSnackbar(withRouter(React.createClass({
   propTypes: {
     campaigns: PropTypes.arrayOf(PropTypes.object),
     campaignCount: PropTypes.number,
     selectedMasterListSlug: PropTypes.string,
+    tagSlugs: PropTypes.arrayOf(PropTypes.string),
+    selectedTags: PropTypes.arrayOf(PropTypes.object),
     loading: PropTypes.bool,
     searching: PropTypes.bool,
     sort: PropTypes.object,
@@ -130,15 +127,22 @@ const CampaignsPage = React.createClass({
     })
   },
 
+  onTagRemove (tag) {
+    const { setQuery, tagSlugs } = this.props
+    setQuery({
+      tagSlugs: tagSlugs.filter((str) => str !== tag.slug)
+    })
+  },
+
   render () {
-    const { campaignCount, campaigns, selectedMasterListSlug, loading, total, sort, term, snackbar } = this.props
-    const { onSortChange, onSelectionsChange, onMasterListChange, onViewSelection, onFavouriteAll } = this
+    const { campaignCount, campaigns, selectedMasterListSlug, loading, total, sort, term, snackbar, selectedTags } = this.props
+    const { onTermChange, onSortChange, onSelectionsChange, onMasterListChange, onViewSelection, onFavouriteAll, onTagRemove } = this
     const { selections, editCampaignOpen } = this.state
 
     if (!loading && campaignCount === 0) {
       return (<div>
         <CampaignListEmpty onAddCampaign={this.toggleEditCampaign} />
-        <EditCampaignContainer onDismiss={this.toggleEditCampaign} open={editCampaignOpen} />
+        <EditCampaign onDismiss={this.toggleEditCampaign} open={editCampaignOpen} />
       </div>)
     }
 
@@ -157,25 +161,20 @@ const CampaignsPage = React.createClass({
             <button className='btn bg-completed white mx4' onClick={this.toggleEditCampaign} id='create-campaign-button'>New Campaign</button>
           </div>
         </div>
-        <EditCampaignContainer onDismiss={this.toggleEditCampaign} open={editCampaignOpen} />
-        <div className='bg-white shadow-2 m4 mt8'>
-          <div className='p4 flex items-center'>
-            <div className='flex-auto'>
-              <SearchBox onTermChange={this.onTermChange} placeholder='Search campaigns...' />
-            </div>
-            <div className='flex-none pl4 f-xs'>
-              <CampaignsTotal total={total} />
-            </div>
-          </div>
-          <CampaignsTable
-            term={term}
-            sort={sort}
-            campaigns={campaigns}
-            selections={selections}
-            onSortChange={onSortChange}
-            onSelectionsChange={onSelectionsChange} />
-        </div>
-        { loading && <div className='center p4'><Loading /></div> }
+        <EditCampaign onDismiss={this.toggleEditCampaign} open={editCampaignOpen} />
+        <CampaignSearch {...{
+          onTermChange,
+          selectedTags,
+          onTagRemove,
+          total,
+          term,
+          sort,
+          campaigns,
+          selections,
+          onSortChange,
+          onSelectionsChange,
+          loading
+        }} />
         <CampaignsActionsToast
           campaigns={selections}
           onViewClick={onViewSelection}
@@ -203,16 +202,7 @@ const CampaignsPage = React.createClass({
       </div>
     )
   }
-})
-
-const CampaignsTotal = ({ total }) => (
-  <div>{total} campaign{total === 1 ? '' : 's'} total</div>
-)
-
-const EditCampaignContainer = createContainer((props) => {
-  Meteor.subscribe('clients')
-  return { ...props, clients: window.Clients.find().fetch() }
-}, EditCampaign)
+})))
 
 const MasterListsSelectorContainer = createContainer((props) => {
   const { selectedMasterListSlug, userId } = props
@@ -227,59 +217,4 @@ const MasterListsSelectorContainer = createContainer((props) => {
   return { ...props, items, selectedSlug }
 }, MasterListsSelector)
 
-const SearchableCampaignsPage = createSearchContainer(CampaignsPage)
-
-const CampaignsPageContainer = withSnackbar(withRouter(React.createClass({
-
-  setQuery (opts) {
-    const { location, router } = this.props
-    const newQuery = {}
-    if (opts.sort) newQuery.sort = JSON.stringify(opts.sort)
-    if (opts.hasOwnProperty('term')) {
-      newQuery.q = opts.term
-    }
-    if (opts.selectedMasterListSlug) {
-      if (opts.selectedMasterListSlug === 'my') {
-        newQuery.my = Meteor.userId()
-      } else {
-        newQuery.list = opts.selectedMasterListSlug
-      }
-    }
-    const query = Object.assign({}, location.query, newQuery)
-    if (query.q === '') delete query.q
-    if (query.list === 'all' || newQuery.my) delete query.list
-    if (newQuery.list) delete query.my
-    const qs = querystring.stringify(query)
-    if (!qs) return router.replace('/campaigns')
-    router.replace(`/campaigns?${qs}`)
-  },
-
-  parseQuery ({query}) {
-    const sort = query.sort ? JSON.parse(query.sort) : { updatedAt: -1 }
-    const term = query.q || ''
-    const { list, my } = query
-    return { sort, term, selectedMasterListSlug: list, userId: my }
-  },
-
-  render () {
-    const { location } = this.props
-    return (
-      <NearBottomContainer>
-        {(nearBottom) => (
-          <SubscriptionLimitContainer wantMore={nearBottom}>
-            {(limit) => (
-              <SearchableCampaignsPage
-                limit={limit}
-                {...this.props}
-                {...this.data}
-                {...this.parseQuery(location)}
-                setQuery={this.setQuery} />
-            )}
-          </SubscriptionLimitContainer>
-        )}
-      </NearBottomContainer>
-    )
-  }
-})))
-
-export default CampaignsPageContainer
+export default campaignsSearchQueryContainer(CampaignsPage)

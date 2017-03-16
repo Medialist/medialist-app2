@@ -7,6 +7,7 @@ import { TimeFromNow } from '../time/time'
 import YouOrName from '../users/you-or-name'
 import { SquareAvatar } from '../images/avatar'
 import isSameItems from '../lists/is-same-items'
+import StatusSelectorContainer from '../feedback/status-selector-container'
 
 const CampaignsTable = React.createClass({
   propTypes: {
@@ -19,7 +20,11 @@ const CampaignsTable = React.createClass({
     // Selected campaigns in the table
     selections: PropTypes.array,
     // Callback when selection(s) change
-    onSelectionsChange: PropTypes.func
+    onSelectionsChange: PropTypes.func,
+    // Callback when contact status is changed
+    onStatusChange: PropTypes.func,
+    // returns true while subscriptionts are still syncing data.
+    loading: PropTypes.bool
   },
 
   onSelectAllChange () {
@@ -49,9 +54,9 @@ const CampaignsTable = React.createClass({
   },
 
   render () {
-    const { sort, onSortChange, campaigns, selections } = this.props
+    const { sort, onSortChange, campaigns, selections, loading, contactSlug } = this.props
 
-    if (!campaigns.length) {
+    if (!loading && !campaigns.length) {
       return <p className='p4 mb2 f-xl semibold center'>No campaigns yet</p>
     }
 
@@ -83,6 +88,9 @@ const CampaignsTable = React.createClass({
               Client
             </SortableHeader>
             <th className='left-align' style={{width: '40%'}}>Key Message</th>
+            {contactSlug && (
+              <th className='left-align'>Status</th>
+            )}
             <SortableHeader
               className='left-align'
               sortDirection={sort['updatedAt']}
@@ -103,7 +111,14 @@ const CampaignsTable = React.createClass({
                   </Link>
                 </td>
                 <td className='left-align truncate'>{client && client.name}</td>
-                <td className='left-align truncate'>{purpose}</td>
+                <td className='left-align truncate'>
+                  {purpose || <span className='gray60'>No key message yet</span>}
+                </td>
+                {contactSlug && (
+                  <td className='left-align' style={{overflow: 'visible'}}>
+                    <StatusSelectorContainer contactSlug={contactSlug} campaign={campaign} />
+                  </td>
+                )}
                 <td className='left-align'>
                   <span className='semibold'><TimeFromNow date={updatedAt} /></span>
                   <span> by <YouOrName user={updatedBy} /></span>

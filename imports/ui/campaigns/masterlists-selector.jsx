@@ -35,11 +35,15 @@ const MasterListsSelector = React.createClass({
   componentDidMount () {
     this.onResize = debounce(this.resetState, 100)
     window.addEventListener('resize', this.onResize)
+    this.calculateSize()
   },
   componentWillUnmount () {
     window.removeEventListener('resize', this.onResize)
   },
   componentDidUpdate () {
+    this.calculateSize()
+  },
+  calculateSize () {
     if (this.state.hideItemsAfterIndex !== null) return
     const {items} = this.props
     const itemWidthBuffer = 180
