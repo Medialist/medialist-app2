@@ -67,5 +67,5 @@ const ContactCampaignsPage = React.createClass({
 export default createContainer(({params: { contactSlug }}) => {
   Meteor.subscribe('contact-page', contactSlug)
   const contact = Contacts.findOne({ slug: contactSlug })
-  return { contact }
+  return { contact, contactSlug }
 }, campaignSearchQueryContainer(ContactCampaignsPage))

@@ -11,6 +11,7 @@ export const searchCampaigns = ({
   tagSlugs,
   masterListSlug,
   userId,
+  contactSlug,
   sort,
   limit = 20,
   minSearchLength = 3
@@ -19,6 +20,7 @@ export const searchCampaigns = ({
   check(tagSlugs, Match.Maybe(Array))
   check(masterListSlug, Match.Maybe(String))
   check(userId, Match.Maybe(String))
+  check(contactSlug, Match.Maybe(String))
   check(sort, Object)
   check(limit, Number)
 
@@ -33,6 +35,9 @@ export const searchCampaigns = ({
     const user = Meteor.users.findOne({_id: userId})
     const myContacts = user ? user.myCampaigns : []
     query.slug = { $in: myContacts.map((c) => c.slug) }
+  }
+  if (contactSlug) {
+    query[`contacts.${contactSlug}`] = { $exists: true }
   }
   if (term && term.length >= minSearchLength) {
     const termRegExp = new RegExp(term, 'gi')

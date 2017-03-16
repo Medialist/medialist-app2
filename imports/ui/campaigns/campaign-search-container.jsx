@@ -31,7 +31,8 @@ export default (Component, opts = {}) => {
       // http://docs.meteor.com/api/collections.html#sortspecifiers
       sort: PropTypes.oneOfType([ PropTypes.object, PropTypes.array ]),
       selectedMasterListSlug: PropTypes.string,
-      userId: PropTypes.string
+      userId: PropTypes.string,
+      contactSlug: PropTypes.string
     },
 
     getDefaultProps () {
@@ -41,11 +42,12 @@ export default (Component, opts = {}) => {
     mixins: [ReactMeteorData],
 
     getMeteorData () {
-      const { term, tagSlugs, selectedMasterListSlug, userId, sort, limit } = this.props
+      const { term, tagSlugs, selectedMasterListSlug, userId, contactSlug, sort, limit } = this.props
       const opts = {
         tagSlugs,
         masterListSlug: selectedMasterListSlug,
         userId,
+        contactSlug,
         sort,
         limit
       }
@@ -60,10 +62,11 @@ export default (Component, opts = {}) => {
       if (userId && userId !== Meteor.userId()) {
         subs.push(Meteor.subscribe('users-by-id', {userIds: [userId]}))
       }
+      let selectedTags = []
       if (tagSlugs && tagSlugs.length) {
         subs.push(Meteor.subscribe('tags-by-slug', {tagSlugs}))
+        selectedTags = Tags.find({slug: { $in: tagSlugs }}).fetch()
       }
-      const selectedTags = Tags.find({slug: { $in: tagSlugs }}).fetch()
       const campaigns = searchCampaigns(opts).fetch()
       const campaignCount = Campaigns.allCampaignsCount()
       const loading = !subs.every((sub) => sub.ready())
