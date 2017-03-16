@@ -31,11 +31,9 @@ const Avatar = React.createClass({
 
   render () {
     const { imageLoadError } = this.state
-    const { avatar, name } = this.props
-    const className = classNames(this.props.className, 'inline-block overflow-hidden white align-middle center semibold')
-    const size = Number(this.props.size || defaultSize) // px
-    const fontSize = Math.max((size / defaultSize) * 13, 13).toFixed(0) + 'px'
-    const style = Object.assign({ width: size, height: size, lineHeight: size + 'px', fontSize }, this.props.style || {})
+    const { avatar, name, size } = this.props
+    const className = classNames(this.props.className, 'white semibold')
+    const style = avatarStyle(size, this.props.style)
 
     if (avatar && !imageLoadError) {
       const src = this.resizeAvatar(avatar, size * 2) // @2x for hdpi
@@ -73,4 +71,18 @@ export const CircleAvatar = (props) => {
 export const SquareAvatar = (props) => {
   const className = classNames(props.className, 'rounded bg-black')
   return <Avatar {...props} className={className} />
+}
+
+export const avatarStyle = (size = defaultSize, style = {}) => {
+  const fontSize = Math.max((size / defaultSize) * 13, 13).toFixed(0) + 'px'
+  return Object.assign({
+    fontSize,
+    lineHeight: size + 'px',
+    width: size,
+    height: size,
+    display: 'inline-block',
+    overflow: 'hidden',
+    textAlign: 'center',
+    verticalAlign: 'middle'
+  }, style)
 }
