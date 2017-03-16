@@ -53,14 +53,6 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
     this.props.setQuery({ selectedMasterListSlug })
   },
 
-  onSortChange (sort) {
-    this.props.setQuery({ sort })
-  },
-
-  onTermChange (term) {
-    this.props.setQuery({ term })
-  },
-
   onSelectionsChange (selections) {
     this.setState({ selections })
   },
@@ -135,8 +127,8 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
   },
 
   render () {
-    const { campaignCount, campaigns, selectedMasterListSlug, loading, total, sort, term, snackbar, selectedTags } = this.props
-    const { onTermChange, onSortChange, onSelectionsChange, onMasterListChange, onViewSelection, onFavouriteAll, onTagRemove } = this
+    const { campaignCount, campaigns, selectedMasterListSlug, loading, total, sort, term, snackbar, selectedTags, onTermChange, onSortChange } = this.props
+    const { onSelectionsChange, onMasterListChange, onViewSelection, onFavouriteAll, onTagRemove } = this
     const { selections, editCampaignOpen } = this.state
 
     if (!loading && campaignCount === 0) {
