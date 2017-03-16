@@ -10,6 +10,9 @@ import EditableAvatar from '../images/editable-avatar'
 import Contacts from '/imports/api/contacts/contacts'
 
 const ContactCampaignsPage = React.createClass({
+  getInitialState () {
+    return { statusFilter: false }
+  },
   onAvatarChange (e) {
     // const { _id } = this.props.campaign
     // update.call({ _id, avatar: e.url }, (err) => {
@@ -24,9 +27,14 @@ const ContactCampaignsPage = React.createClass({
     this.props.snackbar.show('There was a problem updating the image.')
   },
   render () {
-    const {contact, campaigns} = this.props
+    const {contact} = this.props
     if (!contact) return null
+    const { statusFilter } = this.state
+    let {campaigns} = this.props
     const statuses = campaigns.map((c) => c.contacts[contact.slug])
+    if (statusFilter) {
+      campaigns = campaigns.filter((c) => c.contacts[contact.slug] === statusFilter)
+    }
     const { onAvatarChange, onAvatarError } = this
     const { name, avatar, outlets } = contact
     return (
@@ -46,11 +54,11 @@ const ContactCampaignsPage = React.createClass({
               </div>
             </div>
           </div>
-          <StatusStats className='flex-none' statuses={statuses} onStatusClick={(status) => console.log(status)} />
+          <StatusStats className='flex-none' statuses={statuses} active={statusFilter} onStatusClick={(status) => this.setState({statusFilter: status})} />
         </div>
         <CampaignSearch
           {...this.props}
-          onTermChange={(term) => this.props.setQuery({term})}
+          campaigns={campaigns}
           selections={[]}
         />
       </div>
