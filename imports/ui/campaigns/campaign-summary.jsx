@@ -29,13 +29,6 @@ const CamapignSummary = withSnackbar(React.createClass({
     const { campaign } = this.props
     const { contacts, name, avatar, client } = campaign
     const statuses = values(contacts || [])
-    // { 'Completed': 10, 'Hot Lead': 3, etc}
-    const counts = statuses.reduce((counts, s) => {
-      if (!counts[s]) counts[s] = 0
-      counts[s] = counts[s] + 1
-      return counts
-    }, {})
-
     return (
       <div className='flex items-center pt4 pb2 pr2 pl6'>
         <div className='flex-auto'>
@@ -49,7 +42,7 @@ const CamapignSummary = withSnackbar(React.createClass({
             </div>
           </div>
         </div>
-        <StatusStats className='flex-none' counts={counts} onStatusClick={(status) => console.log(status)} />
+        <StatusStats className='flex-none' statuses={statuses} onStatusClick={(status) => console.log(status)} />
       </div>
     )
   }

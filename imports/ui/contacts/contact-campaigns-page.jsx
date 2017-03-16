@@ -27,12 +27,6 @@ const ContactCampaignsPage = React.createClass({
     const {contact, campaigns} = this.props
     if (!contact) return null
     const statuses = campaigns.map((c) => c.contacts[contact.slug])
-    // { 'Completed': 10, 'Hot Lead': 3, etc}
-    const counts = statuses.reduce((counts, s) => {
-      if (!counts[s]) counts[s] = 0
-      counts[s] = counts[s] + 1
-      return counts
-    }, {})
     const { onAvatarChange, onAvatarError } = this
     const { name, avatar, outlets } = contact
     return (
@@ -52,7 +46,7 @@ const ContactCampaignsPage = React.createClass({
               </div>
             </div>
           </div>
-          <StatusStats className='flex-none' counts={counts} onStatusClick={(status) => console.log(status)} />
+          <StatusStats className='flex-none' statuses={statuses} onStatusClick={(status) => console.log(status)} />
         </div>
         <CampaignSearch
           {...this.props}

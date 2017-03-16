@@ -57,7 +57,6 @@ const MasterListsSelector = React.createClass({
   render () {
     const { type, items, selectedSlug } = this.props
     const { hideItemsAfterIndex, showMoreOpen } = this.state
-    console.log('MasterListsSelector', hideItemsAfterIndex)
     const visibleItems = hideItemsAfterIndex ? items.slice(0, hideItemsAfterIndex) : items
     const moreItems = hideItemsAfterIndex ? items.slice(hideItemsAfterIndex) : []
     const selectedIndex = moreItems.findIndex((i) => i.slug === selectedSlug)
