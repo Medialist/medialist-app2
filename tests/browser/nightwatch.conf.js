@@ -1,5 +1,7 @@
 'use strict'
 
+const seleniumServer = require('selenium-server/package.json')
+
 const configure = (obj) => {
   Object.keys(obj).forEach(key => {
     if (process.env[key] !== undefined) {
@@ -26,7 +28,7 @@ const config = {
 
   selenium: {
     start_process: true,
-    server_path: './node_modules/selenium-server/lib/runner/selenium-server-standalone-3.3.0.jar',
+    server_path: `./node_modules/selenium-server/lib/runner/selenium-server-standalone-${seleniumServer.version}.jar`,
     host: defaults.SELENIUM_HOST,
     port: defaults.SELENIUM_PORT,
     cli_args: {
