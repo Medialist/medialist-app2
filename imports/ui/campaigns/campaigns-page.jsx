@@ -205,6 +205,7 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
 })))
 
 const MasterListsSelectorContainer = createContainer((props) => {
+  console.log('MasterListsSelectorContainer', props)
   const { selectedMasterListSlug, userId } = props
   const lists = MasterLists.find({type: 'Campaigns'}).map(({slug, name, items}) => ({
     slug, name, count: items.length

@@ -47,7 +47,7 @@ const ContactCampaignsPage = React.createClass({
               <div className='flex-auto ml3' style={{lineHeight: 1.4}}>
                 <div className='f-xl semibold gray10 truncate'>{name}</div>
                 <div className='f-sm normal gray10 truncate'>
-                  {outlets[0] && outlets[0].label} — {outlets.map((o) => o.value).join(', ')}
+                  {outlets[0] && outlets[0].value} — {outlets.map((o) => o.label).join(', ')}
                 </div>
               </div>
             </div>

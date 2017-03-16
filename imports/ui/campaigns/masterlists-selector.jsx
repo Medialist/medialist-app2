@@ -35,11 +35,15 @@ const MasterListsSelector = React.createClass({
   componentDidMount () {
     this.onResize = debounce(this.resetState, 100)
     window.addEventListener('resize', this.onResize)
+    this.calculateSize()
   },
   componentWillUnmount () {
     window.removeEventListener('resize', this.onResize)
   },
   componentDidUpdate () {
+    this.calculateSize()
+  },
+  calculateSize () {
     if (this.state.hideItemsAfterIndex !== null) return
     const {items} = this.props
     const itemWidthBuffer = 180
@@ -53,6 +57,7 @@ const MasterListsSelector = React.createClass({
   render () {
     const { type, items, selectedSlug } = this.props
     const { hideItemsAfterIndex, showMoreOpen } = this.state
+    console.log('MasterListsSelector', hideItemsAfterIndex)
     const visibleItems = hideItemsAfterIndex ? items.slice(0, hideItemsAfterIndex) : items
     const moreItems = hideItemsAfterIndex ? items.slice(hideItemsAfterIndex) : []
     const selectedIndex = moreItems.findIndex((i) => i.slug === selectedSlug)

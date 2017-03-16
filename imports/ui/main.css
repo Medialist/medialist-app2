@@ -81,6 +81,7 @@ body {
   margin: 0;
   color: var(--gray20);
   background-color: var(--gray90);
+  overflow-y: scroll;
 
   /* Disable subpixel font rendering as it makes our font appear too bold
     compared to the designs... It's questionable if it's an impromvement, but

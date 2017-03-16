@@ -29,8 +29,8 @@ const campaignsSearchQueryContainer = (Component) => {
       if (query.list === 'all' || newQuery.my) delete query.list
       if (newQuery.list) delete query.my
       const qs = querystring.stringify(query)
-      if (!qs) return router.replace('/campaigns')
-      router.replace(`/campaigns?${qs}`)
+      if (!qs) return router.replace(location.pathname)
+      router.replace(`${location.pathname}?${qs}`)
     },
 
     parseQuery ({query}) {
