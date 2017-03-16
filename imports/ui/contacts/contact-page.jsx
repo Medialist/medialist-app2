@@ -61,14 +61,6 @@ const ContactPage = withSnackbar(React.createClass({
     })
   },
 
-  onAddContactToCampaign () {
-    this.setState(({ addContactModalOpen }) => ({ addContactModalOpen: true }))
-  },
-
-  onDismissAddContactToCampaign () {
-    this.setState(({ addContactModalOpen }) => ({ addContactModalOpen: false }))
-  },
-
   onFeedback ({message, campaign, status}, cb) {
     const contactSlug = this.props.contact.slug
     const campaignSlug = campaign.slug
@@ -88,12 +80,11 @@ const ContactPage = withSnackbar(React.createClass({
 
   render () {
     const { contact, campaigns, campaign, user, masterlists, needToKnows, loading } = this.props
-    const { editContactOpen, addContactModalOpen } = this.state
-    const { onDismissAddContactToCampaign, onAddContactToCampaign } = this
+    const { editContactOpen } = this.state
     if (!contact) return null
     return (
       <div>
-        <ContactTopbar contact={contact} open={addContactModalOpen} onAddContactToCampaign={onAddContactToCampaign} onDismiss={onDismissAddContactToCampaign} />
+        <ContactTopbar contact={contact} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
             <ContactInfo campaigns={campaigns} contact={contact} onEditClick={this.toggleEditContact} user={user} masterlists={masterlists} />

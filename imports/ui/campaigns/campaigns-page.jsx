@@ -3,27 +3,21 @@ import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
 import MasterLists from '../../api/master-lists/master-lists'
 import { createContainer } from 'meteor/react-meteor-data'
-import querystring from 'querystring'
-import CampaignsTable from './campaigns-table'
-import SearchBox from '../lists/search-box'
-import CountTag from '../tags/tag'
+import CampaignSearch from './campaign-search'
 import MasterListsSelector from './masterlists-selector.jsx'
 import CampaignsActionsToast from './campaigns-actions-toast'
 import EditCampaign from './edit-campaign'
 import CampaignListEmpty from './campaign-list-empty'
 import withSnackbar from '../snackbar/with-snackbar'
-import createSearchContainer from './campaign-search-container'
 import { batchAddTags } from '/imports/api/tags/methods'
 import { batchFavouriteCampaigns } from '/imports/api/campaigns/methods'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import AddTags from '../tags/add-tags'
 import AbbreviatedAvatarList from '../lists/abbreviated-avatar-list.jsx'
 import AddToMasterList from '../master-lists/add-to-master-list.jsx'
-import NearBottomContainer from '../navigation/near-bottom-container'
-import SubscriptionLimitContainer from '../navigation/subscription-limit-container'
-import Loading from '../lists/loading'
+import campaignsSearchQueryContainer from './campaign-search-query-container'
 
-const CampaignsPage = React.createClass({
+const CampaignsPage = withSnackbar(withRouter(React.createClass({
   propTypes: {
     campaigns: PropTypes.arrayOf(PropTypes.object),
     campaignCount: PropTypes.number,
@@ -142,7 +136,7 @@ const CampaignsPage = React.createClass({
 
   render () {
     const { campaignCount, campaigns, selectedMasterListSlug, loading, total, sort, term, snackbar, selectedTags } = this.props
-    const { onSortChange, onSelectionsChange, onMasterListChange, onViewSelection, onFavouriteAll, onTagRemove } = this
+    const { onTermChange, onSortChange, onSelectionsChange, onMasterListChange, onViewSelection, onFavouriteAll, onTagRemove } = this
     const { selections, editCampaignOpen } = this.state
 
     if (!loading && campaignCount === 0) {
@@ -168,34 +162,19 @@ const CampaignsPage = React.createClass({
           </div>
         </div>
         <EditCampaign onDismiss={this.toggleEditCampaign} open={editCampaignOpen} />
-        <div className='bg-white shadow-2 m4 mt8'>
-          <div className='p4 flex items-center'>
-            <div className='flex-auto'>
-              <SearchBox onTermChange={this.onTermChange} placeholder='Search campaigns...'>
-                {selectedTags && selectedTags.map((t) => (
-                  <CountTag
-                    style={{marginBottom: 0}}
-                    key={t.slug}
-                    name={t.name}
-                    count={t.contactsCount}
-                    onRemove={() => onTagRemove(t)}
-                  />
-                ))}
-              </SearchBox>
-            </div>
-            <div className='flex-none pl4 f-xs'>
-              <CampaignsTotal total={total} />
-            </div>
-          </div>
-          <CampaignsTable
-            term={term}
-            sort={sort}
-            campaigns={campaigns}
-            selections={selections}
-            onSortChange={onSortChange}
-            onSelectionsChange={onSelectionsChange} />
-        </div>
-        { loading && <div className='center p4'><Loading /></div> }
+        <CampaignSearch {...{
+          onTermChange,
+          selectedTags,
+          onTagRemove,
+          total,
+          term,
+          sort,
+          campaigns,
+          selections,
+          onSortChange,
+          onSelectionsChange,
+          loading
+        }} />
         <CampaignsActionsToast
           campaigns={selections}
           onViewClick={onViewSelection}
@@ -223,11 +202,7 @@ const CampaignsPage = React.createClass({
       </div>
     )
   }
-})
-
-const CampaignsTotal = ({ total }) => (
-  <div>{total} campaign{total === 1 ? '' : 's'} total</div>
-)
+})))
 
 const MasterListsSelectorContainer = createContainer((props) => {
   const { selectedMasterListSlug, userId } = props
@@ -242,61 +217,4 @@ const MasterListsSelectorContainer = createContainer((props) => {
   return { ...props, items, selectedSlug }
 }, MasterListsSelector)
 
-const SearchableCampaignsPage = createSearchContainer(CampaignsPage)
-
-const CampaignsPageContainer = withSnackbar(withRouter(React.createClass({
-
-  setQuery (opts) {
-    const { location, router } = this.props
-    const newQuery = {}
-    if (opts.sort) newQuery.sort = JSON.stringify(opts.sort)
-    if (opts.hasOwnProperty('term')) {
-      newQuery.q = opts.term
-    }
-    if (opts.selectedMasterListSlug) {
-      if (opts.selectedMasterListSlug === 'my') {
-        newQuery.my = Meteor.userId()
-      } else {
-        newQuery.list = opts.selectedMasterListSlug
-      }
-    }
-    if (opts.tagSlugs) newQuery.tag = opts.tagSlugs
-    const query = Object.assign({}, location.query, newQuery)
-    if (query.q === '') delete query.q
-    if (query.list === 'all' || newQuery.my) delete query.list
-    if (newQuery.list) delete query.my
-    const qs = querystring.stringify(query)
-    if (!qs) return router.replace('/campaigns')
-    router.replace(`/campaigns?${qs}`)
-  },
-
-  parseQuery ({query}) {
-    const sort = query.sort ? JSON.parse(query.sort) : { updatedAt: -1 }
-    const term = query.q || ''
-    const tagSlugs = query.tag ? [query.tag] : []
-    const { list, my } = query
-    return { sort, term, selectedMasterListSlug: list, userId: my, tagSlugs }
-  },
-
-  render () {
-    const { location } = this.props
-    return (
-      <NearBottomContainer>
-        {(nearBottom) => (
-          <SubscriptionLimitContainer wantMore={nearBottom}>
-            {(limit) => (
-              <SearchableCampaignsPage
-                limit={limit}
-                {...this.props}
-                {...this.data}
-                {...this.parseQuery(location)}
-                setQuery={this.setQuery} />
-            )}
-          </SubscriptionLimitContainer>
-        )}
-      </NearBottomContainer>
-    )
-  }
-})))
-
-export default CampaignsPageContainer
+export default campaignsSearchQueryContainer(CampaignsPage)
