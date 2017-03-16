@@ -13,6 +13,7 @@ const CampaignSearch = ({
   sort,
   campaigns,
   selections,
+  contactSlug,
   onSortChange,
   onSelectionsChange,
   loading
@@ -42,6 +43,7 @@ const CampaignSearch = ({
         sort={sort}
         campaigns={campaigns}
         selections={selections}
+        contactSlug={contactSlug}
         onSortChange={onSortChange}
         onSelectionsChange={onSelectionsChange} />
     </div>

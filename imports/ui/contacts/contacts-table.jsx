@@ -7,7 +7,7 @@ import { TimeFromNow } from '../time/time'
 import YouOrName from '../users/you-or-name'
 import { CircleAvatar } from '../images/avatar'
 import isSameItems from '../lists/is-same-items'
-import StatusSelector from '../feedback/status-selector'
+import StatusSelectorContainer from '../feedback/status-selector-container'
 
 const ContactLink = ({contact, campaign}) => {
   const {slug, name, avatar} = contact
@@ -36,8 +36,6 @@ const ContactsTable = React.createClass({
     onSelectionsChange: PropTypes.func,
     // Optional campaign for calculating a contacts status
     campaign: PropTypes.object,
-    // Callback when contact status is changed
-    onStatusChange: PropTypes.func,
     // returns true while subscriptionts are still syncing data.
     loading: PropTypes.bool
   },
@@ -69,7 +67,7 @@ const ContactsTable = React.createClass({
   },
 
   render () {
-    const { sort, onSortChange, contacts, selections, campaign, onStatusChange, loading } = this.props
+    const { sort, onSortChange, contacts, selections, campaign, loading } = this.props
 
     if (!loading && !contacts.length) {
       return <p className='pt2 pb5 mt0 f-xl semibold center'>No contacts found</p>
@@ -126,14 +124,12 @@ const ContactsTable = React.createClass({
             {contacts.map((contact) => {
               const {
                 _id,
-                slug,
                 emails,
                 outlets,
                 phones,
                 updatedAt,
                 updatedBy
               } = contact
-              const status = campaign && campaign.contacts[slug]
               return (
                 <SelectableRow data={contact} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id}>
                   <td className='left-align'>
@@ -153,7 +149,7 @@ const ContactsTable = React.createClass({
                   </td>
                   {campaign && (
                     <td className='left-align' style={{overflow: 'visible'}}>
-                      <StatusSelector status={status} onChange={(status) => onStatusChange({status, contact})} />
+                      <StatusSelectorContainer contactSlug={contact.slug} campaign={campaign} />
                     </td>
                   )}
                 </SelectableRow>
