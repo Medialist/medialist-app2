@@ -31,7 +31,7 @@ const Avatar = React.createClass({
 
   render () {
     const { imageLoadError } = this.state
-    const { avatar, name, size } = this.props
+    const { avatar, name, size = defaultSize } = this.props
     const className = classNames(this.props.className, 'white semibold')
     const style = avatarStyle(size, this.props.style)
 
@@ -73,7 +73,7 @@ export const SquareAvatar = (props) => {
   return <Avatar {...props} className={className} />
 }
 
-export const avatarStyle = (size = defaultSize, style = {}) => {
+export const avatarStyle = (size, style = {}) => {
   const fontSize = Math.max((size / defaultSize) * 13, 13).toFixed(0) + 'px'
   return Object.assign({
     fontSize,
