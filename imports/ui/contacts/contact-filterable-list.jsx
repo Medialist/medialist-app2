@@ -21,7 +21,7 @@ export default React.createClass({
     return (
       <div>
         <SearchBox term={term} onTermChange={onTermChange} style={styleOverrides} placeholder='Search contacts' />
-        <div className='overflow-scroll' style={{maxHeight: 299}}>
+        <div style={{maxHeight: 299, overflowY: 'scroll'}}>
           <CampaignContacts campaign={campaign} contacts={contacts} onSelectContact={onSelectContact} />
         </div>
       </div>

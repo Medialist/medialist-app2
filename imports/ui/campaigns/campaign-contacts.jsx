@@ -15,10 +15,10 @@ const CampaignContacts = ({campaign, contacts, onSelectContact}) => {
             style={{height: 75}}
             onClick={() => onSelectContact(contact)}
             key={slug} >
-            <div className='flex-auto'>
+            <div className='flex-none'>
               <CampaignContact contact={contact} />
             </div>
-            <div className='flex-none right px4'>
+            <div className='flex-none' style={{paddingLeft: 120}}>
               <StatusLabel name={status} />
             </div>
           </div>)
