@@ -97,7 +97,7 @@ const ContactPage = withSnackbar(React.createClass({
               user={user}
               masterlists={masterlists}
               onEditClick={this.toggleEditContact}
-              toggleAddToCampaign={this.toggleAddToCampaign}
+              onAddToCampaignClick={this.toggleAddToCampaign}
             />
           </div>
           <div className='flex-auto px2' >
