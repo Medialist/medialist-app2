@@ -7,6 +7,7 @@ import { TimeFromNow } from '../time/time'
 import YouOrName from '../users/you-or-name'
 import { SquareAvatar } from '../images/avatar'
 import isSameItems from '../lists/is-same-items'
+import StatusLabel from '../feedback/status-label'
 import StatusSelectorContainer from '../feedback/status-selector-container'
 
 const CampaignsTable = React.createClass({
@@ -121,7 +122,11 @@ const CampaignsTable = React.createClass({
                 </td>
                 {contactSlug && (
                   <td className='left-align' style={{overflow: 'visible'}}>
-                    <StatusSelectorContainer contactSlug={contactSlug} campaign={campaign} />
+                    <StatusSelectorContainer
+                      contactSlug={contactSlug}
+                      campaign={campaign}
+                      children={(status) => <StatusLabel name={status} />}
+                    />
                   </td>
                 )}
                 <td className='left-align'>

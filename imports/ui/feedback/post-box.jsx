@@ -1,7 +1,8 @@
 import React, { PropTypes } from 'react'
-import StatusMap from '/imports/api/contacts/status'
 import CampaignSelector from './campaign-selector'
-import StatusSelector from './status-selector.jsx'
+import StatusMap from '/imports/api/contacts/status'
+import StatusLabel from './status-label'
+import StatusSelector from './status-selector'
 import PostBoxtTextArea from './post-box-textarea'
 import { FeedbackTab, CoverageTab, NeedToKnowTab, PostBoxTabs } from '../feedback/post-box-nav'
 
@@ -116,7 +117,16 @@ const FeedbackInput = React.createClass({
           disabled={!message || posting || !status || !campaign}
           onPost={onSubmit} >
           <CampaignSelector contact={contact} onChange={onCampaignChange} campaigns={campaigns} campaign={campaign} />
-          <StatusSelector className='ml3' status={status} onChange={onStatusChange} border />
+          <div className='ml3 inline-block'>
+            <StatusSelector
+              className='btn bg-transparent border-gray80'
+              style={{padding: '6px 15px 7px'}}
+              status={status}
+              onChange={onStatusChange}
+            >
+              <StatusLabel name={status} />
+            </StatusSelector>
+          </div>
         </PostBoxButtons>
       </div>
     )
@@ -175,7 +185,16 @@ const CoverarageInput = React.createClass({
           disabled={!message || posting || !campaign}
           onPost={onSubmit} >
           <CampaignSelector contact={contact} onChange={onCampaignChange} campaigns={campaigns} campaign={campaign} />
-          <StatusSelector className='ml3' status={status} onChange={onStatusChange} border />
+          <div className='ml3 inline-block'>
+            <StatusSelector
+              className='btn bg-transparent border-gray80'
+              style={{padding: '6px 15px 7px'}}
+              status={status}
+              onChange={onStatusChange}
+            >
+              <StatusLabel name={status} />
+            </StatusSelector>
+          </div>
         </PostBoxButtons>
       </div>
     )

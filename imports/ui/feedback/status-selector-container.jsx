@@ -5,7 +5,8 @@ import { createFeedbackPost } from '/imports/api/posts/methods'
 const StatusSelectorContainer = React.createClass({
   propTypes: {
     contactSlug: PropTypes.string.isRequired,
-    campaign: PropTypes.object.isRequired
+    campaign: PropTypes.object.isRequired,
+    children: PropTypes.func.isRequired
   },
 
   onStatusChange (status) {
@@ -14,9 +15,16 @@ const StatusSelectorContainer = React.createClass({
   },
 
   render () {
-    const { contactSlug, campaign } = this.props
+    const { contactSlug, campaign, children, ...props } = this.props
     const status = campaign.contacts[contactSlug]
-    return <StatusSelector status={status} onChange={this.onStatusChange} />
+    return (
+      <StatusSelector
+        {...props}
+        status={status}
+        onChange={this.onStatusChange}
+        children={children(status)}
+      />
+    )
   }
 })
 

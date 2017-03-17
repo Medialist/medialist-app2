@@ -8,36 +8,30 @@ export const Select = React.createClass({
     children: PropTypes.node.isRequired,
     onChange: PropTypes.func.isRequired,
     options: PropTypes.array.isRequired,
-    border: PropTypes.bool,
     disabled: PropTypes.bool
   },
   getInitialState () {
     return {open: false}
   },
-  openDropdown () {
+  openDropdown (evt) {
+    evt.preventDefault()
+    evt.stopPropagation()
     this.setState({open: true})
   },
-  closeDropdown () {
-    this.setState({open: false})
-  },
-  onOptionClick (status) {
+  closeDropdown (evt) {
+    evt.preventDefault()
+    evt.stopPropagation()
     this.setState({open: false})
   },
   render () {
-    const { border, disabled, buttonText, children, style, className } = this.props
-    const attributes = {
-      disabled,
-      style,
-      className: `btn bg-transparent ${border ? 'border-gray80' : ''} ${className}`,
-      onClick: this.openDropdown
-    }
+    const { open } = this.state
+    const { disabled, buttonText, children, style, className } = this.props
     return (
       <Dropdown>
-        <button {...attributes}>
-          {buttonText}
-          <ChevronDown className='ml1 gray40' />
-        </button>
-        <DropdownMenu width={223} open={this.state.open} onDismiss={this.closeDropdown}>
+        <div className={className} style={style} onClick={this.openDropdown} disabled={disabled}>
+          {buttonText}<ChevronDown className={`${open ? 'blue' : 'gray40'}`} />
+        </div>
+        <DropdownMenu width={223} open={open} onDismiss={this.closeDropdown}>
           <nav className='py3' onClick={this.closeDropdown}>
             {children}
           </nav>
