@@ -1,10 +1,11 @@
 import React, { PropTypes } from 'react'
+import { Link } from 'react-router'
 import { Meteor } from 'meteor/meteor'
+import CountTag from '../tags/tag.jsx'
 import EditableAvatar from '../images/editable-avatar'
 import { SquareAvatar, CircleAvatar } from '../images/avatar'
 import { BioIcon, FavouritesIcon, FavouritesIconGold, WebsiteIcon } from '../images/icons'
 import InfoHeader from '../lists/info-header'
-import QuickAdd from '../lists/quick-add'
 import AddToMasterList from '../master-lists/add-to-master-list.jsx'
 import AddTags from '../tags/add-tags'
 import Tooltip from '../navigation/tooltip'
@@ -90,7 +91,7 @@ const CampaignInfo = React.createClass({
     return (
       <div>
         <div className='flex items-start mb1'>
-          <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError} arrowPosition={'25%'}>
+          <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError} menuLeft={0} menuTop={-20}>
             <SquareAvatar size={70} avatar={avatar} name={name} />
           </EditableAvatar>
           <div className='ml3 flex-auto'>
@@ -127,6 +128,28 @@ const CampaignInfo = React.createClass({
             {team.map((teamMember, ind) => <CircleAvatar {...teamMember} size={38} style={{marginLeft: '2px'}} key={ind} />)}
           </div>
         </section>
+        <section>
+          <InfoHeader name='Master Lists' onClick={onAddToMasterList} />
+          <div className='py3'>
+            {masterLists.map((m) => (
+              <Link to={`/campaigns?list=${m.slug}`} className='pointer p2 blue f-sm' key={m._id}>
+                {m.name}
+              </Link>
+            ))}
+          </div>
+        </section>
+        <section>
+          <InfoHeader name='Tags' onClick={onAddTags} />
+          <div className='px2 py3'>
+            {tags.map((t) => {
+              return (
+                <Link to={`/campaigns?tag=${t.slug}`} key={t.slug}>
+                  <CountTag name={t.name} count={t.count} />
+                </Link>
+              )
+            })}
+          </div>
+        </section>
         <AddToMasterList
           open={addToMasterListOpen}
           onDismiss={dismissAddToMasterList}
@@ -142,11 +165,6 @@ const CampaignInfo = React.createClass({
           title={`Tag the ${name} Campaign`}
           selectedTags={tags}
           onUpdateTags={onUpdateTags} />
-        <QuickAdd
-          selectedMasterLists={masterLists}
-          tags={tags}
-          onAddToMasterList={onAddToMasterList}
-          onAddTags={onAddTags} />
       </div>
     )
   }

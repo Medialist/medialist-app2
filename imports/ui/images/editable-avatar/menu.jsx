@@ -14,17 +14,17 @@ const EditableAvatarMenu = React.createClass({
   },
 
   onUploadcareClick (e) {
-    e.preventDefault()
+    e.stopPropagation()
     this.setState({ uploader: 'uploadcare' })
   },
 
   onTwitterClick (e) {
-    e.preventDefault()
+    e.stopPropagation()
     this.setState({ uploader: 'twitter' })
   },
 
   onRemoveClick (e) {
-    e.preventDefault()
+    e.stopPropagation()
     this.props.onChange({ url: null })
   },
 
@@ -55,9 +55,9 @@ const EditableAvatarMenu = React.createClass({
       default:
         return (
           <div className='py1 left-align'>
-            <a href='#' className='block px3 py2 f-md normal gray20 hover-bg-blue hover-white' onClick={onUploadcareClick}>Upload image</a>
-            <a href='#' className='block px3 py2 f-md normal gray20 hover-bg-blue hover-white' onClick={onTwitterClick}>Import from Twitter</a>
-            {avatar && <a href='#' className='block px3 py2 f-md normal gray20 hover-bg-blue hover-white' onClick={onRemoveClick}>Remove image</a>}
+            <a href='#' className='block px3 py2 f-md normal border-top border-bottom border-transparent gray20 hover-bg-gray90 hover-border-gray80' onClick={onUploadcareClick}>Upload image</a>
+            <a href='#' className='block px3 py2 f-md normal border-top border-bottom border-transparent gray20 hover-bg-gray90 hover-border-gray80' onClick={onTwitterClick}>Import from Twitter</a>
+            {avatar && <a href='#' className='block px3 py2 f-md normal border-top border-bottom border-transparent gray20 hover-bg-gray90 hover-border-gray80' onClick={onRemoveClick}>Remove image</a>}
           </div>
         )
     }

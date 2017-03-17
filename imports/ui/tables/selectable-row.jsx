@@ -4,7 +4,7 @@ import Checkbox from './checkbox'
 
 const SelectableRow = ({ selected, data, children, onSelectChange, className }) => (
   <tr className={classnames(className, 'hover-opacity-trigger', { active: selected })}>
-    <td>
+    <td className='right-align' style={{paddingRight: 0}}>
       <Checkbox
         className={classnames('hover-opacity-100', { 'opacity-0': !selected })}
         checked={selected}

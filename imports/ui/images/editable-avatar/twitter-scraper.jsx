@@ -35,6 +35,10 @@ const TwitterScraper = React.createClass({
     this.setScreenName = debounce(this.setScreenName, 300)
   },
 
+  componentDidMount () {
+    this.inputEl.focus()
+  },
+
   onInputChange (e) {
     const inputValue = e.target.value
     this.setScreenName(twitterScreenName(inputValue))
@@ -77,7 +81,7 @@ const TwitterScraper = React.createClass({
       })
       .done((fileInfo) => {
         this.setState({ uploading: false, progress: 0 })
-        onSuccess({ url: fileInfo.cdnUrl, fileInfo })
+        onSuccess({ screenName, url: fileInfo.cdnUrl, fileInfo })
       })
       .fail((err) => {
         this.setState({ uploading: false, progress: 0 })
@@ -122,18 +126,22 @@ const TwitterScraper = React.createClass({
       <form onSubmit={onSubmit} className='px2 py1'>
         <p className='center'>Enter a Twitter username or URL</p>
         <div className='mb2 center'>
-          {screenName &&
-            <img
-              src={imageSrc}
-              alt={screenName}
-              className={imageClassName}
-              style={{ width: 40, height: 40 }}
-              onLoad={onImageLoad}
-              onError={onImageError}
-              data-screen-name={screenName} />}
+          <div className='inline-block bg-gray90' style={{ width: 40, height: 40 }}>
+            {screenName &&
+              <img
+                src={imageSrc}
+                alt={screenName}
+                className={imageClassName}
+                style={{ width: 40, height: 40 }}
+                onLoad={onImageLoad}
+                onError={onImageError}
+                data-screen-name={screenName} />
+            }
+          </div>
         </div>
         <div className='mb2'>
           <input
+            ref={(el) => { this.inputEl = el }}
             className='input'
             value={inputValue}
             onChange={onInputChange}

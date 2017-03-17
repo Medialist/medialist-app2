@@ -1,7 +1,9 @@
 import React, { PropTypes } from 'react'
-import StatusMap from '/imports/api/contacts/status'
 import CampaignSelector from './campaign-selector'
-import StatusSelector from './status-selector.jsx'
+import StatusMap from '/imports/api/contacts/status'
+import StatusLabel from './status-label'
+import StatusSelector from './status-selector'
+import PostBoxtTextArea from './post-box-textarea'
 import { FeedbackTab, CoverageTab, NeedToKnowTab, PostBoxTabs } from '../feedback/post-box-nav'
 
 const Divider = ({show}) => (
@@ -49,17 +51,6 @@ const PostBox = React.createClass({
     )
   }
 })
-
-export const PostBoxtTextArea = ({placeholder, value, focused, disabled, onChange}) => (
-  <textarea
-    rows={focused ? '3' : '1'}
-    className='textarea mb1 placeholder-gray60 caret-blue'
-    style={{border: '0 none', overflowY: 'auto', resize: 'none', paddingLeft: '3px'}}
-    placeholder={placeholder}
-    onChange={onChange}
-    value={value}
-    disabled={disabled} />
-)
 
 export const PostBoxButtons = ({focused, disabled, onPost, children}) => (
   <div style={{display: focused ? null : 'none'}}>
@@ -126,7 +117,16 @@ const FeedbackInput = React.createClass({
           disabled={!message || posting || !status || !campaign}
           onPost={onSubmit} >
           <CampaignSelector contact={contact} onChange={onCampaignChange} campaigns={campaigns} campaign={campaign} />
-          <StatusSelector className='ml3' status={status} onChange={onStatusChange} border />
+          <div className='ml3 inline-block'>
+            <StatusSelector
+              className='btn bg-transparent border-gray80'
+              style={{padding: '6px 15px 7px'}}
+              status={status}
+              onChange={onStatusChange}
+            >
+              <StatusLabel name={status} />
+            </StatusSelector>
+          </div>
         </PostBoxButtons>
       </div>
     )
@@ -185,7 +185,16 @@ const CoverarageInput = React.createClass({
           disabled={!message || posting || !campaign}
           onPost={onSubmit} >
           <CampaignSelector contact={contact} onChange={onCampaignChange} campaigns={campaigns} campaign={campaign} />
-          <StatusSelector className='ml3' status={status} onChange={onStatusChange} border />
+          <div className='ml3 inline-block'>
+            <StatusSelector
+              className='btn bg-transparent border-gray80'
+              style={{padding: '6px 15px 7px'}}
+              status={status}
+              onChange={onStatusChange}
+            >
+              <StatusLabel name={status} />
+            </StatusSelector>
+          </div>
         </PostBoxButtons>
       </div>
     )

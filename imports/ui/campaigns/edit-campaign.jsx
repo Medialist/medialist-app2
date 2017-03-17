@@ -1,38 +1,38 @@
 import React, { PropTypes } from 'react'
 import { withRouter } from 'react-router'
+import cloneDeep from 'lodash.clonedeep'
+import immutable from 'object-path-immutable'
 import { CameraIcon, BioIcon, WebsiteIcon, FilledCircle } from '../images/icons'
 import Modal from '../navigation/modal'
-import ValidationBanner from '../errors/validation-banner'
+import { hasErrors, atLeastOne } from '/imports/lib/forms'
+import ValidationBanner from '../forms/validation-banner'
+import FormSection from '../forms/form-section'
+import FormField from '../forms/form-field'
+import FormError from '../forms/form-error'
 import EditableAvatar from '../images/editable-avatar'
 import ClientAutocomplete from './client-autocomplete'
 import { create, update } from '/imports/api/campaigns/methods'
 import { MedialistCreateSchema } from '/imports/api/campaigns/campaigns'
-import callAll from '/imports/lib/call-all'
 
 const EditCampaign = React.createClass({
   propTypes: {
     router: PropTypes.object.isRequired,
     open: PropTypes.bool.isRequired,
     onDismiss: PropTypes.func.isRequired,
-    clients: PropTypes.array.isRequired,
     campaign: PropTypes.object
   },
   getInitialState () {
-    const { campaign } = this.props
-    return {
-      avatar: campaign && campaign.avatar || '',
-      focus: null,
-      validated: false, // to intially disable the submit button
-      name: campaign && campaign.name || '',
-      purpose: campaign && campaign.purpose || '',
-      clientName: campaign && campaign.client && campaign.client.name || '',
-      links: campaign && campaign.links || [{ url: '' }],
-      validationErrors: {},
-      isValid: false
+    const campaign = this.props.campaign || {}
+    const state = {
+      avatar: campaign.avatar || '',
+      name: campaign.name || '',
+      purpose: campaign.purpose || '',
+      clientName: campaign.client && campaign.client.name || '',
+      links: atLeastOne(campaign.links, { url: '' }),
+      showErrors: false
     }
-  },
-  componentDidMount () {
-    this.nameInput.focus()
+    state.errors = this.validate(state)
+    return state
   },
   onAvatarChange ({url}) {
     this.setState({avatar: url})
@@ -41,35 +41,37 @@ const EditCampaign = React.createClass({
     console.error('Failed to change avatar', err)
     console.log('TODO: toast error message')
   },
-  onClientNameChange (clientName) {
-    this.setState({clientName})
+  onClientNameChange (evt) {
+    const {value} = evt.target
+    this.setState({clientName: value})
   },
-  onClientSelect (name) {
-    this.setState({clientName: name})
+  onClientSelect ({name, value}) {
+    this.setState({clientName: value})
   },
-  onChange (field) {
-    return ({ target: { value } }) => {
-      this.setState({ [field]: value }, () => this.validate(field))
-    }
+  onChange (evt) {
+    const {name, value} = evt.target
+    this.setState({ [name]: value })
+    this.setState((s) => ({
+      errors: this.validate(s)
+    }))
   },
-  onChangeLink (ind) {
-    return ({ target: { value } }) => {
-      const newLinks = Object.assign(this.state.links, { [ind]: { url: value } })
-      this.setState({ links: newLinks })
-    }
+  onLinkChange (evt) {
+    const {name: i, value} = evt.target
+    this.setState((s) => immutable.set(s, `links.${i}.url`, value))
+    this.setState((s) => ({
+      errors: this.validate(s)
+    }))
   },
-  checkLinkEmpty (ind) {
-    return () => {
-      if (this.state.links[ind] && !this.state.links[ind].url && this.state.links.length > 1) {
-        const newLinks = [...this.state.links]
-        newLinks.splice(ind, 1)
-        this.setState({ links: newLinks })
-      }
-    }
+  addLink () {
+    this.setState((s) => ({
+      links: [...s.links, { url: '' }]
+    }))
   },
   onSubmit (evt) {
     evt.preventDefault()
-    if (!this.validate()) return
+    if (hasErrors(this.state)) {
+      return this.setState({showErrors: true})
+    }
     const { campaign, router, onDismiss } = this.props
     const { avatar, name, purpose, clientName, links } = this.state
     const payload = { avatar, name, purpose, clientName, links: links.filter((l) => l.url) }
@@ -91,135 +93,106 @@ const EditCampaign = React.createClass({
   onReset () {
     this.props.onDismiss()
   },
-  validate () {
-    const { avatar, name, purpose, clientName, links } = this.state
+  validate (state) {
+    const { avatar, name, purpose, clientName, links } = state
     const validationContext = MedialistCreateSchema.newContext()
     const campaign = { avatar, name, purpose, clientName, links: links.filter((l) => l.url) }
     validationContext.validate(campaign)
-    let isValid = true
-    const validationErrors = validationContext.invalidKeys().reduce((validationErrors, error) => {
+    const errors = validationContext.invalidKeys().reduce((errors, error) => {
       const field = error.name
-      validationErrors[field] = `Please add a ${MedialistCreateSchema.label(field)}`
-      if (field.substr(0, 5) === 'links') validationErrors.links = 'Please only use valid URLs'
-      isValid = false
-      return validationErrors
+      errors[field] = `Please add a ${MedialistCreateSchema.label(field)}`
+      if (field.substr(0, 5) === 'links') errors.links = 'Please only use valid URLs'
+      return errors
     }, {})
-    this.setState({ validationErrors, isValid })
-    return validationContext.isValid()
+    const errorsCount = Object.keys(errors).length
+    if (errorsCount > 0) {
+      errors.headline = errorsCount > 1 ? 'Let\'s add a little more detail' : errors[Object.keys(errors)[0]]
+    }
+    return errors
   },
-  addFocus (field) {
-    return () => this.setState({ focus: field })
-  },
-  removeFocus () {
-    this.setState({ focus: null })
-  },
-  focusState (field) {
-    return this.state.focus === field ? 'blue' : 'gray60'
-  },
-  addLink () {
-    if (this.state.links.some((l) => !l)) return
-    this.setState({ links: [...this.state.links, { url: '' }] })
+  onDismissErrorBanner () {
+    const errors = cloneDeep(this.state.errors)
+    delete errors.headline
+    this.setState({errors})
   },
   render () {
     if (!this.props.open) return null
-    const { onChange, onChangeLink, onSubmit, onReset, onClientNameChange, onClientSelect, onAvatarChange, onAvatarError, validate } = this
-    const { campaign, clients } = this.props
-    const { avatar, name, purpose, clientName, links, validationErrors, isValid } = this.state
-    const inputStyle = { resize: 'none' }
-    const iconStyle = { position: 'absolute', left: '-32px', top: '10px' }
+    const { onChange, onLinkChange, onSubmit, onReset, onClientNameChange, onClientSelect, onAvatarChange, onAvatarError, onDismissErrorBanner } = this
+    const { campaign } = this.props
+    const { avatar, name, purpose, clientName, links, errors, showErrors } = this.state
     return (
-      <form onSubmit={onSubmit} onReset={onReset} className='relative'>
-        <ValidationBanner error={validationErrors.name || validationErrors.links} />
-        <div className='px4 py6 center'>
-          <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError}>
-            <div className='bg-gray40 center rounded mx-auto' style={{height: '123px', width: '123px', lineHeight: '123px'}}>
-              { avatar ? <img src={avatar} width='100%' height='100%' /> : <CameraIcon /> }
+      <div className='relative'>
+        <ValidationBanner error={errors.headline} show={showErrors} onDismissErrorBanner={onDismissErrorBanner} />
+        <div className='px4 py6 center border-bottom border-gray80'>
+          <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError} menuTop={-50}>
+            <div className='bg-gray60 center rounded mx-auto' style={{height: '110px', width: '110px', lineHeight: '110px'}}>
+              { avatar ? <img src={avatar} width='100%' height='100%' /> : <CameraIcon className='svg-icon-xl' /> }
             </div>
           </EditableAvatar>
           <div>
             <input
-              ref={(input) => { this.nameInput = input }}
               autoComplete='off'
-              className={`center gray10 input-inline mt4 f-xxxl semibold ${validationErrors.name ? 'error' : ''}`}
+              className={`center gray10 input-inline mt4 f-xxxl semibold placeholder-gray60 ${errors.name && showErrors ? 'error' : ''}`}
               type='text'
               name='name'
               value={name}
-              placeholder='Campaign Name'
+              placeholder='Campaign name'
               size={name.length === 0 ? 15 : name.length + 2}
-              onChange={onChange('name')}
-              onBlur={validate}
-               />
-            {validationErrors.name ? <div className='absolute left-0 right-0 mt1 red'>{validationErrors.name}</div> : null}
+              onChange={onChange} />
+            <FormError error={errors.name} show={showErrors} />
           </div>
         </div>
-        <div className='bg-gray90 border-top border-gray80 py5 overflow-auto' style={{ maxHeight: '400px' }}>
-          <div style={{ padding: '0 100px' }}>
-            <div>
-              <label className='block gray40 f-m mb2'>Client</label>
-              <div className='relative'>
-                <div style={iconStyle}>
-                  <FilledCircle className={this.focusState('clientName')} />
-                </div>
-                <ClientAutocomplete
-                  onFocus={this.addFocus('clientName')}
-                  onBlur={this.removeFocus}
-                  clients={clients}
-                  className='input block'
-                  name='clientName'
-                  placeholder='Client'
-                  clientName={clientName}
-                  onSelect={onClientSelect}
-                  onChange={onClientNameChange} />
-              </div>
-            </div>
-            <div className='mt4'>
-              <label className='block gray40 f-m mb2'>Key Message</label>
-              <div className='relative'>
-                <div style={iconStyle}>
-                  <BioIcon className={this.focusState('purpose')} />
-                </div>
-                <textarea
-                  onFocus={this.addFocus('purpose')}
-                  onBlur={this.removeFocus}
-                  style={{ ...inputStyle, height: '70px' }}
-                  className='input block textarea'
+
+        <div className='bg-gray90 pb6'>
+          <FormSection label='Client'>
+            <FormField icon={<FilledCircle />}>
+              <ClientAutocomplete
+                style={{width: 472}}
+                menuWidth={472}
+                className='input block placeholder-gray60'
+                name='clientName'
+                placeholder='Client'
+                value={clientName}
+                onSelect={onClientSelect}
+                onChange={onClientNameChange} />
+            </FormField>
+          </FormSection>
+
+          <FormSection label='Key Message'>
+            <FormField icon={<BioIcon />}>
+              <textarea
+                style={{height: '70px'}}
+                className='input block textarea placeholder-gray60'
+                type='text'
+                rows='5'
+                name='purpose'
+                value={purpose}
+                placeholder='Key Message'
+                onChange={onChange} />
+            </FormField>
+          </FormSection>
+
+          <FormSection label='Links' addLinkText='Add another link' onAdd={this.addLink}>
+            {links.map((link, i) => (
+              <FormField icon={<WebsiteIcon />} key={i}>
+                <input
+                  className='input flex-auto placeholder-gray60'
                   type='text'
-                  rows='5'
-                  name='purpose'
-                  value={purpose}
-                  placeholder='Key Message'
-                  onChange={onChange('purpose')} />
-              </div>
-            </div>
-            <div className='mt4'>
-              <label className='block gray40 f-m mb2'>Links</label>
-              {links.map((link, ind) => (
-                <div key={ind} className='relative mt1 icon-blue-highlight'>
-                  <div style={iconStyle}>
-                    <WebsiteIcon className={this.focusState(`link-${ind}`)} />
-                  </div>
-                  <input
-                    onFocus={this.addFocus(`link-${ind}`)}
-                    onBlur={callAll([this.removeFocus, this.checkLinkEmpty(ind), validate])}
-                    style={inputStyle}
-                    className='input block'
-                    type='text'
-                    value={links[ind].url}
-                    placeholder='Links'
-                    onChange={onChangeLink(ind)} />
-                </div>
-              ))}
-              <div className='mt1'><a href='#' className='f-xs blue underline' onClick={this.addLink}>Add another link</a></div>
-            </div>
-          </div>
+                  value={links[i].url}
+                  placeholder='Links'
+                  onChange={onLinkChange} />
+                <FormError error={errors[`link-${i}`]} show={showErrors} />
+              </FormField>
+            ))}
+          </FormSection>
         </div>
         <div className='p4 right'>
-          <button className='btn bg-completed white right' type='submit' disabled={!isValid}>
+          <button className='btn bg-completed white right' onClick={onSubmit}>
             {campaign ? 'Save Changes' : 'Create Campaign'}
           </button>
-          <button className='btn bg-transparent gray40 right mr2' type='reset'>Cancel</button>
+          <button className='btn bg-transparent gray40 right mr2' onClick={onReset}>Cancel</button>
         </div>
-      </form>
+      </div>
     )
   }
 })

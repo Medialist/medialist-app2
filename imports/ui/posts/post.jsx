@@ -1,9 +1,11 @@
 import React from 'react'
 import { Link } from 'react-router'
-import { CircleAvatar, SquareAvatar } from '../images/avatar'
+import { CircleAvatar } from '../images/avatar'
 import Time from '../time/time'
 import YouOrName from '../users/you-or-name'
 import Status from '../feedback/status'
+import LinkPreview from '../feedback/link-preview'
+import CampaignPreview from '../campaigns/campaign-preview'
 import {
   ChevronRight,
   FeedCampaignIcon,
@@ -96,6 +98,11 @@ export const FeedbackPost = ({item, currentUser, contact, campaign}) => (
     details={
       <div className='border-gray80 border-top py3 gray10'>
         {item.message}
+        {item.embeds && item.embeds[0] ? (
+          <div className='pt3'>
+            <LinkPreview {...item.embeds[0]} />
+          </div>
+        ) : null}
       </div>
     }
   />
@@ -110,6 +117,11 @@ export const CoveragePost = ({item, currentUser, contact, campaign}) => (
     details={
       <div className='border-gray80 border-top py3 gray10'>
         {item.message}
+        {item.embeds && item.embeds[0] ? (
+          <div className='pt3'>
+            <LinkPreview {...item.embeds[0]} />
+          </div>
+        ) : null}
       </div>
     }
   />
@@ -174,13 +186,7 @@ export const CreateCampaign = ({item, currentUser, campaign}) => {
       details={!campaign &&
         <div className='border-gray80 border-top pt2'>
           <Link key={slug} to={`/campaign/${slug}`} className='block py1' title={name}>
-            <SquareAvatar size={38} avatar={avatar} name={name} />
-            <div className='inline-block align-middle'>
-              <div className='ml3 semibold f-md gray10'>{name}</div>
-              <div className='ml3 regular f-sm gray20' style={{marginTop: 2}}>
-                {clientName}
-              </div>
-            </div>
+            <CampaignPreview name={name} avatar={avatar} clientName={clientName} />
           </Link>
         </div>
       }

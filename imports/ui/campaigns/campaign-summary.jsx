@@ -1,33 +1,53 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
 import values from 'lodash.values'
 import { SquareAvatar } from '../images/avatar'
-import { StatusValues } from '/imports/api/contacts/status'
+import EditableAvatar from '../images/editable-avatar'
+import { update } from '../../api/campaigns/methods'
+import withSnackbar from '../snackbar/with-snackbar'
+import StatusStats from '../contacts/status-stats'
 
-export default (props) => {
-  const { contacts, name, avatar } = props.campaign
-  const statuses = values(contacts || [])
-  // { 'Completed': 10, 'Hot Lead': 3, etc}
-  const counts = statuses.reduce((counts, s) => {
-    if (!counts[s]) counts[s] = 0
-    counts[s] = counts[s] + 1
-    return counts
-  }, {})
-
-  return (
-    <div className='pt4 pb2 pr2 pl6 clearfix'>
-      <div className='inline-block right'>
-        {StatusValues.map((status, i) => (
-          <div key={status} className={`inline-block px3 border-left ${i > 0 ? 'border-gray80' : 'border-transparent'}`}>
-            <div className='gray20 normal center pb1' style={{fontSize: 20}}>{counts[status] || 0}</div>
-            <div className='gray40 semibold f-xxs caps center'>{status}</div>
+const CamapignSummary = withSnackbar(React.createClass({
+  propTypes: {
+    snackbar: PropTypes.object,
+    campaign: PropTypes.object,
+    statusFilter: PropTypes.string,
+    onStatusClick: PropTypes.func
+  },
+  onAvatarChange (e) {
+    const { _id } = this.props.campaign
+    update.call({ _id, avatar: e.url }, (err) => {
+      if (err) {
+        console.error('Failed to update campaign avatar', err)
+        this.props.snackbar.show('There was a problem updating the image.')
+      }
+    })
+  },
+  onAvatarError (err) {
+    console.error('Failed to change avatar', err)
+    this.props.snackbar.show('There was a problem updating the image.')
+  },
+  render () {
+    const { onAvatarError, onAvatarChange } = this
+    const { campaign, statusFilter, onStatusClick } = this.props
+    const { contacts, name, avatar, client } = campaign
+    const statuses = values(contacts || [])
+    return (
+      <div className='flex items-center pt4 pb2 pr2 pl6'>
+        <div className='flex-auto'>
+          <div className='flex items-center'>
+            <EditableAvatar avatar={avatar} onChange={onAvatarChange} onError={onAvatarError} menuLeft={0} menuTop={-20}>
+              <SquareAvatar className='flex-none' size={40} avatar={avatar} name={name} />
+            </EditableAvatar>
+            <div className='flex-auto ml3' style={{lineHeight: 1.4}}>
+              <div className='f-xl semibold gray10 truncate'>{name}</div>
+              <div className='f-sm normal gray10 truncate'>{client && client.name}</div>
+            </div>
           </div>
-        ))}
+        </div>
+        <StatusStats className='flex-none' statuses={statuses} active={statusFilter} onStatusClick={(status) => onStatusClick(status)} />
       </div>
-      <SquareAvatar avatar={avatar} name={name} />
-      <div className='inline-block align-middle ml3' style={{lineHeight: 1.4}}>
-        <div className='f-xl semibold gray10'>{name}</div>
-        <div className='f-sm normal gray10'>Campaign's contacts</div>
-      </div>
-    </div>
-  )
-}
+    )
+  }
+}))
+
+export default CamapignSummary

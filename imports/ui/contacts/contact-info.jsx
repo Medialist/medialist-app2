@@ -1,15 +1,15 @@
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import { Meteor } from 'meteor/meteor'
-import { CircleAvatar, SquareAvatar } from '../images/avatar'
+import { CircleAvatar, SquareAvatar, avatarStyle } from '../images/avatar'
+import CountTag from '../tags/tag.jsx'
 import { EmailIcon, FavouritesIconGold, FavouritesIcon, PhoneIcon, BioIcon, MobileIcon, AddressIcon } from '../images/icons'
 import { setMasterLists } from '/imports/api/master-lists/methods'
-import QuickAdd from '../lists/quick-add'
 import InfoHeader from '../lists/info-header'
 import AddToMasterList from '../master-lists/add-to-master-list.jsx'
 import AddTags from '../tags/add-tags'
 import Tooltip from '../navigation/tooltip'
-import SocialLinks from './contact-social-links'
+import { SocialIcon } from '../social/social'
 
 const ContactInfo = React.createClass({
   propTypes: {
@@ -17,7 +17,9 @@ const ContactInfo = React.createClass({
     contact: PropTypes.object,
     user: PropTypes.object,
     onEditClick: PropTypes.func,
-    masterlists: PropTypes.array
+    masterlists: PropTypes.array,
+    onTagClick: PropTypes.func,
+    onAddToCampaignClick: PropTypes.func
   },
 
   getInitialState () {
@@ -57,6 +59,10 @@ const ContactInfo = React.createClass({
     })
   },
 
+  onTagRemove (tag) {
+    console.log('TODO: remove tags from contact info')
+  },
+
   render () {
     if (!this.props.contact) return null
     const {
@@ -65,10 +71,11 @@ const ContactInfo = React.createClass({
       onAddContactToMasterLists,
       onAddTags,
       dismissAddTags,
-      onUpdateTags
+      onUpdateTags,
+      onTagRemove
     } = this
     const { addToMasterListOpen, addTagsOpen } = this.state
-    const { user: { myContacts }, contact, campaigns } = this.props
+    const { user: { myContacts }, contact, campaigns, onAddToCampaignClick } = this.props
     const { _id, name, avatar, outlets, masterLists, tags } = contact
     const isFavourite = myContacts.some((c) => c._id === _id)
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
@@ -92,7 +99,7 @@ const ContactInfo = React.createClass({
               <div className='f-sm gray10'>{(outlets && outlets.length) ? outlets[0].value : null}</div>
               <div className='f-sm gray10' style={{paddingTop: 2}}>{outlets.map((o) => o.label).join(', ')}</div>
             </div>
-            <div className='pt4'>{socials.map((social) => <SocialLinks {...social} />)}</div>
+            <div className='pt4'>{socials.map((social) => <SocialIcon {...social} className='mr2' />)}</div>
           </div>
         </div>
         <div className='clearfix p3 pt4 mt4 border-gray80 border-bottom'>
@@ -103,17 +110,53 @@ const ContactInfo = React.createClass({
           <ContactItems contact={contact} />
         </div>
         <section>
-          <InfoHeader name='Campaigns' />
+          <InfoHeader name='Campaigns' onClick={onAddToCampaignClick} />
           <div className='px2 py3'>
-            {campaigns.map(({slug, avatar, name}) => (
+            {campaigns.slice(0, 5).map(({slug, avatar, name}) => (
               <Link
                 key={slug}
                 to={`/campaign/${slug}`}
-                style={{marginRight: '2px', marginBottom: '2px'}}
+                className='mr1 mb1'
               >
                 <SquareAvatar name={name} avatar={avatar} size={38} />
               </Link>
             ))}
+            {campaigns.length > 5 && (
+              <Link
+                to={`/contact/${contact.slug}/campaigns`}
+                className='mr1 mb1'
+              >
+                <span className='white bg-gray60 rounded semibold' style={avatarStyle(38)}>
+                  {`+${campaigns.length - 5}`}
+                </span>
+              </Link>
+            )}
+          </div>
+        </section>
+        <section>
+          <InfoHeader name='Master Lists' onClick={onAddToMasterList} />
+          <div className='py3'>
+            {masterLists.map((m) => (
+              <Link to={`/contacts?list=${m.slug}`} className='pointer p2 blue f-sm' key={m._id}>
+                {m.name}
+              </Link>
+            ))}
+          </div>
+        </section>
+        <section>
+          <InfoHeader name='Tags' onClick={onAddTags} />
+          <div className='px2 py3'>
+            {tags.map((t) => {
+              return (
+                <Link to={`/contacts?tag=${t.slug}`} key={t.slug}>
+                  <CountTag
+                    name={t.name}
+                    count={t.count}
+                    onRemove={onTagRemove}
+                  />
+                </Link>
+              )
+            })}
           </div>
         </section>
         <AddToMasterList
@@ -130,11 +173,6 @@ const ContactInfo = React.createClass({
           title={`Tag ${name.split(' ')[0]}`}
           selectedTags={tags}
           onUpdateTags={onUpdateTags} />
-        <QuickAdd
-          selectedMasterLists={masterLists}
-          tags={tags}
-          onAddTags={onAddTags}
-          onAddToMasterList={onAddToMasterList} />
       </div>
     )
   }
@@ -163,10 +201,10 @@ const ContactItems = React.createClass({
     return (
       <ul className='list-reset'>
         <li className='mb2'>
-          {emails.map((email) => <ContactItemsEmail email={email} />)}
+          {emails.map((email) => <ContactItemsEmail key={email} email={email} />)}
         </li>
         <li className='mb2'>
-          {phones.map((phone) => <ContactItemsPhone phone={phone} />)}
+          {phones.map((phone) => <ContactItemsPhone key={phone} phone={phone} />)}
         </li>
         <li className='mb2'>
           <ContactItemBio bio={bio} />

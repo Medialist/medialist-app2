@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
-import { createFeedbackPost } from '/imports/api/posts/methods'
 import ContactsTable from '../contacts/contacts-table'
 import SearchBox from '../lists/search-box'
 import ContactsActionsToast from '../contacts/contacts-actions-toast'
@@ -11,6 +10,7 @@ import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
 import CreateContact from '../contacts/edit-contact'
 import AddContact from './add-contact'
+import { StatusIndex } from '/imports/api/contacts/status'
 
 const CampaignContactsPage = React.createClass({
   propTypes: {
@@ -25,7 +25,8 @@ const CampaignContactsPage = React.createClass({
       addContactModalOpen: false,
       sort: { updatedAt: -1 },
       selections: [],
-      term: ''
+      term: '',
+      statusFilter: ''
     }
   },
 
@@ -77,12 +78,6 @@ const CampaignContactsPage = React.createClass({
     this.setState({ selections: [] })
   },
 
-  onStatusChange ({status, contact}) {
-    const contactSlug = contact.slug
-    const campaignSlug = this.props.campaign.slug
-    createFeedbackPost.call({contactSlug, campaignSlug, status})
-  },
-
   render () {
     const { campaign, contacts } = this.props
     if (!campaign) return null
@@ -90,7 +85,6 @@ const CampaignContactsPage = React.createClass({
     const {
       onSortChange,
       onSelectionsChange,
-      onStatusChange,
       onAddContactClick,
       onCreateContactModalDismiss,
       onAddContactModalDismiss,
@@ -103,13 +97,14 @@ const CampaignContactsPage = React.createClass({
       contactPrefillData,
       sort,
       term,
-      selections
+      selections,
+      statusFilter
     } = this.state
 
     return (
       <div>
         <CampaignTopbar campaign={campaign} onAddContactClick={onAddContactClick} />
-        <CampaignSummary campaign={campaign} />
+        <CampaignSummary campaign={campaign} statusFilter={statusFilter} onStatusClick={(statusFilter) => this.setState({statusFilter})} />
         <div className='bg-white shadow-2 m4'>
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
@@ -124,9 +119,10 @@ const CampaignContactsPage = React.createClass({
             term={term}
             campaign={campaign}
             selections={selections}
+            statusFilter={statusFilter}
             onSortChange={onSortChange}
             onSelectionsChange={onSelectionsChange}
-            onStatusChange={onStatusChange} />
+          />
         </div>
         <ContactsActionsToast
           contacts={selections}
@@ -156,8 +152,15 @@ const ContactsTotal = ({ total }) => (
   <div>{total} contact{total === 1 ? '' : 's'} total</div>
 )
 
+// dir is -1 or 1. Returns a sort functon.
+const contactStatusSort = ({contacts}, dir) => (a, b) => {
+  const statusA = contacts[a.slug]
+  const statusB = contacts[b.slug]
+  return (StatusIndex[statusA] - StatusIndex[statusB]) * dir
+}
+
 const ContactsTableContainer = createContainer((props) => {
-  const { campaign, term, sort } = props
+  const { campaign, term, sort, statusFilter } = props
   const contactIds = campaign.contacts ? Object.keys(campaign.contacts) : []
   let query = { slug: { $in: contactIds } }
   if (term) {
@@ -173,7 +176,13 @@ const ContactsTableContainer = createContainer((props) => {
       ]
     }
   }
-  const contacts = Contacts.find(query, { sort }).fetch()
+  let contacts = Contacts.find(query, { sort }).fetch()
+  if (statusFilter) {
+    contacts = contacts.filter((c) => campaign.contacts[c.slug] === statusFilter)
+  }
+  if (sort.status) {
+    contacts.sort(contactStatusSort(campaign, sort.status))
+  }
   return { ...props, contacts }
 }, ContactsTable)
 
@@ -191,7 +200,6 @@ export default createContainer((props) => {
     ...props,
     loading,
     campaign: Campaigns.findOne({ slug: campaignSlug }),
-    // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
     contacts: Contacts.find({campaigns: campaignSlug}, {sort: {updatedAt: -1}}).fetch(),
     contactsAllCount: Contacts.allContactsCount(),
     user: Meteor.user()

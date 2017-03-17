@@ -4,6 +4,7 @@ import { CircleAvatar } from '../images/avatar.jsx'
 import { ChevronDown } from '../images/icons'
 import StatusSelector from '../feedback/status-selector'
 import ContactFilterableList from '../contacts/contact-filterable-list'
+import StatusLabel from '../feedback/status-label'
 
 const ContactButton = (props) => {
   const { name, avatar } = props.contact
@@ -74,15 +75,19 @@ const ContactSelector = React.createClass({
             </DropdownMenu>
           </Dropdown>
         </div>
-        {showStatus && selectedContact
-          ? <StatusSelector
-            className='ml3'
-            status={selectedStatus}
-            border
-            chevron
-            onChange={onStatusChange}
-            disabled={!selectedContact} />
-          : null}
+        {showStatus && selectedContact ? (
+          <div className='ml3 inline-block'>
+            <StatusSelector
+              className='btn bg-transparent border-gray80'
+              style={{padding: '6px 15px 7px'}}
+              status={selectedStatus}
+              onChange={onStatusChange}
+              disabled={!selectedContact}
+            >
+              <StatusLabel name={selectedStatus} />
+            </StatusSelector>
+          </div>
+        ) : null}
       </div>
     )
   }

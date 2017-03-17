@@ -3,6 +3,7 @@ import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
 import { createFeedbackPost, createCoveragePost, createNeedToKnowPost } from '/imports/api/posts/methods'
 import Contacts from '/imports/api/contacts/contacts'
+import { updateContact } from '/imports/api/contacts/methods'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import Posts from '/imports/api/posts/posts'
@@ -13,8 +14,10 @@ import ContactNeedToKnowList from './contact-need-to-know-list'
 import PostBox from '../feedback/post-box'
 import ActivityFeed from '../dashboard/activity-feed'
 import EditContact from './edit-contact'
+import AddContactsToCampaigns from './add-contacts-to-campaign'
+import withSnackbar from '../snackbar/with-snackbar'
 
-const ContactPage = React.createClass({
+const ContactPage = withSnackbar(React.createClass({
   propTypes: {
     router: PropTypes.object,
     campaigns: PropTypes.array,
@@ -23,13 +26,14 @@ const ContactPage = React.createClass({
     user: PropTypes.object,
     masterlists: PropTypes.array,
     needToKnows: PropTypes.array,
-    loading: PropTypes.bool.isRequired
+    loading: PropTypes.bool.isRequired,
+    snackbar: PropTypes.object.isRequired
   },
 
   getInitialState () {
     return {
       editContactOpen: false,
-      addContactModalOpen: false
+      addToCampaignOpen: false
     }
   },
 
@@ -42,26 +46,28 @@ const ContactPage = React.createClass({
   },
 
   toggleEditContact () {
-    const editContactOpen = !this.state.editContactOpen
-    this.setState({ editContactOpen })
+    this.setState((s) => ({ editContactOpen: !s.editContactOpen }))
   },
 
-  onEditContact (contact) {
-    console.log('onEditContact', contact)
+  toggleAddToCampaign () {
+    this.setState((s) => ({ addToCampaignOpen: !s.addToCampaignOpen }))
   },
 
-  onAddContactToCampaign () {
-    this.setState(({ addContactModalOpen }) => ({ addContactModalOpen: true }))
-  },
-
-  onDismissAddContactToCampaign () {
-    this.setState(({ addContactModalOpen }) => ({ addContactModalOpen: false }))
+  onEditContact (details) {
+    const {snackbar, contact} = this.props
+    updateContact.call({details, contactId: contact._id}, (err, res) => {
+      if (err) {
+        console.log(err)
+        return snackbar.show('Sorry, that didn\'t work')
+      }
+      snackbar.show(`Updated ${details.name.split(' ')[0]}`)
+      this.setState({ editContactOpen: false })
+    })
   },
 
   onFeedback ({message, campaign, status}, cb) {
     const contactSlug = this.props.contact.slug
     const campaignSlug = campaign.slug
-    console.log({contactSlug, campaignSlug, message, status})
     createFeedbackPost.call({contactSlug, campaignSlug, message, status}, cb)
   },
 
@@ -78,15 +84,21 @@ const ContactPage = React.createClass({
 
   render () {
     const { contact, campaigns, campaign, user, masterlists, needToKnows, loading } = this.props
-    const { editContactOpen, addContactModalOpen } = this.state
-    const { onDismissAddContactToCampaign, onAddContactToCampaign } = this
+    const { editContactOpen, addToCampaignOpen } = this.state
     if (!contact) return null
     return (
       <div>
-        <ContactTopbar contact={contact} open={addContactModalOpen} onAddContactToCampaign={onAddContactToCampaign} onDismiss={onDismissAddContactToCampaign} />
+        <ContactTopbar contact={contact} onAddToCampaignClick={this.toggleAddToCampaign} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
-            <ContactInfo campaigns={campaigns} contact={contact} onEditClick={this.toggleEditContact} user={user} masterlists={masterlists} />
+            <ContactInfo
+              campaigns={campaigns}
+              contact={contact}
+              user={user}
+              masterlists={masterlists}
+              onEditClick={this.toggleEditContact}
+              onAddToCampaignClick={this.toggleAddToCampaign}
+            />
           </div>
           <div className='flex-auto px2' >
             <PostBox
@@ -104,17 +116,21 @@ const ContactPage = React.createClass({
             <ContactNeedToKnowList items={needToKnows} />
           </div>
         </div>
-        <EditContact open={editContactOpen} onSubmit={this.onEditContact} onDismiss={this.toggleEditContact} contact={contact} />}
+        <EditContact open={editContactOpen} onSubmit={this.onEditContact} onDismiss={this.toggleEditContact} contact={contact} />
+        <AddContactsToCampaigns
+          title={`Add ${contact.name.split(' ')[0]} to a Campaign`}
+          onDismiss={this.toggleAddToCampaign}
+          open={addToCampaignOpen}
+          contacts={[contact]} />
       </div>
     )
   }
-})
+}))
 
 export default createContainer((props) => {
   const { contactSlug, campaignSlug } = props.params
   const subs = [
-    Meteor.subscribe('contact', contactSlug),
-    Meteor.subscribe('campaigns'),
+    Meteor.subscribe('contact-page', contactSlug),
     Meteor.subscribe('need-to-knows', {
       contact: contactSlug
     })

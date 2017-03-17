@@ -7,8 +7,8 @@ import { TimeFromNow } from '../time/time'
 import YouOrName from '../users/you-or-name'
 import { CircleAvatar } from '../images/avatar'
 import isSameItems from '../lists/is-same-items'
-import StatusSelector from '../feedback/status-selector'
-import Loading from '../lists/loading'
+import StatusLabel from '../feedback/status-label'
+import StatusSelectorContainer from '../feedback/status-selector-container'
 
 const ContactLink = ({contact, campaign}) => {
   const {slug, name, avatar} = contact
@@ -37,8 +37,6 @@ const ContactsTable = React.createClass({
     onSelectionsChange: PropTypes.func,
     // Optional campaign for calculating a contacts status
     campaign: PropTypes.object,
-    // Callback when contact status is changed
-    onStatusChange: PropTypes.func,
     // returns true while subscriptionts are still syncing data.
     loading: PropTypes.bool
   },
@@ -70,7 +68,7 @@ const ContactsTable = React.createClass({
   },
 
   render () {
-    const { sort, onSortChange, contacts, selections, campaign, onStatusChange, loading } = this.props
+    const { sort, onSortChange, contacts, selections, campaign, loading } = this.props
 
     if (!loading && !contacts.length) {
       return <p className='pt2 pb5 mt0 f-xl semibold center'>No contacts found</p>
@@ -86,7 +84,7 @@ const ContactsTable = React.createClass({
         <table className='table'>
           <thead>
             <tr className='bg-gray90'>
-              <th className='center' style={{width: 55}}>
+              <th className='right-align' style={{width: 34, paddingRight: 0, borderRight: '0 none'}}>
                 <Checkbox
                   checked={isSameItems(selections, contacts)}
                   onChange={this.onSelectAllChange} />
@@ -94,50 +92,50 @@ const ContactsTable = React.createClass({
               <SortableHeader
                 className='left-align'
                 sortDirection={sort['name']}
-                style={{width: '14%'}}
+                style={{borderLeft: '0 none'}}
                 onSortChange={(d) => onSortChange({ name: d })}>
                 Name
               </SortableHeader>
               <SortableHeader
                 className='left-align'
                 sortDirection={sort['outlets.value']}
-                style={{width: '12%'}}
                 onSortChange={(d) => onSortChange({ 'outlets.value': d })}>
                 Title
               </SortableHeader>
               <SortableHeader
                 className='left-align'
                 sortDirection={sort['outlets.label']}
-                style={{width: '12%'}}
                 onSortChange={(d) => onSortChange({ 'outlets.label': d })}>
                 Media Outlet
               </SortableHeader>
-              <th className='left-align' style={{width: '12%'}}>Email</th>
-              <th className='left-align' style={{width: '12%'}}>Phone</th>
+              <th className='left-align'>Email</th>
+              <th className='left-align'>Phone</th>
+              {campaign && (
+                <SortableHeader
+                  className='left-align'
+                  sortDirection={sort['status']}
+                  onSortChange={(d) => onSortChange({ status: d })}>
+                  Status
+                </SortableHeader>
+              )}
               <SortableHeader
                 className='left-align'
                 sortDirection={sort['updatedAt']}
-                style={{width: '12%'}}
                 onSortChange={(d) => onSortChange({ updatedAt: d })}>
                 Updated
               </SortableHeader>
-              {campaign && (
-                <th className='left-align' style={{width: '15%'}}>Status</th>
-              )}
             </tr>
           </thead>
           <tbody>
             {contacts.map((contact) => {
               const {
                 _id,
-                slug,
                 emails,
                 outlets,
                 phones,
                 updatedAt,
                 updatedBy
               } = contact
-              const status = campaign && campaign.contacts[slug]
               return (
                 <SelectableRow data={contact} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id}>
                   <td className='left-align'>
@@ -151,21 +149,24 @@ const ContactsTable = React.createClass({
                   <td className='left-align'>
                     <DisplayPhone phones={phones} />
                   </td>
-                  <td className='left-align'>
-                    <TimeFromNow className='semibold f-sm' date={updatedAt} />
-                    <div className='normal f-sm'>by <YouOrName user={updatedBy} /></div>
-                  </td>
                   {campaign && (
                     <td className='left-align' style={{overflow: 'visible'}}>
-                      <StatusSelector status={status} onChange={(status) => onStatusChange({status, contact})} />
+                      <StatusSelectorContainer
+                        contactSlug={contact.slug}
+                        campaign={campaign}
+                        children={(status) => <StatusLabel name={status} />}
+                      />
                     </td>
                   )}
+                  <td className='left-align'>
+                    <TimeFromNow className='semibold f-sm' date={updatedAt} />
+                    <span className='normal f-sm'> by <YouOrName user={updatedBy} /></span>
+                  </td>
                 </SelectableRow>
               )
             })}
           </tbody>
         </table>
-        { loading && <div className='center p4'><Loading /></div> }
       </div>
     )
   }

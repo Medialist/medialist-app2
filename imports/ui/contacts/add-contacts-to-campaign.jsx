@@ -114,7 +114,7 @@ export default Modal(AddContactsToCampaignsContainer)
 const CampaignResult = (props) => {
   const {style, avatar, name, client, updatedAt} = props
   return (
-    <div style={{lineHeight: 1.3, ...style}} {...props}>
+    <div style={{lineHeight: 1.3, ...style}}>
       <SquareAvatar size={38} avatar={avatar} name={name} />
       <div className='inline-block align-top pl3' style={{width: 220}}>
         <div className='f-md semibold gray10 truncate'>{name}</div>

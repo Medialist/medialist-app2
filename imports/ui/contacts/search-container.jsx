@@ -1,15 +1,20 @@
 import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
 import { ReactMeteorData } from 'meteor/react-meteor-data'
-import Contacts from '../../api/contacts/contacts'
+import Tags from '/imports/api/tags/tags'
+import Contacts from '/imports/api/contacts/contacts'
+import { searchContacts } from '/imports/api/contacts/queries'
 
 /**
-* Wrap your component in me to gain contact searching powers.
+* SearchContainer
+* Find contacts by a search term and other criteria.
 *
 * You can pass in:
 * - `term` - The Search term
-* - `sort` - a mongo sort sort specifier
-* - `masterListSlug` - to search a in a specific list
+* - `sort` - A mongo sort sort specifier
+* - `limit` - Maximum number of docs to fetch.
+* - `campaingSlugs` - Array of campaigns ot search in.
+* - `masterListSlug` - To search a in a specific list
 * - `userId` to search in the `myContacts` for a given user
 *
 * Your component will recieve these additional props:
@@ -19,15 +24,16 @@ import Contacts from '../../api/contacts/contacts'
 * - `searching` - true if the term is long enough to trigger a search subscription
 */
 export default (Component, opts = {}) => {
-  opts.minSearchLength = opts.minSearchLength || 3
+  const minSearchLength = opts.minSearchLength || 3
 
   return React.createClass({
     propTypes: {
+      limit: PropTypes.number,
       term: PropTypes.string.isRequired,
       // http://docs.meteor.com/api/collections.html#sortspecifiers
       sort: PropTypes.oneOfType([ PropTypes.object, PropTypes.array ]),
       campaignSlugs: PropTypes.arrayOf(PropTypes.string),
-      masterListSlug: PropTypes.string,
+      selectedMasterListSlug: PropTypes.string,
       userId: PropTypes.string
     },
 
@@ -38,44 +44,35 @@ export default (Component, opts = {}) => {
     mixins: [ReactMeteorData],
 
     getMeteorData () {
-      const { sort, term, selectedMasterListSlug, userId, campaignSlugs } = this.props
-      const subs = [ Meteor.subscribe('contactCount') ]
-      const contactsCount = Contacts.allContactsCount()
-      const query = {}
-
-      if (campaignSlugs && campaignSlugs.length) {
-        query.campaigns = { $in: campaignSlugs }
-        subs.push(Meteor.subscribe('contacts', {campaignSlugs}))
+      const { term, tagSlugs, selectedMasterListSlug, userId, campaignSlugs, sort, limit } = this.props
+      const opts = {
+        tagSlugs,
+        campaignSlugs,
+        masterListSlug: selectedMasterListSlug,
+        userId,
+        sort,
+        limit
       }
-      if (selectedMasterListSlug) {
-        query['masterLists.slug'] = selectedMasterListSlug
-        subs.push(Meteor.subscribe('contacts', {masterListSlug: selectedMasterListSlug}))
-      }
-      if (userId) {
-        subs.push(Meteor.subscribe('contacts', {userId: userId}))
-        if (userId !== Meteor.userId()) {
-          subs.push(Meteor.subscribe('users-by-id', {userIds: [userId]}))
-        }
-        const user = Meteor.users.findOne({_id: userId})
-        const myContacts = user && user.myContacts || []
-        query.slug = { $in: myContacts.map((c) => c.slug) }
-      }
-
-      const searching = term.length >= opts.minSearchLength
+      const searching = !!(term && term.length >= minSearchLength)
       if (searching) {
-        const filterRegExp = new RegExp(term, 'gi')
-        query.$or = [
-          { name: filterRegExp },
-          { 'outlets.value': filterRegExp },
-          { 'outlets.label': filterRegExp }
-        ]
-        subs.push(
-          Meteor.subscribe('contacts', { regex: term.substr(0, opts.minSearchLength) })
-        )
+        opts.term = term
       }
-      const contacts = Contacts.find(query, { sort }).fetch()
+      const subs = [
+        Meteor.subscribe('contactCount'),
+        Meteor.subscribe('searchContacts', opts)
+      ]
+      if (userId && userId !== Meteor.userId()) {
+        subs.push(Meteor.subscribe('users-by-id', {userIds: [userId]}))
+      }
+      let selectedTags = []
+      if (tagSlugs && tagSlugs.length) {
+        subs.push(Meteor.subscribe('tags-by-slug', {tagSlugs}))
+        selectedTags = Tags.find({slug: { $in: tagSlugs }}).fetch()
+      }
+      const contacts = searchContacts(opts).fetch()
+      const contactsCount = Contacts.allContactsCount()
       const loading = !subs.every((sub) => sub.ready())
-      return { contacts, contactsCount, loading, searching }
+      return { contacts, contactsCount, selectedTags, loading, searching }
     },
 
     render () {

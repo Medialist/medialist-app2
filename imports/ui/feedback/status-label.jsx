@@ -3,7 +3,7 @@ import StatusDot from './status-dot'
 
 const Status = ({name, className, ...props}) => {
   const attributes = {
-    className: className || 'gray20 semibold'
+    className: className || 'gray20 semibold inline-block'
   }
   return (
     <div {...attributes} {...props}>

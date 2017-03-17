@@ -1,14 +1,15 @@
 import React, { PropTypes } from 'react'
-import classNames from 'classnames/dedupe'
-import DropdownMenu from '../../lists/dropdown-menu'
+import classNames from 'classnames'
+import { Dropdown, DropdownMenu } from '../../navigation/dropdown'
 import Menu from './menu'
 
 const EditableAvatar = React.createClass({
   propTypes: {
     avatar: PropTypes.string,
-    arrowPosition: PropTypes.string,
     className: PropTypes.string,
     style: PropTypes.object,
+    menuLeft: PropTypes.number,
+    menuTop: PropTypes.number,
     onChange: PropTypes.func.isRequired,
     onError: PropTypes.func.isRequired
   },
@@ -18,15 +19,7 @@ const EditableAvatar = React.createClass({
   },
 
   onAvatarClick (e) {
-    // Don't open dropdown if click target is the menu or descendant of
-    let parent = e.target
-
-    while (parent) {
-      if (parent.className === 'DropdownMenu') return
-      parent = parent.parentElement
-    }
-
-    this.setState({ isDropdownOpen: true })
+    this.setState((s) => ({ isDropdownOpen: !s.isDropdownOpen }))
   },
 
   onDropdownDismiss () {
@@ -44,7 +37,7 @@ const EditableAvatar = React.createClass({
   },
 
   render () {
-    const { avatar, children, style, arrowPosition } = this.props
+    const { avatar, children, style, menuLeft, menuTop } = this.props
     const { isDropdownOpen } = this.state
     const className = classNames(
       'relative inline-block',
@@ -52,18 +45,20 @@ const EditableAvatar = React.createClass({
       this.props.className
     )
     const { onImageChange, onImageError, onAvatarClick, onDropdownDismiss } = this
-
     return (
-      <div className={className} style={style} onClick={onAvatarClick}>
-        {children}
+      <Dropdown>
+        <div className={className} style={style} onClick={onAvatarClick}>
+          {children}
+        </div>
         <DropdownMenu
-          style={{ left: '-50%', top: '5rem', width: 250 }}
-          arrowPosition={arrowPosition}
+          width={250}
+          left={menuLeft}
+          top={menuTop}
           open={isDropdownOpen}
           onDismiss={onDropdownDismiss}>
           <Menu avatar={avatar} onChange={onImageChange} onError={onImageError} />
         </DropdownMenu>
-      </div>
+      </Dropdown>
     )
   }
 })
