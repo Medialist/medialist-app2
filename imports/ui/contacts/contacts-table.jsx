@@ -7,6 +7,7 @@ import { TimeFromNow } from '../time/time'
 import YouOrName from '../users/you-or-name'
 import { CircleAvatar } from '../images/avatar'
 import isSameItems from '../lists/is-same-items'
+import StatusLabel from '../feedback/status-label'
 import StatusSelectorContainer from '../feedback/status-selector-container'
 
 const ContactLink = ({contact, campaign}) => {
@@ -149,7 +150,11 @@ const ContactsTable = React.createClass({
                   </td>
                   {campaign && (
                     <td className='left-align' style={{overflow: 'visible'}}>
-                      <StatusSelectorContainer contactSlug={contact.slug} campaign={campaign} />
+                      <StatusSelectorContainer
+                        contactSlug={contact.slug}
+                        campaign={campaign}
+                        children={(status) => <StatusLabel name={status} />}
+                      />
                     </td>
                   )}
                 </SelectableRow>
