@@ -64,10 +64,11 @@ export default (Component, opts = {}) => {
       if (userId && userId !== Meteor.userId()) {
         subs.push(Meteor.subscribe('users-by-id', {userIds: [userId]}))
       }
+      let selectedTags = []
       if (tagSlugs && tagSlugs.length) {
         subs.push(Meteor.subscribe('tags-by-slug', {tagSlugs}))
+        selectedTags = Tags.find({slug: { $in: tagSlugs }}).fetch()
       }
-      const selectedTags = Tags.find({slug: { $in: tagSlugs }}).fetch()
       const contacts = searchContacts(opts).fetch()
       const contactsCount = Contacts.allContactsCount()
       const loading = !subs.every((sub) => sub.ready())
