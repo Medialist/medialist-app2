@@ -13,6 +13,7 @@ import AddContactsToCampaigns from './add-contacts-to-campaign'
 const ContactCampaignsPage = React.createClass({
   getInitialState () {
     return {
+      statusFilter: false,
       addToCampaignOpen: false
     }
   },
@@ -37,9 +38,14 @@ const ContactCampaignsPage = React.createClass({
   },
 
   render () {
-    const {contact, campaigns} = this.props
+    const {contact} = this.props
     if (!contact) return null
+    const { statusFilter } = this.state
+    let {campaigns} = this.props
     const statuses = campaigns.map((c) => c.contacts[contact.slug])
+    if (statusFilter) {
+      campaigns = campaigns.filter((c) => c.contacts[contact.slug] === statusFilter)
+    }
     const { onAvatarChange, onAvatarError } = this
     const { name, avatar, outlets } = contact
     const { addToCampaignOpen } = this.state
@@ -60,11 +66,11 @@ const ContactCampaignsPage = React.createClass({
               </div>
             </div>
           </div>
-          <StatusStats className='flex-none' statuses={statuses} onStatusClick={(status) => console.log(status)} />
+          <StatusStats className='flex-none' statuses={statuses} active={statusFilter} onStatusClick={(status) => this.setState({statusFilter: status})} />
         </div>
         <CampaignSearch
           {...this.props}
-          onTermChange={(term) => this.props.setQuery({term})}
+          campaigns={campaigns}
           selections={[]}
         />
         <AddContactsToCampaigns

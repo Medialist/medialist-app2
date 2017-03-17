@@ -89,7 +89,12 @@ const CampaignsTable = React.createClass({
             </SortableHeader>
             <th className='left-align' style={{width: '40%'}}>Key Message</th>
             {contactSlug && (
-              <th className='left-align'>Status</th>
+              <SortableHeader
+                className='left-align'
+                sortDirection={sort['status']}
+                onSortChange={(d) => onSortChange({ 'status': d })}>
+                Status
+              </SortableHeader>
             )}
             <SortableHeader
               className='left-align'

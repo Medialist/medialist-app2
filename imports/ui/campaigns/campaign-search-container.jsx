@@ -4,6 +4,14 @@ import { ReactMeteorData } from 'meteor/react-meteor-data'
 import Tags from '/imports/api/tags/tags'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import { searchCampaigns } from '/imports/api/campaigns/queries'
+import { StatusIndex } from '/imports/api/contacts/status'
+
+// dir is -1 or 1. Returns a sort functon.
+const campaignStatusSort = (contactSlug, dir) => (a, b) => {
+  const statusA = a.contacts[contactSlug]
+  const statusB = b.contacts[contactSlug]
+  return (StatusIndex[statusA] - StatusIndex[statusB]) * dir
+}
 
 /**
 * CampaignSearchContainer
@@ -68,6 +76,10 @@ export default (Component, opts = {}) => {
         selectedTags = Tags.find({slug: { $in: tagSlugs }}).fetch()
       }
       const campaigns = searchCampaigns(opts).fetch()
+      if (sort.status && contactSlug) {
+        const byStatus = campaignStatusSort(contactSlug, sort.status)
+        campaigns.sort(byStatus)
+      }
       const campaignCount = Campaigns.allCampaignsCount()
       const loading = !subs.every((sub) => sub.ready())
       return { campaigns, campaignCount, selectedTags, loading, searching }
