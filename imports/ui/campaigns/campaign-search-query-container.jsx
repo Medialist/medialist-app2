@@ -53,6 +53,8 @@ const campaignsSearchQueryContainer = (Component) => {
                   {...this.props}
                   {...this.data}
                   {...this.parseQuery(location)}
+                  onSortChange={(sort) => this.setQuery({sort})}
+                  onTermChange={(term) => this.setQuery({term})}
                   setQuery={this.setQuery} />
               )}
             </SubscriptionLimitContainer>
