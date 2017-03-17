@@ -8,8 +8,19 @@ import campaignSearchQueryContainer from '../campaigns/campaign-search-query-con
 import { CircleAvatar } from '../images/avatar'
 import EditableAvatar from '../images/editable-avatar'
 import Contacts from '/imports/api/contacts/contacts'
+import AddContactsToCampaigns from './add-contacts-to-campaign'
 
 const ContactCampaignsPage = React.createClass({
+  getInitialState () {
+    return {
+      addToCampaignOpen: false
+    }
+  },
+
+  toggleAddToCampaign () {
+    this.setState((s) => ({ addToCampaignOpen: !s.addToCampaignOpen }))
+  },
+
   onAvatarChange (e) {
     // const { _id } = this.props.campaign
     // update.call({ _id, avatar: e.url }, (err) => {
@@ -19,19 +30,22 @@ const ContactCampaignsPage = React.createClass({
     //   }
     // })
   },
+
   onAvatarError (err) {
     console.error('Failed to change avatar', err)
     this.props.snackbar.show('There was a problem updating the image.')
   },
+
   render () {
     const {contact, campaigns} = this.props
     if (!contact) return null
     const statuses = campaigns.map((c) => c.contacts[contact.slug])
     const { onAvatarChange, onAvatarError } = this
     const { name, avatar, outlets } = contact
+    const { addToCampaignOpen } = this.state
     return (
       <div>
-        <ContactTopbar contact={contact} />
+        <ContactTopbar contact={contact} onAddToCampaignClick={this.toggleAddToCampaign} />
         <div className='flex items-center pt4 pb2 pr2 pl6'>
           <div className='flex-auto'>
             <div className='flex items-center'>
@@ -52,6 +66,12 @@ const ContactCampaignsPage = React.createClass({
           {...this.props}
           onTermChange={(term) => this.props.setQuery({term})}
           selections={[]}
+        />
+        <AddContactsToCampaigns
+          title={`Add ${contact.name.split(' ')[0]} to a Campaign`}
+          onDismiss={this.toggleAddToCampaign}
+          open={addToCampaignOpen}
+          contacts={[contact]}
         />
       </div>
     )

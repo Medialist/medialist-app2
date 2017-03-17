@@ -14,6 +14,7 @@ import ContactNeedToKnowList from './contact-need-to-know-list'
 import PostBox from '../feedback/post-box'
 import ActivityFeed from '../dashboard/activity-feed'
 import EditContact from './edit-contact'
+import AddContactsToCampaigns from './add-contacts-to-campaign'
 import withSnackbar from '../snackbar/with-snackbar'
 
 const ContactPage = withSnackbar(React.createClass({
@@ -87,7 +88,7 @@ const ContactPage = withSnackbar(React.createClass({
     if (!contact) return null
     return (
       <div>
-        <ContactTopbar contact={contact} addToCampaignOpen={addToCampaignOpen} toggleAddToCampaign={this.toggleAddToCampaign} />
+        <ContactTopbar contact={contact} onAddToCampaignClick={this.toggleAddToCampaign} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
             <ContactInfo
@@ -115,7 +116,12 @@ const ContactPage = withSnackbar(React.createClass({
             <ContactNeedToKnowList items={needToKnows} />
           </div>
         </div>
-        <EditContact open={editContactOpen} onSubmit={this.onEditContact} onDismiss={this.toggleEditContact} contact={contact} />}
+        <EditContact open={editContactOpen} onSubmit={this.onEditContact} onDismiss={this.toggleEditContact} contact={contact} />
+        <AddContactsToCampaigns
+          title={`Add ${contact.name.split(' ')[0]} to a Campaign`}
+          onDismiss={this.toggleAddToCampaign}
+          open={addToCampaignOpen}
+          contacts={[contact]} />
       </div>
     )
   }
