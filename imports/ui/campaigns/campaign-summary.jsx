@@ -9,7 +9,9 @@ import StatusStats from '../contacts/status-stats'
 const CamapignSummary = withSnackbar(React.createClass({
   propTypes: {
     snackbar: PropTypes.object,
-    campaign: PropTypes.object
+    campaign: PropTypes.object,
+    statusFilter: PropTypes.string,
+    onStatusClick: PropTypes.func
   },
   onAvatarChange (e) {
     const { _id } = this.props.campaign
@@ -26,7 +28,7 @@ const CamapignSummary = withSnackbar(React.createClass({
   },
   render () {
     const { onAvatarError, onAvatarChange } = this
-    const { campaign } = this.props
+    const { campaign, statusFilter, onStatusClick } = this.props
     const { contacts, name, avatar, client } = campaign
     const statuses = values(contacts || [])
     return (
@@ -42,7 +44,7 @@ const CamapignSummary = withSnackbar(React.createClass({
             </div>
           </div>
         </div>
-        <StatusStats className='flex-none' statuses={statuses} onStatusClick={(status) => console.log(status)} />
+        <StatusStats className='flex-none' statuses={statuses} active={statusFilter} onStatusClick={(status) => onStatusClick(status)} />
       </div>
     )
   }

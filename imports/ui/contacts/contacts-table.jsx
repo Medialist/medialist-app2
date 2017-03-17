@@ -110,15 +110,20 @@ const ContactsTable = React.createClass({
               </SortableHeader>
               <th className='left-align'>Email</th>
               <th className='left-align'>Phone</th>
+              {campaign && (
+                <SortableHeader
+                  className='left-align'
+                  sortDirection={sort['status']}
+                  onSortChange={(d) => onSortChange({ status: d })}>
+                  Status
+                </SortableHeader>
+              )}
               <SortableHeader
                 className='left-align'
                 sortDirection={sort['updatedAt']}
                 onSortChange={(d) => onSortChange({ updatedAt: d })}>
                 Updated
               </SortableHeader>
-              {campaign && (
-                <th className='left-align'>Status</th>
-              )}
             </tr>
           </thead>
           <tbody>
@@ -144,10 +149,6 @@ const ContactsTable = React.createClass({
                   <td className='left-align'>
                     <DisplayPhone phones={phones} />
                   </td>
-                  <td className='left-align'>
-                    <TimeFromNow className='semibold f-sm' date={updatedAt} />
-                    <span className='normal f-sm'> by <YouOrName user={updatedBy} /></span>
-                  </td>
                   {campaign && (
                     <td className='left-align' style={{overflow: 'visible'}}>
                       <StatusSelectorContainer
@@ -157,6 +158,10 @@ const ContactsTable = React.createClass({
                       />
                     </td>
                   )}
+                  <td className='left-align'>
+                    <TimeFromNow className='semibold f-sm' date={updatedAt} />
+                    <span className='normal f-sm'> by <YouOrName user={updatedBy} /></span>
+                  </td>
                 </SelectableRow>
               )
             })}
