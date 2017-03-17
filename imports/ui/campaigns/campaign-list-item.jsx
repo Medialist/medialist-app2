@@ -4,7 +4,7 @@ import StatusLabel from '../feedback/status-label'
 
 export default ({campaign, contact}) => {
   const slug = contact ? contact.slug : null
-  const status = campaign.contacts[slug]
+  const status = slug && campaign.contacts ? campaign.contacts[slug] : null
   return (
     <div className='flex items-center'>
       <div className='flex-auto pr3'>
