@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import { Meteor } from 'meteor/meteor'
-import { CircleAvatar, SquareAvatar } from '../images/avatar'
+import { CircleAvatar, SquareAvatar, avatarStyle } from '../images/avatar'
 import CountTag from '../tags/tag.jsx'
 import { EmailIcon, FavouritesIconGold, FavouritesIcon, PhoneIcon, BioIcon, MobileIcon, AddressIcon } from '../images/icons'
 import { setMasterLists } from '/imports/api/master-lists/methods'
@@ -18,7 +18,8 @@ const ContactInfo = React.createClass({
     user: PropTypes.object,
     onEditClick: PropTypes.func,
     masterlists: PropTypes.array,
-    onTagClick: PropTypes.func
+    onTagClick: PropTypes.func,
+    onAddToCampaignClick: PropTypes.func
   },
 
   getInitialState () {
@@ -74,7 +75,7 @@ const ContactInfo = React.createClass({
       onTagRemove
     } = this
     const { addToMasterListOpen, addTagsOpen } = this.state
-    const { user: { myContacts }, contact, campaigns } = this.props
+    const { user: { myContacts }, contact, campaigns, onAddToCampaignClick } = this.props
     const { _id, name, avatar, outlets, masterLists, tags } = contact
     const isFavourite = myContacts.some((c) => c._id === _id)
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
@@ -109,17 +110,27 @@ const ContactInfo = React.createClass({
           <ContactItems contact={contact} />
         </div>
         <section>
-          <InfoHeader name='Campaigns' />
+          <InfoHeader name='Campaigns' onClick={onAddToCampaignClick} />
           <div className='px2 py3'>
-            {campaigns.map(({slug, avatar, name}) => (
+            {campaigns.slice(0, 5).map(({slug, avatar, name}) => (
               <Link
                 key={slug}
                 to={`/campaign/${slug}`}
-                style={{marginRight: '2px', marginBottom: '2px'}}
+                className='mr1 mb1'
               >
                 <SquareAvatar name={name} avatar={avatar} size={38} />
               </Link>
             ))}
+            {campaigns.length > 5 && (
+              <Link
+                to={`/contact/${contact.slug}/campaigns`}
+                className='mr1 mb1'
+              >
+                <span className='white bg-gray60 rounded semibold' style={avatarStyle(38)}>
+                  {`+${campaigns.length - 5}`}
+                </span>
+              </Link>
+            )}
           </div>
         </section>
         <section>

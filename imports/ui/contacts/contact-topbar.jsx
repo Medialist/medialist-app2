@@ -1,20 +1,14 @@
 import React, { PropTypes } from 'react'
 import Topbar from '../navigation/topbar'
 import NavLink from '../navigation/nav-link'
-import AddContactsToCampaigns from './add-contacts-to-campaign'
 
 const ContactTopbar = React.createClass({
   propTypes: {
+    onAddToCampaignClick: PropTypes.func,
     contact: PropTypes.object
   },
-  getInitialState () {
-    return {
-      addContactModalOpen: false
-    }
-  },
   render () {
-    const { contact } = this.props
-    const { addContactModalOpen } = this.state
+    const { contact, onAddToCampaignClick } = this.props
     if (!contact) return null
     return (
       <Topbar>
@@ -23,15 +17,10 @@ const ContactTopbar = React.createClass({
           <NavLink to={`/contact/${contact.slug}/campaigns`}>Campaigns</NavLink>
         </div>
         <div className='px4 py3'>
-          <button className='btn white bg-blue mx2' onClick={() => this.setState({addContactModalOpen: true})}>
+          <button className='btn white bg-blue mx2' onClick={onAddToCampaignClick}>
             Add <FirstName contact={contact} /> to Campaign
           </button>
         </div>
-        <AddContactsToCampaigns
-          title={`Add ${contact.name.split(' ')[0]} to a Campaign`}
-          onDismiss={() => this.setState({addContactModalOpen: false})}
-          open={addContactModalOpen}
-          contacts={[contact]} />
       </Topbar>
     )
   }
