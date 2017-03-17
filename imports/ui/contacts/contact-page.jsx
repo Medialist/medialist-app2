@@ -32,7 +32,7 @@ const ContactPage = withSnackbar(React.createClass({
   getInitialState () {
     return {
       editContactOpen: false,
-      addContactModalOpen: false
+      addToCampaignOpen: false
     }
   },
 
@@ -45,8 +45,11 @@ const ContactPage = withSnackbar(React.createClass({
   },
 
   toggleEditContact () {
-    const editContactOpen = !this.state.editContactOpen
-    this.setState({ editContactOpen })
+    this.setState((s) => ({ editContactOpen: !s.editContactOpen }))
+  },
+
+  toggleAddToCampaign () {
+    this.setState((s) => ({ addToCampaignOpen: !s.addToCampaignOpen }))
   },
 
   onEditContact (details) {
@@ -80,14 +83,21 @@ const ContactPage = withSnackbar(React.createClass({
 
   render () {
     const { contact, campaigns, campaign, user, masterlists, needToKnows, loading } = this.props
-    const { editContactOpen } = this.state
+    const { editContactOpen, addToCampaignOpen } = this.state
     if (!contact) return null
     return (
       <div>
-        <ContactTopbar contact={contact} />
+        <ContactTopbar contact={contact} addToCampaignOpen={addToCampaignOpen} toggleAddToCampaign={this.toggleAddToCampaign} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
-            <ContactInfo campaigns={campaigns} contact={contact} onEditClick={this.toggleEditContact} user={user} masterlists={masterlists} />
+            <ContactInfo
+              campaigns={campaigns}
+              contact={contact}
+              user={user}
+              masterlists={masterlists}
+              onEditClick={this.toggleEditContact}
+              toggleAddToCampaign={this.toggleAddToCampaign}
+            />
           </div>
           <div className='flex-auto px2' >
             <PostBox

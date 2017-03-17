@@ -18,7 +18,8 @@ const ContactInfo = React.createClass({
     user: PropTypes.object,
     onEditClick: PropTypes.func,
     masterlists: PropTypes.array,
-    onTagClick: PropTypes.func
+    onTagClick: PropTypes.func,
+    toggleAddToCampaign: PropTypes.func
   },
 
   getInitialState () {
@@ -74,7 +75,7 @@ const ContactInfo = React.createClass({
       onTagRemove
     } = this
     const { addToMasterListOpen, addTagsOpen } = this.state
-    const { user: { myContacts }, contact, campaigns } = this.props
+    const { user: { myContacts }, contact, campaigns, toggleAddToCampaign } = this.props
     const { _id, name, avatar, outlets, masterLists, tags } = contact
     const isFavourite = myContacts.some((c) => c._id === _id)
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
@@ -109,7 +110,7 @@ const ContactInfo = React.createClass({
           <ContactItems contact={contact} />
         </div>
         <section>
-          <InfoHeader name='Campaigns' />
+          <InfoHeader name='Campaigns' onClick={toggleAddToCampaign} />
           <div className='px2 py3'>
             {campaigns.slice(0, 5).map(({slug, avatar, name}) => (
               <Link
