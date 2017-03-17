@@ -2,8 +2,8 @@ import React, { PropTypes } from 'react'
 import { Dropdown, DropdownMenu } from '../navigation/dropdown'
 import { CircleAvatar } from '../images/avatar.jsx'
 import { ChevronDown } from '../images/icons'
-import CampaignContacts from '../campaigns/campaign-contacts'
 import StatusSelector from '../feedback/status-selector'
+import ContactFilterableList from '../contacts/contact-filterable-list'
 import StatusLabel from '../feedback/status-label'
 
 const ContactButton = (props) => {
@@ -31,24 +31,32 @@ const ContactSelector = React.createClass({
     return { showStatus: true }
   },
   getInitialState () {
-    return { open: false }
+    return {
+      open: false,
+      term: ''
+    }
   },
   openDropdown () {
     this.setState({open: true})
   },
   closeDropdown () {
-    this.setState({open: false})
+    this.setState({open: false, term: ''})
   },
   onSelectContact (contact) {
-    this.setState({open: false})
+    this.setState({open: false, term: ''})
     this.props.onContactChange(contact)
   },
   onStatusChange (status) {
     this.props.onStatusChange(status)
   },
+  onTermChange (term) {
+    this.setState({ term })
+  },
   render () {
-    const { onSelectContact, onStatusChange } = this
+    const { onSelectContact, onStatusChange, closeDropdown, onTermChange } = this
+    const { open, term } = this.state
     const { selectedContact, selectedStatus, contacts, campaign, showStatus } = this.props
+    const filteredContacts = contacts.filter((contact) => contactMatchesTerm(contact, term))
 
     return (
       <div>
@@ -57,8 +65,13 @@ const ContactSelector = React.createClass({
             <button className='btn bg-transparent border-gray80' style={{height: 34, padding: '0 12px', borderRadius: 2}} onClick={this.openDropdown} disabled={!contacts || !contacts.length}>
               { selectedContact ? <ContactButton contact={selectedContact} /> : 'Select a Contact' }
             </button>
-            <DropdownMenu width={520} left={-50} open={this.state.open} onDismiss={this.closeDropdown}>
-              <CampaignContacts campaign={campaign} contacts={contacts} onSelectContact={onSelectContact} />
+            <DropdownMenu width={573} left={-50} open={open} onDismiss={closeDropdown}>
+              <ContactFilterableList
+                term={term}
+                onTermChange={onTermChange}
+                campaign={campaign}
+                contacts={filteredContacts}
+                onSelectContact={onSelectContact} />
             </DropdownMenu>
           </Dropdown>
         </div>
@@ -81,3 +94,15 @@ const ContactSelector = React.createClass({
 })
 
 export default ContactSelector
+
+const contactMatchesTerm = (contact, term) => {
+  term = term.toLowerCase()
+  const { name, outlets } = contact
+  if (name.toLowerCase().substring(0, term.length) === term) return contact
+  if (outlets.some((outlet) => {
+    return [outlet.label, outlet.value]
+      .map((name) => name.toLowerCase().replace('the ', '').substring(0, term.length))
+      .some((name) => name === term)
+  })) return contact
+  return null
+}
