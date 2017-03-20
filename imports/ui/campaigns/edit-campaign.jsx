@@ -138,7 +138,8 @@ const EditCampaign = React.createClass({
               value={name}
               placeholder='Campaign name'
               size={name.length === 0 ? 15 : name.length + 2}
-              onChange={onChange} />
+              onChange={onChange}
+              id='campaign-name-input' />
             <FormError error={errors.name} show={showErrors} />
           </div>
         </div>
@@ -154,7 +155,8 @@ const EditCampaign = React.createClass({
                 placeholder='Client'
                 value={clientName}
                 onSelect={onClientSelect}
-                onChange={onClientNameChange} />
+                onChange={onClientNameChange}
+                id='client-input' />
             </FormField>
           </FormSection>
 
@@ -168,7 +170,8 @@ const EditCampaign = React.createClass({
                 name='purpose'
                 value={purpose}
                 placeholder='Key Message'
-                onChange={onChange} />
+                onChange={onChange}
+                id='key-message-input' />
             </FormField>
           </FormSection>
 
@@ -176,7 +179,7 @@ const EditCampaign = React.createClass({
             {links.map((link, i) => (
               <FormField icon={<WebsiteIcon />} key={i}>
                 <input
-                  className='input flex-auto placeholder-gray60'
+                  className='input flex-auto placeholder-gray60 links-input'
                   type='text'
                   value={links[i].url}
                   placeholder='Links'
@@ -187,7 +190,7 @@ const EditCampaign = React.createClass({
           </FormSection>
         </div>
         <div className='p4 right'>
-          <button className='btn bg-completed white right' onClick={onSubmit}>
+          <button className='btn bg-completed white right' onClick={onSubmit} id='save-campaign-button'>
             {campaign ? 'Save Changes' : 'Create Campaign'}
           </button>
           <button className='btn bg-transparent gray40 right mr2' onClick={onReset}>Cancel</button>

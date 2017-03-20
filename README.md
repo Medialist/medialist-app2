@@ -272,6 +272,50 @@ you will get:
 }
 ```
 
+## Tests
+
+### Integration
+
+There is a browser test suite built using [nightwatch](http://nightwatchjs.org/).
+
+To start the app, run the tests and then shut down the app run:
+
+```sh
+npm run test:browser
+```
+
+To run the tests without starting and stopping the app automatically, first start the app with the test configuration:
+
+```sh
+npm run watch:server:test
+```
+
+Then run the tests as usual:
+
+```sh
+npm run test:browser
+```
+
+#### Options
+
+Test options are specified as environment variables.
+
+```
+BROWSER 'chrome' or 'firefox'
+PARALLEL true or false
+```
+
+You will need a recent version of chrome or firefox installed.
+
+#### Running individual integration tests
+
+To specify a subset of tests to run, [tag your tests](http://nightwatchjs.org/guide#test-tags) and pass the tags to the test runner.  For example to run tests with the `contacts` tag:
+
+```sh
+npm run test:browser -- --tag contacts
+```
+
+More generally anything after `--` will be passed to the nightwatch executable.
 
 [Basscss]: http://www.basscss.com/
 [postcss]: http://postcss.org/

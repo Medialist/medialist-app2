@@ -21,7 +21,9 @@ const FileInput = React.createClass({
           accept={accept}
           disabled={disabled}
           onChange={onChange}
-          style={{visibility: 'none', position: 'absolute', top: '-9999px'}} />
+          style={{visibility: 'none', position: 'absolute', top: '-9999px'}}
+          id='file-input'
+          />
 
         { this.props.children }
       </div>

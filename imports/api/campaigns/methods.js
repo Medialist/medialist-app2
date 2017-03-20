@@ -65,7 +65,7 @@ export const update = new ValidatedMethod({
     data.updatedBy = {
       _id: user._id,
       name: user.profile.name,
-      avatar: user.services.twitter.profile_image_url_https
+      avatar: getAvatar(user)
     }
 
     const result = Campaigns.update({ _id }, { $set: data })
@@ -182,7 +182,7 @@ export const addTeamMates = new ValidatedMethod({
       updatedBy: {
         _id: user._id,
         name: user.profile.name,
-        avatar: user.services.twitter.profile_image_url_https
+        avatar: getAvatar(user)
       }
     }
     const pushIds = userIds.filter((_id) => !campaign.team.some((t) => t._id === _id))
@@ -234,7 +234,7 @@ export const removeTeamMate = new ValidatedMethod({
       updatedBy: {
         _id: user._id,
         name: user.profile.name,
-        avatar: user.services.twitter.profile_image_url_https
+        avatar: getAvatar(user)
       }
     }
     const $pull = { team: { _id: userId } }

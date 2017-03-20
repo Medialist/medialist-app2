@@ -8,7 +8,7 @@ const FormSection = ({label, addLinkText, onAdd, children}) => (
     </div>
     {addLinkText && (
       <div className='mt2'>
-        <span className='pointer inline-block blue f-xs underline' onClick={onAdd}>
+        <span className='pointer inline-block blue f-xs underline' onClick={onAdd} id='add-links-button'>
           {addLinkText}
         </span>
       </div>

@@ -3,6 +3,7 @@ import { Dropdown, DropdownMenu } from '../navigation/dropdown'
 
 export default React.createClass({
   propTypes: {
+    id: PropTypes.string,
     className: PropTypes.string,
     name: PropTypes.string.isRequired,
     value: PropTypes.string.isRequired,
@@ -69,6 +70,7 @@ export default React.createClass({
   },
   render () {
     const {
+      id,
       style,
       className,
       name,
@@ -94,6 +96,7 @@ export default React.createClass({
           onKeyDown={onKeyDown}
           onFocus={onFocus}
           onBlur={this.onBlur}
+          id={id}
         />
         <DropdownMenu open={open} onDismiss={onDismiss} width={menuWidth} arrowHeight={0}>
           <ol className='list-reset m0'>{suggestions.map((s, ind) => {

@@ -4,3 +4,5 @@ npm-debug*
 client/bundle.css
 settings.json
 imports/ui/images/icons/*
+.reports
+*.log
