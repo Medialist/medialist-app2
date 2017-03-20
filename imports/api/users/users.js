@@ -1,23 +1,7 @@
 import { Meteor } from 'meteor/meteor'
-import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import toUserRef from '/imports/lib/to-user-ref'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
-
-export const UserRefSchema = new SimpleSchema({
-  _id: {
-    type: String,
-    regEx: SimpleSchema.RegEx.Id
-  },
-  name: {
-    type: String,
-    min: 1
-  },
-  avatar: {
-    type: String,
-    optional: true
-  }
-})
 
 export const findOneUserRef = (userId) => {
   const user = Meteor.users.findOne(
