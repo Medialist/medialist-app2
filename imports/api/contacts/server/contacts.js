@@ -42,7 +42,7 @@ function updateWithTwitterInfo (id, twitterUser) {
     // https://dev.twitter.com/basics/user-profile-images-and-banners#alternative-image-sizes-for-user-profile-images
     $set.avatar = url.replace('_normal.', '_bigger.')
   }
-  return Contacts.update({ _id: id }, {$set})
+  return Contacts.update({ _id: id, 'socials.label': 'Twitter' }, {$set})
 }
 
 export default Contacts
