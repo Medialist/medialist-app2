@@ -15,10 +15,12 @@ import ContactCampaignsPage from './contacts/contact-campaigns-page'
 import SettingsPage from './users/settings/settings-page'
 import NotFoundPage from './not-found-page'
 import LogoutPage from './users/logout-page'
+import SigningInPage from './sign-in/signing-in-page'
 
 const Routes = ({ store, history }) => {
   return (
     <Router history={history}>
+      <Route path='/sign-in/:token' component={SigningInPage} />
       <Route path='/' component={Layout}>
         <IndexRoute component={DashboardPage} />
         <Route path='notifications' component={NotificationsPage} />

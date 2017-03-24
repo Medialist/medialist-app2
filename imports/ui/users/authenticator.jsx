@@ -1,20 +1,16 @@
 import React, { PropTypes } from 'react'
-import { Meteor } from 'meteor/meteor'
-import LoginWithTwitter from './login-with-twitter'
-import LoginWithPassword from './login-with-password'
+import SignInPage from '../sign-in/sign-in-page'
 
-const Authenticator = ({ children, user }) => {
+const Authenticator = ({ user, children }) => {
   if (user) {
     return <div>{children || null}</div>
   }
 
-  if (Meteor.settings.public.authentication === 'password') {
-    return <LoginWithPassword />
-  }
-
-  return <LoginWithTwitter />
+  return <SignInPage />
 }
 
-Authenticator.propTypes = { user: PropTypes.object }
+Authenticator.propTypes = {
+  user: PropTypes.object
+}
 
 export default Authenticator

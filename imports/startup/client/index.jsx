@@ -6,6 +6,7 @@ import { browserHistory } from 'react-router'
 import { syncHistoryWithStore } from 'react-router-redux'
 import thunkMiddleware from 'redux-thunk'
 import { Meteor } from 'meteor/meteor'
+import { Accounts } from 'meteor/accounts-base'
 import reducers from '../../ui/redux/reducers'
 import Routes from '../../ui/routes'
 import Head from '../../ui/head'
@@ -29,4 +30,16 @@ Meteor.startup(() => {
       </Provider>
     </div>
   ), document.getElementById('react-root'))
+})
+
+Accounts.onLoginFromLink((error, response) => {
+  if (!error) {
+    return
+  }
+
+  console.info('logged in from link', error, response, Meteor.user())
+
+  if (error.reason === 'Verify email link expired') {
+    browserHistory.push('/sign-in/link-invalid')
+  }
 })

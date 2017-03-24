@@ -372,7 +372,7 @@ button {
   border-bottom-color: var(--blue);
   outline: none;
 }
-.input-inline.error {
+.input-inline.error, .input.error {
   border-bottom-color: var(--status-red);
 }
 .select {

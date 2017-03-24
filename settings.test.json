@@ -1,19 +1,35 @@
 {
-  "twitter": {
-    "consumer_key": "${TWITTER_CONSUMER_KEY}",
-    "consumer_secret": "${TWITTER_CONSUMER_SECRET}",
-    "access_token_key": "${TWITTER_ACCESS_TOKEN_KEY}",
-    "access_token_secret": "${TWITTER_ACCESS_TOKEN_SECRET}"
+  "authentication": {
+    "email_domains": ["test.medialist.io"],
+    "send_link": false,
+    "token_life": 900000
+  },
+  "email": {
+    "defaultFrom": "Medialist <noreply@medialist.io>",
+    "smtp": {
+      "user": "${SMTP_USER}",
+      "password": "${SMTP_PASSWORD}",
+      "host": "${SMTP_HOST}",
+      "port": "${SMTP_PORT}"
+    }
   },
   "migrations": {
     "whitelist": [
       "${TWITTER_HANDLE}"
     ]
   },
+  "twitter": {
+    "consumer_key": "${TWITTER_CONSUMER_KEY}",
+    "consumer_secret": "${TWITTER_CONSUMER_SECRET}",
+    "access_token_key": "${TWITTER_ACCESS_TOKEN_KEY}",
+    "access_token_secret": "${TWITTER_ACCESS_TOKEN_SECRET}"
+  },
   "public": {
     "uploadcare": {
       "publicKey": "${UPLOADCARE_PUBLIC_KEY}"
-    },
-    "authentication": "password"
+    }
+  },
+  "server": {
+    "url": "http://localhost:3000"
   }
 }
