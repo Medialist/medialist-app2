@@ -1,12 +1,17 @@
 import React, { PropTypes } from 'react'
 import SignInPage from '../sign-in/sign-in-page'
+import OnboardingPage from './onboarding-page'
 
 const Authenticator = ({ user, children }) => {
-  if (user) {
-    return <div>{children || null}</div>
+  if (!user) {
+    return <SignInPage />
   }
 
-  return <SignInPage />
+  if (!user.profile || !user.profile.name) {
+    return <OnboardingPage />
+  }
+
+  return <div>{children || null}</div>
 }
 
 Authenticator.propTypes = {

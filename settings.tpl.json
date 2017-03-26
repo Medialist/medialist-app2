@@ -1,8 +1,7 @@
 {
   "authentication": {
-    "email_domains": ["localhost"],
-    "send_link": true,
-    "token_life": 900000
+    "sendLink": true,
+    "tokenLife": 900000
   },
   "email": {
     "defaultFrom": "Medialist <noreply@medialist.io>",
@@ -10,7 +9,7 @@
       "user": "${SMTP_USER}",
       "password": "${SMTP_PASSWORD}",
       "host": "smtp.mailgun.org",
-      "port": "587"
+      "port": 587
     }
   },
   "migrations": {
@@ -27,6 +26,9 @@
   "public": {
     "uploadcare": {
       "publicKey": "${UPLOADCARE_PUBLIC_KEY}"
+    },
+    "authentication": {
+      "emailDomains": ["localhost"]
     }
   },
   "server": {

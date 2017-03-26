@@ -38,7 +38,7 @@ const SignInPage = React.createClass({
         return
       }
 
-      if (result.token) {
+      if (result && result.token) {
         // we got a login token, must be our lucky day
         Meteor.loginWithToken(result.token, (error) => {
           if (error) {

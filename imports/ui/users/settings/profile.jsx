@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
 import { CircleAvatar } from '../../images/avatar'
 import { EmailIcon, PhoneIcon } from '../../images/icons'
+import getAvatar from '../../../lib/get-avatar'
 
 export default React.createClass({
   propTypes: {
@@ -51,12 +52,7 @@ export default React.createClass({
 })
 
 function readAvatarUrl (props) {
-  return (
-    props.user &&
-    props.user.services &&
-    props.user.services.twitter &&
-    props.user.services.twitter.profile_image_url_https
-  )
+  return getAvatar(props.user)
 }
 
 function readName (props) {

@@ -39,7 +39,8 @@ npm run watch
 		}
 	},
 	"profile" : {
-		"name" : "Richard Silverton"
+		"name" : "Richard Silverton",
+		"avatar": "http://path/to/image.png"
 	},
 	"myCampaigns": [
 		{
@@ -96,7 +97,7 @@ npm run watch
 	]
 	"createdAt" : ISODate("2016-02-26T13:12:53.456Z"),
 	"createdBy" : {
-    "_id" : "hNc2ArK9TcAWyEXqQ",
+		"_id" : "hNc2ArK9TcAWyEXqQ",
 		"name" : "Olly Gilbert",
 		"avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
 	},

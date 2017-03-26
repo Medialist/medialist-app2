@@ -375,6 +375,10 @@ button {
 .input-inline.error, .input.error {
   border-bottom-color: var(--status-red);
 }
+.error-message {
+  color: var(--status-red);
+  min-height: 16px;
+}
 .select {
   font-family: inherit;
   font-size: inherit;

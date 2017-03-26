@@ -7,19 +7,18 @@ const verifyLoginToken = (token) => {
   })
 
   if (!user) {
+    console.warn('Token did not exist')
+
     throw new Meteor.Error('INVALID_TOKEN')
   }
 
   const tokenRecord = user.services.email.verificationTokens.find(verificationToken => verificationToken.token === token)
-
-  if (!tokenRecord) {
-    throw new Meteor.Error('INVALID_TOKEN')
-  }
-
-  const tooOld = Date.now() - Meteor.settings.authentication.token_life
-  const expired = tokenRecord.when.getTime() < tooOld
+  const oldestValidTokenDate = Date.now() - Meteor.settings.authentication.tokenLife
+  const expired = tokenRecord.when.getTime() < oldestValidTokenDate
 
   if (expired) {
+    console.warn('Token has expired')
+
     Meteor.users.update({
       _id: user._id
     }, {
@@ -32,6 +31,9 @@ const verifyLoginToken = (token) => {
 
     throw new Meteor.Error('INVALID_TOKEN')
   }
+
+  // mark email verified
+  Accounts.addEmail(user._id, tokenRecord.address, true)
 
   const stampedLoginToken = Accounts._generateStampedLoginToken()
   Accounts._insertLoginToken(user._id, stampedLoginToken)

@@ -91,7 +91,7 @@ export default createContainer(() => {
 function userInfo (user) {
   return (
     <div className='py3'>
-      <CircleAvatar name={user.profile.name} />
+      <CircleAvatar name={user.profile.name} avatar={user.profile.avatar} />
       <div className='inline-block align-middle pl2'>
         <div className='f-md semibold gray10'>{user.profile.name}</div>
         <div className='f-xs normal gray20'>{`Organisation name`}</div>

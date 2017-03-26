@@ -45,7 +45,7 @@ const UserInfo = React.createClass({
         </div>
         <DropdownMenu right arrowPosition='calc(100% - 32px)' style={dropdownStyle} open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
           <div className='px4 py3' style={{width: 225}}>
-            <CircleAvatar name={user.profile.name} />
+            <CircleAvatar name={user.profile.name} avatar={user.profile.avatar} />
             <div className='inline-block align-middle pl2'>
               <div className='f-md semibold gray10'>{user.profile.name}</div>
               <div className='f-xs normal gray20'>{`Organisation name`}</div>

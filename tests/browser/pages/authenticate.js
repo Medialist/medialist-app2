@@ -4,7 +4,10 @@ module.exports = {
   url: 'http://localhost:3000/',
   elements: {
     emailField: '#authenticate-email-field',
-    sendEmailButton: '#authenticate-send-email-button'
+    errorMessage: '.error-message',
+    sendEmailButton: '#authenticate-send-email-button',
+    onboardingNameField: '#onboarding-name-field',
+    onboardingCompleteButton: '#onboarding-save-button'
   },
   commands: [{
     register: function () {
@@ -20,6 +23,10 @@ module.exports = {
         .sendKeys('@emailField', user.email)
         .waitForElementVisible('@sendEmailButton')
         .click('@sendEmailButton')
+        .waitForElementVisible('@onboardingNameField')
+        .sendKeys('@onboardingNameField', user.name)
+        .waitForElementVisible('@onboardingCompleteButton')
+        .click('@onboardingCompleteButton')
 
       return user
     }
