@@ -52,7 +52,7 @@ const OnboardingPage = React.createClass({
   },
   render () {
     const content = (
-      <Form className='bg-white max-width-2 mt6 p5 mx-auto left-align' onSubmit={this.onSubmit}>
+      <Form className='bg-white max-width-2 mt6 p5 mx-auto left-align shadow-2' onSubmit={this.onSubmit}>
         <p className='semibold f-sm mt0'>Almost there...</p>
         <p className='semibold f-sm mb4'>Finish creating your profile to join your teammates on Medialist</p>
         <label className='block gray40 semibold f-sm mb1' htmlFor='email'>Email address</label>

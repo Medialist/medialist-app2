@@ -20,11 +20,12 @@ module.exports = {
       this
         .navigate()
         .waitForElementVisible('@emailField')
-        .sendKeys('@emailField', user.email)
+        .setValue('@emailField', user.email)
         .waitForElementVisible('@sendEmailButton')
         .click('@sendEmailButton')
         .waitForElementVisible('@onboardingNameField')
-        .sendKeys('@onboardingNameField', user.name)
+        .clearValue('@onboardingNameField')
+        .setValue('@onboardingNameField', user.name)
         .waitForElementVisible('@onboardingCompleteButton')
         .click('@onboardingCompleteButton')
 
