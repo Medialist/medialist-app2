@@ -35,23 +35,17 @@ const UserInfo = React.createClass({
     return (
       <Dropdown style={{padding: '14px 15px 13px 25px', marginRight: 16}}>
         <div className='inline-block hover-opacity-trigger pointer' onClick={this.onNameClick}>
+          <CircleAvatar name={user.profile.name} avatar={user.profile.avatar} style={{ verticalAlign: '-2px', marginRight: '10px' }} />
           <div className='inline-block'>
             <div className='f-xs semibold white'>{user.profile.name}</div>
-            <div className='f-xxs semibold white opacity-40 hover-opacity-50' style={{marginTop: 2}}>{`Organisation name`}</div>
+            <div className='f-xxs semibold white opacity-40 hover-opacity-50' style={{marginTop: 2}}>{user.emails[0].address}</div>
           </div>
-          <div className='inline-block' style={{ verticalAlign: '5px', padding: '0 0 0 10px' }}>
+          <div className='inline-block' style={{ verticalAlign: '5px', padding: '0 0 0 20px' }}>
             <Arrow direction='down' />
           </div>
         </div>
-        <DropdownMenu right arrowPosition='calc(100% - 32px)' style={dropdownStyle} open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
-          <div className='px4 py3' style={{width: 225}}>
-            <CircleAvatar name={user.profile.name} avatar={user.profile.avatar} />
-            <div className='inline-block align-middle pl2'>
-              <div className='f-md semibold gray10'>{user.profile.name}</div>
-              <div className='f-xs normal gray20'>{`Organisation name`}</div>
-            </div>
-          </div>
-          <nav className='block border-top border-gray80 py1'>
+        <DropdownMenu right arrowPosition='calc(100% - 27px)' style={dropdownStyle} open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
+          <nav className='block border-top border-gray80 py1' style={{width: 225}}>
             <Link to='/settings' className='block px3 py2 f-md normal gray20 hover-bg-blue' activeClassName='active' onClick={this.onLinkClick}>
               <SettingsIcon />
               <span className='ml2'>Settings</span>
