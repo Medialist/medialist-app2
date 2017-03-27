@@ -14,6 +14,8 @@ const test = {
       .navigate()
       .waitForElementVisible('@emailField')
       .sendKeys('@emailField', faker.internet.email())
+      .waitForElementVisible('@sendEmailButton')
+      .click('@sendEmailButton')
       .waitForElementVisible('@errorMessage')
       .assert.containsText('@errorMessage', 'Please use a')
       .assert.containsText('@errorMessage', '@test.medialist.io address')
