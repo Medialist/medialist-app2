@@ -372,8 +372,11 @@ button {
   border-bottom-color: var(--blue);
   outline: none;
 }
-.input-inline.error, .input.error {
+.input-inline.error {
   border-bottom-color: var(--status-red);
+}
+.input.error {
+  border-color: var(--status-red);
 }
 .error-message {
   color: var(--status-red);
