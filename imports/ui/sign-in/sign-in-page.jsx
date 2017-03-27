@@ -17,7 +17,6 @@ const SignInPage = React.createClass({
     this.setState(this.getInitialState())
   },
   onSubmit (email) {
-    console.info('got', email)
     this.setState({
       status: 'SENDING_EMAIL'
     })

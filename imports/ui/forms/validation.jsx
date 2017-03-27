@@ -18,8 +18,6 @@ const SIGNIN_EMAIL_DOMAIN_REGEX = new RegExp('^.+' + Meteor.settings.public.auth
     return list
   }, '('))
 
-console.info(SIGNIN_EMAIL_DOMAIN_REGEX)
-
 const SIGNIN_EMAIL_DOMAIN_HINT = Meteor.settings.public.authentication.emailDomains
   .map(domain => `@${domain}`)
   .reduce((list, current, index) => {

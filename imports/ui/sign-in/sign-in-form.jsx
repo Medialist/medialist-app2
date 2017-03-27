@@ -12,6 +12,12 @@ const SignInForm = React.createClass({
   onSubmit (e) {
     e.preventDefault()
 
+    const errors = this.form.validateAll()
+
+    if (Object.keys(errors).length) {
+      return
+    }
+
     const email = this.state.email.trim()
 
     this.props.onSubmit(email)
@@ -20,12 +26,6 @@ const SignInForm = React.createClass({
     this.setState({
       [event.target.name]: event.target.value
     })
-
-    // trigger validation in a little bit otherwise you can enter an invalid
-    // email address and click the submit button without seeing a warning
-    setTimeout(() => {
-      this.form.validateAll()
-    }, 500)
   },
   render () {
     const form = (
@@ -45,7 +45,7 @@ const SignInForm = React.createClass({
           />
         </div>
         <div>
-          <Button className='btn bg-blue white width-100' id='authenticate-send-email-button'>Email me a link to sign in</Button>
+          <Button className='btn bg-blue white width-100' id='authenticate-send-email-button' disabled={false}>Email me a link to sign in</Button>
         </div>
       </Form>
     )
