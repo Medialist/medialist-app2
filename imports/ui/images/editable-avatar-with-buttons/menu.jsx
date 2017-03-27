@@ -75,7 +75,7 @@ const EditableAvatarMenu = React.createClass({
       default:
         return (
           <div className='left-align' style={{display: 'inline-block'}}>
-            <a href='#' className='block px3 mb2 f-md normal gray20' onClick={this.onUploadcareClick}><UploadIcon className='flex-none' />Upload image</a>
+            <a href='#' className='block px3 mb2 f-md normal gray20' onClick={this.onUploadcareClick}><UploadIcon className='flex-none' /> Upload image</a>
             <Dropdown>
               <a href='#' className='block px3 mb2 f-md normal gray20' onClick={this.onTwitterClick}><TwitterIconGrey className='flex-none' /> Import from Twitter</a>
               <DropdownMenu

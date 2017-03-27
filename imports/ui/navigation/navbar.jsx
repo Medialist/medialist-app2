@@ -29,7 +29,7 @@ const NavBar = React.createClass({
             <span style={{marginLeft: 3}}>Contacts</span>
           </Link>
         </nav>
-        <div className='inline-block right xs-hide'>
+        <div className='inline-block right'>
           <UserInfo user={this.props.user} />
         </div>
       </div>
