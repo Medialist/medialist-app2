@@ -17,8 +17,7 @@ const test = {
       .waitForElementVisible('@sendEmailButton')
       .click('@sendEmailButton')
       .waitForElementVisible('@errorMessage')
-      .assert.containsText('@errorMessage', 'Please use a')
-      .assert.containsText('@errorMessage', '@test.medialist.io address')
+      .assert.containsText('@errorMessage', 'Please use a @test.medialist.io address')
 
     t.end()
   }
