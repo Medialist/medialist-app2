@@ -116,7 +116,7 @@ export default React.createClass({
             className='btn white bg-blue mx2 right'
             disabled={false}
             id='update-profile-button'
-          >Update Profile</Button>
+          >Save changes</Button>
         </div>
       </Form>
     )
