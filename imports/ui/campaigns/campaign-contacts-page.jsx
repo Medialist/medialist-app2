@@ -11,6 +11,7 @@ import Contacts from '/imports/api/contacts/contacts'
 import CreateContact from '../contacts/edit-contact'
 import AddContact from './add-contact'
 import { StatusIndex } from '/imports/api/contacts/status'
+import { createContact } from '/imports/api/contacts/methods'
 
 const CampaignContactsPage = React.createClass({
   propTypes: {
@@ -50,11 +51,25 @@ const CampaignContactsPage = React.createClass({
     this.setState({ addContactModalOpen: false })
   },
 
-  onCreateContact (data) {
+  onShowCreateContact (data) {
     this.setState({
       addContactModalOpen: false,
       createContactModalOpen: true,
       contactPrefillData: data
+    })
+  },
+
+  onCreateContact (details) {
+    createContact.call({details}, (err, res) => {
+      if (err) {
+        return console.log(err)
+      }
+
+      this.setState({
+        addContactModalOpen: true,
+        createContactModalOpen: false,
+        contactPrefillData: null
+      })
     })
   },
 
@@ -88,7 +103,8 @@ const CampaignContactsPage = React.createClass({
       onAddContactClick,
       onCreateContactModalDismiss,
       onAddContactModalDismiss,
-      onCreateContact
+      onCreateContact,
+      onShowCreateContact
     } = this
 
     const {
@@ -135,12 +151,13 @@ const CampaignContactsPage = React.createClass({
         <CreateContact
           open={createContactModalOpen}
           onDismiss={onCreateContactModalDismiss}
+          onSubmit={onCreateContact}
           campaign={campaign}
           prefill={contactPrefillData} />
         <AddContact
           open={addContactModalOpen}
           onDismiss={onAddContactModalDismiss}
-          onCreate={onCreateContact}
+          onCreate={onShowCreateContact}
           campaign={campaign}
           campaignContacts={contacts} />
       </div>

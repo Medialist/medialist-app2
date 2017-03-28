@@ -18,7 +18,6 @@ const EditContact = React.createClass({
   propTypes: {
     open: PropTypes.bool,
     contact: PropTypes.object,
-    onChange: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
     onDismiss: PropTypes.func.isRequired,
     // Allow some prefill data to be passed in

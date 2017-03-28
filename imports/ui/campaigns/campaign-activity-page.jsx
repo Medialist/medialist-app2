@@ -17,6 +17,7 @@ import { setMasterLists } from '/imports/api/master-lists/methods'
 import CreateContact from '../contacts/edit-contact'
 import AddContact from './add-contact'
 import EditTeam from './edit-team'
+import { createContact } from '/imports/api/contacts/methods'
 
 const CampaignActivityPage = React.createClass({
   propTypes: {
@@ -85,11 +86,25 @@ const CampaignActivityPage = React.createClass({
     createCoveragePost.call({contactSlug, campaignSlug, message, status}, cb)
   },
 
-  onCreateContact (data) {
+  onShowCreateContact (data) {
     this.setState({
       addContactModalOpen: false,
       createContactModalOpen: true,
       contactPrefillData: data
+    })
+  },
+
+  onCreateContact (details) {
+    createContact.call({details}, (err, res) => {
+      if (err) {
+        return console.log(err)
+      }
+
+      this.setState({
+        addContactModalOpen: true,
+        createContactModalOpen: false,
+        contactPrefillData: null
+      })
     })
   },
 
@@ -103,6 +118,7 @@ const CampaignActivityPage = React.createClass({
       onFeedback,
       onCoverage,
       onCreateContact,
+      onShowCreateContact,
       onAddCampaignToMasterLists
     } = this
     const { campaign, contacts, contactsCount, clients, teamMates, loading, user } = this.props
@@ -141,12 +157,13 @@ const CampaignActivityPage = React.createClass({
         <CreateContact
           open={createContactModalOpen}
           onDismiss={onCreateContactModalDismiss}
+          onSubmit={onCreateContact}
           campaign={campaign}
           prefill={contactPrefillData} />
         <AddContact
           open={addContactModalOpen}
           onDismiss={onAddContactModalDismiss}
-          onCreate={onCreateContact}
+          onCreate={onShowCreateContact}
           campaign={campaign}
           campaignContacts={contacts} />
       </div>
