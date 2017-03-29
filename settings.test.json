@@ -5,17 +5,7 @@
   },
   "email": {
     "defaultFrom": "Medialist <noreply@medialist.io>",
-    "smtp": {
-      "user": "${SMTP_USER}",
-      "password": "${SMTP_PASSWORD}",
-      "host": "${SMTP_HOST}",
-      "port": "${SMTP_PORT}"
-    }
-  },
-  "migrations": {
-    "whitelist": [
-      "${TWITTER_HANDLE}"
-    ]
+    "mailUrl": "smtp://${SMTP_USER}:${STMP_PASSWORD}@${SMTP_HOST}:${SMTP_PORT}"
   },
   "twitter": {
     "consumer_key": "${TWITTER_CONSUMER_KEY}",
@@ -30,8 +20,5 @@
     "authentication": {
       "emailDomains": ["test.medialist.io"]
     }
-  },
-  "server": {
-    "url": "http://localhost:3000"
   }
 }
