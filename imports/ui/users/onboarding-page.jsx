@@ -80,7 +80,11 @@ const OnboardingPage = React.createClass({
         </div>
 
         <div>
-          <Button className='btn bg-blue white width-100' id='onboarding-save-button'>Create profile</Button>
+          <Button
+            className='btn bg-blue white width-100'
+            id='onboarding-save-button'
+            disabled={false}
+          >Create profile</Button>
         </div>
       </Form>
     )
