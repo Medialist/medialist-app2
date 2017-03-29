@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
 import classNames from 'classnames/dedupe'
+import { CameraIcon } from './icons'
 
 const defaultSize = 30
 
@@ -57,7 +58,9 @@ const Avatar = React.createClass({
       )
     }
 
-    return <div style={style} className={className} />
+    style.lineHeight = `${this.props.size - 8}px`
+
+    return <div style={style} className={className}><CameraIcon className='svg-icon-xl' /></div>
   }
 })
 
