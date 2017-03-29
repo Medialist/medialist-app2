@@ -7,15 +7,8 @@ const EditableAvatarWithButtons = React.createClass({
     className: PropTypes.string,
     style: PropTypes.object,
     onChange: PropTypes.func.isRequired,
-    onError: PropTypes.func.isRequired
-  },
-
-  onImageChange (e) {
-    this.props.onChange(e)
-  },
-
-  onImageError (err) {
-    this.props.onError(err)
+    onError: PropTypes.func.isRequired,
+    name: PropTypes.string
   },
 
   render () {
@@ -23,9 +16,10 @@ const EditableAvatarWithButtons = React.createClass({
       <div style={this.props.style}>
         {this.props.children}
         <Menu
+          name={this.props.name}
           avatar={this.props.avatar}
-          onChange={this.onImageChange}
-          onError={this.onImageError} />
+          onChange={this.props.onChange}
+          onError={this.props.onError} />
       </div>
     )
   }

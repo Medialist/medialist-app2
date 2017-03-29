@@ -10,13 +10,15 @@ const EditableAvatarMenu = React.createClass({
     onChange: PropTypes.func.isRequired,
     onError: PropTypes.func.isRequired,
     menuLeft: PropTypes.number,
-    menuTop: PropTypes.number
+    menuTop: PropTypes.number,
+    name: PropTypes.string
   },
 
   getDefaultProps () {
     return {
       menuLeft: 0,
-      menuTop: -10
+      menuTop: -10,
+      name: 'avatar'
     }
   },
 
@@ -48,17 +50,28 @@ const EditableAvatarMenu = React.createClass({
 
   onRemoveClick (e) {
     e.stopPropagation()
-    this.props.onChange({ url: null })
+
+    this.props.onChange({
+      target: {
+        name: this.props.name,
+        value: null
+      }
+    })
   },
 
-  onSuccess (url) {
+  onSuccess (avatar) {
     this.reset()
-    this.props.onChange(url)
+    this.props.onChange({
+      target: {
+        name: this.props.name,
+        value: avatar.url
+      }
+    })
   },
 
-  onError (err) {
+  onError (error) {
     this.reset()
-    this.props.onError(err)
+    this.props.onError(error)
   },
 
   reset () {
@@ -75,6 +88,7 @@ const EditableAvatarMenu = React.createClass({
       default:
         return (
           <div className='left-align' style={{display: 'inline-block'}}>
+            <p className='block gray40 semibold f-sm mb2 mt0 ml3'>Your avatar</p>
             <a href='#' className='block px3 mb2 f-md normal gray20' onClick={this.onUploadcareClick}><UploadIcon className='flex-none' /> Upload image</a>
             <Dropdown>
               <a href='#' className='block px3 mb2 f-md normal gray20' onClick={this.onTwitterClick}><TwitterIconGrey className='flex-none' /> Import from Twitter</a>

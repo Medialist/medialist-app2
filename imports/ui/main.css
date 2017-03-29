@@ -171,6 +171,7 @@ button {
 
 .mt8 { margin-top: 40px }
 .px8 { padding-left: 40px; padding-right: 40px; }
+.py8 { padding-top: 40px; padding-bottom: 40px; }
 
 .w24 {
   width: 24rem;

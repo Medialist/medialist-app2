@@ -2,8 +2,7 @@ import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
 import { Form, Input, Button } from 'react-validation/lib/build/validation.rc'
 import { CircleAvatar } from '../../images/avatar'
-import { LockIcon, FeedContactIcon } from '../../images/icons'
-import getAvatar from '../../../lib/get-avatar'
+import { LockIcon } from '../../images/icons'
 import EditableAvatarWithButtons from '../../images/editable-avatar-with-buttons'
 
 export default React.createClass({
@@ -12,15 +11,9 @@ export default React.createClass({
   },
   getInitialState () {
     return {
-      avatar: getAvatar(this.props.user) || '',
-      name: this.props.user.profile.name || ''
+      avatar: this.props.user.profile.avatar,
+      name: this.props.user.profile.name
     }
-  },
-  componentWillReceiveProps (props) {
-    const avatar = getAvatar(props.user)
-    const name = props.user.profile.name
-    if (avatar) this.setState({ avatar })
-    if (name) this.setState({ name })
   },
   onSubmit (e) {
     e.preventDefault()
@@ -49,11 +42,6 @@ export default React.createClass({
       [event.target.name]: event.target.value
     })
   },
-  onAvatarChange (e) {
-    this.setState({
-      avatar: e.url
-    })
-  },
   onAvatarError (error) {
     console.error('Failed to change avatar', error)
     console.log('TODO: toast error message')
@@ -63,21 +51,22 @@ export default React.createClass({
     const inputStyles = {
       maxWidth: '24rem'
     }
+
     return (
-      <Form id='profile-settings-panel' className='pt4' onSubmit={this.onSubmit} ref={(form) => { this.form = form }}>
-        <div className='center my4'>
-          <FeedContactIcon className='svg-icon-lg blue' />
-        </div>
-        <div className='center my4 bold f-xl'>Profile settings</div>
-        <div className='center my4'>
-          <p className='mx-auto max-width-2 center mt4 mb6'>Update your profile settings so people know who you are</p>
-        </div>
-        <hr className='flex-auto my4' style={{height: 1, marginRight: '-0.6rem', marginLeft: '-0.6rem'}} />
+      <Form id='profile-settings-panel' className='py8' onSubmit={this.onSubmit} ref={(form) => { this.form = form }}>
         <div className='ml-auto mr-auto w26'>
           <div className='py2'>
-            <p className='block gray40 semibold f-sm mb2' htmlFor='email'>Your avatar</p>
-            <EditableAvatarWithButtons avatar={this.state.avatar} onChange={this.onAvatarChange} onError={this.onAvatarError} className='mt4 mb2'>
-              <CircleAvatar size={100} avatar={this.state.avatar} name={this.state.name} style={{verticalAlign: 'top'}} />
+            <EditableAvatarWithButtons
+              avatar={this.state.avatar}
+              onChange={this.onFieldChange}
+              onError={this.onAvatarError}
+              className='mt4 mb2'>
+              <CircleAvatar
+                size={100}
+                avatar={this.state.avatar}
+                name={this.state.name}
+                style={{verticalAlign: 'top'}}
+              />
             </EditableAvatarWithButtons>
           </div>
           <div className='mb2'>
@@ -108,12 +97,9 @@ export default React.createClass({
             />
             <LockIcon className='inline-block ml2' />
           </div>
-        </div>
-        {insertRuler()}
-        <div className='col col-12 pt2 pb4 mb2'>
           <Button
             type='submit'
-            className='btn white bg-blue mx2 right'
+            className='btn white bg-blue w24'
             disabled={false}
             id='update-profile-button'
           >Save changes</Button>
@@ -122,7 +108,3 @@ export default React.createClass({
     )
   }
 })
-
-function insertRuler () {
-  return <hr className='flex-auto my4' style={{height: 1, marginRight: '-0.6rem', marginLeft: '-0.6rem'}} />
-}

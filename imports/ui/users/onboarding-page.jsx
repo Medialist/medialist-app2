@@ -21,11 +21,6 @@ const OnboardingPage = React.createClass({
       [event.target.name]: event.target.value
     })
   },
-  onAvatarChange (e) {
-    this.setState({
-      avatar: e.url
-    })
-  },
   onAvatarError (error) {
     console.error('Failed to change avatar', error)
     console.log('TODO: toast error message')
@@ -58,8 +53,16 @@ const OnboardingPage = React.createClass({
         <label className='block gray40 semibold f-sm mb1' htmlFor='email'>Email address</label>
         <p className='f-sm mt1 mb4'>{this.state.email}</p>
         <p className='block gray40 semibold f-sm mb2' htmlFor='email'>Your avatar</p>
-        <EditableAvatarWithButtons avatar={this.state.avatar} onChange={this.onAvatarChange} onError={this.onAvatarError}>
-          <CircleAvatar size={70} avatar={this.state.avatar} name={this.state.name} style={{verticalAlign: 'top'}} />
+        <EditableAvatarWithButtons
+          avatar={this.state.avatar}
+          onChange={this.onFieldChange}
+          onError={this.onAvatarError}>
+          <CircleAvatar
+            size={70}
+            avatar={this.state.avatar}
+            name={this.state.name}
+            style={{verticalAlign: 'top'}}
+          />
         </EditableAvatarWithButtons>
 
         <div className='mb6 left-align'>
