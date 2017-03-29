@@ -172,6 +172,13 @@ button {
 .mt8 { margin-top: 40px }
 .px8 { padding-left: 40px; padding-right: 40px; }
 
+.w24 {
+  width: 24rem;
+}
+.w26 {
+  width: 26rem;
+}
+
 .f-xxxl { font-size:25px }
 .f-xxl { font-size:20px }
 .f-xl { font-size:18px }

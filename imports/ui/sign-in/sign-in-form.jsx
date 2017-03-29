@@ -29,7 +29,7 @@ const SignInForm = React.createClass({
   },
   render () {
     const form = (
-      <Form className='bg-white max-width-2 mt6 p5 mx-auto' onSubmit={this.onSubmit} ref={(form) => { this.form = form }}>
+      <Form className='bg-white max-width-2 mt6 p5 mx-auto shadow-2' onSubmit={this.onSubmit} ref={(form) => { this.form = form }}>
         <p className='semibold f-sm'>Enter your email address to sign in or create a profile on {window.location.hostname}</p>
         <div className='mb6 left-align'>
           <label className='block gray40 semibold f-sm pt4 mb2' htmlFor='email'>Email</label>
