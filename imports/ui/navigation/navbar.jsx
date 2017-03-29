@@ -1,19 +1,15 @@
 import React, { PropTypes } from 'react'
 import { Link, IndexLink } from 'react-router'
-import NotificationsBell from './notifications-bell'
 import UserInfo from './user-info'
-import SearchSiteBox from './search-site'
 import { Logo, MenuActivityIcon, MenuCampaignIcon, MenuContactIcon } from '../images/icons'
 
 const linkStyle = { padding: '19px 25px 20px', display: 'inline-block' }
 
 const NavBar = React.createClass({
   propTypes: {
-    user: PropTypes.object,
-    notifications: PropTypes.array
+    user: PropTypes.object
   },
   render () {
-    const { notifications } = this.props
     return (
       <div className='navbar bg-gray10 clearfix'>
         <nav className='inline-block align-top'>
@@ -33,14 +29,8 @@ const NavBar = React.createClass({
             <span style={{marginLeft: 3}}>Contacts</span>
           </Link>
         </nav>
-        <div className='inline-block right xs-hide'>
+        <div className='inline-block right'>
           <UserInfo user={this.props.user} />
-        </div>
-        <div className='inline-block right' style={{padding: '9px 0'}}>
-          <NotificationsBell notifications={notifications} />
-        </div>
-        <div className='inline-block right mr2' style={{paddingTop: '12.5px'}}>
-          <SearchSiteBox />
         </div>
       </div>
     )

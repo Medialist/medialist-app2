@@ -10,7 +10,8 @@ const TwitterScraper = React.createClass({
     onSuccess: PropTypes.func.isRequired,
     onError: PropTypes.func.isRequired,
     onDismiss: PropTypes.func.isRequired,
-    uploadcareConfig: PropTypes.object
+    uploadcareConfig: PropTypes.object,
+    className: PropTypes.string
   },
 
   getDefaultProps () {
@@ -27,7 +28,8 @@ const TwitterScraper = React.createClass({
       screenName: null,
       imageLoadStates: {},
       uploading: false,
-      progress: 0
+      progress: 0,
+      className: ''
     }
   },
 
@@ -123,7 +125,7 @@ const TwitterScraper = React.createClass({
     const imageClassName = imageLoaded ? '' : 'display-none'
 
     return (
-      <form onSubmit={onSubmit} className='px2 py1'>
+      <form onSubmit={onSubmit} className={`px2 py1 ${this.props.className}`}>
         <p className='center'>Enter a Twitter username or URL</p>
         <div className='mb2 center'>
           <div className='inline-block bg-gray90' style={{ width: 40, height: 40 }}>

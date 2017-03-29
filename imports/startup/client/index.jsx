@@ -10,6 +10,8 @@ import reducers from '../../ui/redux/reducers'
 import Routes from '../../ui/routes'
 import Head from '../../ui/head'
 
+require('../../ui/forms/validation')
+
 const store = createStore(
   reducers,
   compose(

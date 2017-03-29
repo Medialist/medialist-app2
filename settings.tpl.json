@@ -1,18 +1,37 @@
 {
+  "authentication": {
+    "sendLink": true,
+    "tokenLife": 900000
+  },
+  "email": {
+    "defaultFrom": "Medialist <noreply@medialist.io>",
+    "smtp": {
+      "user": "${SMTP_USER}",
+      "password": "${SMTP_PASSWORD}",
+      "host": "smtp.mailgun.org",
+      "port": 587
+    }
+  },
+  "migrations": {
+    "whitelist": [
+      "${TWITTER_HANDLE}"
+    ]
+  },
   "twitter": {
     "consumer_key": "${TWITTER_CONSUMER_KEY}",
     "consumer_secret": "${TWITTER_CONSUMER_SECRET}",
     "access_token_key": "${TWITTER_ACCESS_TOKEN_KEY}",
     "access_token_secret": "${TWITTER_ACCESS_TOKEN_SECRET}"
   },
-  "migrations": {
-    "whitelist": [
-      "twitterHandle"
-    ]
-  },
   "public": {
     "uploadcare": {
       "publicKey": "${UPLOADCARE_PUBLIC_KEY}"
+    },
+    "authentication": {
+      "emailDomains": ["localhost"]
     }
+  },
+  "server": {
+    "url": "http://localhost:3000"
   }
 }
