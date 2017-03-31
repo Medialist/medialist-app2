@@ -17,6 +17,6 @@ The team at Medialist
 `
 export default {
   subject: () => 'Log in to Medialist',
-  html: Pug.compileFile(`${base}imports/api/email/server/templates/send-login-link.pug`),
+  html: Pug.compileFile(path.join(base, 'imports/api/email/server/templates/send-login-link.pug')),
   text: plainText
 }
