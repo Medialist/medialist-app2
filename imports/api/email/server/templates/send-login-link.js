@@ -1,22 +1,7 @@
-import Pug from 'pug'
-const path = Npm.require('path')
-const base = path.resolve('.').split('.meteor')[0]
+import { ServerTemplate } from 'meteor/felixble:server-templates'
 
-const plainText = (data) => `
-Please follow the link below to sign in to Medialist.
-
-${data.url}
-
-This link will expire in fifteen minutes and can only be used once.
-
-If you did not make this request, please contact us at feedback@medialist.io
-
-Cheers,
-
-The team at Medialist
-`
 export default {
   subject: () => 'Log in to Medialist',
-  html: Pug.compileFile(path.join(base, 'imports/api/email/server/templates/send-login-link.pug')),
-  text: plainText
+  html: (data) => ServerTemplate.render(Assets.getText('email/send-login-link.html'), data),
+  text: (data) => ServerTemplate.render(Assets.getText('email/send-login-link.txt'), data)
 }

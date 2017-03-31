@@ -40,7 +40,6 @@
     "moment": "^2.15.1",
     "object-path-immutable": "^0.5.1",
     "papaparse": "^4.1.2",
-    "pug": "^2.0.0-beta11",
     "react": "^15.4.2",
     "react-addons-css-transition-group": "^15.4.2",
     "react-addons-pure-render-mixin": "^15.4.2",
@@ -100,7 +99,7 @@
       "server/**"
     ],
     "globals": [
-      "Npm"
+      "Assets"
     ]
   },
   "ava": {
