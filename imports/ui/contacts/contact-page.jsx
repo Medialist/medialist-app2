@@ -13,7 +13,7 @@ import ContactInfo from './contact-info'
 import ContactNeedToKnowList from './contact-need-to-know-list'
 import PostBox from '../feedback/post-box'
 import ActivityFeed from '../dashboard/activity-feed'
-import EditContact from './edit-contact'
+import EditContactModal from './edit-contact'
 import AddContactsToCampaigns from './add-contacts-to-campaign'
 import withSnackbar from '../snackbar/with-snackbar'
 
@@ -116,7 +116,7 @@ const ContactPage = withSnackbar(React.createClass({
             <ContactNeedToKnowList items={needToKnows} />
           </div>
         </div>
-        <EditContact open={editContactOpen} onSubmit={this.onEditContact} onDismiss={this.toggleEditContact} contact={contact} />
+        <EditContactModal open={editContactOpen} onSubmit={this.onEditContact} onDismiss={this.toggleEditContact} contact={contact} />
         <AddContactsToCampaigns
           title={`Add ${contact.name.split(' ')[0]} to a Campaign`}
           onDismiss={this.toggleAddToCampaign}

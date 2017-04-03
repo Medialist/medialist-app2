@@ -99,7 +99,7 @@ const ContactInfo = React.createClass({
               <div className='f-sm gray10'>{(outlets && outlets.length) ? outlets[0].value : null}</div>
               <div className='f-sm gray10' style={{paddingTop: 2}}>{outlets.map((o) => o.label).join(', ')}</div>
             </div>
-            <div className='pt4'>{socials.map((social) => <SocialIcon {...social} className='mr2' />)}</div>
+            <div className='pt4'>{socials.map((social, index) => <SocialIcon {...social} className='mr2' key={index} />)}</div>
           </div>
         </div>
         <div className='clearfix p3 pt4 mt4 border-gray80 border-bottom'>
@@ -201,10 +201,10 @@ const ContactItems = React.createClass({
     return (
       <ul className='list-reset'>
         <li className='mb2'>
-          {emails.map((email) => <ContactItemsEmail key={email} email={email} />)}
+          {emails.map((email, index) => <ContactItemsEmail key={`${email.value}-${index}`} email={email} />)}
         </li>
         <li className='mb2'>
-          {phones.map((phone) => <ContactItemsPhone key={phone} phone={phone} />)}
+          {phones.map((phone, index) => <ContactItemsPhone key={`${phone.value}-${index}`} phone={phone} />)}
         </li>
         <li className='mb2'>
           <ContactItemBio bio={bio} />

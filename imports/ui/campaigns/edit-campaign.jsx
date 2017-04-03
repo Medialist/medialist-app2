@@ -121,7 +121,7 @@ const EditCampaign = React.createClass({
     const { campaign } = this.props
     const { avatar, name, purpose, clientName, links, errors, showErrors } = this.state
     return (
-      <div className='relative'>
+      <div className='relative' data-id='edit-campaign-form'>
         <ValidationBanner error={errors.headline} show={showErrors} onDismissErrorBanner={onDismissErrorBanner} />
         <div className='px4 py6 center border-bottom border-gray80'>
           <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError} menuTop={-50}>
@@ -175,7 +175,7 @@ const EditCampaign = React.createClass({
             </FormField>
           </FormSection>
 
-          <FormSection label='Links' addLinkText='Add another link' onAdd={this.addLink}>
+          <FormSection label='Links' addLinkText='Add another link' addLinkClassName='add-links-button' onAdd={this.addLink}>
             {links.map((link, i) => (
               <FormField icon={<WebsiteIcon />} key={i}>
                 <input
@@ -190,7 +190,7 @@ const EditCampaign = React.createClass({
           </FormSection>
         </div>
         <div className='p4 right'>
-          <button className='btn bg-completed white right' onClick={onSubmit} id='save-campaign-button'>
+          <button className='btn bg-completed white right' onClick={onSubmit} data-id='save-campaign-button'>
             {campaign ? 'Save Changes' : 'Create Campaign'}
           </button>
           <button className='btn bg-transparent gray40 right mr2' onClick={onReset}>Cancel</button>

@@ -1,8 +1,9 @@
 import React from 'react'
 import { Close } from '../images/icons'
 
-export default ({show, error, onDismiss}) => {
-  if (!show || !error) return null
+export default ({error, onDismiss}) => {
+  if (!error) return null
+
   return (
     <div
       className='shadow-2 absolute top-0 left-0 right-0 px4 bg-yellow-lighter f-xs gray10 semibold flex items-center'

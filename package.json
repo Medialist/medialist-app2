@@ -57,7 +57,8 @@
     "twitter-screen-name": "^1.0.0",
     "underscore.string": "^3.3.4",
     "uploadcare": "^0.4.3",
-    "uploadcare-widget": "^2.10.2"
+    "uploadcare-widget": "^2.10.2",
+    "validator": "^7.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.5.1",

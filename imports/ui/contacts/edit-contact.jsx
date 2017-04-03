@@ -13,6 +13,7 @@ import { SocialMap, SocialIcon } from '../social/social'
 import EditableAvatar from '../images/editable-avatar/editable-avatar'
 import Scroll from '../navigation/scroll'
 import Modal from '../navigation/modal'
+import { Form, Input, Button } from 'react-validation/lib/build/validation.rc'
 
 const EditContact = React.createClass({
   propTypes: {
@@ -27,13 +28,30 @@ const EditContact = React.createClass({
   },
 
   getInitialState () {
-    const contact = this.props.contact || {}
+    const contact = this.props.contact || {
+      socials: []
+    }
+
     // Create the full socials list, setting any existing social values.
     const socials = Object.keys(SocialMap).map((label, i) => {
       const existing = contact.socials && contact.socials.find((s) => s.label === label)
       if (existing) return Object.assign({}, existing)
       return {label, value: ''}
     })
+
+    // Some socials, eg. Website can have more than one entry so add
+    // them to the end of the list
+    contact.socials.forEach(social => {
+      const existing = socials.find(s => s.label === social.label)
+
+      if (existing && existing.value !== social.value) {
+        socials.push({
+          label: social.label,
+          value: social.value
+        })
+      }
+    })
+
     const state = Object.assign({
       avatar: contact.avatar || '',
       name: contact.name || '',
@@ -42,49 +60,36 @@ const EditContact = React.createClass({
       phones: atLeastOne(contact.phones, {label: 'Phone', value: ''}),
       socials,
       showErrors: false,
-      fixHeaderPosition: false
+      fixHeaderPosition: false,
+      errorHeader: null
     }, this.props.prefill)
-    state.errors = this.validate(state)
     return state
-  },
-
-  validate ({name, emails, socials}) {
-    const errors = {}
-    if (!name) errors.name = 'Please add a contact name'
-    const emailRegEx = /.+@.{2,}\..{2,}/
-    const emailErrors = emails.map((e, i) => {
-      const {value} = e
-      if (!value || value.match(emailRegEx)) return false
-      return 'Looks like this isn’t a valid email'
-    })
-    const hasEmailErrors = emailErrors.filter((e) => e).length > 0
-    if (hasEmailErrors) {
-      errors.emails = emailErrors
-    }
-    const socialErrors = socials.map(({label, value}) => {
-      if (label === 'Website') return false
-      if (!value.match(/^https?/)) return false
-      return `Please enter their ${label} username`
-    })
-    const hasSocialErrors = socialErrors.filter((e) => e).length > 0
-    if (hasSocialErrors) {
-      errors.socials = socialErrors
-    }
-    if (errors.name && hasEmailErrors) {
-      errors.headline = 'Let’s add a little more detail'
-    } else if (errors.name) {
-      errors.headline = 'Please add a contact name'
-    } else if (hasEmailErrors) {
-      errors.headline = 'Looks like that isn’t a valid email'
-    }
-    return errors
   },
 
   onSubmit (evt) {
     evt.preventDefault()
-    if (hasErrors(this.state)) {
-      return this.setState({showErrors: true})
+
+    const errors = this.form.validateAll()
+
+    if (Object.keys(errors).length) {
+      let headlineError = null
+      const emailError = Object.keys(errors).find(key => key.includes('emails-'))
+
+      if (errors.name) {
+        headlineError = 'Please add a contact name'
+      } else if (emailError) {
+        headlineError = 'Looks like that isn’t a valid email'
+      } else {
+        headlineError = 'Let’s add a little more detail'
+      }
+
+      this.setState({
+        errorHeader: headlineError
+      })
+
+      return
     }
+
     const data = cloneDeep(this.state)
     ContactCreateSchema.clean(data)
     data.outlets = data.outlets.filter((o) => o.label || o.value)
@@ -92,6 +97,22 @@ const EditContact = React.createClass({
     data.phones = data.phones.filter((o) => o.value)
     data.socials = data.socials.filter((o) => o.value)
     this.props.onSubmit(data)
+  },
+
+  onFieldChange (event) {
+    const {name, value} = event.target
+
+    if (name.includes('-')) {
+      const parts = name.split('-')
+      const property = parts[0]
+      const index = parts[1]
+
+      this.setState((s) => immutable.set(s, `${property}.${index}.value`, value))
+    } else {
+      this.setState({
+        [name]: value
+      })
+    }
   },
 
   onAvatarChange (evt) {
@@ -116,14 +137,6 @@ const EditContact = React.createClass({
     console.log('onAvatarError', err)
   },
 
-  onProfileChange (evt) {
-    const {name, value} = evt.target
-    this.setState({[name]: value})
-    this.setState((s) => ({
-      errors: this.validate(s)
-    }))
-  },
-
   onJobTitleSelect ({name: i, value}) {
     this.setState((s) => immutable.set(s, `outlets.${i}.value`, value))
   },
@@ -138,33 +151,6 @@ const EditContact = React.createClass({
 
   onJobOrgChange (evt) {
     this.onJobOrgSelect(evt.target)
-  },
-
-  onEmailChange (evt) {
-    const {name: i, value} = evt.target
-    this.setState((s) => immutable.set(s, `emails.${i}.value`, value))
-    this.setState((s) => ({
-      errors: this.validate(s)
-    }))
-  },
-
-  onPhoneChange (evt) {
-    const {name: i, value} = evt.target
-    this.setState((s) => immutable.set(s, `phones.${i}.value`, value))
-  },
-
-  onSocialChange (evt) {
-    const {name: i, value} = evt.target
-    this.setState((s) => {
-      const socials = cloneDeep(s.socials)
-      const social = socials[i]
-      if (social.label === 'Website') return {socials}
-      social.value = value.replace(SocialMap[social.label].url, '')
-      return {socials}
-    })
-    this.setState((s) => ({
-      errors: this.validate(s)
-    }))
   },
 
   onDelete (evt) {
@@ -185,11 +171,11 @@ const EditContact = React.createClass({
     this.onAdd('emails', {label: 'Email', value: ''})
   },
 
-  onAddPhone (evt) {
+  onAddPhone () {
     this.onAdd('phones', {label: 'Phone', value: ''})
   },
 
-  onAddSocial (evt) {
+  onAddSocial () {
     this.onAdd('socials', {label: 'Website', value: ''})
   },
 
@@ -199,9 +185,9 @@ const EditContact = React.createClass({
   },
 
   onDismissErrorBanner () {
-    const errors = cloneDeep(this.state.errors)
-    delete errors.headline
-    this.setState({errors})
+    this.setState({
+      errorHeader: null
+    })
   },
 
   onScrollChange ({scrollTop}) {
@@ -216,14 +202,14 @@ const EditContact = React.createClass({
   },
 
   render () {
-    const { onAvatarChange, onAvatarError, onJobTitleChange, onJobOrgChange, onJobOrgSelect, onJobTitleSelect, onAddJob, onProfileChange, onEmailChange, onAddEmail, onPhoneChange, onAddPhone, onSocialChange, onAddSocial, onSubmit, onDelete, inputSize, onScrollChange, onDismissErrorBanner } = this
+    const { onAvatarChange, onAvatarError, onJobTitleChange, onJobOrgChange, onJobOrgSelect, onJobTitleSelect, onAddJob, onEmailChange, onAddEmail, onPhoneChange, onAddPhone, onAddSocial, onSubmit, onDelete, inputSize, onScrollChange, onDismissErrorBanner } = this
     const { onDismiss } = this.props
     const { name, avatar, outlets, emails, phones, socials, errors, showErrors, fixHeaderPosition } = this.state
     return (
-      <div className='relative'>
-        <ValidationBanner show={showErrors} error={errors.headline} onDismiss={onDismissErrorBanner} />
+      <Form data-id='edit-contact-form' className='relative' onSubmit={this.onSubmit} ref={(form) => { this.form = form }}>
+        <ValidationBanner error={this.state.errorHeader} onDismiss={onDismissErrorBanner} />
         <div className='absolute top-0 left-0 right-0' style={{transition: 'opacity 1s', zIndex: 1, display: fixHeaderPosition ? 'block' : 'none'}}>
-          <ValidationBanner show={showErrors} error={errors.headline} onDismiss={onDismissErrorBanner} />
+          <ValidationBanner error={this.state.errorHeader} onDismiss={onDismissErrorBanner} />
           <div className='py3 center bg-white border-bottom border-gray80'>
             <div className='center f-xl gray20'>{name || 'Create Contact'}</div>
           </div>
@@ -236,29 +222,32 @@ const EditContact = React.createClass({
               </div>
             </EditableAvatar>
             <div>
-              <input
+              <Input
                 autoComplete='off'
                 className='center input-inline mt4 f-xxxl semibold'
+                errorClassName='error'
+                data-id='contact-name-input'
                 placeholder='Contact Name'
                 type='text'
                 name='name'
                 value={name}
                 size={inputSize(name)}
-                onChange={onProfileChange} />
-              <FormError show={showErrors} error={errors.name} className='' />
+                onChange={this.onFieldChange}
+                validations={['required']} />
             </div>
           </div>
 
           <div className='bg-gray90 pb6'>
-            <FormSection label='Jobs' addLinkText='Add another job' onAdd={onAddJob}>
+            <FormSection label='Jobs' addLinkText='Add another job' addLinkId='add-job-button' onAdd={onAddJob}>
               {outlets.map((outlet, index) => (
                 <FormField key={index} icon={<FilledCircle />}>
                   <OutletAutocomplete
                     style={{width: 225}}
                     menuWidth={225}
                     className='input'
+                    data-id={`job-title-input-${index}`}
                     value={outlet.value}
-                    name={index}
+                    name={index.toString()}
                     field='value'
                     placeholder='Title'
                     onSelect={onJobTitleSelect}
@@ -269,8 +258,9 @@ const EditContact = React.createClass({
                       style={{width: 225}}
                       menuWidth={225}
                       className='input'
+                      data-id={`job-company-input-${index}`}
                       value={outlet.label}
-                      name={index}
+                      name={index.toString()}
                       field='label'
                       placeholder='Outlet'
                       onSelect={onJobOrgSelect}
@@ -281,52 +271,58 @@ const EditContact = React.createClass({
               ))}
             </FormSection>
 
-            <FormSection label='Emails' addLinkText='Add another email' onAdd={onAddEmail}>
+            <FormSection label='Emails' addLinkText='Add another email' addLinkId='add-email-button' onAdd={onAddEmail}>
               {emails.map((email, index) => {
-                const error = errors.emails && errors.emails[index]
                 return (
                   <FormField key={index} icon={<EmailIcon />}>
-                    <input
+                    <Input
                       style={{width: 350}}
-                      className={`input ${error && 'border-red'}`}
+                      className='input'
+                      data-id={`email-input-${index}`}
+                      errorClassName='error'
                       type='text'
                       value={email.value}
-                      name={index}
-                      onChange={onEmailChange}
-                      placeholder='Email' />
-                    <FormError show={showErrors} error={error} />
+                      name={`emails-${index}`}
+                      onChange={this.onFieldChange}
+                      placeholder='Email'
+                      validations={['email']} />
                   </FormField>
                 )
               })}
             </FormSection>
 
-            <FormSection label='Phones' addLinkText='Add another phone' onAdd={onAddPhone}>
+            <FormSection label='Phones' addLinkText='Add another phone' addLinkId='add-phone-button' onAdd={onAddPhone}>
               {phones.map((phone, index) => (
                 <FormField key={index} icon={<PhoneIcon />}>
-                  <input
+                  <Input
                     style={{width: 350}}
                     className='input'
+                    data-id={`phone-input-${index}`}
+                    errorClassName='error'
                     type='text'
-                    name={index}
+                    name={`phones-${index}`}
                     value={phone.value}
-                    onChange={onPhoneChange}
-                    placeholder='Phone number' />
+                    onChange={this.onFieldChange}
+                    placeholder='Phone number'
+                    validations={[]} />
                 </FormField>
               ))}
             </FormSection>
 
-            <FormSection label='Websites & Social Links' addLinkText='Add another social' onAdd={onAddSocial}>
+            <FormSection label='Websites & Social Links' addLinkText='Add another social' addLinkId='add-social-button' onAdd={onAddSocial}>
               {socials.map(({label, value}, index) => (
                 <FormField key={index} icon={<SocialIcon label={label} value={value} />}>
-                  <input
+                  <Input
                     style={{width: 472}}
                     className='input'
+                    data-id={`social-input-${index > 7 ? index : label.toLowerCase()}`}
+                    errorClassName='error'
                     type='text'
-                    name={index}
+                    name={`socials-${index}`}
                     value={value}
-                    onChange={onSocialChange}
-                    placeholder={label} />
-                  <FormError show={showErrors} error={errors.socials && errors.socials[index]} />
+                    onChange={this.onFieldChange}
+                    placeholder={label}
+                    validations={label === 'Website' ? ['url'] : ['username']} />
                 </FormField>
               ))}
             </FormSection>
@@ -337,10 +333,10 @@ const EditContact = React.createClass({
           {this.props.contact && <button className='flex-none btn bg-transparent not-interested' onClick={onDelete}>Delete Contact</button>}
           <div className='flex-auto right-align'>
             <button className='btn bg-transparent gray40 mr2' onClick={onDismiss}>Cancel</button>
-            <button className='btn bg-completed white' onClick={onSubmit}>Save Changes</button>
+            <Button className='btn bg-completed white' data-id='edit-contact-form-submit-button' disabled={false}>Save Changes</Button>
           </div>
         </div>
-      </div>
+      </Form>
     )
   }
 })

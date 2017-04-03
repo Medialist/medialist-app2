@@ -17,7 +17,7 @@ const StatusSelector = React.createClass({
     return (
       <Select {...props} buttonText={children}>
         {StatusValues.map((item) => (
-          <Option selected={item === status} onClick={(evt) => this.onLinkClick(evt, item)}>
+          <Option key={item} selected={item === status} onClick={(evt) => this.onLinkClick(evt, item)}>
             <StatusLabel name={item} className={`${item === status ? 'gray10 semibold' : 'gray20'}`} />
           </Option>
         ))}

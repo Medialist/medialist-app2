@@ -1,6 +1,7 @@
 import React from 'react'
 import { Meteor } from 'meteor/meteor'
 import { rules } from 'react-validation/lib/build/validation.rc'
+import validator from 'validator'
 
 const SIGNIN_EMAIL_DOMAIN_REGEX = new RegExp('^.+' + Meteor.settings.public.authentication.emailDomains
   .map(domain => `@${domain}`)
@@ -48,6 +49,45 @@ export default Object.assign(rules, {
     },
     hint: value => {
       return <p className='error-message f-sm mt1'>Please use a {SIGNIN_EMAIL_DOMAIN_HINT} address</p>
+    }
+  },
+
+  email: {
+    rule: value => {
+      if (!value) {
+        return true
+      }
+
+      return validator.isEmail(value)
+    },
+    hint: value => {
+      return <p className='error-message f-sm mt1'>Looks like this isn’t a valid email</p>
+    }
+  },
+
+  username: {
+    rule: value => {
+      if (!value) {
+        return true
+      }
+
+      return !value.match(/^https?/)
+    },
+    hint: value => {
+      return <p className='error-message f-sm mt1'>Please enter their username</p>
+    }
+  },
+
+  url: {
+    rule: value => {
+      if (!value) {
+        return true
+      }
+
+      return value.match(/^https?/)
+    },
+    hint: value => {
+      return <p className='error-message f-sm mt1'>Please enter a valid URL</p>
     }
   }
 })

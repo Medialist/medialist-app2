@@ -7,7 +7,6 @@ export const Select = React.createClass({
     buttonText: PropTypes.node.isRequired,
     children: PropTypes.node.isRequired,
     onChange: PropTypes.func.isRequired,
-    options: PropTypes.array.isRequired,
     disabled: PropTypes.bool
   },
   getInitialState () {
