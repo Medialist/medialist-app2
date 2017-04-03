@@ -73,7 +73,7 @@ const OnboardingPage = React.createClass({
             name='name'
             value={this.state.name}
             placeholder='Your name'
-            id='onboarding-name-field'
+            data-id='onboarding-name-field'
             onChange={this.onFieldChange}
             validations={['required']}
           />
@@ -82,7 +82,7 @@ const OnboardingPage = React.createClass({
         <div>
           <Button
             className='btn bg-blue white width-100'
-            id='onboarding-save-button'
+            data-id='onboarding-save-button'
             disabled={false}
           >Create profile</Button>
         </div>

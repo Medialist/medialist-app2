@@ -2,9 +2,8 @@ import React, { PropTypes } from 'react'
 import cloneDeep from 'lodash.clonedeep'
 import immutable from 'object-path-immutable'
 import { ContactCreateSchema } from '/imports/api/contacts/contacts'
-import { hasErrors, atLeastOne } from '/imports/lib/forms'
+import { atLeastOne } from '/imports/lib/forms'
 import ValidationBanner from '../forms/validation-banner'
-import FormError from '../forms/form-error'
 import FormField from '../forms/form-field'
 import FormSection from '../forms/form-section'
 import OutletAutocomplete from '../forms/outlet-autocomplete'
@@ -202,9 +201,9 @@ const EditContact = React.createClass({
   },
 
   render () {
-    const { onAvatarChange, onAvatarError, onJobTitleChange, onJobOrgChange, onJobOrgSelect, onJobTitleSelect, onAddJob, onEmailChange, onAddEmail, onPhoneChange, onAddPhone, onAddSocial, onSubmit, onDelete, inputSize, onScrollChange, onDismissErrorBanner } = this
+    const { onAvatarChange, onAvatarError, onJobTitleChange, onJobOrgChange, onJobOrgSelect, onJobTitleSelect, onAddJob, onAddEmail, onAddPhone, onAddSocial, onDelete, inputSize, onScrollChange, onDismissErrorBanner } = this
     const { onDismiss } = this.props
-    const { name, avatar, outlets, emails, phones, socials, errors, showErrors, fixHeaderPosition } = this.state
+    const { name, avatar, outlets, emails, phones, socials, fixHeaderPosition } = this.state
     return (
       <Form data-id='edit-contact-form' className='relative' onSubmit={this.onSubmit} ref={(form) => { this.form = form }}>
         <ValidationBanner error={this.state.errorHeader} onDismiss={onDismissErrorBanner} />

@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router'
 
 export default () => (
-  <section className='max-width-md mx-auto' style={{paddingTop: 150}} id='contacts-import'>
+  <section className='max-width-md mx-auto' style={{paddingTop: 150}} data-id='contacts-import'>
     <img className='align-top' src='/import.svg' width='316' height='210' />
     <div className='inline-block pl6'>
       <header>
@@ -22,7 +22,7 @@ export default () => (
         <li>Learn from every outcome, build stronger relationships</li>
       </ul>
       <div className='pt6'>
-        <Link to='/contacts/import' className='btn bg-completed white' id='import-contacts-button'>
+        <Link to='/contacts/import' className='btn bg-completed white' data-id='import-contacts-button'>
           Import contacts
         </Link>
       </div>

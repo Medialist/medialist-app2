@@ -91,9 +91,9 @@ const ProcessingPanel = ({rows, tag}) => (
 )
 
 const CompletePanel = ({results, tag, contacts, onCampaignClick, onSectorClick, onFavouriteClick, onTagClick}) => (
-  <section className='center p6' id='contacts-import-complete'>
+  <section className='center p6' data-id='contacts-import-complete'>
     <h1 className='blue semibold f-xxxl'>Contacts imported</h1>
-    <p id='contacts-import-complete-status'>Created {results.created} contacts and updated {results.updated} contacts. Contacts are tagged with:</p>
+    <p data-id='contacts-import-complete-status'>Created {results.created} contacts and updated {results.updated} contacts. Contacts are tagged with:</p>
     <div className='py6'>
       <Tag name={tag} count={results.created + results.updated} />
     </div>

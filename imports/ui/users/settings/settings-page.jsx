@@ -52,12 +52,12 @@ const SettingsPage = React.createClass({
           <article>
             <label className='gray40'><SettingsIcon /> My Settings </label>
             <nav className='mt2 bg-white border-top border-left border-right border-gray80'>
-              <SideMenuItem selected={selectedMenuItem} item={menuItems[0]} id='profile-settings-button' />
+              <SideMenuItem selected={selectedMenuItem} item={menuItems[0]} data-id='profile-settings-button' />
             </nav>
             <label className='inline-block gray40 mt5 mb4'><SettingsIcon /> Organisation Settings </label>
             <nav className='mt2 bg-white border-top border-left border-right border-gray80'>
-              <SideMenuItem selected={selectedMenuItem} item={menuItems[1]} id='campain-lists-button' />
-              <SideMenuItem selected={selectedMenuItem} item={menuItems[2]} id='contact-lists-button' />
+              <SideMenuItem selected={selectedMenuItem} item={menuItems[1]} data-id='campaign-lists-button' />
+              <SideMenuItem selected={selectedMenuItem} item={menuItems[2]} data-id='contact-lists-button' />
             </nav>
           </article>
         </div>
@@ -77,12 +77,12 @@ export default createContainer(() => {
   }
 }, SettingsPage)
 
-function SideMenuItem ({selected, item, id}) {
+function SideMenuItem ({selected, item, ...props}) {
   const { slug, label } = item
   const activeClass = slug === selected ? 'active' : ''
   const activeIcon = slug === selected ? <span className='right pr1'><ChevronRight /></span> : ''
   return (
-    <Link to={`/settings/${slug}`} key={slug} id={id}>
+    <Link to={`/settings/${slug}`} key={slug} data-id={props['data-id']}>
       <div className={`py3 pl3 pr2 border-bottom border-gray80 active-border-left-blue active-blue ${activeClass}`}>{label}{activeIcon}</div>
     </Link>
   )

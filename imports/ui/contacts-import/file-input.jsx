@@ -22,7 +22,7 @@ const FileInput = React.createClass({
           disabled={disabled}
           onChange={onChange}
           style={{visibility: 'none', position: 'absolute', top: '-9999px'}}
-          id='file-input'
+          data-id='file-input'
           />
 
         { this.props.children }

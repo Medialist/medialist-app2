@@ -3,11 +3,11 @@ const faker = require('faker')
 module.exports = {
   url: 'http://localhost:3000/',
   elements: {
-    emailField: '#authenticate-email-field',
+    emailField: '[data-id=authenticate-email-field]',
     errorMessage: '.error-message',
-    sendEmailButton: '#authenticate-send-email-button',
-    onboardingNameField: '#onboarding-name-field',
-    onboardingCompleteButton: '#onboarding-save-button'
+    sendEmailButton: '[data-id=authenticate-send-email-button]',
+    onboardingNameField: '[data-id=onboarding-name-field]',
+    onboardingCompleteButton: '[data-id=onboarding-save-button]'
   },
   commands: [{
     register: function () {

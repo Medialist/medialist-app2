@@ -3,17 +3,17 @@
 module.exports = {
   url: 'http://localhost:3000/settings',
   elements: {
-    profileSettingsButton: '#profile-settings-button',
-    campaignListsButton: '#campaign-lists-button',
-    contactListsButton: '#contact-lists-button'
+    profileSettingsButton: '[data-id=profile-settings-button]',
+    campaignListsButton: '[data-id=campaign-lists-button]',
+    contactListsButton: '[data-id=contact-lists-button]'
   },
   sections: {
     profile: {
-      selector: '#profile-settings-panel',
+      selector: '[data-id=profile-settings-panel]',
       elements: {
         nameField: 'input[name=name]',
         emailField: 'input[name=email]',
-        updateProfileButton: '#update-profile-button'
+        updateProfileButton: '[data-id=update-profile-button]'
       }
     }
   },

@@ -20,7 +20,7 @@ export default ({ onAddCampaign }) => (
         <li>Work better, together</li>
       </ul>
       <div className='pt3'>
-        <button onClick={onAddCampaign} className='btn bg-completed white' id='create-campaign-button'>
+        <button onClick={onAddCampaign} className='btn bg-completed white' data-id='create-campaign-button'>
           Create Campaign
         </button>
       </div>

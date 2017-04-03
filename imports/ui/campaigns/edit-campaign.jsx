@@ -139,7 +139,7 @@ const EditCampaign = React.createClass({
               placeholder='Campaign name'
               size={name.length === 0 ? 15 : name.length + 2}
               onChange={onChange}
-              id='campaign-name-input' />
+              data-id='campaign-name-input' />
             <FormError error={errors.name} show={showErrors} />
           </div>
         </div>
@@ -156,7 +156,7 @@ const EditCampaign = React.createClass({
                 value={clientName}
                 onSelect={onClientSelect}
                 onChange={onClientNameChange}
-                id='client-input' />
+                data-id='client-input' />
             </FormField>
           </FormSection>
 
@@ -171,20 +171,21 @@ const EditCampaign = React.createClass({
                 value={purpose}
                 placeholder='Key Message'
                 onChange={onChange}
-                id='key-message-input' />
+                data-id='key-message-input' />
             </FormField>
           </FormSection>
 
           <FormSection label='Links' addLinkText='Add another link' addLinkClassName='add-links-button' onAdd={this.addLink}>
-            {links.map((link, i) => (
-              <FormField icon={<WebsiteIcon />} key={i}>
+            {links.map((link, index) => (
+              <FormField icon={<WebsiteIcon />} key={index}>
                 <input
-                  className='input flex-auto placeholder-gray60 links-input'
+                  className='input flex-auto placeholder-gray60'
+                  data-id={`links-input-${index}`}
                   type='text'
-                  value={links[i].url}
+                  value={links[index].url || undefined}
                   placeholder='Links'
                   onChange={onLinkChange} />
-                <FormError error={errors[`link-${i}`]} show={showErrors} />
+                <FormError error={errors[`link-${index}`]} show={showErrors} />
               </FormField>
             ))}
           </FormSection>

@@ -40,12 +40,12 @@ const SignInForm = React.createClass({
             value={this.props.email}
             placeholder={`yourname@${Meteor.settings.public.authentication.emailDomains[0]}`}
             onChange={this.onFieldChange}
-            id='authenticate-email-field'
+            data-id='authenticate-email-field'
             validations={['required', 'signInEmail']}
           />
         </div>
         <div>
-          <Button className='btn bg-blue white width-100' id='authenticate-send-email-button' disabled={false}>Email me a link to sign in</Button>
+          <Button className='btn bg-blue white width-100' data-id='authenticate-send-email-button' disabled={false}>Email me a link to sign in</Button>
         </div>
       </Form>
     )

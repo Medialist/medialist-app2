@@ -10,7 +10,8 @@ export default React.createClass({
     onChange: PropTypes.func.isRequired,
     onSelect: PropTypes.func.isRequired,
     suggestions: PropTypes.array.isRequired,
-    menuWidth: PropTypes.number.isRequired
+    menuWidth: PropTypes.number.isRequired,
+    'data-id': PropTypes.string
   },
   getDefaultProps () {
     return {
@@ -97,6 +98,7 @@ export default React.createClass({
           onFocus={onFocus}
           onBlur={this.onBlur}
           id={id}
+          data-id={this.props['data-id']}
         />
         <DropdownMenu open={open} onDismiss={onDismiss} width={menuWidth} arrowHeight={0}>
           <ol className='list-reset m0'>{suggestions.map((s, ind) => {

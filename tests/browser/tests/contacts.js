@@ -24,6 +24,8 @@ const test = {
     contactsPage.section.importComplete.waitForElementVisible('@status')
     contactsPage.section.importComplete.assert.containsText('@status', 'Created 1 contacts and updated 0 contacts.')
 
+    t.page.main().logout()
+
     t.end()
   },
 
@@ -58,53 +60,55 @@ const test = {
       .click('@newContactButton')
       .waitForElementVisible('@editContactForm')
 
-    contactsPage.section.editContactForm.clearValue(`@nameInput`)
-    contactsPage.section.editContactForm.setValue(`@nameInput`, contact.name)
+    const form = contactsPage.section.editContactForm
 
-    contactsPage.section.editContactForm.clearValue(`@jobTitleInput`)
-    contactsPage.section.editContactForm.setValue(`@jobTitleInput`, contact.outlets[0].title)
-    contactsPage.section.editContactForm.clearValue(`@jobCompanyInput`)
-    contactsPage.section.editContactForm.setValue(`@jobCompanyInput`, contact.outlets[0].company)
+    form.clearValue(`@nameInput`)
+    form.setValue(`@nameInput`, contact.name)
 
-    contactsPage.section.editContactForm.waitForElementVisible('@addJobButton')
-    contactsPage.section.editContactForm.click(`@addJobButton`)
-    contactsPage.section.editContactForm.waitForElementVisible('@otherJobTitleInput')
+    form.clearValue(`@jobTitleInput`)
+    form.setValue(`@jobTitleInput`, contact.outlets[0].title)
+    form.clearValue(`@jobCompanyInput`)
+    form.setValue(`@jobCompanyInput`, contact.outlets[0].company)
 
-    contactsPage.section.editContactForm.clearValue(`@otherJobTitleInput`)
-    contactsPage.section.editContactForm.setValue(`@otherJobTitleInput`, contact.outlets[1].title)
-    contactsPage.section.editContactForm.clearValue(`@otherJobCompanyInput`)
-    contactsPage.section.editContactForm.setValue(`@otherJobCompanyInput`, contact.outlets[1].company)
+    form.waitForElementVisible('@addJobButton')
+    form.click(`@addJobButton`)
+    form.waitForElementVisible('@otherJobTitleInput')
 
-    contactsPage.section.editContactForm.clearValue(`@emailInput`)
-    contactsPage.section.editContactForm.setValue(`@emailInput`, contact.emails[0])
+    form.clearValue(`@otherJobTitleInput`)
+    form.setValue(`@otherJobTitleInput`, contact.outlets[1].title)
+    form.clearValue(`@otherJobCompanyInput`)
+    form.setValue(`@otherJobCompanyInput`, contact.outlets[1].company)
 
-    contactsPage.section.editContactForm.waitForElementVisible('@addEmailButton')
-    contactsPage.section.editContactForm.click(`@addEmailButton`)
-    contactsPage.section.editContactForm.waitForElementVisible('@otherEmailInput')
+    form.clearValue(`@emailInput`)
+    form.setValue(`@emailInput`, contact.emails[0])
 
-    contactsPage.section.editContactForm.clearValue(`@otherEmailInput`)
-    contactsPage.section.editContactForm.setValue(`@otherEmailInput`, contact.emails[1])
+    form.waitForElementVisible('@addEmailButton')
+    form.click(`@addEmailButton`)
+    form.waitForElementVisible('@otherEmailInput')
 
-    contactsPage.section.editContactForm.clearValue(`@phoneInput`)
-    contactsPage.section.editContactForm.setValue(`@phoneInput`, contact.phones[0])
+    form.clearValue(`@otherEmailInput`)
+    form.setValue(`@otherEmailInput`, contact.emails[1])
 
-    contactsPage.section.editContactForm.waitForElementVisible('@addPhoneButton')
-    contactsPage.section.editContactForm.click(`@addPhoneButton`)
-    contactsPage.section.editContactForm.waitForElementVisible('@otherPhoneInput')
+    form.clearValue(`@phoneInput`)
+    form.setValue(`@phoneInput`, contact.phones[0])
 
-    contactsPage.section.editContactForm.clearValue(`@otherPhoneInput`)
-    contactsPage.section.editContactForm.setValue(`@otherPhoneInput`, contact.phones[1])
+    form.waitForElementVisible('@addPhoneButton')
+    form.click(`@addPhoneButton`)
+    form.waitForElementVisible('@otherPhoneInput')
 
-    contactsPage.section.editContactForm.waitForElementVisible('@addSocialButton')
-    contactsPage.section.editContactForm.click(`@addSocialButton`)
-    contactsPage.section.editContactForm.waitForElementVisible('@otherWebsiteInput')
+    form.clearValue(`@otherPhoneInput`)
+    form.setValue(`@otherPhoneInput`, contact.phones[1])
+
+    form.waitForElementVisible('@addSocialButton')
+    form.click(`@addSocialButton`)
+    form.waitForElementVisible('@otherWebsiteInput')
 
     Object.keys(contact.socials).forEach(key => {
-      contactsPage.section.editContactForm.clearValue(`@${key}Input`)
-      contactsPage.section.editContactForm.setValue(`@${key}Input`, contact.socials[key])
+      form.clearValue(`@${key}Input`)
+      form.setValue(`@${key}Input`, contact.socials[key])
     })
 
-    contactsPage.section.editContactForm.click('@submitButton')
+    form.click('@submitButton')
 
     t.perform(function (done) {
       t.db.findContact({
@@ -142,6 +146,8 @@ const test = {
         done()
       })
     })
+
+    t.page.main().logout()
 
     t.end()
   }

@@ -3,32 +3,37 @@
 module.exports = {
   url: 'http://localhost:3000/campaigns',
   elements: {
-    newCampaignButton: '#create-campaign-button'
+    newCampaignButton: '[data-id=create-campaign-button]'
   },
   sections: {
     editCampaignForm: {
       selector: '[data-id=edit-campaign-form]',
       elements: {
-        campaignNameInput: '.campaign-name-input',
-        clientInput: '.client-input',
-        keyMessageInput: '.key-message-input',
-        linksInput: '.links-input',
-        addLinksButton: '.add-links-button',
-        saveCampaignButton: '.save-campaign-button'
+        campaignNameInput: '[data-id=campaign-name-input]',
+        clientInput: '[data-id=client-input]',
+        keyMessageInput: '[data-id=key-message-input]',
+        linksInput: '[data-id=links-input-0]',
+        addLinksButton: '[data-id=add-links-button]',
+        saveCampaignButton: '[data-id=save-campaign-button]'
       }
     }
   },
   commands: [{
     createCampaign: function (campaign) {
-      return this
+      this
         .waitForElementVisible('@newCampaignButton')
         .click('@newCampaignButton')
-        .waitForElementVisible('@campaignNameInput')
-        .sendKeys('@campaignNameInput', campaign.name)
-        .sendKeys('@clientInput', campaign.client)
-        .sendKeys('@keyMessageInput', campaign.keyMessage)
-        .sendKeys('@linksInput', campaign.link)
-        .click('@saveCampaignButton')
+
+      const form = this.section.editCampaignForm
+
+      form.waitForElementVisible('@campaignNameInput')
+      form.sendKeys('@campaignNameInput', campaign.name)
+      form.sendKeys('@clientInput', campaign.client)
+      form.sendKeys('@keyMessageInput', campaign.keyMessage)
+      form.sendKeys('@linksInput', campaign.link)
+      form.click('@saveCampaignButton')
+
+      return this
     }
   }]
 }

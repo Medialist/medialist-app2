@@ -74,7 +74,7 @@ const AddContact = React.createClass({
         </div>
         <form className='py4 border-top border-gray80 flex' onReset={onReset} onSubmit={onSubmit}>
           <div className='flex-auto'>
-            <Link to='/contacts/import' className='btn bg-transparent blue ml1' id='import-contacts-button'>
+            <Link to='/contacts/import' className='btn bg-transparent blue ml1' data-id='import-contacts-button'>
               Import Contacts via CSV
             </Link>
           </div>

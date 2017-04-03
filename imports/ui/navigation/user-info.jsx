@@ -34,7 +34,7 @@ const UserInfo = React.createClass({
 
     return (
       <Dropdown style={{padding: '14px 0 13px 25px', marginRight: 18}}>
-        <div className='inline-block hover-opacity-trigger pointer' onClick={this.onNameClick}>
+        <div className='inline-block hover-opacity-trigger pointer' onClick={this.onNameClick} data-id='user-info-menu'>
           <HamburgerIcon className='flex-none md-hide lg-hide' />
           <CircleAvatar name={user.profile.name} avatar={user.profile.avatar} style={{ verticalAlign: '-2px', marginRight: '10px' }} className='xs-hide sm-hide' />
           <div className='inline-block xs-hide sm-hide'>
@@ -54,11 +54,11 @@ const UserInfo = React.createClass({
             </div>
           </div>
           <nav className='block border-top border-gray80 py1' style={{width: 225}}>
-            <Link to='/settings' className='block px3 py2 f-md normal gray20 hover-bg-blue' activeClassName='active' onClick={this.onLinkClick}>
+            <Link to='/settings' className='block px3 py2 f-md normal gray20 hover-bg-blue' activeClassName='active' onClick={this.onLinkClick} data-id='settings-link'>
               <SettingsIcon />
               <span className='ml2'>Settings</span>
             </Link>
-            <Link to='/logout' className='block px3 py2 f-md normal gray20 hover-bg-blue' activeClassName='active'>
+            <Link to='/logout' className='block px3 py2 f-md normal gray20 hover-bg-blue' activeClassName='active' data-id='logout-link'>
               <ExitIcon />
               <span className='ml2'>Logout</span>
             </Link>

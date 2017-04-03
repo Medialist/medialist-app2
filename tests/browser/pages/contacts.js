@@ -3,25 +3,25 @@
 module.exports = {
   url: 'http://localhost:3000/contacts',
   elements: {
-    contactActionsButton: '#contact-actions-button',
-    importContactsButton: '#import-contacts-button',
-    saveAndImportContactsButton: '#save-and-import-contacts-button',
-    newContactButton: '#new-contact-button',
-    editContactForm: '#edit-contact-form'
+    contactActionsButton: '[data-id=contact-actions-button]',
+    importContactsButton: '[data-id=import-contacts-button]',
+    saveAndImportContactsButton: '[data-id=save-and-import-contacts-button]',
+    newContactButton: '[data-id=new-contact-button]',
+    editContactForm: '[data-id=edit-contact-form]'
   },
   sections: {
     upload: {
-      selector: '#contacts-import',
+      selector: '[data-id=contacts-import]',
       elements: {
-        importContactsButton: '#import-contacts-button',
-        fileInput: '#file-input',
-        uploadContactsButton: '#upload-contacts-button'
+        importContactsButton: '[data-id=import-contacts-button]',
+        fileInput: '[data-id=file-input]',
+        uploadContactsButton: '[data-id=upload-contacts-button]'
       }
     },
     importComplete: {
-      selector: '#contacts-import-complete',
+      selector: '[data-id=contacts-import-complete]',
       elements: {
-        status: '#contacts-import-complete-status'
+        status: '[data-id=contacts-import-complete-status]'
       }
     },
     editContactForm: {
@@ -49,7 +49,7 @@ module.exports = {
         pinterestInput: '[data-id=social-input-pinterest]',
         otherWebsiteInput: '[data-id=social-input-8]',
         addSocialButton: '[data-id=add-social-button]',
-        submitButton: '[data-id=edit-contact-form-submit-button]',
+        submitButton: '[data-id=edit-contact-form-submit-button]'
       }
     }
   },

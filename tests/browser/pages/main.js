@@ -3,8 +3,10 @@
 module.exports = {
   url: 'http://localhost:3000/',
   elements: {
-    campaignsTab: '#campaigns-tab',
-    contactsTab: '#contacts-tab'
+    campaignsTab: '[data-id=campaigns-tab]',
+    contactsTab: '[data-id=contacts-tab]',
+    userInfoMenu: '[data-id=user-info-menu]',
+    logOutLink: '[data-id=logout-link]'
   },
   commands: [{
     navigateToCampaigns: function (t) {
@@ -20,6 +22,13 @@ module.exports = {
         .click('@contactsTab')
 
       return t.page.contacts()
+    },
+    logout: function (t) {
+      this
+        .waitForElementVisible('@userInfoMenu')
+        .click('@userInfoMenu')
+        .waitForElementVisible('@logOutLink')
+        .click('@logOutLink')
     }
   }]
 }

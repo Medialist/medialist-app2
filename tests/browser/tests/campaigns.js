@@ -48,6 +48,8 @@ const test = {
       })
     })
 
+    t.page.main().logout()
+
     t.end()
   }
 }

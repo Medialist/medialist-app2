@@ -4,26 +4,26 @@ module.exports = {
   url: 'http://localhost:3000/campaigns',
   sections: {
     details: {
-      selector: '#campaign-details',
+      selector: '[data-id=campaign-details]',
       elements: {
-        title: '#campaign-name',
-        client: '#campaign-client',
-        keyMessage: '#campaign-key-message',
-        links: '.campaign-link',
-        teamMembers: '#campaign-team-members',
-        masterLists: '#campaign-master-lists',
-        tags: '#campaign-tags'
+        title: '[data-id=campaign-name]',
+        client: '[data-id=campaign-client]',
+        keyMessage: '[data-id=campaign-key-message]',
+        links: '[data-id=campaign-link]',
+        teamMembers: '[data-id=campaign-team-members]',
+        masterLists: '[data-id=campaign-master-lists]',
+        tags: '[data-id=campaign-tags]'
       }
     },
     activity: {
-      selector: '#activity-feed',
+      selector: '[data-id=activity-feed]',
       elements: {
-        feedbackPost: '.feedback-post .post-text',
-        coveragePost: '.coverage-post .post-text',
-        needToKnowPost: '.need-to-know-post .post-text',
-        statusUpdatePost: '.status-update .post-text',
-        addContactsToCampaignPost: '.add-contacts-to-campaign .post-text',
-        createCampaignPost: '.create-campaign .post-text'
+        feedbackPost: '[data-id=feedback-post] [data-id=post-text]',
+        coveragePost: '[data-id=coverage-post] [data-id=post-text]',
+        needToKnowPost: '[data-id=need-to-know-post] [data-id=post-text]',
+        statusUpdatePost: '[data-id=status-update] [data-id=post-text]',
+        addContactsToCampaignPost: '[data-id=add-contacts-to-campaign] [data-id=post-text]',
+        createCampaignPost: '[data-id=create-campaign] [data-id=post-text]'
       }
     }
   },

@@ -30,7 +30,7 @@ export default withRouter(React.createClass({
     const { onFileChange, onImport } = this
     const { file } = this.state
     return (
-      <div id='contacts-import'>
+      <div data-id='contacts-import'>
         <Topbar backLinkText='Cancel' />
         <section className='mx-auto center py3' style={{maxWidth: 554}}>
           <h1 className='f-xxl gray10 m0 pb2 semibold'>Import your contacts</h1>
@@ -78,7 +78,7 @@ const FileInfo = ({ file, onImport, onFileChange }) => (
       </div>
     </div>
     <div className='py4 center border-top border-gray80'>
-      <button className='btn bg-completed white mx4' onClick={onImport} id='upload-contacts-button'>
+      <button className='btn bg-completed white mx4' onClick={onImport} data-id='upload-contacts-button'>
         Upload File
       </button>
     </div>

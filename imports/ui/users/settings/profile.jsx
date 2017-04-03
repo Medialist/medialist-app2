@@ -53,7 +53,7 @@ export default React.createClass({
     }
 
     return (
-      <Form id='profile-settings-panel' className='py8' onSubmit={this.onSubmit} ref={(form) => { this.form = form }}>
+      <Form data-id='profile-settings-panel' className='py8' onSubmit={this.onSubmit} ref={(form) => { this.form = form }}>
         <div className='ml-auto mr-auto w26'>
           <div className='py2'>
             <EditableAvatarWithButtons
@@ -101,7 +101,7 @@ export default React.createClass({
             type='submit'
             className='btn white bg-blue w24'
             disabled={false}
-            id='update-profile-button'
+            data-id='update-profile-button'
           >Save changes</Button>
         </div>
       </Form>
