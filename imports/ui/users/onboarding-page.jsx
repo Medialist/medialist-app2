@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor'
 import { browserHistory } from 'react-router'
 import { CircleAvatar } from '../images/avatar'
 import EditableAvatarWithButtons from '../images/editable-avatar-with-buttons'
-import { Form, Input, Button } from 'react-validation/lib/build/validation.rc'
+import { Form, Input, Button } from '@achingbrain/react-validation'
 
 const OnboardingPage = React.createClass({
   getInitialState () {

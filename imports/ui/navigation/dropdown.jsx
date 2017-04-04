@@ -14,7 +14,7 @@ import React, { PropTypes } from 'react'
  */
 
 export const Dropdown = ({children}) => (
-  <div style={{display: 'inline-block'}}>
+  <div className='inline-block align-top'>
     {children}
   </div>
 )

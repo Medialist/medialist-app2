@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import { Meteor } from 'meteor/meteor'
-import { Form, Input, Button } from 'react-validation/lib/build/validation.rc'
+import { Form, Input, Button } from '@achingbrain/react-validation'
 import { CircleAvatar } from '../../images/avatar'
 import { LockIcon } from '../../images/icons'
 import EditableAvatarWithButtons from '../../images/editable-avatar-with-buttons'

@@ -12,7 +12,7 @@ import EditableAvatar from '../images/editable-avatar'
 import ClientAutocomplete from './client-autocomplete'
 import { create, update } from '/imports/api/campaigns/methods'
 import { MedialistCreateSchema } from '/imports/api/campaigns/campaigns'
-import { Form, Input, Textarea, Button } from 'react-validation/lib/build/validation.rc'
+import { Form, Input, Textarea, Button } from '@achingbrain/react-validation'
 
 const EditCampaign = React.createClass({
   propTypes: {

@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import { Dropdown, DropdownMenu } from '../navigation/dropdown'
-import { Input } from 'react-validation/lib/build/validation.rc'
+import { Input } from '@achingbrain/react-validation'
 
 export default React.createClass({
   propTypes: {
@@ -95,6 +95,7 @@ export default React.createClass({
           type='text'
           style={style}
           className={className}
+          errorClassName='error'
           name={name}
           value={value}
           placeholder={placeholder}
@@ -105,19 +106,20 @@ export default React.createClass({
           onBlur={this.onBlur}
           id={id}
           data-id={this.props['data-id']}
+          data-paired-with={this.props['data-paired-with']}
           validations={this.props.validations}
         />
         <DropdownMenu open={open} onDismiss={onDismiss} width={menuWidth} arrowHeight={0}>
-          <ol className='list-reset m0'>{suggestions.map((s, ind) => {
-            const activeClass = (activeInd === ind) ? 'bg-blue white' : ''
+          <ol className='list-reset m0'>{suggestions.map((suggestion, index) => {
+            const activeClass = (activeInd === index) ? 'bg-blue white' : ''
             return (
               <li
-                key={s}
+                key={index.toString()}
                 className={`block px3 py2 pointer left-align f-sm normal gray20 ${activeClass}`}
-                onMouseOver={() => onActivate(ind)}
+                onMouseOver={() => onActivate(index)}
                 onMouseOut={() => onActivate(0)}
-                onMouseDown={() => onClick(s)}>
-                {s}
+                onMouseDown={() => onClick(suggestion)}>
+                {suggestion}
               </li>
             )
           })}</ol>

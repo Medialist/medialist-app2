@@ -12,7 +12,7 @@ import { SocialMap, SocialIcon } from '../social/social'
 import EditableAvatar from '../images/editable-avatar/editable-avatar'
 import Scroll from '../navigation/scroll'
 import Modal from '../navigation/modal'
-import { Form, Input, Button } from 'react-validation/lib/build/validation.rc'
+import { Form, Input, Button } from '@achingbrain/react-validation'
 
 const EditContact = React.createClass({
   propTypes: {
@@ -221,12 +221,14 @@ const EditContact = React.createClass({
                     menuWidth={225}
                     className='input'
                     data-id={`job-title-input-${index}`}
+                    data-paired-with={`outlets.${index}.label`}
                     value={outlet.value}
                     name={`outlets.${index}.value`}
                     field='value'
                     placeholder='Title'
                     onSelect={this.onAutocomplete}
                     onChange={this.onFieldChange}
+                    validations={['paired']}
                   />
                   <div className='ml4 inline-block'>
                     <OutletAutocomplete
@@ -234,12 +236,14 @@ const EditContact = React.createClass({
                       menuWidth={225}
                       className='input'
                       data-id={`job-company-input-${index}`}
+                      data-paired-with={`outlets.${index}.value`}
                       value={outlet.label}
                       name={`outlets.${index}.label`}
                       field='label'
                       placeholder='Outlet'
                       onSelect={this.onAutocomplete}
                       onChange={this.onFieldChange}
+                      validations={['paired']}
                     />
                   </div>
                 </FormField>

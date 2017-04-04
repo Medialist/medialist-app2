@@ -1,6 +1,6 @@
 import React from 'react'
 import { Meteor } from 'meteor/meteor'
-import { rules } from 'react-validation/lib/build/validation.rc'
+import { rules } from '@achingbrain/react-validation'
 import validator from 'validator'
 
 const SIGNIN_EMAIL_DOMAIN_REGEX = new RegExp('^.+' + Meteor.settings.public.authentication.emailDomains
@@ -88,6 +88,21 @@ export default Object.assign(rules, {
     },
     hint: value => {
       return <p className='error-message f-sm mt1'>Please enter a valid URL</p>
+    }
+  },
+
+  paired: {
+    rule: (value, components, component) => {
+      const other = components[component.props['data-paired-with']]
+
+      if (!value && other.state.value) {
+        return false
+      }
+
+      return true
+    },
+    hint: value => {
+      return <p className='error-message f-sm mt1'>Please enter a value</p>
     }
   }
 })
