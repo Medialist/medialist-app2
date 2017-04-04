@@ -102,7 +102,7 @@ const ContactInfo = React.createClass({
             <div className='pt4'>{socials.map((social, index) => <SocialIcon {...social} className='mr2' key={index} />)}</div>
           </div>
         </div>
-        <div className='clearfix p3 pt4 mt4 border-gray80 border-bottom'>
+        <div className='clearfix p2 pt4 mt4 border-gray80 border-bottom'>
           <a href='#' className='f-sm blue right' onClick={this.props.onEditClick}>Edit</a>
           <h1 className='m0 f-md normal gray20 left'>Info</h1>
         </div>
