@@ -4,15 +4,15 @@ import cloneDeep from 'lodash.clonedeep'
 import immutable from 'object-path-immutable'
 import { CameraIcon, BioIcon, WebsiteIcon, FilledCircle } from '../images/icons'
 import Modal from '../navigation/modal'
-import { hasErrors, atLeastOne } from '/imports/lib/forms'
+import { atLeastOne } from '/imports/lib/forms'
 import ValidationBanner from '../forms/validation-banner'
 import FormSection from '../forms/form-section'
 import FormField from '../forms/form-field'
-import FormError from '../forms/form-error'
 import EditableAvatar from '../images/editable-avatar'
 import ClientAutocomplete from './client-autocomplete'
 import { create, update } from '/imports/api/campaigns/methods'
 import { MedialistCreateSchema } from '/imports/api/campaigns/campaigns'
+import { Form, Input, Textarea, Button } from 'react-validation/lib/build/validation.rc'
 
 const EditCampaign = React.createClass({
   propTypes: {
@@ -29,9 +29,8 @@ const EditCampaign = React.createClass({
       purpose: campaign.purpose || '',
       clientName: campaign.client && campaign.client.name || '',
       links: atLeastOne(campaign.links, { url: '' }),
-      showErrors: false
+      errorHeader: null
     }
-    state.errors = this.validate(state)
     return state
   },
   onAvatarChange ({url}) {
@@ -41,26 +40,12 @@ const EditCampaign = React.createClass({
     console.error('Failed to change avatar', err)
     console.log('TODO: toast error message')
   },
-  onClientNameChange (evt) {
-    const {value} = evt.target
-    this.setState({clientName: value})
+  onFieldChange (event) {
+    const { name, value } = event.target
+    this.setState((s) => immutable.set(s, name, value))
   },
-  onClientSelect ({name, value}) {
-    this.setState({clientName: value})
-  },
-  onChange (evt) {
-    const {name, value} = evt.target
-    this.setState({ [name]: value })
-    this.setState((s) => ({
-      errors: this.validate(s)
-    }))
-  },
-  onLinkChange (evt) {
-    const {name: i, value} = evt.target
-    this.setState((s) => immutable.set(s, `links.${i}.url`, value))
-    this.setState((s) => ({
-      errors: this.validate(s)
-    }))
+  onAutocomplete ({name, value}) {
+    this.setState((s) => immutable.set(s, name, value))
   },
   addLink () {
     this.setState((s) => ({
@@ -69,60 +54,68 @@ const EditCampaign = React.createClass({
   },
   onSubmit (evt) {
     evt.preventDefault()
-    if (hasErrors(this.state)) {
-      return this.setState({showErrors: true})
+
+    const errors = this.form.validateAll()
+
+    if (Object.keys(errors).length) {
+      let headlineError = null
+      const emailError = Object.keys(errors).find(key => key.includes('emails-'))
+
+      if (errors.name) {
+        headlineError = 'Please add a campaign name'
+      } else if (emailError) {
+        headlineError = 'Looks like that isn’t a valid email'
+      } else {
+        headlineError = 'Let’s add a little more detail'
+      }
+
+      this.setState({
+        errorHeader: headlineError
+      })
+
+      return
     }
-    const { campaign, router, onDismiss } = this.props
-    const { avatar, name, purpose, clientName, links } = this.state
-    const payload = { avatar, name, purpose, clientName, links: links.filter((l) => l.url) }
-    Object.keys(payload).forEach((k) => {
-      if (payload[k] === '' || payload[k] === []) delete payload[k]
-    })
-    if (campaign) {
-      update.call({ _id: campaign._id, ...payload }, (err, res) => {
+
+    const data = cloneDeep(this.state)
+    MedialistCreateSchema.clean(data)
+    data.links = data.links.filter((o) => o.url)
+
+    if (!data.purpose) {
+      data.purpose = null
+    }
+
+    if (this.props.campaign) {
+      update.call({ _id: this.props.campaign._id, ...data }, (err, res) => {
         if (err) return console.error('Failed to edit campaign', err)
-        onDismiss()
+        this.props.onDismiss()
       })
     } else {
-      create.call(payload, (err, slug) => {
+      create.call(data, (err, slug) => {
         if (err) return console.error('Failed to create campaign', err)
-        router.push(`/campaign/${slug || campaign.slug}`)
+        this.props.router.push(`/campaign/${slug}`)
       })
     }
   },
   onReset () {
     this.props.onDismiss()
   },
-  validate (state) {
-    const { avatar, name, purpose, clientName, links } = state
-    const validationContext = MedialistCreateSchema.newContext()
-    const campaign = { avatar, name, purpose, clientName, links: links.filter((l) => l.url) }
-    validationContext.validate(campaign)
-    const errors = validationContext.invalidKeys().reduce((errors, error) => {
-      const field = error.name
-      errors[field] = `Please add a ${MedialistCreateSchema.label(field)}`
-      if (field.substr(0, 5) === 'links') errors.links = 'Please only use valid URLs'
-      return errors
-    }, {})
-    const errorsCount = Object.keys(errors).length
-    if (errorsCount > 0) {
-      errors.headline = errorsCount > 1 ? 'Let\'s add a little more detail' : errors[Object.keys(errors)[0]]
-    }
-    return errors
-  },
   onDismissErrorBanner () {
-    const errors = cloneDeep(this.state.errors)
-    delete errors.headline
-    this.setState({errors})
+    this.setState({
+      errorHeader: null
+    })
+  },
+  inputSize (value) {
+    if (!value || value.length < 14) return 15
+    return value.length + 2
   },
   render () {
     if (!this.props.open) return null
-    const { onChange, onLinkChange, onSubmit, onReset, onClientNameChange, onClientSelect, onAvatarChange, onAvatarError, onDismissErrorBanner } = this
+    const { onReset, onAvatarChange, onAvatarError, onDismissErrorBanner, inputSize } = this
     const { campaign } = this.props
-    const { avatar, name, purpose, clientName, links, errors, showErrors } = this.state
+    const { avatar, name, purpose, clientName, links } = this.state
     return (
-      <div className='relative' data-id='edit-campaign-form'>
-        <ValidationBanner error={errors.headline} show={showErrors} onDismissErrorBanner={onDismissErrorBanner} />
+      <Form className='relative' data-id='edit-campaign-form' onSubmit={this.onSubmit} ref={(form) => { this.form = form }}>
+        <ValidationBanner error={this.state.errorHeader} onDismiss={onDismissErrorBanner} />
         <div className='px4 py6 center border-bottom border-gray80'>
           <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError} menuTop={-50}>
             <div className='bg-gray60 center rounded mx-auto' style={{height: '110px', width: '110px', lineHeight: '110px'}}>
@@ -130,17 +123,18 @@ const EditCampaign = React.createClass({
             </div>
           </EditableAvatar>
           <div>
-            <input
+            <Input
               autoComplete='off'
-              className={`center gray10 input-inline mt4 f-xxxl semibold placeholder-gray60 ${errors.name && showErrors ? 'error' : ''}`}
+              className='center gray10 input-inline mt4 f-xxxl semibold placeholder-gray60'
+              errorClassName='error'
+              data-id='campaign-name-input'
+              placeholder='Campaign name'
               type='text'
               name='name'
               value={name}
-              placeholder='Campaign name'
-              size={name.length === 0 ? 15 : name.length + 2}
-              onChange={onChange}
-              data-id='campaign-name-input' />
-            <FormError error={errors.name} show={showErrors} />
+              size={inputSize(name)}
+              onChange={this.onFieldChange}
+              validations={['required']} />
           </div>
         </div>
 
@@ -151,18 +145,19 @@ const EditCampaign = React.createClass({
                 style={{width: 472}}
                 menuWidth={472}
                 className='input block placeholder-gray60'
+                data-id='client-input'
                 name='clientName'
                 placeholder='Client'
                 value={clientName}
-                onSelect={onClientSelect}
-                onChange={onClientNameChange}
-                data-id='client-input' />
+                onSelect={this.onAutocomplete}
+                onChange={this.onFieldChange}
+              />
             </FormField>
           </FormSection>
 
           <FormSection label='Key Message'>
             <FormField icon={<BioIcon />}>
-              <textarea
+              <Textarea
                 style={{height: '70px'}}
                 className='input block textarea placeholder-gray60'
                 type='text'
@@ -170,34 +165,35 @@ const EditCampaign = React.createClass({
                 name='purpose'
                 value={purpose}
                 placeholder='Key Message'
-                onChange={onChange}
-                data-id='key-message-input' />
+                onChange={this.onFieldChange}
+                data-id='key-message-input'
+                validations={[]} />
             </FormField>
           </FormSection>
 
           <FormSection label='Links' addLinkText='Add another link' addLinkClassName='add-links-button' onAdd={this.addLink}>
             {links.map((link, index) => (
               <FormField icon={<WebsiteIcon />} key={index}>
-                <input
+                <Input
                   className='input flex-auto placeholder-gray60'
                   data-id={`links-input-${index}`}
-                  name={index.toString()}
+                  name={`links.${index}.url`}
                   type='text'
                   value={links[index].url || undefined}
                   placeholder='Links'
-                  onChange={onLinkChange} />
-                <FormError error={errors[`link-${index}`]} show={showErrors} />
+                  onChange={this.onFieldChange}
+                  validations={['url']} />
               </FormField>
             ))}
           </FormSection>
         </div>
         <div className='p4 right'>
-          <button className='btn bg-completed white right' onClick={onSubmit} data-id='save-campaign-button'>
+          <Button className='btn bg-completed white right' data-id='save-campaign-button' disabled={false}>
             {campaign ? 'Save Changes' : 'Create Campaign'}
-          </button>
+          </Button>
           <button className='btn bg-transparent gray40 right mr2' onClick={onReset}>Cancel</button>
         </div>
-      </div>
+      </Form>
     )
   }
 })

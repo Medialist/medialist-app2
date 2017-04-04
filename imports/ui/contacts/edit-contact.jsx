@@ -58,7 +58,6 @@ const EditContact = React.createClass({
       emails: atLeastOne(contact.emails, {label: 'Email', value: ''}),
       phones: atLeastOne(contact.phones, {label: 'Phone', value: ''}),
       socials,
-      showErrors: false,
       fixHeaderPosition: false,
       errorHeader: null
     }, this.props.prefill)
@@ -99,19 +98,8 @@ const EditContact = React.createClass({
   },
 
   onFieldChange (event) {
-    const {name, value} = event.target
-
-    if (name.includes('-')) {
-      const parts = name.split('-')
-      const property = parts[0]
-      const index = parts[1]
-
-      this.setState((s) => immutable.set(s, `${property}.${index}.value`, value))
-    } else {
-      this.setState({
-        [name]: value
-      })
-    }
+    const { name, value } = event.target
+    this.setState((s) => immutable.set(s, name, value))
   },
 
   onAvatarChange (evt) {
@@ -136,20 +124,8 @@ const EditContact = React.createClass({
     console.log('onAvatarError', err)
   },
 
-  onJobTitleSelect ({name: i, value}) {
-    this.setState((s) => immutable.set(s, `outlets.${i}.value`, value))
-  },
-
-  onJobTitleChange (evt) {
-    this.onJobTitleSelect(evt.target)
-  },
-
-  onJobOrgSelect ({name: i, value}) {
-    this.setState((s) => immutable.set(s, `outlets.${i}.label`, value))
-  },
-
-  onJobOrgChange (evt) {
-    this.onJobOrgSelect(evt.target)
+  onAutocomplete ({name, value}) {
+    this.setState((s) => immutable.set(s, name, value))
   },
 
   onDelete (evt) {
@@ -201,7 +177,7 @@ const EditContact = React.createClass({
   },
 
   render () {
-    const { onAvatarChange, onAvatarError, onJobTitleChange, onJobOrgChange, onJobOrgSelect, onJobTitleSelect, onAddJob, onAddEmail, onAddPhone, onAddSocial, onDelete, inputSize, onScrollChange, onDismissErrorBanner } = this
+    const { onAvatarChange, onAvatarError, onAddJob, onAddEmail, onAddPhone, onAddSocial, onDelete, inputSize, onScrollChange, onDismissErrorBanner } = this
     const { onDismiss } = this.props
     const { name, avatar, outlets, emails, phones, socials, fixHeaderPosition } = this.state
     return (
@@ -246,11 +222,11 @@ const EditContact = React.createClass({
                     className='input'
                     data-id={`job-title-input-${index}`}
                     value={outlet.value}
-                    name={index.toString()}
+                    name={`outlets.${index}.value`}
                     field='value'
                     placeholder='Title'
-                    onSelect={onJobTitleSelect}
-                    onChange={onJobTitleChange}
+                    onSelect={this.onAutocomplete}
+                    onChange={this.onFieldChange}
                   />
                   <div className='ml4 inline-block'>
                     <OutletAutocomplete
@@ -259,11 +235,11 @@ const EditContact = React.createClass({
                       className='input'
                       data-id={`job-company-input-${index}`}
                       value={outlet.label}
-                      name={index.toString()}
+                      name={`outlets.${index}.label`}
                       field='label'
                       placeholder='Outlet'
-                      onSelect={onJobOrgSelect}
-                      onChange={onJobOrgChange}
+                      onSelect={this.onAutocomplete}
+                      onChange={this.onFieldChange}
                     />
                   </div>
                 </FormField>
@@ -281,7 +257,7 @@ const EditContact = React.createClass({
                       errorClassName='error'
                       type='text'
                       value={email.value}
-                      name={`emails-${index}`}
+                      name={`emails.${index}.value`}
                       onChange={this.onFieldChange}
                       placeholder='Email'
                       validations={['email']} />
@@ -299,7 +275,7 @@ const EditContact = React.createClass({
                     data-id={`phone-input-${index}`}
                     errorClassName='error'
                     type='text'
-                    name={`phones-${index}`}
+                    name={`phones.${index}.value`}
                     value={phone.value}
                     onChange={this.onFieldChange}
                     placeholder='Phone number'
@@ -317,7 +293,7 @@ const EditContact = React.createClass({
                     data-id={`social-input-${index > 7 ? index : label.toLowerCase()}`}
                     errorClassName='error'
                     type='text'
-                    name={`socials-${index}`}
+                    name={`socials.${index}.value`}
                     value={value}
                     onChange={this.onFieldChange}
                     placeholder={label}
