@@ -181,6 +181,7 @@ const EditCampaign = React.createClass({
                 <input
                   className='input flex-auto placeholder-gray60'
                   data-id={`links-input-${index}`}
+                  name={index.toString()}
                   type='text'
                   value={links[index].url || undefined}
                   placeholder='Links'
