@@ -99,7 +99,7 @@ const ContactInfo = React.createClass({
               <div className='f-sm gray10'>{(outlets && outlets.length) ? outlets[0].value : null}</div>
               <div className='f-sm gray10' style={{paddingTop: 2}}>{outlets.map((o) => o.label).join(', ')}</div>
             </div>
-            <div className='pt4'>{socials.map((social, index) => <SocialIcon {...social} className='mr2' key={index} />)}</div>
+            <div className='pt4'>{socials.map((social, index) => <SocialIcon {...social} className='inline-block mr2 mb2' key={index} />)}</div>
           </div>
         </div>
         <div className='clearfix p2 pt4 mt4 border-gray80 border-bottom'>
@@ -239,7 +239,7 @@ const ContactItemsPhone = ({ phone }) => {
   const { label, value } = phone
   const Icon = label === 'Mobile' ? MobileIcon : PhoneIcon
   return (
-    <div className='mb2'>
+    <div>
       <a href={`tel:${value}`} className='hover-blue block py1 clearfix'>
         <div className='col col-2 center'><Icon /></div>
         <div className='col col-10 f-sm gray10'>{value}</div>
