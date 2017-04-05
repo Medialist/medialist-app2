@@ -6,7 +6,12 @@ module.exports = {
     contactActionsButton: '[data-id=contact-actions-button]',
     importContactsButton: '[data-id=import-contacts-button]',
     saveAndImportContactsButton: '[data-id=save-and-import-contacts-button]',
-    newContactButton: '[data-id=new-contact-button]'
+    newContactButton: '[data-id=new-contact-button]',
+    searchContactsInput: '[data-id=search-contacts-input]',
+    editContactButton: '[data-id=edit-contact-button]',
+    contactLink: '[data-id=contact-link]',
+    contactsTable: '[data-id=contacts-table]',
+    contactsTableSearchResults: '[data-id=contacts-table-search-results]'
   },
   sections: {
     upload: {
@@ -56,10 +61,8 @@ module.exports = {
     uploadCsvFile: function (path) {
       // if we don't have an empty database, need to click the drop down arrow to
       // find the 'import contacts' button
-      this.api.element('css selector', '[data-id=contact-actions-button]', (result) => {
-        if (result.value && result.value.ELEMENT) {
-          this.click('@contactActionsButton')
-        }
+      this.ifPresent('[data-id=contact-actions-button]', () => {
+        this.click('@contactActionsButton')
       })
 
       this.waitForElementVisible('@importContactsButton')
@@ -80,60 +83,149 @@ module.exports = {
       this
         .click('@newContactButton')
         .waitForElementVisible(this.section.editContactForm.selector)
+        .fillInContactFormAnSubmit(contact)
 
+      return this
+    },
+    searchForContact: function (query) {
+      this.waitForElementVisible('@searchContactsInput')
+      this.clearValue('@searchContactsInput')
+      this.setValue('@searchContactsInput', query)
+      this.waitForElementVisible('@contactsTableSearchResults')
+
+      return this
+    },
+    selectSearchResult: function (query) {
+      this.waitForElementVisible('@contactLink')
+      this.click('@contactLink')
+
+      return this
+    },
+    editContact: function () {
+      this
+        .waitForElementVisible('@editContactButton')
+        .click('@editContactButton')
+        .waitForElementVisible(this.section.editContactForm.selector)
+
+      return this
+    },
+    updateContact: function (updated) {
+      this
+        .fillInContactFormAnSubmit(updated)
+
+      return this
+    },
+    verifyEditFormContents: function (contact) {
+      const form = this.section.editContactForm
+
+      form.assert.attributeEquals('@nameInput', 'value', contact.name)
+
+      contact.outlets.forEach((outlet, index) => {
+        form.assert.attributeEquals(`[data-id=job-title-input-${index}]`, 'value', outlet.title)
+        form.assert.attributeEquals(`[data-id=job-company-input-${index}]`, 'value', outlet.company)
+      })
+
+      contact.emails.forEach((value, index) => {
+        form.assert.attributeEquals(`[data-id=email-input-${index}]`, 'value', value)
+      })
+
+      contact.phones.forEach((value, index) => {
+        form.assert.attributeEquals(`[data-id=phone-input-${index}]`, 'value', value)
+      })
+
+      Object.keys(contact.socials).forEach((key, index) => {
+        form.assert.attributeEquals(`[data-id=social-input-${index}]`, 'value', contact.socials[key])
+      })
+
+      return this
+    },
+    fillInContactFormAnSubmit: function (contact) {
       const form = this.section.editContactForm
 
       form.clearValue(`@nameInput`)
       form.setValue(`@nameInput`, contact.name)
 
-      form.clearValue(`@jobTitleInput`)
-      form.setValue(`@jobTitleInput`, contact.outlets[0].title)
-      form.clearValue(`@jobCompanyInput`)
-      form.setValue(`@jobCompanyInput`, contact.outlets[0].company)
+      contact.outlets.forEach((outlet, index) => {
+        const jobInput = `[data-id=job-title-input-${index}]`
+        const companyInput = `[data-id=job-company-input-${index}]`
 
-      form.waitForElementVisible('@addJobButton')
-      form.click(`@addJobButton`)
-      form.waitForElementVisible('@otherJobTitleInput')
+        if (index > 0) {
+          this.ifNotPresent(jobInput, () => {
+            form.waitForElementVisible('@addJobButton')
+            form.click(`@addJobButton`)
+            form.waitForElementVisible(jobInput)
+          })
+        }
 
-      form.clearValue(`@otherJobTitleInput`)
-      form.setValue(`@otherJobTitleInput`, contact.outlets[1].title)
-      form.clearValue(`@otherJobCompanyInput`)
-      form.setValue(`@otherJobCompanyInput`, contact.outlets[1].company)
+        form.clearValue(jobInput)
+        form.setValue(jobInput, outlet.title)
+        form.clearValue(companyInput)
+        form.setValue(companyInput, outlet.company)
+      })
 
-      form.clearValue(`@emailInput`)
-      form.setValue(`@emailInput`, contact.emails[0])
+      contact.emails.forEach((value, index) => {
+        const input = `[data-id=email-input-${index}]`
 
-      form.waitForElementVisible('@addEmailButton')
-      form.click(`@addEmailButton`)
-      form.waitForElementVisible('@otherEmailInput')
+        if (index > 0) {
+          this.ifNotPresent(input, () => {
+            form.waitForElementVisible('@addEmailButton')
+            form.click(`@addEmailButton`)
+            form.waitForElementVisible(input)
+          })
+        }
 
-      form.clearValue(`@otherEmailInput`)
-      form.setValue(`@otherEmailInput`, contact.emails[1])
+        form.clearValue(input)
+        form.setValue(input, value)
+      })
 
-      form.clearValue(`@phoneInput`)
-      form.setValue(`@phoneInput`, contact.phones[0])
+      contact.phones.forEach((value, index) => {
+        const input = `[data-id=phone-input-${index}]`
 
-      form.waitForElementVisible('@addPhoneButton')
-      form.click(`@addPhoneButton`)
-      form.waitForElementVisible('@otherPhoneInput')
+        if (index > 0) {
+          this.ifNotPresent(input, () => {
+            form.waitForElementVisible('@addPhoneButton')
+            form.click(`@addPhoneButton`)
+            form.waitForElementVisible(input)
+          })
+        }
 
-      form.clearValue(`@otherPhoneInput`)
-      form.setValue(`@otherPhoneInput`, contact.phones[1])
+        form.clearValue(input)
+        form.setValue(input, value)
+      })
 
-      form.waitForElementVisible('@addSocialButton')
-      form.click(`@addSocialButton`)
-      form.waitForElementVisible('@otherWebsiteInput')
+      Object.keys(contact.socials).forEach((key, index) => {
+        const input = `[data-id=social-input-${index}]`
 
-      Object.keys(contact.socials).forEach(key => {
-        form.clearValue(`@${key}Input`)
-        form.setValue(`@${key}Input`, contact.socials[key])
+        if (index > 7) {
+          this.ifNotPresent(input, () => {
+            form.waitForElementVisible('@addSocialButton')
+            form.click(`@addSocialButton`)
+            form.waitForElementVisible(input)
+          })
+        }
+
+        form.clearValue(input)
+        form.clearValue(input)
+        form.setValue(input, contact.socials[key])
       })
 
       form.click('@submitButton')
 
       this.waitForElementNotPresent(this.section.editContactForm.selector)
-
-      return this
+    },
+    ifNotPresent: function (selector, ifNotPresent) {
+      this.api.element('css selector', selector, (result) => {
+        if (!result.value || !result.value.ELEMENT) {
+          ifNotPresent()
+        }
+      })
+    },
+    ifPresent: function (selector, ifPresent) {
+      this.api.element('css selector', selector, (result) => {
+        if (result.value && result.value.ELEMENT) {
+          ifPresent()
+        }
+      })
     }
   }]
 }

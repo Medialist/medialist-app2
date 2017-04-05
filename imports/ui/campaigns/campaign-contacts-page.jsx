@@ -124,7 +124,7 @@ const CampaignContactsPage = React.createClass({
         <div className='bg-white shadow-2 m4'>
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
-              <SearchBox onTermChange={this.onTermChange} placeholder='Search contacts...' />
+              <SearchBox onTermChange={this.onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' />
             </div>
             <div className='flex-none pl4 f-xs'>
               <ContactsTotal total={contacts.length} />

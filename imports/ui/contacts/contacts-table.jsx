@@ -16,7 +16,7 @@ const ContactLink = ({contact, campaign}) => {
   const campaignUrl = campaign ? `/campaign/${campaign.slug}` : ''
   const to = campaignUrl + contactUrl
   return (
-    <Link to={to} className='nowrap'>
+    <Link to={to} className='nowrap' data-id='contact-link'>
       <CircleAvatar avatar={avatar} name={name} />
       <span className='ml3 semibold'>{name}</span>
     </Link>
@@ -38,7 +38,9 @@ const ContactsTable = React.createClass({
     // Optional campaign for calculating a contacts status
     campaign: PropTypes.object,
     // returns true while subscriptionts are still syncing data.
-    loading: PropTypes.bool
+    loading: PropTypes.bool,
+    // true if we are searching
+    searching: PropTypes.bool
   },
 
   onSelectAllChange () {
@@ -81,7 +83,7 @@ const ContactsTable = React.createClass({
 
     return (
       <div>
-        <table className='table'>
+        <table className='table' data-id={`contacts-table${this.props.searching ? '-search-results' : ''}`}>
           <thead>
             <tr className='bg-gray90'>
               <th className='right-align' style={{width: 34, paddingRight: 0, borderRight: '0 none'}}>

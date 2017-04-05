@@ -294,7 +294,7 @@ const EditContact = React.createClass({
                   <Input
                     style={{width: 472}}
                     className='input'
-                    data-id={`social-input-${index > 7 ? index : label.toLowerCase()}`}
+                    data-id={`social-input-${index}`}
                     errorClassName='error'
                     type='text'
                     name={`socials.${index}.value`}

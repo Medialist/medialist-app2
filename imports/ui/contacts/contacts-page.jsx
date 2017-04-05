@@ -211,7 +211,7 @@ const ContactsPage = withSnackbar(React.createClass({
         <div className='bg-white shadow-2 m4 mt8'>
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
-              <SearchBox onTermChange={onTermChange} placeholder='Search contacts...'>
+              <SearchBox onTermChange={onTermChange} placeholder='Search contacts...' data-id='search-contacts-input'>
                 <div style={{marginBottom: -4}} >
                   {campaigns && campaigns.map((c) => (
                     <AvatarTag
@@ -244,7 +244,8 @@ const ContactsPage = withSnackbar(React.createClass({
             term={term}
             selections={selections}
             onSortChange={onSortChange}
-            onSelectionsChange={onSelectionsChange} />
+            onSelectionsChange={onSelectionsChange}
+            searching={searching} />
         </div>
         { loading && <div className='center p4'><Loading /></div> }
         <ContactsActionsToast

@@ -33,29 +33,7 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
   },
 
   'Should create a new contact': function (t) {
-    const contact = {
-      name: faker.name.findName(),
-      outlets: [{
-        title: faker.name.jobTitle(),
-        company: faker.company.companyName()
-      }, {
-        title: faker.name.jobTitle(),
-        company: faker.company.companyName()
-      }],
-      emails: [faker.internet.email(), faker.internet.email()],
-      phones: [faker.phone.phoneNumber(), faker.phone.phoneNumber()],
-      socials: {
-        website: faker.internet.url(),
-        twitter: faker.internet.userName(),
-        linkedin: faker.internet.userName(),
-        facebook: faker.internet.userName(),
-        youtube: faker.internet.userName(),
-        instagram: faker.internet.userName(),
-        medium: faker.internet.userName(),
-        pinterest: faker.internet.userName(),
-        otherWebsite: faker.internet.url()
-      }
-    }
+    const contact = createContact()
 
     t.page.main()
       .navigateToContacts(t)
@@ -67,28 +45,44 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
         name: contact.name
       })
       .then(function (doc) {
-        t.assert.equal(doc.name, contact.name)
+        verifySame(t, contact, doc)
 
-        t.assert.equal(doc.outlets.length, contact.outlets.length)
+        done()
+      })
+      .catch(function (error) {
+        console.info(error.stack)
 
-        doc.outlets.forEach((outlet, index) => {
-          t.assert.equal(outlet.label, contact.outlets[index].company)
-          t.assert.equal(outlet.value, contact.outlets[index].title)
-        })
+        done()
+      })
+    })
 
-        const listProperties = ['emails', 'phones']
+    t.page.main().logout()
+    t.end()
+  },
 
-        listProperties.forEach(property => {
-          t.assert.equal(doc[property].length, contact[property].length)
+  'Should edit an existing contact': function (t) {
+    const contact = createContact()
+    const updated = createContact()
 
-          contact[property].forEach((job, index) => {
-            t.assert.equal(doc[property][index].value, contact[property][index])
-          })
-        })
+    t.page.main()
+      .navigateToContacts(t)
+      .waitForElementVisible('@newContactButton')
+      .createContact(contact)
 
-        Object.keys(contact.socials).forEach((social, index) => {
-          t.assert.equal(doc.socials[index].value, contact.socials[social])
-        })
+    t.page.main()
+      .navigateToContacts(t)
+      .searchForContact(contact.name)
+      .selectSearchResult(contact.name)
+      .editContact()
+      .verifyEditFormContents(contact)
+      .updateContact(updated)
+
+    t.perform(function (done) {
+      t.db.findContact({
+        name: updated.name
+      })
+      .then(function (doc) {
+        verifySame(t, updated, doc)
 
         done()
       })
@@ -102,6 +96,57 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
     t.page.main().logout()
     t.end()
   }
+}
+
+const createContact = () => {
+  return {
+    name: faker.name.findName(),
+    outlets: [{
+      title: faker.name.jobTitle(),
+      company: faker.company.companyName()
+    }, {
+      title: faker.name.jobTitle(),
+      company: faker.company.companyName()
+    }],
+    emails: [faker.internet.email(), faker.internet.email()],
+    phones: [faker.phone.phoneNumber(), faker.phone.phoneNumber()],
+    socials: {
+      website: faker.internet.url(),
+      twitter: faker.internet.userName(),
+      linkedin: faker.internet.userName(),
+      facebook: faker.internet.userName(),
+      youtube: faker.internet.userName(),
+      instagram: faker.internet.userName(),
+      medium: faker.internet.userName(),
+      pinterest: faker.internet.userName(),
+      otherWebsite: faker.internet.url()
+    }
+  }
+}
+
+const verifySame = (t, contact, other) => {
+  t.assert.equal(other.name, contact.name)
+
+  t.assert.equal(other.outlets.length, contact.outlets.length)
+
+  other.outlets.forEach((outlet, index) => {
+    t.assert.equal(outlet.label, contact.outlets[index].company)
+    t.assert.equal(outlet.value, contact.outlets[index].title)
+  })
+
+  const listProperties = ['emails', 'phones']
+
+  listProperties.forEach(property => {
+    t.assert.equal(other[property].length, contact[property].length)
+
+    contact[property].forEach((job, index) => {
+      t.assert.equal(other[property][index].value, contact[property][index])
+    })
+  })
+
+  Object.keys(contact.socials).forEach((social, index) => {
+    t.assert.equal(other.socials[index].value, contact.socials[social])
+  })
 }
 
 module.exports = test

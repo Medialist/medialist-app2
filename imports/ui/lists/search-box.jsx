@@ -8,7 +8,8 @@ const SearchBox = React.createClass({
     onTermChange: PropTypes.func.isRequired,
     onKeyDown: PropTypes.func,
     children: PropTypes.node,
-    style: PropTypes.object
+    style: PropTypes.object,
+    'data-id': PropTypes.string
   },
 
   getDefaultProps () {
@@ -61,7 +62,8 @@ const SearchBox = React.createClass({
             onFocus={() => this.setState({isFocused: true})}
             onBlur={() => this.setState({isFocused: false})}
             value={term}
-            placeholder={placeholder} />
+            placeholder={placeholder}
+            data-id={this.props['data-id']} />
         </div>
       </div>
     )
