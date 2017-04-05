@@ -33,6 +33,8 @@ module.exports = {
       form.sendKeys('@linksInput', campaign.link)
       form.click('@saveCampaignButton')
 
+      this.waitForElementNotPresent(this.section.editCampaignForm.selector)
+
       return this
     }
   }]

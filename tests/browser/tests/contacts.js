@@ -1,7 +1,8 @@
 'use strict'
 
-const path = require('path')
 const faker = require('faker')
+const tmp = require('tmp')
+const fs = require('fs')
 
 const test = {
   '@tags': ['contacts'],
@@ -14,18 +15,20 @@ const test = {
   },
 
   'Should import contacts': function (t) {
-    const file = path.resolve(path.join(__dirname, '../fixtures/contacts.csv'))
+    const file = tmp.fileSync()
+    const contents = `Name, Email, Telephone
+${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()}`
+    fs.writeFileSync(file.fd, contents)
 
     const contactsPage = t.page.main()
       .navigateToContacts(t)
-      .uploadCsvFile(file)
+      .uploadCsvFile(file.name)
       .completeImport()
 
     contactsPage.section.importComplete.waitForElementVisible('@status')
     contactsPage.section.importComplete.assert.containsText('@status', 'Created 1 contacts and updated 0 contacts.')
 
     t.page.main().logout()
-
     t.end()
   },
 
@@ -54,61 +57,10 @@ const test = {
       }
     }
 
-    const contactsPage = t.page.main()
+    t.page.main()
       .navigateToContacts(t)
       .waitForElementVisible('@newContactButton')
-      .click('@newContactButton')
-      .waitForElementVisible('@editContactForm')
-
-    const form = contactsPage.section.editContactForm
-
-    form.clearValue(`@nameInput`)
-    form.setValue(`@nameInput`, contact.name)
-
-    form.clearValue(`@jobTitleInput`)
-    form.setValue(`@jobTitleInput`, contact.outlets[0].title)
-    form.clearValue(`@jobCompanyInput`)
-    form.setValue(`@jobCompanyInput`, contact.outlets[0].company)
-
-    form.waitForElementVisible('@addJobButton')
-    form.click(`@addJobButton`)
-    form.waitForElementVisible('@otherJobTitleInput')
-
-    form.clearValue(`@otherJobTitleInput`)
-    form.setValue(`@otherJobTitleInput`, contact.outlets[1].title)
-    form.clearValue(`@otherJobCompanyInput`)
-    form.setValue(`@otherJobCompanyInput`, contact.outlets[1].company)
-
-    form.clearValue(`@emailInput`)
-    form.setValue(`@emailInput`, contact.emails[0])
-
-    form.waitForElementVisible('@addEmailButton')
-    form.click(`@addEmailButton`)
-    form.waitForElementVisible('@otherEmailInput')
-
-    form.clearValue(`@otherEmailInput`)
-    form.setValue(`@otherEmailInput`, contact.emails[1])
-
-    form.clearValue(`@phoneInput`)
-    form.setValue(`@phoneInput`, contact.phones[0])
-
-    form.waitForElementVisible('@addPhoneButton')
-    form.click(`@addPhoneButton`)
-    form.waitForElementVisible('@otherPhoneInput')
-
-    form.clearValue(`@otherPhoneInput`)
-    form.setValue(`@otherPhoneInput`, contact.phones[1])
-
-    form.waitForElementVisible('@addSocialButton')
-    form.click(`@addSocialButton`)
-    form.waitForElementVisible('@otherWebsiteInput')
-
-    Object.keys(contact.socials).forEach(key => {
-      form.clearValue(`@${key}Input`)
-      form.setValue(`@${key}Input`, contact.socials[key])
-    })
-
-    form.click('@submitButton')
+      .createContact(contact)
 
     t.perform(function (done) {
       t.db.findContact({
@@ -148,7 +100,6 @@ const test = {
     })
 
     t.page.main().logout()
-
     t.end()
   }
 }
