@@ -22,7 +22,7 @@ const CampaignSearch = ({
     <div className='bg-white shadow-2 m4 mt8'>
       <div className='p4 flex items-center'>
         <div className='flex-auto'>
-          <SearchBox onTermChange={onTermChange} placeholder='Search campaigns...'>
+          <SearchBox onTermChange={onTermChange} placeholder='Search campaigns...' data-id='search-campaigns-input'>
             {selectedTags && selectedTags.map((t) => (
               <CountTag
                 style={{marginBottom: 0}}
@@ -45,7 +45,8 @@ const CampaignSearch = ({
         selections={selections}
         contactSlug={contactSlug}
         onSortChange={onSortChange}
-        onSelectionsChange={onSelectionsChange} />
+        onSelectionsChange={onSelectionsChange}
+        searching={Boolean(term)} />
     </div>
     { loading && <div className='center p4'><Loading /></div> }
   </div>

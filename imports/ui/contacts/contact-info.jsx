@@ -110,7 +110,7 @@ const ContactInfo = React.createClass({
           <ContactItems contact={contact} />
         </div>
         <section>
-          <InfoHeader name='Campaigns' onClick={onAddToCampaignClick} />
+          <InfoHeader name='Campaigns' onClick={onAddToCampaignClick} data-id='edit-contact-campaigns-button' />
           <div className='px2 py3'>
             {campaigns.slice(0, 5).map(({slug, avatar, name}) => (
               <Link
@@ -134,7 +134,7 @@ const ContactInfo = React.createClass({
           </div>
         </section>
         <section>
-          <InfoHeader name='Master Lists' onClick={onAddToMasterList} />
+          <InfoHeader name='Master Lists' onClick={onAddToMasterList} data-id='edit-contact-masterlists-button' />
           <div className='py3'>
             {masterLists.map((m) => (
               <Link to={`/contacts?list=${m.slug}`} className='pointer p2 blue f-sm' key={m._id}>
@@ -144,7 +144,7 @@ const ContactInfo = React.createClass({
           </div>
         </section>
         <section>
-          <InfoHeader name='Tags' onClick={onAddTags} />
+          <InfoHeader name='Tags' onClick={onAddTags} data-id='edit-contact-tags-button' />
           <div className='px2 py3'>
             {tags.map((t) => {
               return (

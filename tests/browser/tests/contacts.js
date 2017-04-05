@@ -68,7 +68,6 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
 
     t.page.main()
       .navigateToContacts(t)
-      .waitForElementVisible('@newContactButton')
       .createContact(contact)
 
     t.page.main()

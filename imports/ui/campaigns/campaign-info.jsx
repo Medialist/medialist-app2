@@ -116,20 +116,20 @@ const CampaignInfo = React.createClass({
           </div>
         </div>
         <section>
-          <InfoHeader name='Key Message' linkText='Edit' onClick={onEditClick} />
+          <InfoHeader name='Key Message' linkText='Edit' onClick={onEditClick} data-id='edit-campaign-button' />
           <div className='px2 py3 flex'>
             <BioIcon className='inline-block flex-none gray60' />
             <div className='inline-block pl3 f-sm gray10 flex-auto' data-id='campaign-key-message'>{purpose}</div>
           </div>
         </section>
         <section>
-          <InfoHeader name='Team Members' onClick={onEditTeamClick} />
+          <InfoHeader name='Team Members' onClick={onEditTeamClick} data-id='edit-campaign-team-button' />
           <div className='px2 py3'>
             {team.map((teamMember, ind) => <CircleAvatar {...teamMember} size={38} style={{marginLeft: '2px'}} key={ind} />)}
           </div>
         </section>
         <section>
-          <InfoHeader name='Master Lists' onClick={onAddToMasterList} />
+          <InfoHeader name='Master Lists' onClick={onAddToMasterList} data-id='edit-campaign-masterlists-button' />
           <div className='py3'>
             {masterLists.map((m) => (
               <Link to={`/campaigns?list=${m.slug}`} className='pointer p2 blue f-sm' key={m._id}>
@@ -139,7 +139,7 @@ const CampaignInfo = React.createClass({
           </div>
         </section>
         <section>
-          <InfoHeader name='Tags' onClick={onAddTags} />
+          <InfoHeader name='Tags' onClick={onAddTags} data-id='edit-campaign-tags-button' />
           <div className='px2 py3'>
             {tags.map((t) => {
               return (

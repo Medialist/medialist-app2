@@ -81,9 +81,10 @@ module.exports = {
     },
     createContact: function (contact) {
       this
+        .waitForElementVisible('@newContactButton')
         .click('@newContactButton')
         .waitForElementVisible(this.section.editContactForm.selector)
-        .fillInContactFormAnSubmit(contact)
+        .fillInContactFormAndSubmit(contact)
 
       return this
     },
@@ -111,7 +112,7 @@ module.exports = {
     },
     updateContact: function (updated) {
       this
-        .fillInContactFormAnSubmit(updated)
+        .fillInContactFormAndSubmit(updated)
 
       return this
     },
@@ -139,7 +140,7 @@ module.exports = {
 
       return this
     },
-    fillInContactFormAnSubmit: function (contact) {
+    fillInContactFormAndSubmit: function (contact) {
       const form = this.section.editContactForm
 
       form.clearValue(`@nameInput`)
@@ -211,7 +212,7 @@ module.exports = {
 
       form.click('@submitButton')
 
-      this.waitForElementNotPresent(this.section.editContactForm.selector)
+      this.waitForElementNotPresent(form.selector)
     }
   }]
 }

@@ -171,12 +171,12 @@ const EditCampaign = React.createClass({
             </FormField>
           </FormSection>
 
-          <FormSection label='Links' addLinkText='Add another link' addLinkClassName='add-links-button' onAdd={this.addLink}>
+          <FormSection label='Links' addLinkText='Add another link' addLinkId='add-link-button' onAdd={this.addLink}>
             {links.map((link, index) => (
               <FormField icon={<WebsiteIcon />} key={index}>
                 <Input
                   className='input flex-auto placeholder-gray60'
-                  data-id={`links-input-${index}`}
+                  data-id={`link-input-${index}`}
                   name={`links.${index}.url`}
                   type='text'
                   value={links[index].url || undefined}

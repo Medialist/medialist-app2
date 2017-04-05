@@ -25,7 +25,9 @@ const CampaignsTable = React.createClass({
     // Callback when contact status is changed
     onStatusChange: PropTypes.func,
     // returns true while subscriptionts are still syncing data.
-    loading: PropTypes.bool
+    loading: PropTypes.bool,
+    // true if we are searching
+    searching: PropTypes.bool
   },
 
   onSelectAllChange () {
@@ -67,7 +69,7 @@ const CampaignsTable = React.createClass({
     }, {})
 
     return (
-      <table className='table'>
+      <table className='table' data-id={`campaigns-table${this.props.searching ? '-search-results' : ''}`}>
         <thead>
           <tr className='bg-gray90'>
             <th className='right-align' style={{width: 34, paddingRight: 0, borderRight: '0 none'}}>
@@ -111,7 +113,7 @@ const CampaignsTable = React.createClass({
             return (
               <SelectableRow data={campaign} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id}>
                 <td className='left-align'>
-                  <Link to={`/campaign/${slug}`} className='nowrap'>
+                  <Link to={`/campaign/${slug}`} className='nowrap' data-id='campaign-link'>
                     <SquareAvatar avatar={avatar} name={name} />
                     <span className='ml3 semibold'>{name}</span>
                   </Link>
