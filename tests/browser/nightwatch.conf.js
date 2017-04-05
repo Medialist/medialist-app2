@@ -26,6 +26,7 @@ const config = {
   output_folder: defaults.REPORTS_DIR,
   page_objects_path: 'tests/browser/pages',
   globals_path: 'tests/browser/globals',
+  custom_commands_path: 'tests/browser/commands',
 
   selenium: {
     start_process: true,

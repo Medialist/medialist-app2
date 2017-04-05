@@ -61,7 +61,7 @@ module.exports = {
     uploadCsvFile: function (path) {
       // if we don't have an empty database, need to click the drop down arrow to
       // find the 'import contacts' button
-      this.ifPresent('[data-id=contact-actions-button]', () => {
+      this.ifElementPresent('[data-id=contact-actions-button]', () => {
         this.click('@contactActionsButton')
       })
 
@@ -150,7 +150,7 @@ module.exports = {
         const companyInput = `[data-id=job-company-input-${index}]`
 
         if (index > 0) {
-          this.ifNotPresent(jobInput, () => {
+          this.ifElementNotPresent(jobInput, () => {
             form.waitForElementVisible('@addJobButton')
             form.click(`@addJobButton`)
             form.waitForElementVisible(jobInput)
@@ -167,7 +167,7 @@ module.exports = {
         const input = `[data-id=email-input-${index}]`
 
         if (index > 0) {
-          this.ifNotPresent(input, () => {
+          this.ifElementNotPresent(input, () => {
             form.waitForElementVisible('@addEmailButton')
             form.click(`@addEmailButton`)
             form.waitForElementVisible(input)
@@ -182,7 +182,7 @@ module.exports = {
         const input = `[data-id=phone-input-${index}]`
 
         if (index > 0) {
-          this.ifNotPresent(input, () => {
+          this.ifElementNotPresent(input, () => {
             form.waitForElementVisible('@addPhoneButton')
             form.click(`@addPhoneButton`)
             form.waitForElementVisible(input)
@@ -197,7 +197,7 @@ module.exports = {
         const input = `[data-id=social-input-${index}]`
 
         if (index > 7) {
-          this.ifNotPresent(input, () => {
+          this.ifElementNotPresent(input, () => {
             form.waitForElementVisible('@addSocialButton')
             form.click(`@addSocialButton`)
             form.waitForElementVisible(input)
@@ -212,20 +212,6 @@ module.exports = {
       form.click('@submitButton')
 
       this.waitForElementNotPresent(this.section.editContactForm.selector)
-    },
-    ifNotPresent: function (selector, ifNotPresent) {
-      this.api.element('css selector', selector, (result) => {
-        if (!result.value || !result.value.ELEMENT) {
-          ifNotPresent()
-        }
-      })
-    },
-    ifPresent: function (selector, ifPresent) {
-      this.api.element('css selector', selector, (result) => {
-        if (result.value && result.value.ELEMENT) {
-          ifPresent()
-        }
-      })
     }
   }]
 }

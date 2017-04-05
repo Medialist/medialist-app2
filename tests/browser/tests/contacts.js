@@ -3,6 +3,8 @@
 const faker = require('faker')
 const tmp = require('tmp')
 const fs = require('fs')
+const createContact = require('../fixtures/contacts').createContact
+const verifyContactsAreEqual = require('../fixtures/contacts').verifyContactsAreEqual
 
 const test = {
   '@tags': ['contacts'],
@@ -18,7 +20,7 @@ const test = {
     const file = tmp.fileSync()
     const contents = `Name, Email, Telephone
 ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()}`
-    fs.writeFileSync(file.fd, contents)
+    fs.writeFileSync(file.name, contents)
 
     const contactsPage = t.page.main()
       .navigateToContacts(t)
@@ -45,7 +47,7 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
         name: contact.name
       })
       .then(function (doc) {
-        verifySame(t, contact, doc)
+        verifyContactsAreEqual(t, contact, doc)
 
         done()
       })
@@ -82,7 +84,7 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
         name: updated.name
       })
       .then(function (doc) {
-        verifySame(t, updated, doc)
+        verifyContactsAreEqual(t, updated, doc)
 
         done()
       })
@@ -96,57 +98,6 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
     t.page.main().logout()
     t.end()
   }
-}
-
-const createContact = () => {
-  return {
-    name: faker.name.findName(),
-    outlets: [{
-      title: faker.name.jobTitle(),
-      company: faker.company.companyName()
-    }, {
-      title: faker.name.jobTitle(),
-      company: faker.company.companyName()
-    }],
-    emails: [faker.internet.email(), faker.internet.email()],
-    phones: [faker.phone.phoneNumber(), faker.phone.phoneNumber()],
-    socials: {
-      website: faker.internet.url(),
-      twitter: faker.internet.userName(),
-      linkedin: faker.internet.userName(),
-      facebook: faker.internet.userName(),
-      youtube: faker.internet.userName(),
-      instagram: faker.internet.userName(),
-      medium: faker.internet.userName(),
-      pinterest: faker.internet.userName(),
-      otherWebsite: faker.internet.url()
-    }
-  }
-}
-
-const verifySame = (t, contact, other) => {
-  t.assert.equal(other.name, contact.name)
-
-  t.assert.equal(other.outlets.length, contact.outlets.length)
-
-  other.outlets.forEach((outlet, index) => {
-    t.assert.equal(outlet.label, contact.outlets[index].company)
-    t.assert.equal(outlet.value, contact.outlets[index].title)
-  })
-
-  const listProperties = ['emails', 'phones']
-
-  listProperties.forEach(property => {
-    t.assert.equal(other[property].length, contact[property].length)
-
-    contact[property].forEach((job, index) => {
-      t.assert.equal(other[property][index].value, contact[property][index])
-    })
-  })
-
-  Object.keys(contact.socials).forEach((social, index) => {
-    t.assert.equal(other.socials[index].value, contact.socials[social])
-  })
 }
 
 module.exports = test
