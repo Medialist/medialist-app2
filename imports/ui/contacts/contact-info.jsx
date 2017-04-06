@@ -83,7 +83,7 @@ const ContactInfo = React.createClass({
     const { socials } = contact
 
     return (
-      <div>
+      <div data-id='contact-info'>
         <div className='mb1 clearfix'>
           <div className='col col-3'>
             <CircleAvatar className='ml2' size={70} avatar={avatar} name={name} />
@@ -103,7 +103,7 @@ const ContactInfo = React.createClass({
           </div>
         </div>
         <div className='clearfix p2 pt4 mt4 border-gray80 border-bottom'>
-          <a href='#' className='f-sm blue right' onClick={this.props.onEditClick} data-id='edit-contact-button'>Edit</a>
+          <a href='#' className='f-sm blue right' onClick={this.props.onEditClick} data-id='edit-contact-info-button'>Edit</a>
           <h1 className='m0 f-md normal gray20 left'>Info</h1>
         </div>
         <div className='clearfix'>
@@ -111,7 +111,7 @@ const ContactInfo = React.createClass({
         </div>
         <section>
           <InfoHeader name='Campaigns' onClick={onAddToCampaignClick} data-id='edit-contact-campaigns-button' />
-          <div className='px2 py3'>
+          <div className='px2 py3' data-id='contact-campaigns-list'>
             {campaigns.slice(0, 5).map(({slug, avatar, name}) => (
               <Link
                 key={slug}
@@ -134,7 +134,7 @@ const ContactInfo = React.createClass({
           </div>
         </section>
         <section>
-          <InfoHeader name='Master Lists' onClick={onAddToMasterList} data-id='edit-contact-masterlists-button' />
+          <InfoHeader name='Master Lists' onClick={onAddToMasterList} data-id='edit-contact-master-lists-button' />
           <div className='py3'>
             {masterLists.map((m) => (
               <Link to={`/contacts?list=${m.slug}`} className='pointer p2 blue f-sm' key={m._id}>

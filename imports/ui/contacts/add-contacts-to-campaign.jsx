@@ -42,15 +42,15 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
     const { onChange, onKeyPress } = this
 
     return (
-      <div>
+      <div data-id='add-contacts-to-campaign-form'>
         <div className='f-xl regular center mt6'>{title}</div>
         <div className='mb6'>{children}</div>
         <div className='py3 pl4 flex border-top border-bottom border-gray80'>
           <SearchBlueIcon className='flex-none' />
-          <input ref={(input) => input && input.focus()} className='flex-auto f-sm pa2 mx2' placeholder='Search campaigns' onChange={onChange} style={{outline: 'none'}} onKeyPress={onKeyPress} value={term} />
+          <input ref={(input) => input && input.focus()} className='flex-auto f-sm pa2 mx2' placeholder='Search campaigns' onChange={onChange} style={{outline: 'none'}} onKeyPress={onKeyPress} value={term} data-id='add-contacts-to-campaign-search-input' />
         </div>
         <div style={{height: '413px', overflowY: 'auto'}}>
-          <ResultList onAdd={onAdd} results={campaigns} />
+          <ResultList onAdd={onAdd} results={campaigns} searching={Boolean(term)} />
         </div>
       </div>
     )
@@ -117,15 +117,15 @@ const CampaignResult = (props) => {
     <div style={{lineHeight: 1.3, ...style}}>
       <SquareAvatar size={38} avatar={avatar} name={name} />
       <div className='inline-block align-top pl3' style={{width: 220}}>
-        <div className='f-md semibold gray10 truncate'>{name}</div>
+        <div className='f-md semibold gray10 truncate' data-id='campaign-name'>{name}</div>
         <div className='f-sm normal nowrap'>
           {client && (
             <span>
-              <span className='gray20 truncate'>{client.name}</span>
+              <span className='gray20 truncate' data-id='client-name'>{client.name}</span>
               <span> &mdash; </span>
             </span>
           )}
-          <TimeFromNow className='gray40' date={updatedAt} />
+          <TimeFromNow className='gray40' date={updatedAt} data-id='updated-time' />
         </div>
       </div>
     </div>
@@ -135,14 +135,15 @@ const CampaignResult = (props) => {
 const ResultList = React.createClass({
   propTypes: {
     onAdd: PropTypes.func.isRequired,
-    results: PropTypes.array.isRequired
+    results: PropTypes.array.isRequired,
+    searching: PropTypes.bool
   },
 
   render () {
     const { results, onAdd } = this.props
 
     return (
-      <div>
+      <div data-id={`campaign-list${this.props.searching ? '-search-results' : ''}`}>
         {results.map((res) => {
           const {slug, contacts} = res
           const contactCount = Object.keys(contacts).length
@@ -154,11 +155,11 @@ const ResultList = React.createClass({
               <div className='flex-auto'>
                 <CampaignResult {...res} />
               </div>
-              <div className='flex-none f-sm gray40 hover-gray20'>
+              <div className='flex-none f-sm gray40 hover-gray20' data-id='contact-count'>
                 {contactCount} {contactCount === 1 ? 'contact' : 'contacts'}
               </div>
               <div className='flex-none opacity-0 hover-opacity-100' style={{padding: '0 50px'}}>
-                <AddIcon />
+                <AddIcon data-id='add-button' />
               </div>
             </div>
           )

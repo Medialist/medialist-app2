@@ -1,7 +1,7 @@
 'use strict'
 
-const createCampaign = require('../fixtures/campaigns').createCampaign
-const verifyCampaignsAreEqual = require('../fixtures/campaigns').verifyCampaignsAreEqual
+const domain = require('../fixtures/domain')
+const assertions = require('../fixtures/assertions')
 
 const test = {
   '@tags': ['campaigns'],
@@ -14,36 +14,39 @@ const test = {
   },
 
   'Should create new campaign': function (t) {
-    const campaign = createCampaign()
-
-    t.page.main()
+    const campaignsPage = t.page.main()
       .navigateToCampaigns(t)
-      .createCampaign(campaign)
 
-    const campaignPage = t.page.campaign()
-    campaignPage.section.details.waitForElementVisible('@title')
+    campaignsPage.waitForElementVisible('@newCampaignButton')
+      .click('@newCampaignButton')
+      .waitForElementVisible(campaignsPage.section.editCampaignForm.selector)
 
-    t.perform(function (done) {
+    const campaign = domain.campaign()
+
+    campaignsPage.section.editCampaignForm
+      .populate(campaign)
+      .submit()
+
+    t.perform((done) => {
       t.db.findCampaign({
         name: campaign.name
       })
       .then(function (doc) {
         t.assert.urlEquals(`http://localhost:3000/campaign/${doc.slug}`)
 
-        verifyCampaignsAreEqual(t, doc, campaign)
+        assertions.campaignsAreEqual(t, doc, campaign)
 
-        campaignPage.section.details.assert.containsText('@title', doc.name)
-        campaignPage.section.details.assert.containsText('@client', doc.client.name)
-        campaignPage.section.details.assert.containsText('@keyMessage', doc.purpose)
-        campaignPage.section.details.assert.attributeContains('@link0', 'href', campaign.links[0])
-        campaignPage.section.details.assert.attributeContains('@link1', 'href', campaign.links[1])
-        campaignPage.section.details.assert.attributeContains('@link2', 'href', campaign.links[2])
+        const campaignPage = t.page.campaign()
+        const info = campaignPage.section.info
+
+        info.assert.containsText('@title', doc.name)
+        info.assert.containsText('@client', doc.client.name)
+        info.assert.containsText('@keyMessage', doc.purpose)
+        info.assert.attributeContains('@link0', 'href', doc.links[0].url)
+        info.assert.attributeContains('@link1', 'href', doc.links[1].url)
+        info.assert.attributeContains('@link2', 'href', doc.links[2].url)
+
         campaignPage.section.activity.assert.containsText('@createCampaignPost', 'You\ncreated this campaign')
-
-        done()
-      })
-      .catch(function (error) {
-        console.info(error.stack)
 
         done()
       })
@@ -54,35 +57,58 @@ const test = {
   },
 
   'Should edit an existing campaign': function (t) {
-    const campaign = createCampaign()
-    const updated = createCampaign()
+    let campaign
 
-    t.page.main()
-      .navigateToCampaigns(t)
-      .createCampaign(campaign)
+    t.createCampaign((c) => {
+      campaign = c
+    })
 
-    t.page.main()
-      .navigateToCampaigns(t)
-      .searchForCampaign(campaign.name)
-      .selectSearchResult(campaign.name)
-      .editCampaign()
-      .verifyEditFormContents(campaign)
-      .updateCampaign(updated)
+    t.perform((done) => {
+      const campaignPage = t.page.campaign()
+        .navigate(campaign)
+        .editCampaign()
 
-    t.perform(function (done) {
-      t.db.findCampaign({
-        name: updated.name
+      const updated = domain.campaign()
+
+      campaignPage.section.editCampaignForm
+        .verifyEditFormContents(campaign)
+        .populate(updated)
+        .submit()
+
+      t.perform((done) => {
+        t.db.findCampaign({
+          name: updated.name
+        })
+        .then((doc) => {
+          assertions.campaignsAreEqual(t, doc, updated)
+
+          done()
+        })
       })
-      .then(function (doc) {
-        verifyCampaignsAreEqual(t, doc, updated)
 
-        done()
-      })
-      .catch(function (error) {
-        console.info(error.stack)
+      done()
+    })
 
-        done()
-      })
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should search for campaigns': function (t) {
+    let campaign
+
+    t.createCampaign((c) => {
+      campaign = c
+    })
+
+    t.perform((done) => {
+      t.page.main()
+        .navigateToCampaigns(t)
+        .searchForCampaign(campaign.name)
+        .selectSearchResult(campaign.name)
+
+      t.assert.urlEquals(`http://localhost:3000/campaign/${campaign.slug}`)
+
+      done()
     })
 
     t.page.main().logout()

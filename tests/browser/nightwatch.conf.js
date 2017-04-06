@@ -27,6 +27,7 @@ const config = {
   page_objects_path: 'tests/browser/pages',
   globals_path: 'tests/browser/globals',
   custom_commands_path: 'tests/browser/commands',
+  custom_assertions_path: 'tests/browser/assertions',
 
   selenium: {
     start_process: true,

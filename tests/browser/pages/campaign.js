@@ -1,9 +1,11 @@
 'use strict'
 
+const editCampaignForm = require('../forms/edit-campaign-form')
+
 module.exports = {
   url: 'http://localhost:3000/campaigns',
   sections: {
-    details: {
+    info: {
       selector: '[data-id=campaign-details]',
       elements: {
         title: '[data-id=campaign-name]',
@@ -14,7 +16,11 @@ module.exports = {
         link2: '[data-id=campaign-link-2]',
         teamMembers: '[data-id=campaign-team-members]',
         masterLists: '[data-id=campaign-master-lists]',
-        tags: '[data-id=campaign-tags]'
+        tags: '[data-id=campaign-tags]',
+        editCampaignInfoButton: '[data-id=edit-campaign-info-button]',
+        editCampaignTeamMembersButton: '[data-id=edit-campaign-team-members-button]',
+        editCampaignMasterListsButton: '[data-id=edit-campaign-master-lists-button]',
+        editCampaignTagsButton: '[data-id=edit-campaign-tags-button]'
       }
     },
     activity: {
@@ -27,20 +33,23 @@ module.exports = {
         addContactsToCampaignPost: '[data-id=add-contacts-to-campaign] [data-id=post-text]',
         createCampaignPost: '[data-id=create-campaign] [data-id=post-text]'
       }
-    }
+    },
+    editCampaignForm: editCampaignForm
   },
   commands: [{
-    updateCampaign: function (campaign) {
-      this
-        .waitForElementVisible('@editCampaignButton')
-        .click('@editCampaignButton')
-        .waitForElementVisible('@campaignNameInput')
-        .sendKeys('@campaignNameInput', campaign.name)
-        .sendKeys('@clientInput', campaign.client)
-        .sendKeys('@keyMessageInput', campaign.keyMessage)
-        .sendKeys('@linksInput', campaign.link)
-        .click('@saveCampaignButton')
-        .waitForElementVisible('@campaignTitle')
+    navigate: function (campaign) {
+      this.api.url('http://localhost:3000/campaign/' + campaign.slug)
+      this.waitForElementVisible(this.section.info.selector)
+
+      return this
+    },
+    editCampaign: function () {
+      this.section.info
+        .waitForElementVisible('@editCampaignInfoButton')
+        .click('@editCampaignInfoButton')
+        .waitForElementVisible(this.section.editCampaignForm.selector)
+
+      return this
     }
   }]
 }

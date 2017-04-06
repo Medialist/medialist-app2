@@ -116,7 +116,7 @@ const CampaignInfo = React.createClass({
           </div>
         </div>
         <section>
-          <InfoHeader name='Key Message' linkText='Edit' onClick={onEditClick} data-id='edit-campaign-button' />
+          <InfoHeader name='Key Message' linkText='Edit' onClick={onEditClick} data-id='edit-campaign-info-button' />
           <div className='px2 py3 flex'>
             <BioIcon className='inline-block flex-none gray60' />
             <div className='inline-block pl3 f-sm gray10 flex-auto' data-id='campaign-key-message'>{purpose}</div>
@@ -129,7 +129,7 @@ const CampaignInfo = React.createClass({
           </div>
         </section>
         <section>
-          <InfoHeader name='Master Lists' onClick={onAddToMasterList} data-id='edit-campaign-masterlists-button' />
+          <InfoHeader name='Master Lists' onClick={onAddToMasterList} data-id='edit-campaign-master-lists-button' />
           <div className='py3'>
             {masterLists.map((m) => (
               <Link to={`/campaigns?list=${m.slug}`} className='pointer p2 blue f-sm' key={m._id}>

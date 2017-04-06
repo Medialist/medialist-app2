@@ -3,8 +3,8 @@
 const faker = require('faker')
 const tmp = require('tmp')
 const fs = require('fs')
-const createContact = require('../fixtures/contacts').createContact
-const verifyContactsAreEqual = require('../fixtures/contacts').verifyContactsAreEqual
+const domain = require('../fixtures/domain')
+const assertions = require('../fixtures/assertions')
 
 const test = {
   '@tags': ['contacts'],
@@ -35,24 +35,25 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
   },
 
   'Should create a new contact': function (t) {
-    const contact = createContact()
-
-    t.page.main()
+    const contactsPage = t.page.main()
       .navigateToContacts(t)
-      .waitForElementVisible('@newContactButton')
-      .createContact(contact)
 
-    t.perform(function (done) {
+    contactsPage.waitForElementVisible('@newContactButton')
+      .click('@newContactButton')
+      .waitForElementVisible(contactsPage.section.editContactForm.selector)
+
+    const contact = domain.contact()
+
+    contactsPage.section.editContactForm
+      .populate(contact)
+      .submit()
+
+    t.perform((done) => {
       t.db.findContact({
         name: contact.name
       })
-      .then(function (doc) {
-        verifyContactsAreEqual(t, contact, doc)
-
-        done()
-      })
-      .catch(function (error) {
-        console.info(error.stack)
+      .then((doc) => {
+        assertions.contactsAreEqual(t, contact, doc)
 
         done()
       })
@@ -63,35 +64,95 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
   },
 
   'Should edit an existing contact': function (t) {
-    const contact = createContact()
-    const updated = createContact()
+    let contact
 
-    t.page.main()
-      .navigateToContacts(t)
-      .createContact(contact)
+    t.createContact((c) => {
+      contact = c
+    })
 
-    t.page.main()
-      .navigateToContacts(t)
-      .searchForContact(contact.name)
-      .selectSearchResult(contact.name)
-      .editContact()
-      .verifyEditFormContents(contact)
-      .updateContact(updated)
+    t.perform((done) => {
+      const contactPage = t.page.contact()
+        .navigate(contact)
+        .editContact()
 
-    t.perform(function (done) {
-      t.db.findContact({
-        name: updated.name
+      const updated = domain.contact()
+
+      contactPage.section.editContactForm
+        .verifyEditFormContents(contact)
+        .populate(updated)
+        .submit()
+
+      t.perform((done) => {
+        t.db.findContact({
+          name: updated.name
+        })
+        .then((doc) => {
+          assertions.contactsAreEqual(t, updated, doc)
+
+          done()
+        })
       })
-      .then(function (doc) {
-        verifyContactsAreEqual(t, updated, doc)
 
-        done()
-      })
-      .catch(function (error) {
-        console.info(error.stack)
+      done()
+    })
 
-        done()
-      })
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should search for contacts': function (t) {
+    let contact
+
+    t.createContact((c) => {
+      contact = c
+    })
+
+    t.perform((done) => {
+      t.page.main()
+        .navigateToContacts(t)
+        .searchForContact(contact.name)
+        .selectSearchResult(contact.name)
+
+      t.assert.urlEquals(`http://localhost:3000/contact/${contact.slug}`)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should add contact to campaign from contact page': function (t) {
+    let campaign
+    let contact
+
+    t.createCampaign((c) => {
+      campaign = c
+    })
+
+    t.createContact((c) => {
+      contact = c
+    })
+
+    t.perform((done) => {
+      t.page.contact().navigate(contact)
+
+      const contactPage = t.page.contact()
+      const infoSection = contactPage.section.info
+      const addToCampaign = contactPage.section.addToCampaign
+
+      infoSection.waitForElementVisible('@editContactCampaignsButton')
+      infoSection.click('@editContactCampaignsButton')
+
+      contactPage.waitForElementVisible(addToCampaign.selector)
+
+      addToCampaign
+        .searchForCampaign(campaign)
+        .selectSearchResult(campaign)
+
+      infoSection.assert.attributeContains('[data-id=contact-campaigns-list] a', 'href', `/campaign/${campaign.slug}`)
+
+      done()
     })
 
     t.page.main().logout()

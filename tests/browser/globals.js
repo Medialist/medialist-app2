@@ -2,6 +2,7 @@
 
 const app = require('./fixtures/app')
 const mongo = require('./fixtures/mongo')
+const ddp = require('./fixtures/ddp')
 const http = require('http')
 const APP_URL = 'http://127.0.0.1:3000'
 const MONGO_URL = 'mongodb://127.0.0.1:3001/meteor'
@@ -35,21 +36,38 @@ module.exports = {
     .then(() => {
       done()
     })
-    .catch(error => {
-      console.error('Could not stop app!', error.stack)
-      done(error)
-    })
   },
 
   beforeEach: (t, done) => {
     t.db = mongo(MONGO_URL)
 
-    done()
+    ddp(t)
+    .then(ddp => {
+      t.ddp = ddp
+      done()
+    })
   },
 
   afterEach: (t, done) => {
+    t.ddp.client.close()
     t.db.connection.close(true, () => {
       done()
     })
   }
 }
+
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught exception', error)
+
+  if (process.listenerCount('uncaughtException') === 1) {
+    throw error
+  }
+})
+
+process.on('unhandledRejection', (error) => {
+  console.error('Unhandled rejection', error)
+
+  if (process.listenerCount('unhandledRejection') === 1) {
+    throw error
+  }
+})
