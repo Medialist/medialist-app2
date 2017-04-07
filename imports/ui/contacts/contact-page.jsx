@@ -3,7 +3,6 @@ import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
 import { createFeedbackPost, createCoveragePost, createNeedToKnowPost } from '/imports/api/posts/methods'
 import Contacts from '/imports/api/contacts/contacts'
-import { updateContact } from '/imports/api/contacts/methods'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import Posts from '/imports/api/posts/posts'
@@ -13,7 +12,7 @@ import ContactInfo from './contact-info'
 import ContactNeedToKnowList from './contact-need-to-know-list'
 import PostBox from '../feedback/post-box'
 import ActivityFeed from '../dashboard/activity-feed'
-import EditContactModal from './edit-contact'
+import { EditContactModal } from './edit-contact'
 import AddContactsToCampaigns from './add-contacts-to-campaign'
 import withSnackbar from '../snackbar/with-snackbar'
 
@@ -51,18 +50,6 @@ const ContactPage = withSnackbar(React.createClass({
 
   toggleAddToCampaign () {
     this.setState((s) => ({ addToCampaignOpen: !s.addToCampaignOpen }))
-  },
-
-  onEditContact (details) {
-    const {snackbar, contact} = this.props
-    updateContact.call({details, contactId: contact._id}, (err, res) => {
-      if (err) {
-        console.log(err)
-        return snackbar.show('Sorry, that didn\'t work')
-      }
-      snackbar.show(`Updated ${details.name.split(' ')[0]}`)
-      this.setState({ editContactOpen: false })
-    })
   },
 
   onFeedback ({message, campaign, status}, cb) {
@@ -116,7 +103,10 @@ const ContactPage = withSnackbar(React.createClass({
             <ContactNeedToKnowList items={needToKnows} />
           </div>
         </div>
-        <EditContactModal open={editContactOpen} onSubmit={this.onEditContact} onDismiss={this.toggleEditContact} contact={contact} />
+        <EditContactModal
+          open={editContactOpen}
+          onDismiss={this.toggleEditContact}
+          contact={contact} />
         <AddContactsToCampaigns
           title={`Add ${contact.name.split(' ')[0]} to a Campaign`}
           onDismiss={this.toggleAddToCampaign}

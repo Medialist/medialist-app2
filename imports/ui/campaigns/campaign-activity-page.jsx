@@ -14,10 +14,9 @@ import Contacts from '/imports/api/contacts/contacts'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import { createFeedbackPost, createCoveragePost } from '/imports/api/posts/methods'
 import { setMasterLists } from '/imports/api/master-lists/methods'
-import CreateContact from '../contacts/edit-contact'
+import { CreateContactModal } from '../contacts/edit-contact'
 import AddContact from './add-contact'
 import EditTeam from './edit-team'
-import { createContact } from '/imports/api/contacts/methods'
 
 const CampaignActivityPage = React.createClass({
   propTypes: {
@@ -53,11 +52,17 @@ const CampaignActivityPage = React.createClass({
   },
 
   onCreateContactModalDismiss () {
-    this.setState({ createContactModalOpen: false })
+    this.setState({
+      createContactModalOpen: false,
+      contactPrefillData: null,
+      addContactModalOpen: true
+    })
   },
 
   onAddContactModalDismiss () {
-    this.setState({ addContactModalOpen: false })
+    this.setState({
+      addContactModalOpen: false
+    })
   },
 
   onAddCampaignToMasterLists ({item, masterLists}) {
@@ -94,20 +99,6 @@ const CampaignActivityPage = React.createClass({
     })
   },
 
-  onCreateContact (details) {
-    createContact.call({details}, (err, res) => {
-      if (err) {
-        return console.log(err)
-      }
-
-      this.setState({
-        addContactModalOpen: true,
-        createContactModalOpen: false,
-        contactPrefillData: null
-      })
-    })
-  },
-
   render () {
     const {
       onAddContactClick,
@@ -117,7 +108,6 @@ const CampaignActivityPage = React.createClass({
       toggleEditTeamModal,
       onFeedback,
       onCoverage,
-      onCreateContact,
       onShowCreateContact,
       onAddCampaignToMasterLists
     } = this
@@ -154,11 +144,9 @@ const CampaignActivityPage = React.createClass({
             <CampaignContactList contacts={contacts.slice(0, 7)} contactsCount={contactsCount} campaign={campaign} onAddContactClick={onAddContactClick} />
           </div>
         </div>
-        <CreateContact
+        <CreateContactModal
           open={createContactModalOpen}
           onDismiss={onCreateContactModalDismiss}
-          onSubmit={onCreateContact}
-          campaign={campaign}
           prefill={contactPrefillData} />
         <AddContact
           open={addContactModalOpen}

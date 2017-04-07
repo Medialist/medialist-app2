@@ -9,15 +9,15 @@ import { Dropdown, DropdownMenu } from '../navigation/dropdown'
 import ContactsTable from './contacts-table'
 import SearchBox from '../lists/search-box'
 import ContactsActionsToast from './contacts-actions-toast'
-import MasterListsSelector from '../campaigns/masterlists-selector.jsx'
-import EditContact from './edit-contact.jsx'
+import MasterListsSelector from '../campaigns/masterlists-selector'
+import { CreateContactModal } from './edit-contact'
 import ContactListEmpty from './contacts-list-empty'
 import { FeedContactIcon } from '../images/icons'
 import createSearchContainer from './search-container'
 import AddContactsToCampaign from './add-contacts-to-campaign'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import CountTag, { AvatarTag } from '../tags/tag'
-import { batchFavouriteContacts, batchRemoveContacts, createContact } from '/imports/api/contacts/methods'
+import { batchFavouriteContacts, batchRemoveContacts } from '/imports/api/contacts/methods'
 import { batchAddTags } from '/imports/api/tags/methods'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import withSnackbar from '../snackbar/with-snackbar'
@@ -145,22 +145,6 @@ const ContactsPage = withSnackbar(React.createClass({
     this.setState({ addContactModalOpen: !this.state.addContactModalOpen })
   },
 
-  onAddContactChange (contact) {
-    console.log('change', contact)
-  },
-
-  onAddContactSubmit (details) {
-    const {snackbar} = this.props
-    createContact.call({details}, (err, res) => {
-      if (err) {
-        console.log(err)
-        return snackbar.show('Sorry, that didn\'t work')
-      }
-      snackbar.show(`Added ${details.name.split(' ')[0]}`)
-      this.setState({ addContactModalOpen: false })
-    })
-  },
-
   onCampaignRemove (campaign) {
     const { setQuery, campaignSlugs } = this.props
     setQuery({
@@ -256,10 +240,8 @@ const ContactsPage = withSnackbar(React.createClass({
           onTagClick={() => this.setState({addTagsOpen: true})}
           onDeleteClick={this.onDeleteAllClick}
           onDeselectAllClick={this.onDeselectAllClick} />
-        <EditContact
+        <CreateContactModal
           onDismiss={this.toggleAddContactModal}
-          onChange={this.onAddContactChange}
-          onSubmit={this.onAddContactSubmit}
           open={this.state.addContactModalOpen} />
         <AddContactsToCampaign
           title='Add these Contacts to a Campaign'

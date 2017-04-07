@@ -8,10 +8,9 @@ import CampaignTopbar from './campaign-topbar'
 import CampaignSummary from './campaign-summary'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
-import CreateContact from '../contacts/edit-contact'
+import { CreateContactModal } from '../contacts/edit-contact'
 import AddContact from './add-contact'
 import { StatusIndex } from '/imports/api/contacts/status'
-import { createContact } from '/imports/api/contacts/methods'
 import RemoveContact from './remove-contact'
 
 const CampaignContactsPage = React.createClass({
@@ -83,20 +82,6 @@ const CampaignContactsPage = React.createClass({
     })
   },
 
-  onCreateContact (details) {
-    createContact.call({details}, (err, res) => {
-      if (err) {
-        return console.log(err)
-      }
-
-      this.setState({
-        addContactModalOpen: true,
-        createContactModalOpen: false,
-        contactPrefillData: null
-      })
-    })
-  },
-
   onSectorChange (selectedSector) {
     this.setState({ selectedSector })
   },
@@ -127,7 +112,6 @@ const CampaignContactsPage = React.createClass({
       onAddContactClick,
       onCreateContactModalDismiss,
       onAddContactModalDismiss,
-      onCreateContact,
       onShowCreateContact,
       onRemoveContactModalDismiss
     } = this
@@ -175,10 +159,9 @@ const CampaignContactsPage = React.createClass({
           onTagClick={() => console.log('TODO: add/edit tags')}
           onDeleteClick={this.onShowRemoveContact}
           onDeselectAllClick={this.onDeselectAllClick} />
-        <CreateContact
+        <CreateContactModal
           open={createContactModalOpen}
           onDismiss={onCreateContactModalDismiss}
-          onSubmit={onCreateContact}
           campaign={campaign}
           prefill={contactPrefillData} />
         <AddContact

@@ -13,17 +13,16 @@ import EditableAvatar from '../images/editable-avatar/editable-avatar'
 import Scroll from '../navigation/scroll'
 import Modal from '../navigation/modal'
 import { Form, Input, Button } from '@achingbrain/react-validation'
+import { createContact, updateContact } from '/imports/api/contacts/methods'
+import withSnackbar from '../snackbar/with-snackbar'
 
-const EditContact = React.createClass({
+const EditContact = withSnackbar(React.createClass({
   propTypes: {
     open: PropTypes.bool,
     contact: PropTypes.object,
     onSubmit: PropTypes.func.isRequired,
     onDismiss: PropTypes.func.isRequired,
-    // Allow some prefill data to be passed in
-    prefill: PropTypes.shape({
-      name: PropTypes.string
-    })
+    onDelete: PropTypes.func
   },
 
   getInitialState () {
@@ -40,16 +39,18 @@ const EditContact = React.createClass({
 
     // Some socials, eg. Website can have more than one entry so add
     // them to the end of the list
-    contact.socials.forEach(social => {
-      const existing = socials.find(s => s.label === social.label)
+    if (contact.socials) {
+      contact.socials.forEach(social => {
+        const existing = socials.find(s => s.label === social.label)
 
-      if (existing && existing.value !== social.value) {
-        socials.push({
-          label: social.label,
-          value: social.value
-        })
-      }
-    })
+        if (existing && existing.value !== social.value) {
+          socials.push({
+            label: social.label,
+            value: social.value
+          })
+        }
+      })
+    }
 
     const state = Object.assign({
       avatar: contact.avatar || '',
@@ -60,7 +61,7 @@ const EditContact = React.createClass({
       socials,
       fixHeaderPosition: false,
       errorHeader: null
-    }, this.props.prefill)
+    })
     return state
   },
 
@@ -121,15 +122,12 @@ const EditContact = React.createClass({
   },
 
   onAvatarError (err) {
-    console.log('onAvatarError', err)
+    console.error('Failed to change avatar', err)
+    this.props.snackbar.show('There was a problem updating the image.')
   },
 
   onAutocomplete ({name, value}) {
     this.setState((s) => immutable.set(s, name, value))
-  },
-
-  onDelete (evt) {
-    console.log('TODO: onDelete')
   },
 
   onAdd (prop, item) {
@@ -177,7 +175,7 @@ const EditContact = React.createClass({
   },
 
   render () {
-    const { onAvatarChange, onAvatarError, onAddJob, onAddEmail, onAddPhone, onAddSocial, onDelete, inputSize, onScrollChange, onDismissErrorBanner } = this
+    const { onAvatarChange, onAvatarError, onAddJob, onAddEmail, onAddPhone, onAddSocial, inputSize, onScrollChange, onDismissErrorBanner } = this
     const { onDismiss } = this.props
     const { name, avatar, outlets, emails, phones, socials, fixHeaderPosition } = this.state
     return (
@@ -309,7 +307,7 @@ const EditContact = React.createClass({
         </Scroll>
 
         <div className='flex items-center p4 bg-white border-top border-gray80'>
-          {this.props.contact && <button className='flex-none btn bg-transparent not-interested' onClick={onDelete}>Delete Contact</button>}
+          {this.props.onDelete && <button className='flex-none btn bg-transparent not-interested' onClick={this.props.onDelete}>Delete Contact</button>}
           <div className='flex-auto right-align'>
             <button className='btn bg-transparent gray40 mr2' onClick={onDismiss}>Cancel</button>
             <Button className='btn bg-completed white' data-id='edit-contact-form-submit-button' disabled={false}>Save Changes</Button>
@@ -318,8 +316,77 @@ const EditContact = React.createClass({
       </Form>
     )
   }
-})
+}))
 
-const EditContactModal = Modal(EditContact)
+const EditContactForm = withSnackbar(React.createClass({
+  propTypes: {
+    open: PropTypes.bool.isRequired,
+    onDismiss: PropTypes.func.isRequired,
+    contact: PropTypes.object.isRequired
+  },
 
-export default EditContactModal
+  onSubmit (details) {
+    updateContact.call({details, contactId: this.props.contact._id}, (error, id) => {
+      if (error) {
+        console.log(error)
+
+        return this.props.snackbar.show('Sorry, that didn\'t work')
+      }
+
+      this.props.snackbar.show(`Updated ${details.name.split(' ')[0]}`)
+      this.props.onDismiss(id)
+    })
+  },
+
+  onDelete () {
+
+  },
+
+  render () {
+    return (
+      <EditContact
+        open={this.props.open}
+        contact={this.props.contact}
+        onSubmit={this.onSubmit}
+        onDelete={this.onDelete}
+        onDismiss={this.props.onDismiss}
+       />
+    )
+  }
+}))
+
+const CreateContactForm = withSnackbar(React.createClass({
+  propTypes: {
+    open: PropTypes.bool.isRequired,
+    onDismiss: PropTypes.func.isRequired,
+    prefill: PropTypes.object
+  },
+
+  onSubmit (details) {
+    createContact.call({details}, (error, id) => {
+      if (error) {
+        console.log(error)
+
+        return this.props.snackbar.show('Sorry, that didn\'t work')
+      }
+
+      this.props.snackbar.show(`Created ${details.name.split(' ')[0]}`)
+      this.props.onDismiss(id)
+    })
+  },
+
+  render () {
+    return (
+      <EditContact
+        open={this.props.open}
+        contact={this.props.prefill}
+        onSubmit={this.onSubmit}
+        onDismiss={this.props.onDismiss}
+       />
+    )
+  }
+}))
+
+export const EditContactModal = Modal(EditContactForm)
+
+export const CreateContactModal = Modal(CreateContactForm)
