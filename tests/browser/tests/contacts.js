@@ -22,13 +22,12 @@ const test = {
 ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()}`
     fs.writeFileSync(file.name, contents)
 
-    const contactsPage = t.page.main()
-      .navigateToContacts(t)
+    t.page.contactImport()
+      .navigate()
       .uploadCsvFile(file.name)
       .completeImport()
-
-    contactsPage.section.importComplete.waitForElementVisible('@status')
-    contactsPage.section.importComplete.assert.containsText('@status', 'Created 1 contacts and updated 0 contacts.')
+      .waitForElementVisible('@status')
+      .assert.containsText('@status', 'Created 1 contacts and updated 0 contacts.')
 
     t.page.main().logout()
     t.end()
