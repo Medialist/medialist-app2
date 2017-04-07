@@ -13,6 +13,7 @@ import EditableAvatar from '../images/editable-avatar/editable-avatar'
 import Scroll from '../navigation/scroll'
 import Modal from '../navigation/modal'
 import { Form, Input, Button } from '@achingbrain/react-validation'
+import { createContact, updateContact } from '/imports/api/contacts/methods'
 
 const EditContact = React.createClass({
   propTypes: {
@@ -323,3 +324,69 @@ const EditContact = React.createClass({
 const EditContactModal = Modal(EditContact)
 
 export default EditContactModal
+
+export const EditContactForm = React.createClass({
+  propTypes: {
+    open: PropTypes.bool.isRequired,
+    contact: PropTypes.object.isRequired,
+    onDismiss: PropTypes.func.isRequired,
+    snackbar: PropTypes.object
+  },
+
+  onSubmit (details) {
+    updateContact.call({details, contactId: this.props.contact._id}, (error) => {
+      if (error) {
+        console.log(error)
+
+        return this.props.snackbar.show('Sorry, that didn\'t work')
+      }
+
+      this.props.snackbar.show(`Updated ${details.name.split(' ')[0]}`)
+      this.props.onDismiss()
+    })
+  },
+
+  render() {
+    return (
+      <EditContact
+        open={this.props.open}
+        contact={this.props.contact}
+        onSubmit={this.onSubmit}
+        onDismiss={this.props.onDismiss}
+       />
+    )
+  }
+})
+
+export const CreateContactForm = React.createClass({
+  propTypes: {
+    open: PropTypes.bool.isRequired,
+    contact: PropTypes.object.isRequired,
+    onDismiss: PropTypes.func.isRequired,
+    snackbar: PropTypes.object
+  },
+
+  onSubmit (details) {
+    createContact.call({details}, (error) => {
+      if (error) {
+        console.log(error)
+
+        return this.props.snackbar.show('Sorry, that didn\'t work')
+      }
+
+      this.props.snackbar.show(`Updated ${details.name.split(' ')[0]}`)
+      this.props.onDismiss()
+    })
+  },
+
+  render() {
+    return (
+      <EditContact
+        open={this.props.open}
+        contact={this.props.contact}
+        onSubmit={this.onSubmit}
+        onDismiss={this.props.onDismiss}
+       />
+    )
+  }
+})

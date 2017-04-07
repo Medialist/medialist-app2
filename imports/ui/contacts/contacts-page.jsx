@@ -145,10 +145,6 @@ const ContactsPage = withSnackbar(React.createClass({
     this.setState({ addContactModalOpen: !this.state.addContactModalOpen })
   },
 
-  onAddContactChange (contact) {
-    console.log('change', contact)
-  },
-
   onAddContactSubmit (details) {
     const {snackbar} = this.props
     createContact.call({details}, (err, res) => {
@@ -258,7 +254,6 @@ const ContactsPage = withSnackbar(React.createClass({
           onDeselectAllClick={this.onDeselectAllClick} />
         <EditContact
           onDismiss={this.toggleAddContactModal}
-          onChange={this.onAddContactChange}
           onSubmit={this.onAddContactSubmit}
           open={this.state.addContactModalOpen} />
         <AddContactsToCampaign

@@ -13,7 +13,7 @@ import ContactInfo from './contact-info'
 import ContactNeedToKnowList from './contact-need-to-know-list'
 import PostBox from '../feedback/post-box'
 import ActivityFeed from '../dashboard/activity-feed'
-import EditContactModal from './edit-contact'
+import EditContactForm from './edit-contact'
 import AddContactsToCampaigns from './add-contacts-to-campaign'
 import withSnackbar from '../snackbar/with-snackbar'
 
@@ -51,18 +51,6 @@ const ContactPage = withSnackbar(React.createClass({
 
   toggleAddToCampaign () {
     this.setState((s) => ({ addToCampaignOpen: !s.addToCampaignOpen }))
-  },
-
-  onEditContact (details) {
-    const {snackbar, contact} = this.props
-    updateContact.call({details, contactId: contact._id}, (err, res) => {
-      if (err) {
-        console.log(err)
-        return snackbar.show('Sorry, that didn\'t work')
-      }
-      snackbar.show(`Updated ${details.name.split(' ')[0]}`)
-      this.setState({ editContactOpen: false })
-    })
   },
 
   onFeedback ({message, campaign, status}, cb) {
@@ -116,7 +104,7 @@ const ContactPage = withSnackbar(React.createClass({
             <ContactNeedToKnowList items={needToKnows} />
           </div>
         </div>
-        <EditContactModal open={editContactOpen} onSubmit={this.onEditContact} onDismiss={this.toggleEditContact} contact={contact} />
+        <EditContactForm open={editContactOpen} onDismiss={this.toggleEditContact} contact={contact} snackbar={this.props.snackbar} />
         <AddContactsToCampaigns
           title={`Add ${contact.name.split(' ')[0]} to a Campaign`}
           onDismiss={this.toggleAddToCampaign}
