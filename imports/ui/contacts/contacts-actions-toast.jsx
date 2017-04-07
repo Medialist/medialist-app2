@@ -32,7 +32,7 @@ const ContactsActionsToast = React.createClass({
     } = this.props
 
     return (
-      <Toast>
+      <Toast data-id='contact-actions-toast'>
         { contacts.length && (
           <div className='bg-white shadow-1 p4 flex items-center' key='ContactsActionsToast'>
             <div className='flex-none'>
@@ -41,19 +41,19 @@ const ContactsActionsToast = React.createClass({
             </div>
             <div className='flex-auto center'>
               <Tooltip title='Add to Campaigns'>
-                <FeedCampaignIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onCampaignClick(contacts)} />
+                <FeedCampaignIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onCampaignClick(contacts)} data-id='contact-actions-add-to-campaign' />
               </Tooltip>
               <Tooltip title='Add to Master list'>
-                <SectorIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onSectorClick(contacts)} />
+                <SectorIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onSectorClick(contacts)} data-id='contact-actions-add-to-master-list' />
               </Tooltip>
               <Tooltip title='Add to My Contacts'>
-                <FavouritesIcon className='svg-icon-lg px3 pointer gray60 hover-gold' onClick={() => onFavouriteClick(contacts)} />
+                <FavouritesIcon className='svg-icon-lg px3 pointer gray60 hover-gold' onClick={() => onFavouriteClick(contacts)} data-id='contact-actions-add-to-my-contacts' />
               </Tooltip>
               <Tooltip title='Add Tags'>
-                <TagIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onTagClick(contacts)} />
+                <TagIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onTagClick(contacts)} data-id='contact-actions-add-tags' />
               </Tooltip>
-              <Tooltip title='Delete Contacts'>
-                <DeleteIcon className='svg-icon-lg px3 pointer gray60 hover-red' onClick={() => onDeleteClick(contacts)} />
+              <Tooltip title='Remove Contacts'>
+                <DeleteIcon className='svg-icon-lg px3 pointer gray60 hover-red' onClick={() => onDeleteClick(contacts)} data-id='contact-actions-remove' />
               </Tooltip>
             </div>
             <div className='flex-none'>

@@ -113,6 +113,62 @@ const test = {
 
     t.page.main().logout()
     t.end()
+  },
+
+  'Should remove contacts from a campaign': function (t) {
+    let campaign
+    let contact1
+    let contact2
+    let contact3
+
+    t.createCampaign((c) => {
+      campaign = c
+    })
+
+    t.createContact((c) => {
+      contact1 = c
+    })
+
+    t.createContact((c) => {
+      contact2 = c
+    })
+
+    t.createContact((c) => {
+      contact3 = c
+    })
+
+    t.perform((done) => {
+      t.addContactsToCampaign([contact1, contact2, contact3], campaign, () => done())
+    })
+
+    t.perform((done) => {
+      const campaignContactsPage = t.page.campaignContacts()
+        .navigate(campaign)
+
+      campaignContactsPage.section.contactTable
+        .selectRow(0)
+        .selectRow(1)
+
+      campaignContactsPage.removeContacts()
+
+      t.perform((done) => {
+        t.db.findContacts({
+          campaigns: {
+            $in: [campaign.slug]
+          }
+        })
+        .then((docs) => {
+          t.assert.equal(docs.length, 1)
+
+          done()
+        })
+      })
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   }
 }
 

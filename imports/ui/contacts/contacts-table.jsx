@@ -83,7 +83,7 @@ const ContactsTable = React.createClass({
 
     return (
       <div>
-        <table className='table' data-id={`contacts-table${this.props.searching ? '-search-results' : ''}`}>
+        <table className='table' data-id={`contacts-table${this.props.searching ? '-search-results' : '-unfiltered'}`}>
           <thead>
             <tr className='bg-gray90'>
               <th className='right-align' style={{width: 34, paddingRight: 0, borderRight: '0 none'}}>
@@ -129,7 +129,7 @@ const ContactsTable = React.createClass({
             </tr>
           </thead>
           <tbody>
-            {contacts.map((contact) => {
+            {contacts.map((contact, index) => {
               const {
                 _id,
                 emails,
@@ -139,7 +139,7 @@ const ContactsTable = React.createClass({
                 updatedBy
               } = contact
               return (
-                <SelectableRow data={contact} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id}>
+                <SelectableRow data={contact} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id} data-id={`contacts-table-row-${index}`}>
                   <td className='left-align'>
                     <ContactLink contact={contact} campaign={campaign} />
                   </td>

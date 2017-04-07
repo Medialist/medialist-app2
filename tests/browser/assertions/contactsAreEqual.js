@@ -2,7 +2,7 @@
 // Left here as an artifact to intruige the code spelunker.  This should work
 // but causes the test to hang even if the assertion passes.
 
-exports.assertion = function (expected, actual) {
+exports.assertion = function (actual, expected) {
   this.expected = expected
   this.message = 'The contacts were equal'
   this.value = function (result) {

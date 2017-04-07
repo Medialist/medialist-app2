@@ -12,6 +12,7 @@ import CreateContact from '../contacts/edit-contact'
 import AddContact from './add-contact'
 import { StatusIndex } from '/imports/api/contacts/status'
 import { createContact } from '/imports/api/contacts/methods'
+import RemoveContact from './remove-contact'
 
 const CampaignContactsPage = React.createClass({
   propTypes: {
@@ -24,6 +25,7 @@ const CampaignContactsPage = React.createClass({
     return {
       createContactModalOpen: false,
       addContactModalOpen: false,
+      removeContactModalOpen: false,
       sort: { updatedAt: -1 },
       selections: [],
       term: '',
@@ -51,11 +53,33 @@ const CampaignContactsPage = React.createClass({
     this.setState({ addContactModalOpen: false })
   },
 
+  onRemoveContactModalDismiss (contactsWereRemoved) {
+    this.setState({
+      removeContactModalOpen: false
+    })
+
+    if (contactsWereRemoved) {
+      this.setState({
+        selections: []
+      })
+    }
+  },
+
   onShowCreateContact (data) {
     this.setState({
       addContactModalOpen: false,
+      removeContactModalOpen: false,
       createContactModalOpen: true,
       contactPrefillData: data
+    })
+  },
+
+  onShowRemoveContact (contacts) {
+    this.setState({
+      addContactModalOpen: false,
+      removeContactModalOpen: true,
+      createContactModalOpen: false,
+      selections: contacts
     })
   },
 
@@ -104,7 +128,8 @@ const CampaignContactsPage = React.createClass({
       onCreateContactModalDismiss,
       onAddContactModalDismiss,
       onCreateContact,
-      onShowCreateContact
+      onShowCreateContact,
+      onRemoveContactModalDismiss
     } = this
 
     const {
@@ -114,14 +139,15 @@ const CampaignContactsPage = React.createClass({
       sort,
       term,
       selections,
-      statusFilter
+      statusFilter,
+      removeContactModalOpen
     } = this.state
 
     return (
       <div>
         <CampaignTopbar campaign={campaign} onAddContactClick={onAddContactClick} />
         <CampaignSummary campaign={campaign} statusFilter={statusFilter} onStatusClick={(statusFilter) => this.setState({statusFilter})} />
-        <div className='bg-white shadow-2 m4'>
+        <div className='bg-white shadow-2 m4' data-id='contacts-table'>
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
               <SearchBox onTermChange={this.onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' />
@@ -138,6 +164,7 @@ const CampaignContactsPage = React.createClass({
             statusFilter={statusFilter}
             onSortChange={onSortChange}
             onSelectionsChange={onSelectionsChange}
+            searching={Boolean(term)}
           />
         </div>
         <ContactsActionsToast
@@ -146,7 +173,7 @@ const CampaignContactsPage = React.createClass({
           onSectorClick={() => console.log('TODO: add/edit sectors')}
           onFavouriteClick={() => console.log('TODO: toggle favourite')}
           onTagClick={() => console.log('TODO: add/edit tags')}
-          onDeleteClick={() => console.log('TODO: delete contact(s)')}
+          onDeleteClick={this.onShowRemoveContact}
           onDeselectAllClick={this.onDeselectAllClick} />
         <CreateContact
           open={createContactModalOpen}
@@ -160,6 +187,11 @@ const CampaignContactsPage = React.createClass({
           onCreate={onShowCreateContact}
           campaign={campaign}
           campaignContacts={contacts} />
+        <RemoveContact
+          open={removeContactModalOpen}
+          onDismiss={onRemoveContactModalDismiss}
+          campaign={campaign}
+          contacts={this.state.selections} />
       </div>
     )
   }

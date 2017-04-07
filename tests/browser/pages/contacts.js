@@ -1,6 +1,7 @@
 'use strict'
 
 const editContactForm = require('../forms/edit-contact-form')
+const contactTable = require('../forms/contact-table')
 
 module.exports = {
   url: 'http://localhost:3000/contacts',
@@ -8,11 +9,7 @@ module.exports = {
     contactActionsButton: '[data-id=contact-actions-button]',
     importContactsButton: '[data-id=import-contacts-button]',
     saveAndImportContactsButton: '[data-id=save-and-import-contacts-button]',
-    newContactButton: '[data-id=new-contact-button]',
-    searchContactsInput: '[data-id=search-contacts-input]',
-    contactLink: '[data-id=contact-link]',
-    contactsTable: '[data-id=contacts-table]',
-    contactsTableSearchResults: '[data-id=contacts-table-search-results]'
+    newContactButton: '[data-id=new-contact-button]'
   },
   sections: {
     upload: {
@@ -29,7 +26,8 @@ module.exports = {
         status: '[data-id=contacts-import-complete-status]'
       }
     },
-    editContactForm: editContactForm
+    editContactForm: editContactForm,
+    contactTable: contactTable
   },
   commands: [{
     uploadCsvFile: function (path) {
@@ -50,20 +48,6 @@ module.exports = {
     completeImport: function () {
       this.waitForElementVisible('@saveAndImportContactsButton')
       this.click('@saveAndImportContactsButton')
-
-      return this
-    },
-    searchForContact: function (query) {
-      this.waitForElementVisible('@searchContactsInput')
-      this.clearValue('@searchContactsInput')
-      this.setValue('@searchContactsInput', query)
-      this.waitForElementVisible('@contactsTableSearchResults')
-
-      return this
-    },
-    selectSearchResult: function (query) {
-      this.waitForElementVisible('@contactLink')
-      this.click('@contactLink')
 
       return this
     }

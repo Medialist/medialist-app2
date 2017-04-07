@@ -108,10 +108,12 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
     })
 
     t.perform((done) => {
-      t.page.main()
+      const contactsPage = t.page.main()
         .navigateToContacts(t)
-        .searchForContact(contact.name)
-        .selectSearchResult(contact.name)
+
+      contactsPage.section.contactTable
+        .searchFor(contact.name)
+        .clickRow(0)
 
       t.assert.urlEquals(`http://localhost:3000/contact/${contact.slug}`)
 

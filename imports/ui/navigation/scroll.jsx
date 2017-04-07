@@ -8,6 +8,11 @@ const Scroll = React.createClass({
     children: PropTypes.node.isRequired,
     onScrollChange: PropTypes.func.isRequired
   },
+  getDefaultProps () {
+    return {
+      onScrollChange: () => {}
+    }
+  },
   lastScrollTop: false,
   onScroll () {
     const { lastScrollTop } = this

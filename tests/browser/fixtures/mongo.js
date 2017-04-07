@@ -11,7 +11,7 @@ const findCampaign = (db, query) => {
         }
 
         if (error) {
-          return reject(doc)
+          return reject(error)
         }
 
         resolve(doc)
@@ -30,7 +30,7 @@ const findUser = (db, query) => {
         }
 
         if (error) {
-          return reject(doc)
+          return reject(error)
         }
 
         resolve(doc)
@@ -49,7 +49,26 @@ const findContact = (db, query) => {
         }
 
         if (error) {
-          return reject(doc)
+          return reject(error)
+        }
+
+        resolve(doc)
+      })
+    })
+    .catch(retry)
+  })
+}
+
+const findContacts = (db, query) => {
+  return retry((retry) => {
+    return new Promise((resolve, reject) => {
+      db.collection('contacts').find(query, (error, doc) => {
+        if (!error && !doc) {
+          error = new Error('Could not find docs')
+        }
+
+        if (error) {
+          return reject(error)
         }
 
         resolve(doc)
@@ -66,6 +85,7 @@ module.exports = (url) => {
     connection: db,
     findCampaign: findCampaign.bind(null, db),
     findUser: findUser.bind(null, db),
-    findContact: findContact.bind(null, db)
+    findContact: findContact.bind(null, db),
+    findContacts: findContacts.bind(null, db)
   }
 }
