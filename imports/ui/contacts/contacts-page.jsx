@@ -175,11 +175,55 @@ const ContactsPage = withSnackbar(React.createClass({
     })
   },
 
+  contactQuery (term) {
+    const contactSlugs = this.props.campaign.contacts ? Object.keys(this.props.campaign.contacts) : []
+
+    let query = {
+      slug: {
+        $in: contactSlugs
+      }
+    }
+
+    if (term) {
+      const filterRegExp = new RegExp(term, 'gi')
+
+      query = {
+        $and: [{
+          slug: {
+            $in: contactSlugs
+          }
+        }, {
+          $or: [{
+            name: filterRegExp
+          }, {
+            'outlets.value': filterRegExp
+          }, {
+            'outlets.label': filterRegExp
+          }]
+        }]
+      }
+    }
+
+    return query
+  },
+
   render () {
+    if (this.props.loading) {
+      return (<div>
+        <div className='center p4'>
+          <Loading />
+        </div>
+      </div>)
+    }
+
+    if (this.props.contactsCount === 0) {
+      return <ContactListEmpty />
+    }
+
     const { contactsCount, selectedMasterListSlug, loading, searching, contacts, term, sort, campaigns, selectedTags } = this.props
     const { onSortChange, onSelectionsChange, onMasterListChange, onTermChange, onCampaignRemove, onTagRemove } = this
     const { selections } = this.state
-    if (!loading && contactsCount === 0) return <ContactListEmpty />
+
     return (
       <div style={{paddingBottom: 100}}>
         <div style={{height: 58}} className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
@@ -208,46 +252,13 @@ const ContactsPage = withSnackbar(React.createClass({
             </Dropdown>
           </div>
         </div>
-        <div className='bg-white shadow-2 m4 mt8' data-id='contacts-table'>
-          <div className='p4 flex items-center'>
-            <div className='flex-auto'>
-              <SearchBox onTermChange={onTermChange} placeholder='Search contacts...' data-id='search-contacts-input'>
-                <div style={{marginBottom: -4}} >
-                  {campaigns && campaigns.map((c) => (
-                    <AvatarTag
-                      key={c.slug}
-                      name={c.name}
-                      avatar={c.avatar}
-                      onRemove={() => onCampaignRemove(c)}
-                    />
-                  ))}
-                  {selectedTags && selectedTags.map((t) => (
-                    <CountTag
-                      key={t.slug}
-                      name={t.name}
-                      count={t.contactsCount}
-                      onRemove={() => onTagRemove(t)}
-                    />
-                  ))}
-                </div>
-              </SearchBox>
-            </div>
-            <div className='flex-none pl4 f-xs'>
-              <ContactsTotal searching={searching} results={contacts} total={contactsCount} />
-            </div>
-          </div>
-          <ContactsTable
-            contacts={contacts}
-            loading={loading}
-            sort={sort}
-            limit={25}
-            term={term}
-            selections={selections}
-            onSortChange={onSortChange}
-            onSelectionsChange={onSelectionsChange}
-            searching={searching} />
-        </div>
-        { loading && <div className='center p4'><Loading /></div> }
+        <ContactsTable ref={(table) => { this.table = table }}
+          query={this.contactQuery}
+          total={Contacts.allContactsCount()}
+          onSelectionChange={onSelectionsChange}
+          campaigns={campaigns}
+          selectedTags={selectedTags}
+        />
         <ContactsActionsToast
           contacts={selections}
           onCampaignClick={() => this.setState({AddContactsToCampaignModalOpen: true})}

@@ -13,12 +13,12 @@ import AddContact from './add-contact'
 import { StatusIndex } from '/imports/api/contacts/status'
 import { createContact } from '/imports/api/contacts/methods'
 import RemoveContact from './remove-contact'
+import Loading from '../lists/loading'
 
 const CampaignContactsPage = React.createClass({
   propTypes: {
-    campaign: PropTypes.object.isRequired,
-    contacts: PropTypes.array.isRequired,
-    contactsAllCount: PropTypes.number.isRequired
+    loading: PropTypes.bool.isRequired,
+    campaign: PropTypes.object
   },
 
   getInitialState () {
@@ -27,9 +27,7 @@ const CampaignContactsPage = React.createClass({
       addContactModalOpen: false,
       removeContactModalOpen: false,
       sort: { updatedAt: -1 },
-      selections: [],
-      term: '',
-      statusFilter: ''
+      selections: []
     }
   },
 
@@ -97,29 +95,66 @@ const CampaignContactsPage = React.createClass({
     })
   },
 
-  onSectorChange (selectedSector) {
-    this.setState({ selectedSector })
-  },
-
-  onSortChange (sort) {
-    this.setState({ sort })
-  },
-
   onSelectionsChange (selections) {
     this.setState({ selections })
-  },
-
-  onTermChange (term) {
-    this.setState({ term })
   },
 
   onDeselectAllClick () {
     this.setState({ selections: [] })
   },
 
+  contactQuery (term) {
+    const contactSlugs = this.props.campaign.contacts ? Object.keys(this.props.campaign.contacts) : []
+
+    let query = {
+      slug: {
+        $in: contactSlugs
+      }
+    }
+
+    if (term) {
+      const filterRegExp = new RegExp(term, 'gi')
+
+      query = {
+        $and: [{
+          slug: {
+            $in: contactSlugs
+          }
+        }, {
+          $or: [{
+            name: filterRegExp
+          }, {
+            'outlets.value': filterRegExp
+          }, {
+            'outlets.label': filterRegExp
+          }]
+        }]
+      }
+    }
+
+    return query
+  },
+
+  onStatusFilterChange (filter) {
+    if (!filter) {
+      this.table.setFilter(() => true)
+    } else {
+      const contacts = this.props.campaign.contacts
+
+      this.table.setFilter((contact) => contacts[contact.slug] === filter)
+    }
+  },
+
   render () {
+    if (this.props.loading) {
+      return (<div>
+        <div className='center p4'>
+          <Loading />
+        </div>
+      </div>)
+    }
+
     const { campaign, contacts } = this.props
-    if (!campaign) return null
 
     const {
       onSortChange,
@@ -146,27 +181,13 @@ const CampaignContactsPage = React.createClass({
     return (
       <div>
         <CampaignTopbar campaign={campaign} onAddContactClick={onAddContactClick} />
-        <CampaignSummary campaign={campaign} statusFilter={statusFilter} onStatusClick={(statusFilter) => this.setState({statusFilter})} />
-        <div className='bg-white shadow-2 m4' data-id='contacts-table'>
-          <div className='p4 flex items-center'>
-            <div className='flex-auto'>
-              <SearchBox onTermChange={this.onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' />
-            </div>
-            <div className='flex-none pl4 f-xs'>
-              <ContactsTotal total={contacts.length} />
-            </div>
-          </div>
-          <ContactsTableContainer
-            sort={sort}
-            term={term}
-            campaign={campaign}
-            selections={selections}
-            statusFilter={statusFilter}
-            onSortChange={onSortChange}
-            onSelectionsChange={onSelectionsChange}
-            searching={Boolean(term)}
-          />
-        </div>
+        <CampaignSummary campaign={campaign} statusFilter={statusFilter} onStatusClick={this.onStatusFilterChange} />
+        <ContactsTable ref={(table) => { this.table = table }}
+          query={this.contactQuery}
+          total={Object.keys(this.props.campaign.contacts).length}
+          campaign={this.props.campaign}
+          onSelectionChange={onSelectionsChange}
+        />
         <ContactsActionsToast
           contacts={selections}
           onCampaignClick={() => console.log('TODO: add contacts to campaign')}
@@ -197,43 +218,12 @@ const CampaignContactsPage = React.createClass({
   }
 })
 
-const ContactsTotal = ({ total }) => (
-  <div>{total} contact{total === 1 ? '' : 's'} total</div>
-)
-
 // dir is -1 or 1. Returns a sort functon.
 const contactStatusSort = ({contacts}, dir) => (a, b) => {
   const statusA = contacts[a.slug]
   const statusB = contacts[b.slug]
   return (StatusIndex[statusA] - StatusIndex[statusB]) * dir
 }
-
-const ContactsTableContainer = createContainer((props) => {
-  const { campaign, term, sort, statusFilter } = props
-  const contactIds = campaign.contacts ? Object.keys(campaign.contacts) : []
-  let query = { slug: { $in: contactIds } }
-  if (term) {
-    const filterRegExp = new RegExp(term, 'gi')
-    query = {
-      $and: [
-        { slug: { $in: contactIds } },
-        { $or: [
-          { name: filterRegExp },
-          { 'outlets.value': filterRegExp },
-          { 'outlets.label': filterRegExp }
-        ]}
-      ]
-    }
-  }
-  let contacts = Contacts.find(query, { sort }).fetch()
-  if (statusFilter) {
-    contacts = contacts.filter((c) => campaign.contacts[c.slug] === statusFilter)
-  }
-  if (sort.status) {
-    contacts.sort(contactStatusSort(campaign, sort.status))
-  }
-  return { ...props, contacts }
-}, ContactsTable)
 
 export default createContainer((props) => {
   const { campaignSlug } = props.params
@@ -248,9 +238,6 @@ export default createContainer((props) => {
   return {
     ...props,
     loading,
-    campaign: Campaigns.findOne({ slug: campaignSlug }),
-    contacts: Contacts.find({campaigns: campaignSlug}, {sort: {updatedAt: -1}}).fetch(),
-    contactsAllCount: Contacts.allContactsCount(),
-    user: Meteor.user()
+    campaign: Campaigns.findOne({ slug: campaignSlug })
   }
 }, CampaignContactsPage)

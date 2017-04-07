@@ -33,7 +33,7 @@ const RemoveContact = React.createClass({
       <div data-id='remove-contact-from-campaign' className='relative'>
         <div className='center px4 pt4 pb6'>
           <h3 className='normal f-xl m4'>Are you sure you want to <strong>remove {this.props.contacts.length > 1 ? 'these contacts' : 'this contact'}</strong> from this campaign?</h3>
-          <AvatarList items={this.props.contacts} maxAvatars='10' className='my4 px4' />
+          <AvatarList items={this.props.contacts} maxAvatars={10} className='my4 px4' />
         </div>
 
         <div className='flex items-center p4 bg-white border-top border-gray80'>

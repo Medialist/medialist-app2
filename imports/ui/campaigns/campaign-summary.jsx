@@ -13,6 +13,11 @@ const CamapignSummary = withSnackbar(React.createClass({
     statusFilter: PropTypes.string,
     onStatusClick: PropTypes.func
   },
+  getInitialState () {
+    return {
+      statusFilter: this.props.statusFilter
+    }
+  },
   onAvatarChange (e) {
     const { _id } = this.props.campaign
     update.call({ _id, avatar: e.url }, (err) => {
@@ -26,9 +31,16 @@ const CamapignSummary = withSnackbar(React.createClass({
     console.error('Failed to change avatar', err)
     this.props.snackbar.show('There was a problem updating the image.')
   },
+  onStatusClick (statusFilter) {
+    this.setState({
+      statusFilter: statusFilter
+    })
+
+    this.props.onStatusClick(statusFilter)
+  },
   render () {
     const { onAvatarError, onAvatarChange } = this
-    const { campaign, statusFilter, onStatusClick } = this.props
+    const { campaign, onStatusClick } = this.props
     const { contacts, name, avatar, client } = campaign
     const statuses = values(contacts || [])
     return (
@@ -44,7 +56,7 @@ const CamapignSummary = withSnackbar(React.createClass({
             </div>
           </div>
         </div>
-        <StatusStats className='flex-none' statuses={statuses} active={statusFilter} onStatusClick={(status) => onStatusClick(status)} />
+        <StatusStats className='flex-none' statuses={statuses} active={this.state.statusFilter} onStatusClick={this.onStatusClick} />
       </div>
     )
   }
