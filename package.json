@@ -16,6 +16,7 @@
     "build": "run-s build:*",
     "build:css": "postcss --config ./postcss.config.js --output ./client/bundle.css ./imports/ui/main.css",
     "build:svg": "node ./private/build/createSvgComponents",
+    "build:version": "echo '{\"commit\":\"'`git rev-parse --short HEAD`'\"}' > imports/ui/version.json",
     "watch": "run-p watch:*",
     "watch:css": "nodemon --quiet --watch ./imports/ui --ext css --exec npm run build:css",
     "watch:svg": "nodemon --quiet --watch ./private/svgs/icons --ext svg --exec npm run build:svg",
