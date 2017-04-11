@@ -2,6 +2,9 @@ import React, { PropTypes } from 'react'
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 import { Close } from '../images/icons'
 
+// ten seconds
+const MESSAGE_VISIBILITY_DURATION = 10000
+
 /*
  * SnackbarItem - a self-dismissing notification.
  * `dismissTimer` is stopped when user hovers mouse over the item.
@@ -17,26 +20,32 @@ const SnackbarItem = React.createClass({
     return this.startDismissTimer({})
   },
   startDismissTimer ({dismissTimer}) {
-    if (dismissTimer) return // is already running.
-    return { dismissTimer: setTimeout(this.props.onDismiss, 2000) }
+    if (dismissTimer) {
+       // is already running.
+      return
+    }
+
+    return { dismissTimer: setTimeout(this.props.onDismiss, MESSAGE_VISIBILITY_DURATION) }
   },
   stopDismissTimer ({dismissTimer}) {
-    if (!dismissTimer) return
+    if (!dismissTimer) {
+      return
+    }
+
     return { dismissTimer: clearTimeout(dismissTimer) }
   },
   render () {
-    const { onDismiss, children, style } = this.props
     return (
       <div
         onMouseEnter={() => this.setState(this.stopDismissTimer)}
         onMouseLeave={() => this.setState(this.startDismissTimer)}
         className='inline-block p4 left-align shadow-1 bg-gray10'
-        style={{...style}}>
+        style={{...this.props.style}}>
         <div className='white inline-block align-middle'>
-          {children}
+          {this.props.children}
         </div>
         <div className='inline-block pl4 align-middle'>
-          <span className='pointer' onClick={onDismiss}>
+          <span className='pointer' onClick={this.props.onDismiss}>
             <Close className='gray20' />
           </span>
         </div>
@@ -87,11 +96,9 @@ const Snackbar = React.createClass({
     }
   },
   render () {
-    const { children } = this.props
-    const { items } = this.state
     return (
       <div>
-        {children}
+        {this.props.children}
         <div className='snackbars' style={{
           position: 'fixed',
           bottom: 0,
@@ -103,7 +110,7 @@ const Snackbar = React.createClass({
             transitionAppearTimeout={350}
             transitionEnterTimeout={350}
             transitionLeaveTimeout={350}>
-            {items.map((item, index) => (
+            {this.state.items.map((item, index) => (
               <div className='mb4 right-align' key={item.id}>
                 <SnackbarItem onDismiss={() => this.remove(item.id)}>
                   {item.message}
