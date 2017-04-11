@@ -82,7 +82,7 @@ const AddTeamMateContainer = React.createClass({
   getInitialState () {
     return {
       searching: false,
-      selectedTeamMates: [],
+      selectedTeamMates: this.props && this.props.teamMates || [],
       filteredTeamMates: this.props && this.props.teamMatesAll || []
     }
   },
@@ -93,12 +93,9 @@ const AddTeamMateContainer = React.createClass({
     }
   },
 
-  // Is the contact in the campaign or in selected teamMates list?
-  isActive (contact) {
-    const { teamMates } = this.props
-    const { selectedTeamMates } = this.state
-    const activeContacts = teamMates.concat(selectedTeamMates)
-    return activeContacts.some((c) => c._id === contact._id)
+  // Is the user in selected teamMates list?
+  isActive (teamMate) {
+    return this.state.selectedTeamMates.some((t) => t._id === teamMate._id)
   },
 
   onAdd (contact) {
@@ -111,19 +108,19 @@ const AddTeamMateContainer = React.createClass({
     evt.preventDefault()
     const teamMateIds = this.state.selectedTeamMates.map((t) => t._id)
     const _id = this.props.campaign._id
-    if (teamMateIds.length > 0) Meteor.call('Campaigns/addTeamMates', { userIds: teamMateIds, _id })
+
+    if (teamMateIds.length > 0) {
+      Meteor.call('Campaigns/setTeamMates', { userIds: teamMateIds, _id })
+    }
+
     this.onReset()
   },
 
   onRemove (teamMate) {
-    let { selectedTeamMates } = this.state
-
-    if (selectedTeamMates.some((t) => t._id === teamMate._id)) {
-      selectedTeamMates = selectedTeamMates.filter((t) => t._id !== teamMate._id)
-      this.setState({ selectedTeamMates })
-    } else {
-      Meteor.call('Campaigns/removeTeamMate', { userId: teamMate._id, _id: this.props.campaign._id })
-    }
+    this.setState({
+      selectedTeamMates: this.state.selectedTeamMates
+        .filter((t) => t._id !== teamMate._id)
+    })
   },
 
   onReset () {
@@ -166,7 +163,8 @@ const TeamMatesList = React.createClass({
   propTypes: {
     isActive: PropTypes.func.isRequired,
     onAdd: PropTypes.func.isRequired,
-    onRemove: PropTypes.func.isRequired
+    onRemove: PropTypes.func.isRequired,
+    teamMates: PropTypes.array.isRequired
   },
 
   onClick (teamMate, isActive) {

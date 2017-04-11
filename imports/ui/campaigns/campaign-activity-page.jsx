@@ -134,7 +134,12 @@ const CampaignActivityPage = React.createClass({
               user={user}
               onAddCampaignToMasterLists={onAddCampaignToMasterLists} />
             <EditCampaign campaign={campaign} open={editModalOpen} onDismiss={toggleEditModal} clients={clients} />
-            <EditTeam campaign={campaign} open={editTeamModalOpen} onDismiss={toggleEditTeamModal} teamMates={teamMates} loading={loading} />
+            <EditTeam
+              campaign={campaign}
+              open={editTeamModalOpen}
+              onDismiss={toggleEditTeamModal}
+              teamMates={teamMates}
+              loading={loading} />
           </div>
           <div className='flex-auto px2' >
             <PostBox campaign={campaign} contacts={contacts} onFeedback={onFeedback} onCoverage={onCoverage} />

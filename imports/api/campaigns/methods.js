@@ -260,3 +260,64 @@ export const removeTeamMate = new ValidatedMethod({
     return result
   }
 })
+
+export const setTeamMates = new ValidatedMethod({
+  name: 'Campaigns/setTeamMates',
+  validate: MedialistAddTeamMatesSchema.validator(),
+  run ({ _id, userIds }) {
+    if (!this.userId) throw new Meteor.Error('You must be logged in')
+
+    const campaign = Campaigns.findOne(_id)
+
+    if (!campaign) {
+      throw new Meteor.Error('Medialist not found')
+    }
+
+    const user = Meteor.users.findOne({ _id: this.userId })
+    const now = new Date()
+
+    const $set = {
+      updatedAt: now,
+      updatedBy: {
+        _id: user._id,
+        name: user.profile.name,
+        avatar: getAvatar(user)
+      },
+      team: Meteor.users.find({
+        _id: {
+          $in: userIds
+        }
+      }, {
+        fields: {
+          'profile': 1
+        }
+      })
+        .fetch()
+        .map((u) => ({
+          _id: u._id,
+          name: u.profile.name,
+          avatar: u.profile.avatar
+        }))
+    }
+
+    const result = Campaigns.update(campaign._id, { $set })
+
+    // Add this campaign to the updating user's favourites if required
+    Meteor.users.update({
+      _id: this.userId,
+      'myCampaigns._id': { $ne: campaign._id }
+    }, {
+      $push: { myCampaigns: {
+        name: campaign.name,
+        slug: campaign.slug,
+        avatar: campaign.avatar,
+        clientName: campaign.client
+          ? campaign.client.name
+          : null,
+        updatedAt: now
+      } }
+    })
+
+    return result
+  }
+})
