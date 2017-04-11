@@ -85,6 +85,19 @@ module.exports = {
 
       return this
     },
+    removeFromTeam: function (user) {
+      this.section.editTeamMembersForm
+        .waitForElementVisible('@searchInput')
+        .clearValue('@searchInput')
+        .setValue('@searchInput', user.profile.name)
+        .waitForElementVisible('@searchResults')
+        .waitForElementPresent('@selectedButton')
+        .moveToElement('@selectedButton', 1, 1)
+        .waitForElementVisible('@selectedButton')
+        .click('@selectedButton')
+
+      return this
+    },
     cancelTeamEdit: function () {
       this.section.editTeamMembersForm
         .waitForElementVisible('@cancelButton')

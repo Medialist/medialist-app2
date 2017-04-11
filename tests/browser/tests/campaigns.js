@@ -171,6 +171,41 @@ const test = {
 
     t.page.main().logout()
     t.end()
+  },
+
+  'should remove team members from a campaign': function (t) {
+    t.createDomain(['user', 'user', 'campaign'], (user1, user2, campaign, done) => {
+      t.perform((done) => {
+        t.addTeamMembersToCampaign([user1, user2], campaign, () => done())
+      })
+
+      const campaignPage = t.page.campaign()
+        .navigate(campaign)
+
+      campaignPage
+        .editTeam()
+        .removeFromTeam(user1)
+        .removeFromTeam(user2)
+        .saveTeamEdit()
+
+      t.perform((done) => {
+        t.db.findCampaign({
+          _id: campaign._id
+        })
+        .then((doc) => {
+          t.assert.equal(doc.team.length, 1)
+          t.assert.notEqual(doc.team[0]._id, user1._id)
+          t.assert.notEqual(doc.team[0]._id, user2._id)
+
+          done()
+        })
+      })
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   }
 }
 
