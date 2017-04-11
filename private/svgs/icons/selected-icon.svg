@@ -1,6 +1,10 @@
-<svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
-  <g fill="none" fill-rule="evenodd">
-    <rect fill="#35BF77" width="28" height="28" rx="14"/>
-    <path fill="#FFF" d="M11.844 19.181l.806.819.806-.819L22 10.501 20.388 9l-8.544 8.68h1.612l-4.844-4.92L7 14.26z"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" width="28" height="28" viewBox="0, 0, 28, 28">
+  <g id="Layer_1">
+    <g>
+      <path d="M14,0 C21.732,0 28,6.268 28,14 C28,21.732 21.732,28 14,28 C6.268,28 0,21.732 -0,14 C-0,6.268 6.268,0 14,0 z M14,2 C7.373,2 2,7.373 2,14 C2,20.627 7.373,26 14,26 C20.627,26 26,20.627 26,14 C26,7.373 20.627,2 14,2 z" fill="#3F76F8"/>
+      <path d="M11.844,19.181 L12.65,20 L13.456,19.181 L22,10.501 L20.388,9 L11.844,17.68 L13.456,17.68 L8.612,12.76 L7,14.26 z" fill="#3F76F8"/>
+    </g>
   </g>
 </svg>

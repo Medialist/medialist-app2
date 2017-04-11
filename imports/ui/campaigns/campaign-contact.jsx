@@ -9,7 +9,7 @@ const CampaignContact = ({ contact, campaign, style, ...props }) => {
       <CircleAvatar className='inline-block' size={38} avatar={contact.avatar} name={contact.name} />
       <div className='inline-block align-top pl3' style={{width: 220, height: 55}}>
         <div className='flex items-center'>
-          <div className='flex-none f-md semibold gray10 truncate'>{contact.name}</div>
+          <div className='flex-none f-md semibold blue'>{contact.name}</div>
           <div className='flex-none'>
             {campaign && (
               <StatusSelectorContainer

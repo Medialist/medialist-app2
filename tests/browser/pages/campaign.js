@@ -4,6 +4,9 @@ const editCampaignForm = require('../forms/edit-campaign-form')
 
 module.exports = {
   url: 'http://localhost:3000/campaigns',
+  elements: {
+    addContactsButton: '[data-id=add-contacts-to-campaign-button]'
+  },
   sections: {
     info: {
       selector: '[data-id=campaign-details]',
@@ -46,6 +49,52 @@ module.exports = {
         cancelButton: '[data-id=edit-campaign-team-cancel-button]',
         saveButton: '[data-id=edit-campaign-team-submit-button]'
       }
+    },
+    addContactsModal: {
+      selector: '[data-id=add-contacts-to-campaign-modal]',
+      elements: {
+        searchInput: '[data-id=search-contacts-input]',
+        searchResults: '[data-id=contacts-table-search-results]',
+        unfilteredList: '[data-id=contacts-table-unfiltered]',
+        addButton: '[data-id=add-button]',
+        removeButton: '[data-id=remove-button]',
+        selectedButton: '[data-id=selected-button]',
+        cancelButton: '[data-id=cancel-button]',
+        saveButton: '[data-id=save-button]'
+      },
+      commands: [{
+        add: function (contact) {
+          this
+            .waitForElementVisible('@searchInput')
+            .clearValue('@searchInput')
+            .setValue('@searchInput', contact.name)
+            .waitForElementVisible('@searchResults')
+            .waitForElementPresent('@addButton')
+            .moveToElement('@addButton', 1, 1)
+            .waitForElementVisible('@addButton')
+            .click('@addButton')
+
+          return this
+        },
+        save: function () {
+          this
+            .waitForElementVisible('@saveButton')
+            .click('@saveButton')
+
+          this.waitForElementNotPresent(this.selector)
+
+          return this
+        },
+        cancel: function () {
+          this
+            .waitForElementVisible('@cancelButton')
+            .click('@cancelButton')
+
+          this.waitForElementNotPresent(this.selector)
+
+          return this
+        }
+      }]
     }
   },
   commands: [{
@@ -113,6 +162,15 @@ module.exports = {
         .click('@saveButton')
 
       this.waitForElementNotPresent(this.section.editTeamMembersForm.selector)
+
+      return this
+    },
+    openAddContactsModal: function () {
+      this
+        .waitForElementVisible('@addContactsButton')
+        .click('@addContactsButton')
+
+      this.waitForElementVisible(this.section.addContactsModal.selector)
 
       return this
     }

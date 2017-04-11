@@ -15,7 +15,7 @@ import RemoveContact from './remove-contact'
 
 const CampaignContactsPage = React.createClass({
   propTypes: {
-    campaign: PropTypes.object.isRequired,
+    campaign: PropTypes.object,
     contacts: PropTypes.array.isRequired,
     contactsAllCount: PropTypes.number.isRequired
   },
