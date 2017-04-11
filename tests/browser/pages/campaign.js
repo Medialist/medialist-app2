@@ -34,7 +34,19 @@ module.exports = {
         createCampaignPost: '[data-id=create-campaign] [data-id=post-text]'
       }
     },
-    editCampaignForm: editCampaignForm
+    editCampaignForm: editCampaignForm,
+    editTeamMembersForm: {
+      selector: '[data-id=edit-campaign-team-modal]',
+      elements: {
+        searchInput: '[data-id=search-team-mates-input]',
+        searchResults: '[data-id=team-mates-table-search-results]',
+        unfilteredList: '[data-id=team-mates-table-unfiltered]',
+        addButton: '[data-id=add-button]',
+        selectedButton: '[data-id=selected-button]',
+        cancelButton: '[data-id=edit-campaign-team-cancel-button]',
+        saveButton: '[data-id=edit-campaign-team-submit-button]'
+      }
+    }
   },
   commands: [{
     navigate: function (campaign) {
@@ -48,6 +60,46 @@ module.exports = {
         .waitForElementVisible('@editCampaignInfoButton')
         .click('@editCampaignInfoButton')
         .waitForElementVisible(this.section.editCampaignForm.selector)
+
+      return this
+    },
+    editTeam: function () {
+      this.section.info
+        .waitForElementVisible('@editCampaignTeamMembersButton')
+        .click('@editCampaignTeamMembersButton')
+
+      this.waitForElementVisible(this.section.editTeamMembersForm.selector)
+
+      return this
+    },
+    addToTeam: function (user) {
+      this.section.editTeamMembersForm
+        .waitForElementVisible('@searchInput')
+        .clearValue('@searchInput')
+        .setValue('@searchInput', user.profile.name)
+        .waitForElementVisible('@searchResults')
+        .waitForElementPresent('@addButton')
+        .moveToElement('@addButton', 1, 1)
+        .waitForElementVisible('@addButton')
+        .click('@addButton')
+
+      return this
+    },
+    cancelTeamEdit: function () {
+      this.section.editTeamMembersForm
+        .waitForElementVisible('@cancelButton')
+        .click('@cancelButton')
+
+      this.waitForElementNotPresent(this.section.editTeamMembersForm.selector)
+
+      return this
+    },
+    saveTeamEdit: function () {
+      this.section.editTeamMembersForm
+        .waitForElementVisible('@saveButton')
+        .click('@saveButton')
+
+      this.waitForElementNotPresent(this.section.editTeamMembersForm.selector)
 
       return this
     }

@@ -22,7 +22,8 @@ const AddTeamMate = React.createClass({
     isActive: PropTypes.func.isRequired,
     teamMatesAll: PropTypes.object.isRequired,
     filteredTeamMates: PropTypes.array,
-    selectedTeamMates: PropTypes.array.isRequired
+    selectedTeamMates: PropTypes.array.isRequired,
+    searching: PropTypes.bool
   },
 
   render () {
@@ -40,14 +41,14 @@ const AddTeamMate = React.createClass({
     const scrollableHeight = Math.max(window.innerHeight - 380, 80)
 
     return (
-      <div>
+      <div data-id='edit-campaign-team-modal'>
         <h1 className='f-xl regular center mt6'>Add Team Mates to this Campaign</h1>
         <AvatarList items={selectedTeamMates} onRemove={onRemove} className='my4 px4' />
         <div className='py3 pl4 flex border-top border-bottom border-gray80'>
           <SearchBlueIcon className='flex-none' />
-          <input className='flex-auto f-lg pa2 mx2' placeholder='Find a team mate...' onChange={onSearch} style={{outline: 'none'}} />
+          <input className='flex-auto f-lg pa2 mx2' placeholder='Find a team mate...' onChange={onSearch} style={{outline: 'none'}} data-id='search-team-mates-input' />
         </div>
-        <div style={{height: scrollableHeight, overflowY: 'scroll'}}>
+        <div style={{height: scrollableHeight, overflowY: 'scroll'}} data-id={`team-mates-table-${this.props.searching ? 'search-results' : 'unfiltered'}`}>
           <TeamMatesList
             isActive={isActive}
             onAdd={onAdd}
@@ -61,8 +62,8 @@ const AddTeamMate = React.createClass({
         <form className='p4 border-top border-gray80 flex' onReset={onReset} onSubmit={onSubmit}>
           <div className='flex-auto center-align self-center'><Link to='/settings/team' className='blue bold'>Manage Team Mates</Link></div>
           <div className='flex-auto right-align'>
-            <button className='btn bg-transparent gray40 mr2' type='reset'>Cancel</button>
-            <button className='btn bg-completed white px3' type='submit'>Save Changes</button>
+            <button className='btn bg-transparent gray40 mr2' type='reset' data-id='edit-campaign-team-cancel-button'>Cancel</button>
+            <button className='btn bg-completed white px3' type='submit' data-id='edit-campaign-team-submit-button'>Save Changes</button>
           </div>
         </form>
       </div>
@@ -80,6 +81,7 @@ const AddTeamMateContainer = React.createClass({
 
   getInitialState () {
     return {
+      searching: false,
       selectedTeamMates: [],
       filteredTeamMates: this.props && this.props.teamMatesAll || []
     }
@@ -133,7 +135,10 @@ const AddTeamMateContainer = React.createClass({
     const term = evt.target.value
     const query = {'profile.name': {$regex: term, $options: 'i'}}
     const filteredTeamMates = Meteor.users.find(query, {limit: 20, sort: {'profile.name': 1}}).fetch()
-    this.setState({filteredTeamMates})
+    this.setState({
+      searching: Boolean(term),
+      filteredTeamMates
+    })
   },
 
   deselectAll () {
@@ -182,14 +187,14 @@ const TeamMatesList = React.createClass({
           } = teamMate
           const avatar = getAvatar(teamMate)
           return (
-            <div className={`flex items-center pointer border-bottom border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger ${isActive ? 'active' : ''}`} key={_id} onClick={() => this.onClick(teamMate, isActive)}>
+            <div className={`flex items-center pointer border-bottom border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger ${isActive ? 'active' : ''}`} key={_id} onClick={() => this.onClick(teamMate, isActive)} data-id={`team-mate-${teamMate._id}`}>
               <CircleAvatar avatar={avatar} name={name} />
               <div className='inline-block pl4' style={{width: '24rem'}}>
                 <span className='f-xl gray40 py1'>{name}</span><br />
               </div>
               <div className='flex-none px4'>0 campaigns</div>
               <div className={`flex-none pl4 pr2 ${isActive ? '' : 'opacity-0'} hover-opacity-100`}>
-                {isActive ? <SelectedIcon /> : <AddIcon />}
+                {isActive ? <SelectedIcon data-id='selected-button' /> : <AddIcon data-id='add-button' />}
               </div>
               <div className={`flex-none pl2 pr4 ${isActive ? 'hover-opacity-100' : 'opacity-0'} gray20 hover-fill-trigger`}>
                 {isActive ? <Tooltip title='Remove'><RemoveIcon /></Tooltip> : <RemoveIcon />}

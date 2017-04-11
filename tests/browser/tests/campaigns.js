@@ -57,13 +57,7 @@ const test = {
   },
 
   'Should edit an existing campaign': function (t) {
-    let campaign
-
-    t.createCampaign((c) => {
-      campaign = c
-    })
-
-    t.perform((done) => {
+    t.createDomain(['campaign'], (campaign, done) => {
       const campaignPage = t.page.campaign()
         .navigate(campaign)
         .editCampaign()
@@ -94,13 +88,7 @@ const test = {
   },
 
   'Should search for campaigns': function (t) {
-    let campaign
-
-    t.createCampaign((c) => {
-      campaign = c
-    })
-
-    t.perform((done) => {
+    t.createDomain(['campaign'], (campaign, done) => {
       t.page.main()
         .navigateToCampaigns(t)
         .searchForCampaign(campaign.name)
@@ -116,49 +104,63 @@ const test = {
   },
 
   'Should remove contacts from a campaign': function (t) {
-    let campaign
-    let contact1
-    let contact2
-    let contact3
-
-    t.createCampaign((c) => {
-      campaign = c
-    })
-
-    t.createContact((c) => {
-      contact1 = c
-    })
-
-    t.createContact((c) => {
-      contact2 = c
-    })
-
-    t.createContact((c) => {
-      contact3 = c
-    })
-
-    t.perform((done) => {
-      t.addContactsToCampaign([contact1, contact2, contact3], campaign, () => done())
-    })
-
-    t.perform((done) => {
-      const campaignContactsPage = t.page.campaignContacts()
-        .navigate(campaign)
-
-      campaignContactsPage.section.contactTable
-        .selectRow(0)
-        .selectRow(1)
-
-      campaignContactsPage.removeContacts()
+    t.createDomain(['campaign', 'contact', 'contact', 'contact'], (campaign, contact1, contact2, contact3, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact1, contact2, contact3], campaign, () => done())
+      })
 
       t.perform((done) => {
-        t.db.findContacts({
-          campaigns: {
-            $in: [campaign.slug]
-          }
+        const campaignContactsPage = t.page.campaignContacts()
+          .navigate(campaign)
+
+        campaignContactsPage.section.contactTable
+          .selectRow(0)
+          .selectRow(1)
+
+        campaignContactsPage.removeContacts()
+
+        t.perform((done) => {
+          t.db.findContacts({
+            campaigns: {
+              $in: [campaign.slug]
+            }
+          })
+          .then((docs) => {
+            t.assert.equal(docs.length, 1)
+
+            done()
+          })
         })
-        .then((docs) => {
-          t.assert.equal(docs.length, 1)
+
+        done()
+      })
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'should add team members to a campaign': function (t) {
+    t.createDomain(['user', 'user', 'campaign'], (user1, user2, campaign, done) => {
+      const campaignPage = t.page.campaign()
+        .navigate(campaign)
+
+      campaignPage
+        .editTeam()
+        .addToTeam(user1)
+        .addToTeam(user2)
+        .saveTeamEdit()
+
+      t.perform((done) => {
+        t.db.findCampaign({
+          _id: campaign._id
+        })
+        .then((doc) => {
+          t.assert.equal(doc.team.length, 3)
+          t.assert.equal(doc.team.find(member => member._id === user1._id)._id, user1._id)
+          t.assert.equal(doc.team.find(member => member._id === user2._id)._id, user2._id)
 
           done()
         })

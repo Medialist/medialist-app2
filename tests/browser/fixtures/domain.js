@@ -51,8 +51,21 @@ function contact () {
   }
 }
 
+function user () {
+  return {
+    emails: [{
+      address: faker.internet.email(null, null, 'test.medialist.io')
+    }],
+    profile: {
+      name: faker.name.findName(),
+      avatar: faker.image.imageUrl()
+    }
+  }
+}
+
 module.exports = {
   campaign,
   contact,
+  user,
   labelValue
 }

@@ -63,13 +63,7 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
   },
 
   'Should edit an existing contact': function (t) {
-    let contact
-
-    t.createContact((c) => {
-      contact = c
-    })
-
-    t.perform((done) => {
+    t.createDomain(['contact'], (contact, done) => {
       const contactPage = t.page.contact()
         .navigate(contact)
         .editContact()
@@ -100,13 +94,7 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
   },
 
   'Should search for contacts': function (t) {
-    let contact
-
-    t.createContact((c) => {
-      contact = c
-    })
-
-    t.perform((done) => {
+    t.createDomain(['contact'], (contact, done) => {
       const contactsPage = t.page.main()
         .navigateToContacts(t)
 
@@ -124,18 +112,7 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
   },
 
   'Should add contact to campaign from contact page': function (t) {
-    let campaign
-    let contact
-
-    t.createCampaign((c) => {
-      campaign = c
-    })
-
-    t.createContact((c) => {
-      contact = c
-    })
-
-    t.perform((done) => {
+    t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
       t.page.contact().navigate(contact)
 
       const contactPage = t.page.contact()

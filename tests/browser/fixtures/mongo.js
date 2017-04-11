@@ -2,69 +2,20 @@
 const mongojs = require('mongojs')
 const retry = require('promise-retry')
 
-const findCampaign = (db, query) => {
-  return retry((retry) => {
-    return new Promise((resolve, reject) => {
-      db.collection('campaigns').findOne(query, (error, doc) => {
-        if (!error && !doc) {
-          error = new Error('Could not find doc')
-        }
-
-        if (error) {
-          return reject(error)
-        }
-
-        resolve(doc)
-      })
-    })
-    .catch(retry)
-  })
+const findOne = (db, collection, query) => {
+  return find(db, collection, 'findOne', query)
 }
 
-const findUser = (db, query) => {
-  return retry((retry) => {
-    return new Promise((resolve, reject) => {
-      db.collection('users').findOne(query, (error, doc) => {
-        if (!error && !doc) {
-          error = new Error('Could not find doc')
-        }
-
-        if (error) {
-          return reject(error)
-        }
-
-        resolve(doc)
-      })
-    })
-    .catch(retry)
-  })
+const findMany = (db, collection, query) => {
+  return find(db, collection, 'find', query)
 }
 
-const findContact = (db, query) => {
+const find = (db, collection, method, query) => {
   return retry((retry) => {
     return new Promise((resolve, reject) => {
-      db.collection('contacts').findOne(query, (error, doc) => {
+      db.collection(collection)[method](query, (error, doc) => {
         if (!error && !doc) {
-          error = new Error('Could not find doc')
-        }
-
-        if (error) {
-          return reject(error)
-        }
-
-        resolve(doc)
-      })
-    })
-    .catch(retry)
-  })
-}
-
-const findContacts = (db, query) => {
-  return retry((retry) => {
-    return new Promise((resolve, reject) => {
-      db.collection('contacts').find(query, (error, doc) => {
-        if (!error && !doc) {
-          error = new Error('Could not find docs')
+          error = new Error('Could not find doc(s)')
         }
 
         if (error) {
@@ -83,9 +34,9 @@ module.exports = (url) => {
 
   return {
     connection: db,
-    findCampaign: findCampaign.bind(null, db),
-    findUser: findUser.bind(null, db),
-    findContact: findContact.bind(null, db),
-    findContacts: findContacts.bind(null, db)
+    findCampaign: findOne.bind(null, db, 'campaigns'),
+    findUser: findOne.bind(null, db, 'users'),
+    findContact: findOne.bind(null, db, 'contacts'),
+    findContacts: findMany.bind(null, db, 'contacts')
   }
 }

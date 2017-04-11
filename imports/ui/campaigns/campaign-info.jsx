@@ -90,7 +90,7 @@ const CampaignInfo = React.createClass({
     const tooltip = isFavourite ? 'Remove from My Campaigns' : 'Add to My Campaigns'
     return (
       <div data-id='campaign-details'>
-        <div className='flex items-start mb1'>
+        <div className='flex items-start mb1' data-id='campaign-info'>
           <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError} menuLeft={0} menuTop={-20}>
             <SquareAvatar size={70} avatar={avatar} name={name} />
           </EditableAvatar>
@@ -115,15 +115,15 @@ const CampaignInfo = React.createClass({
             </div>
           </div>
         </div>
-        <section>
+        <section data-id='campaign-key-message'>
           <InfoHeader name='Key Message' linkText='Edit' onClick={onEditClick} data-id='edit-campaign-info-button' />
           <div className='px2 py3 flex'>
             <BioIcon className='inline-block flex-none gray60' />
             <div className='inline-block pl3 f-sm gray10 flex-auto' data-id='campaign-key-message'>{purpose}</div>
           </div>
         </section>
-        <section>
-          <InfoHeader name='Team Members' onClick={onEditTeamClick} data-id='edit-campaign-team-button' />
+        <section data-id='campaign-team-members'>
+          <InfoHeader name='Team Members' onClick={onEditTeamClick} data-id='edit-campaign-team-members-button' />
           <div className='px2 py3'>
             {team.map((teamMember, ind) => <CircleAvatar {...teamMember} size={38} style={{marginLeft: '2px'}} key={ind} />)}
           </div>

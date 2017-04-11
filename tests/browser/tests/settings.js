@@ -39,11 +39,6 @@ const test = {
 
         done()
       })
-      .catch(function (error) {
-        console.info(error.stack)
-
-        done()
-      })
     })
 
     t.page.main().logout()
