@@ -4,7 +4,7 @@ import Modal from '../navigation/modal'
 import { SearchBlueIcon, AddIcon, SelectedIcon, RemoveIcon } from '../images/icons'
 import AvatarList from '../lists/avatar-list'
 import Tooltip from '../navigation/tooltip'
-import CampaignContact from './campaign-contact.jsx'
+import CampaignContact from './campaign-contact'
 import createSearchContainer from '../contacts/search-container'
 import { addContactsToCampaign } from '/imports/api/contacts/methods'
 
@@ -264,7 +264,7 @@ const SelectedContact = ({contact, onContactClick}) => {
     <div className='flex items-center border-bottom border-gray80 py2 pl4 active pointer hover-bg-gray90 hover-color-trigger hover-opacity-trigger'
       onClick={() => onContactClick(contact, true)}>
       <div className='flex-auto'>
-        <CampaignContact contact={contact} />
+        <CampaignContact contact={contact} highlighted />
       </div>
       <div className='flex-none px4 f-sm gray40 hover-gray20'>
         {`${contact.campaigns.length} ${contact.campaigns.length === 1 ? 'campaign' : 'campaigns'}`}
@@ -283,7 +283,7 @@ const UnselectabledContact = ({contact}) => {
   return (
     <div className='flex items-center border-bottom border-gray80 py2 pl4 opacity-50'>
       <div className='flex-auto'>
-        <CampaignContact contact={contact} />
+        <CampaignContact contact={contact} highlighted />
       </div>
       <div className='flex-none px4 f-sm gray40'>
         Already in campaign

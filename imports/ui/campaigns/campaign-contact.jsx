@@ -3,13 +3,13 @@ import { CircleAvatar } from '../images/avatar'
 import StatusSelectorContainer from '../feedback/status-selector-container'
 import StatusDot from '../feedback/status-dot'
 
-const CampaignContact = ({ contact, campaign, style, ...props }) => {
+const CampaignContact = ({ contact, campaign, style, highlighted, ...props }) => {
   return (
     <div style={{lineHeight: 1.3, ...style}} {...props}>
       <CircleAvatar className='inline-block' size={38} avatar={contact.avatar} name={contact.name} />
       <div className='inline-block align-top pl3' style={{width: 220, height: 55}}>
         <div className='flex items-center'>
-          <div className='flex-none f-md semibold blue'>{contact.name}</div>
+          <div className={`flex-none f-md semibold ${highlighted ? 'blue' : ''}`}>{contact.name}</div>
           <div className='flex-none'>
             {campaign && (
               <StatusSelectorContainer
