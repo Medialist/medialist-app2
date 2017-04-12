@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import { Dropdown, DropdownMenu } from '../navigation/dropdown'
-import { CircleAvatar } from '../images/avatar.jsx'
+import { CircleAvatar } from '../images/avatar'
 import { ChevronDown } from '../images/icons'
 import StatusSelector from '../feedback/status-selector'
 import ContactFilterableList from '../contacts/contact-filterable-list'

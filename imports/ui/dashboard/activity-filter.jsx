@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import { Dropdown, DropdownMenu } from '../navigation/dropdown'
-import { Option } from '../navigation/select.jsx'
+import { Option } from '../navigation/select'
 import {
   AllTypesIcon,
   FeedFeedbackIcon,

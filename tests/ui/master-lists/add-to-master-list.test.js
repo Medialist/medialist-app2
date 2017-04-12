@@ -1,7 +1,7 @@
 import test from 'ava'
 import React from 'react'
 import { shallow } from 'enzyme'
-import AddToMasterListModal from '../../../imports/ui/master-lists/add-to-master-list-modal.jsx'
+import AddToMasterListModal from '../../../imports/ui/master-lists/add-to-master-list-modal'
 
 const stubFunc = () => {}
 

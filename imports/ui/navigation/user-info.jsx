@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import Arrow from 'rebass/dist/Arrow'
 import { Dropdown, DropdownMenu } from '../lists/dropdown'
-import { CircleAvatar } from '../images/avatar.jsx'
+import { CircleAvatar } from '../images/avatar'
 import { SettingsIcon, ExitIcon, HamburgerIcon } from '../images/icons'
 import { dropdownMenuStyle } from '../common-styles'
 

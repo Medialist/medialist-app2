@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react'
 import { ChevronDown } from '../images/icons'
 import { Dropdown, DropdownMenu } from '../navigation/dropdown'
-import { SquareAvatar } from '../images/avatar.jsx'
+import { SquareAvatar } from '../images/avatar'
 import CampaignsFilterableList from '../campaigns/campaigns-filterable-list'
 
 const CampaignButton = (props) => {
