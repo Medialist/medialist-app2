@@ -86,6 +86,35 @@ describe('Medialist update method', function () {
     const updatedMedialist = Campaigns.findOne({ _id })
     assert.equal(updatedMedialist.avatar, updatedAvatarUrl)
   })
+
+  it('should add a campaign to the myCampaigns list for the user', function () {
+    const userId = Meteor.users.insert({
+      profile: { name: 'TESTER' }
+    })
+    const _id = Campaigns.insert({ avatar: 'http://example.org/image.jpg' })
+
+    update.run.call({ userId }, { _id, avatar: 'http://example.org/new_image.jpg' })
+
+    const user = Meteor.users.findOne({ _id: userId })
+
+    assert.equal(user.myCampaigns.length, 1)
+    assert.equal(user.myCampaigns[0]._id, _id)
+  })
+
+  it('should not duplicate campaigns in the myCampaigns list for the user', function () {
+    const userId = Meteor.users.insert({
+      profile: { name: 'TESTER' }
+    })
+    const _id = Campaigns.insert({ avatar: 'http://example.org/image.jpg' })
+
+    update.run.call({ userId }, { _id, avatar: 'http://example.org/new_image.jpg' })
+    update.run.call({ userId }, { _id, name: 'A new name' })
+
+    const user = Meteor.users.findOne({ _id: userId })
+
+    assert.equal(user.myCampaigns.length, 1)
+    assert.equal(user.myCampaigns[0]._id, _id)
+  })
 })
 
 describe('Medialist create method', function () {

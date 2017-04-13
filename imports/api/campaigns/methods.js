@@ -102,6 +102,7 @@ export const update = new ValidatedMethod({
       'myCampaigns._id': { $ne: _id }
     }, {
       $push: { myCampaigns: {
+        _id: _id,
         name: updatedMedialist.name,
         slug: updatedMedialist.slug,
         avatar: updatedMedialist.avatar,
