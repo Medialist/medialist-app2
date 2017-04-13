@@ -17,7 +17,7 @@ Meteor.publish('campaignCount', function () {
 Meteor.publish('campaign-refs', function () {
   return Campaigns.find(
     {},
-    { fields: { _id: 1, slug: 1, name: 1, avatar: 1, client: 1 } }
+    { fields: { _id: 1, slug: 1, name: 1, avatar: 1, client: 1, contacts: 1 } }
   )
 })
 
