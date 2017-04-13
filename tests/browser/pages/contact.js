@@ -1,6 +1,7 @@
 'use strict'
 
 const editContactForm = require('../forms/edit-contact-form')
+const activityFeed = require('../forms/activity-feed')
 
 module.exports = {
   url: 'http://localhost:3000/contacts',
@@ -46,7 +47,8 @@ module.exports = {
         }
       }]
     },
-    editContactForm: editContactForm
+    editContactForm: editContactForm,
+    activityFeed: activityFeed
   },
   commands: [{
     navigate: function (contact) {

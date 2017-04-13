@@ -1,6 +1,7 @@
 'use strict'
 
 const editCampaignForm = require('../forms/edit-campaign-form')
+const activityFeed = require('../forms/activity-feed')
 
 module.exports = {
   url: 'http://localhost:3000/campaigns',
@@ -38,6 +39,7 @@ module.exports = {
       }
     },
     editCampaignForm: editCampaignForm,
+    activityFeed: activityFeed,
     editTeamMembersForm: {
       selector: '[data-id=edit-campaign-team-modal]',
       elements: {
