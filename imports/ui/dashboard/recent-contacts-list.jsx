@@ -17,7 +17,7 @@ const ContactPreviewsList = (props) => {
       <div className='pb3 px3'>
         {contacts.map((contact) => (
           <Link to={`/contact/${contact.slug}`} key={contact.slug} className='block mt4'>
-            <ContactPreview {...contact} />
+            <ContactPreview contact={contact} />
           </Link>
         ))}
         {!contacts.length && (
