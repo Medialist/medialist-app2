@@ -17,9 +17,15 @@ import NotFoundPage from './not-found-page'
 import LogoutPage from './users/logout-page'
 import SigningInPage from './sign-in/signing-in-page'
 
+function handleUpdate () {
+  if (this.state.location.action === 'PUSH') {
+    window.scrollTo(0, 0)
+  }
+}
+
 const Routes = ({ store, history }) => {
   return (
-    <Router history={history}>
+    <Router history={history} onUpdate={handleUpdate}>
       <Route path='/sign-in/:token' component={SigningInPage} />
       <Route path='/' component={Layout}>
         <IndexRoute component={DashboardPage} />
