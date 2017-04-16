@@ -58,6 +58,9 @@ const config = {
         acceptSslCerts: true,
         chromeOptions: {
           args: [`user-data-dir=${tmp.dirSync().name}`]
+        },
+        loggingPrefs: {
+          browser: 'ALL'
         }
       }
     }

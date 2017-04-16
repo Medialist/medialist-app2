@@ -42,7 +42,11 @@ const CampaignsFilterableList = React.createClass({
     }
     return (
       <nav>
-        <SearchBox onTermChange={this.onTermChange} placeholder='Search campaigns' style={styleOverrides} />
+        <SearchBox
+          onTermChange={this.onTermChange}
+          placeholder='Search campaigns'
+          style={styleOverrides}
+          data-id='campaigns-filterable-list-search-input' />
         {!hideAllFilter &&
           <div className='f-sm semibold p3 pointer hover-bg-gray90 hover-box-shadow-x-gray80' onClick={onClearFilter}>
             All campaigns ({allCampaignCount})
@@ -53,7 +57,9 @@ const CampaignsFilterableList = React.createClass({
             <div
               key={item._id}
               className={`px3 py2 pointer hover-bg-gray90 hover-box-shadow-x-gray80`}
-              onClick={() => onFilter(item)}>
+              onClick={() => onFilter(item)}
+              data-type='campaign-search-result'
+              data-id={`campaign-${item._id}`}>
               <Campaign campaign={item} contact={contact} />
             </div>
           ))}

@@ -17,7 +17,12 @@ import {
   StatusUpdateIcon
 } from '../images/icons'
 
-const Post = ({icon, summary, details, createdBy, createdAt, currentUser, type, bgClass = 'bg-white', data}) => {
+const Post = ({icon, summary, details, createdBy, createdAt, currentUser, type, bgClass = 'bg-white', contacts, campaigns}) => {
+  const data = {
+    'data-contact': contacts.map(contact => contact._id).join(' '),
+    'data-campaign': campaigns.map(campaigns => campaigns._id).join(' ')
+  }
+
   return (
     <article className={`flex rounded px4 pt3 pb2 mb2 shadow-2 ${bgClass}`} data-id={dasherise(type)} {...data}>
       <div className='flex-none' style={{paddingTop: 1}}>
@@ -39,27 +44,47 @@ const Post = ({icon, summary, details, createdBy, createdAt, currentUser, type, 
 }
 
 const ContactLink = ({contact, ...props}) => (
-  <Link to={`/contact/${contact.slug}`} {...props}>
-    <span className='semibold gray10'> {contact.name} </span>
-    { contact.outletName &&
-      <span className='gray10'> ({contact.outletName}) </span>
-    }
+  <Link to={`/contact/${contact.slug}`} data-id='contact-link' {...props}>
+    <span className='semibold gray10' data-id='contact-name'>{contact.name}</span>
+    { contact.outletName && <span className='gray10' data-id='contact-outlet'> ({contact.outletName})</span> }
   </Link>
 )
 
 const CampaignLink = ({campaign}) => (
-  <Link className='semibold gray10' to={`/campaign/${campaign.slug}`}> {campaign.name} </Link>
+  <Link className='semibold gray10' to={`/campaign/${campaign.slug}`} data-id='campaign-link'>
+    <span data-id='campaign-name'>{campaign.name}</span>
+  </Link>
 )
+
+const ContactName = ({contacts, onContactPage}) => {
+  if (contacts.length === 1 && onContactPage) {
+    return <span data-id='contact-name'>{firstName(contacts[0])}</span>
+  }
+
+  if (contacts.length > 1) {
+    return <span data-id='contact-name'>{contacts.length} contacts</span>
+  }
+
+  return <ContactLink contact={contacts[0]} />
+}
+
+const CampaignName = ({campaigns, onCampaignPage}) => {
+  if (onCampaignPage) {
+    return null
+  }
+
+  return <span> to <CampaignLink campaign={campaigns[0]} /></span>
+}
 
 const firstName = ({name}) => name.split(' ')[0]
 
 const PostSummary = ({children, status}) => (
   <span className='nowrap flex'>
-    <span className='truncate align-middle'>
+    <span className='truncate align-middle' data-id='post-summary'>
       {children}
     </span>
     { status &&
-      <span className='flex-none align-middle'>
+      <span className='flex-none align-middle' data-id='contact-status'>
         <Status status={status} />
       </span>
     }
@@ -93,7 +118,7 @@ export const FeedbackPost = ({item, currentUser, contact, campaign}) => (
     icon={<FeedFeedbackIcon className='blue-dark' style={{verticalAlign: -2}} />}
     summary={<FeedbackPostSummary {...item} label='logged feedback' contact={contact} campaign={campaign} />}
     details={
-      <div className='border-gray80 border-top py3 gray10'>
+      <div className='border-gray80 border-top py3 gray10' data-id='post-message'>
         {item.message}
         {item.embeds && item.embeds[0] ? (
           <div className='pt3'>
@@ -112,7 +137,7 @@ export const CoveragePost = ({item, currentUser, contact, campaign}) => (
     icon={<FeedCoverageIcon className='blue' />}
     summary={<FeedbackPostSummary {...item} label='logged coverage' contact={contact} campaign={campaign} />}
     details={
-      <div className='border-gray80 border-top py3 gray10'>
+      <div className='border-gray80 border-top py3 gray10' data-id='post-message'>
         {item.message}
         {item.embeds && item.embeds[0] ? (
           <div className='pt3'>
@@ -132,7 +157,7 @@ export const NeedToKnowPost = ({item, currentUser, contact}) => (
     icon={<FeedNeedToKnowIcon className='tangerine' />}
     summary={<FeedbackPostSummary {...item} label='shared a need-to-know' contact={contact} />}
     details={
-      <div className='border-gray80 border-top py3 gray10'>
+      <div className='border-gray80 border-top py3 gray10' data-id='post-message'>
         {item.message}
       </div>
     }
@@ -157,40 +182,17 @@ export const StatusUpdate = ({item, currentUser, campaign}) => {
 }
 
 export const AddContactsToCampaign = ({item, currentUser, contact, campaign}) => {
-  let name
-
-  if (contact) {
-    // contact is only set on the contact's page
-    name = firstName(contact)
-  } else if (item.contacts.length > 1) {
-    name = `${item.contacts.length} contacts`
-  } else {
-    name = <ContactLink contact={item.contacts[0]} />
-  }
-
-  let campaignName
-
-  if (!campaign) {
-    // campaign is only set on the campaign's page
-    campaignName = <CampaignLink campaign={item.campaigns[0]} />
-  }
-
-  const data = {
-    'data-contact': item.contacts.map(contact => contact._id).join(' '),
-    'data-campaign': item.campaigns.map(campaigns => campaigns._id).join(' ')
-  }
-
   return (
     <Post
       {...item}
       currentUser={currentUser}
       icon={<FeedContactIcon className='gray60' />}
       summary={
-        <span>
-          added {name} {campaignName ? 'to' : ''} {campaignName}
+        <span data-id='post-summary'>
+          added <ContactName contacts={item.contacts} onContactPage={Boolean(contact)} />
+          <CampaignName campaigns={item.campaigns} onCampaignPage={Boolean(campaign)} />
         </span>
       }
-      data={data}
     />
   )
 }

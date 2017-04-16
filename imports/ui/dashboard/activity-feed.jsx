@@ -12,7 +12,8 @@ import SubscriptionLimitContainer from '../navigation/subscription-limit-contain
 const ActivityFeed = React.createClass({
   propTypes: {
     campaign: PropTypes.object,
-    contact: PropTypes.object
+    contact: PropTypes.object,
+    'data-id': PropTypes.string
   },
 
   getInitialState () {
@@ -35,7 +36,7 @@ const ActivityFeed = React.createClass({
     const { contact, campaign } = this.props
     const { filterType, filterCampaign } = this.state
     return (
-      <div data-id='activity-feed'>
+      <div data-id={this.props['data-id']}>
         <div className='flex justify-start items-center pb3'>
           <ActivityFilter selected={filterType} onChange={onFilterChange} />
           {!campaign &&

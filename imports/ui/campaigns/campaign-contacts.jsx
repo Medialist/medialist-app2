@@ -14,7 +14,9 @@ const CampaignContacts = ({campaign, contacts, onSelectContact}) => {
             className={'flex items-center pointer border-bottom border-top border-transparent hover-border-gray80 pl4 hover-bg-gray90 hover-opacity-trigger active-bg-green-light'}
             style={{height: 75}}
             onClick={() => onSelectContact(contact)}
-            key={slug} >
+            key={slug}
+            data-type='campaign-contact-search-result'
+            data-id={`campaign-contact-${contact._id}`} >
             <div className='flex-none'>
               <CampaignContact contact={contact} />
             </div>

@@ -20,7 +20,7 @@ const DashboardPage = React.createClass({
           <RecentContactsList contacts={recentContacts} />
         </div>
         <div className='flex-auto px2 py1'>
-          <ActivityFeed />
+          <ActivityFeed data-id='dashboard-activity-feed' />
         </div>
       </div>
     )

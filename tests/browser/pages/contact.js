@@ -2,6 +2,7 @@
 
 const editContactForm = require('../forms/edit-contact-form')
 const activityFeed = require('../forms/activity-feed')
+const postBox = require('../forms/post-box')
 
 module.exports = {
   url: 'http://localhost:3000/contacts',
@@ -48,7 +49,8 @@ module.exports = {
       }]
     },
     editContactForm: editContactForm,
-    activityFeed: activityFeed
+    activityFeed: activityFeed('contact'),
+    postBox: postBox
   },
   commands: [{
     navigate: function (contact) {

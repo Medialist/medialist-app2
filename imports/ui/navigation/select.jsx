@@ -7,7 +7,8 @@ export const Select = React.createClass({
     buttonText: PropTypes.node.isRequired,
     children: PropTypes.node.isRequired,
     onChange: PropTypes.func.isRequired,
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool,
+    'data-id': PropTypes.string
   },
   getInitialState () {
     return {open: false}
@@ -27,7 +28,7 @@ export const Select = React.createClass({
     const { disabled, buttonText, children, style, className } = this.props
     return (
       <Dropdown>
-        <div className={className} style={style} onClick={this.openDropdown} disabled={disabled}>
+        <div className={className} style={style} onClick={this.openDropdown} disabled={disabled} data-id={this.props['data-id']}>
           {buttonText}<ChevronDown className={`${open ? 'blue' : 'gray40'}`} />
         </div>
         <DropdownMenu width={223} open={open} onDismiss={this.closeDropdown}>
@@ -40,8 +41,8 @@ export const Select = React.createClass({
   }
 })
 
-export const Option = ({selected, onClick, children}) => (
-  <div className='flex px3 py2 pointer hover-bg-gray90 hover-color-trigger hover-box-shadow-x-gray80' onClick={onClick}>
+export const Option = ({selected, onClick, children, ...props}) => (
+  <div className='flex px3 py2 pointer hover-bg-gray90 hover-color-trigger hover-box-shadow-x-gray80' onClick={onClick} data-id={props['data-id']}>
     <div className='flex-auto'>
       {children}
     </div>

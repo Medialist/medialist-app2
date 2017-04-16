@@ -32,7 +32,7 @@ const PostBox = React.createClass({
     if (loading) return null
     const childProps = { focused, contact }
     return (
-      <div className='pb3' onFocus={() => this.setState({focused: true})}>
+      <div className='pb3' onFocus={() => this.setState({focused: true})} data-id='post-box'>
         <PostBoxTabs>
           <FeedbackTab onClick={() => this.setState({selected: 'Feedback'})} selected={selected === 'Feedback'} />
           <Divider show={selected === 'Need to Know'} />
@@ -57,7 +57,8 @@ export const PostBoxButtons = ({focused, disabled, onPost, children}) => (
     <button
       onClick={onPost}
       className={`btn opacity-100 bg-gray80 right active-bg-blue ${disabled ? 'white' : 'active'}`}
-      disabled={disabled}>
+      disabled={disabled}
+      data-id='create-post-button'>
       Post
     </button>
     {children}
@@ -111,7 +112,8 @@ const FeedbackInput = React.createClass({
           value={message}
           focused={focused}
           disabled={posting}
-          onChange={onMessageChange} />
+          onChange={onMessageChange}
+          data-id='feedback-input' />
         <PostBoxButtons
           focused={focused}
           disabled={!message || posting || !status || !campaign}
@@ -179,7 +181,8 @@ const CoverarageInput = React.createClass({
           value={message}
           focused={focused}
           disabled={posting}
-          onChange={onMessageChange} />
+          onChange={onMessageChange}
+          data-id='coverage-input' />
         <PostBoxButtons
           focused={focused}
           disabled={!message || posting || !campaign}
@@ -232,7 +235,8 @@ const NeedToKnowInput = React.createClass({
           value={message}
           focused={focused}
           disabled={posting}
-          onChange={onMessageChange} />
+          onChange={onMessageChange}
+          data-id='need-to-know-input' />
         <PostBoxButtons
           focused={focused}
           disabled={!message || posting}

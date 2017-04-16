@@ -59,10 +59,14 @@ const ContactSelector = React.createClass({
     const filteredContacts = contacts.filter((contact) => contactMatchesTerm(contact, term))
 
     return (
-      <div>
+      <div className='inline-block'>
         <div className='inline-block'>
           <Dropdown>
-            <button className='btn bg-transparent border-gray80' style={{height: 34, padding: '0 12px', borderRadius: 2}} onClick={this.openDropdown} disabled={!contacts || !contacts.length}>
+            <button
+              className='btn bg-transparent border-gray80'
+              style={{height: 34, padding: '0 12px', borderRadius: 2}}
+              onClick={this.openDropdown} disabled={!contacts || !contacts.length}
+              data-id='select-contact-button'>
               { selectedContact ? <ContactButton contact={selectedContact} /> : 'Select a Contact' }
             </button>
             <DropdownMenu width={573} left={-50} open={open} onDismiss={closeDropdown}>

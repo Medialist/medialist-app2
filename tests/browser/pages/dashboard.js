@@ -8,7 +8,7 @@ module.exports = {
 
   },
   sections: {
-    activityFeed: activityFeed
+    activityFeed: activityFeed('dashboard')
   },
   commands: [{
 

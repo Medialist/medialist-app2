@@ -52,7 +52,8 @@ const CampaignSelector = React.createClass({
           <button
             style={{padding: '6px 15px 6px'}}
             className='btn bg-transparent border-gray80' onClick={openDropdown}
-            disabled={!campaigns.length}>
+            disabled={!campaigns.length}
+            data-id='select-campaign-button'>
             { campaign ? <CampaignButton campaign={campaign} /> : 'Select a Campaign' }
           </button>
           <DropdownMenu left={-73} width={573} open={this.state.open} onDismiss={closeDropdown}>

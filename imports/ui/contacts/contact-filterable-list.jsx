@@ -20,7 +20,12 @@ export default React.createClass({
     }
     return (
       <div>
-        <SearchBox term={term} onTermChange={onTermChange} style={styleOverrides} placeholder='Search contacts' />
+        <SearchBox
+          term={term}
+          onTermChange={onTermChange}
+          style={styleOverrides}
+          placeholder='Search contacts'
+          data-id='contacts-filterable-list-search-input' />
         <div style={{maxHeight: 299, overflowY: 'scroll'}}>
           <CampaignContacts campaign={campaign} contacts={contacts} onSelectContact={onSelectContact} />
         </div>

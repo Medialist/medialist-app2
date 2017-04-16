@@ -22,7 +22,7 @@ const CampaignPostBox = React.createClass({
     const childProps = { focused, contacts, campaign }
 
     return (
-      <div className='pb3' onFocus={() => this.setState({focused: true})}>
+      <div className='pb3' onFocus={() => this.setState({focused: true})} data-id='post-box'>
         <PostBoxTabs>
           <FeedbackTab onClick={() => this.setState({selected: 'Feedback'})} selected={selected === 'Feedback'} />
           <CoverageTab onClick={() => this.setState({selected: 'Coverage'})} selected={selected === 'Coverage'} />
@@ -78,6 +78,7 @@ const FeedbackInput = React.createClass({
           focused={focused}
           disabled={posting}
           onChange={onMessageChange}
+          data-id='feedback-input'
         />
         <PostBoxButtons
           focused={focused}
@@ -112,6 +113,9 @@ const CoverageInput = React.createClass({
     const status = this.props.campaign.contacts[contact.slug]
     this.setState({contact, status})
   },
+  onStatusChange (status) {
+    this.setState({status: status})
+  },
   onSubmit () {
     this.setState({posting: true})
     this.props.onSubmit(this.state, (err) => {
@@ -131,18 +135,19 @@ const CoverageInput = React.createClass({
           focused={focused}
           disabled={posting}
           onChange={onMessageChange}
+          data-id='coverage-input'
         />
         <PostBoxButtons
           focused={focused}
           disabled={!message || posting || !contact}
           onPost={onSubmit} >
           <ContactSelector
-            showStatus={false}
             selectedContact={contact}
             selectedStatus={status}
             campaign={campaign}
             contacts={contacts}
             onContactChange={onContactChange}
+            onStatusChange={this.onStatusChange}
             />
         </PostBoxButtons>
       </div>

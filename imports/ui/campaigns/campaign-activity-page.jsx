@@ -143,7 +143,7 @@ const CampaignActivityPage = React.createClass({
           </div>
           <div className='flex-auto px2' >
             <PostBox campaign={campaign} contacts={contacts} onFeedback={onFeedback} onCoverage={onCoverage} />
-            <ActivityFeed campaign={campaign} />
+            <ActivityFeed data-id='campaign-activity-feed' campaign={campaign} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
             <CampaignContactList contacts={contacts.slice(0, 7)} contactsCount={contactsCount} campaign={campaign} onAddContactClick={onAddContactClick} />

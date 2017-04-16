@@ -9,7 +9,8 @@ const PostBoxTextArea = React.createClass({
     value: PropTypes.string,
     focused: PropTypes.bool,
     disabled: PropTypes.bool,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    'data-id': PropTypes.string.isRequired
   },
 
   getInitialState () {
@@ -50,7 +51,8 @@ const PostBoxTextArea = React.createClass({
           placeholder={placeholder}
           onChange={onChange}
           value={value}
-          disabled={disabled} />
+          disabled={disabled}
+          data-id={this.props['data-id']} />
         {embedLoading || embed ? (
           <div className='py3'>
             <LinkPreview {...embed} loading={embedLoading} />

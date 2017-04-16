@@ -1,10 +1,10 @@
 import React from 'react'
 import { FeedFeedbackIcon, FeedCoverageIcon, FeedNeedToKnowIcon } from '../images/icons'
 
-const Tab = ({selected, onClick, children}) => {
+const Tab = ({selected, onClick, children, ...props}) => {
   const className = `inline-block pl3 pr4 py3 pointer f-sm semibold ${selected ? 'bg-white shadow-2' : 'gray60'}`
   return (
-    <div className={className} onClick={onClick} >
+    <div className={className} onClick={onClick} {...props}>
       {children}
     </div>
   )
@@ -13,21 +13,21 @@ const Tab = ({selected, onClick, children}) => {
 const style = {paddingLeft: 7, verticalAlign: '-1px'}
 
 export const FeedbackTab = ({selected, onClick}) => (
-  <Tab selected={selected} onClick={onClick} >
+  <Tab selected={selected} onClick={onClick} data-id='feedback-tab'>
     <FeedFeedbackIcon className={selected ? 'blue-dark' : 'gray60'} />
     <span style={style}>Feedback</span>
   </Tab>
 )
 
 export const CoverageTab = ({selected, onClick}) => (
-  <Tab selected={selected} onClick={onClick} >
+  <Tab selected={selected} onClick={onClick} data-id='coverage-tab'>
     <FeedCoverageIcon className={selected ? 'blue-dark' : 'gray60'} />
     <span style={style}>Coverage</span>
   </Tab>
 )
 
 export const NeedToKnowTab = ({selected, onClick}) => (
-  <Tab selected={selected} onClick={onClick} >
+  <Tab selected={selected} onClick={onClick} data-id='need-to-know-tab'>
     <FeedNeedToKnowIcon className={selected ? 'tangerine' : 'gray60'} />
     <span style={style}>Need to Know</span>
   </Tab>
