@@ -1,8 +1,14 @@
 import React, { PropTypes } from 'react'
 import SignInPage from '../sign-in/sign-in-page'
 import OnboardingPage from './onboarding-page'
+import Loading from '../lists/loading'
 
-const Authenticator = ({ user, children }) => {
+const Authenticator = ({ userId, user, children }) => {
+  if (userId && !user) {
+    // the user object arrives after page load
+    return <div className='center p4'><Loading /></div>
+  }
+
   if (!user) {
     return <SignInPage />
   }
@@ -15,7 +21,8 @@ const Authenticator = ({ user, children }) => {
 }
 
 Authenticator.propTypes = {
-  user: PropTypes.object
+  user: PropTypes.object,
+  userId: PropTypes.string
 }
 
 export default Authenticator

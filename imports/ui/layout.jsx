@@ -11,9 +11,9 @@ const Layout = React.createClass({
   },
 
   render () {
-    const { children, user } = this.props
+    const { children, userId, user } = this.props
     return (
-      <Authenticator user={user}>
+      <Authenticator userId={userId} user={user}>
         <Snackbar>
           <div>
             <NavBar user={user} />
@@ -27,10 +27,11 @@ const Layout = React.createClass({
 
 export default createContainer(() => {
   const user = Meteor.user()
+  const userId = Meteor.userId()
   let subs = [
     Meteor.subscribe('my-contacts-and-campaigns'),
     Meteor.subscribe('master-lists')
   ]
   const loading = !subs.every((sub) => sub.ready())
-  return { user, loading }
+  return { userId, user, loading }
 }, Layout)
