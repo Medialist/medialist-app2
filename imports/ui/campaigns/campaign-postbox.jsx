@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react'
 import ContactSelector from '../feedback/contact-selector'
 import { PostBoxButtons } from '../feedback/post-box'
-import PostBoxtTextArea from '../feedback/post-box-textarea'
+import PostBoxTextArea from '../feedback/post-box-textarea'
 import { FeedbackTab, CoverageTab, PostBoxTabs } from '../feedback/post-box-nav'
 
 const CampaignPostBox = React.createClass({
@@ -46,23 +46,39 @@ const FeedbackInput = React.createClass({
     onSubmit: PropTypes.func.isRequired
   },
   getInitialState () {
-    return {message: '', status: null, contact: null, posting: false}
+    return {
+      message: '',
+      contact: null,
+      status: null,
+      posting: false
+    }
   },
   onMessageChange (evt) {
     this.setState({message: evt.target.value})
   },
   onContactChange (contact) {
     const status = this.props.campaign.contacts[contact.slug]
-    this.setState({contact, status})
+
+    this.setState({
+      contact, status
+    })
   },
   onStatusChange (status) {
-    this.setState({status})
+    this.setState({
+      status
+    })
   },
   onSubmit () {
-    this.setState({posting: true})
-    this.props.onSubmit(this.state, (err) => {
-      this.setState({message: '', posting: false})
-      if (err) console.error(err)
+    this.setState({
+      posting: true
+    })
+
+    this.props.onSubmit(this.state, (error) => {
+      this.setState(this.getInitialState())
+
+      if (error) {
+        console.error(error)
+      }
     })
   },
   render () {
@@ -72,7 +88,7 @@ const FeedbackInput = React.createClass({
 
     return (
       <div>
-        <PostBoxtTextArea
+        <PostBoxTextArea
           placeholder={'What\'s happening with this campaign?'}
           value={message}
           focused={focused}
@@ -104,23 +120,41 @@ const CoverageInput = React.createClass({
     focused: PropTypes.bool.isRequired
   },
   getInitialState () {
-    return {message: '', contact: null, posting: false}
+    return {
+      message: '',
+      contact: null,
+      posting: false,
+      status: null
+    }
   },
-  onMessageChange (evt) {
-    this.setState({message: evt.target.value})
+  onMessageChange (event) {
+    this.setState({
+      message: event.target.value
+    })
   },
   onContactChange (contact) {
     const status = this.props.campaign.contacts[contact.slug]
-    this.setState({contact, status})
+
+    this.setState({
+      contact, status
+    })
   },
   onStatusChange (status) {
-    this.setState({status: status})
+    this.setState({
+      status: status
+    })
   },
   onSubmit () {
-    this.setState({posting: true})
-    this.props.onSubmit(this.state, (err) => {
-      this.setState({message: '', posting: false})
-      if (err) console.error(err)
+    this.setState({
+      posting: true
+    })
+
+    this.props.onSubmit(this.state, (error) => {
+      this.setState(this.getInitialState())
+
+      if (error) {
+        console.error(error)
+      }
     })
   },
   render () {
@@ -129,7 +163,7 @@ const CoverageInput = React.createClass({
     const {message, contact, status, posting} = this.state
     return (
       <div>
-        <PostBoxtTextArea
+        <PostBoxTextArea
           placeholder={'Any coverage for this campaign?'}
           value={message}
           focused={focused}

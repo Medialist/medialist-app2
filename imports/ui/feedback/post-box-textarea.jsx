@@ -21,21 +21,39 @@ const PostBoxTextArea = React.createClass({
   },
 
   componentWillReceiveProps ({value}) {
-    if (value === this.props.value) return
+    if (value === this.props.value) {
+      return
+    }
 
     const url = findUrl(value)
-    if (!url) {
-      return this.setState({embedLoading: false, embed: null})
-    }
-    if (this.state.embed && this.state.embed.url === url) return
 
-    this.setState({embedLoading: true})
-    Meteor.call('createEmbed', {url}, (err, embed) => {
-      if (err) {
-        console.log(err)
-        return this.setState({embedLoading: false})
+    if (!url) {
+      return this.setState({
+        embedLoading: false,
+        embed: null
+      })
+    }
+
+    if (this.state.embed && this.state.embed.url === url) {
+      return
+    }
+
+    this.setState({
+      embedLoading: true
+    })
+
+    Meteor.call('createEmbed', {
+      url
+    }, (error, embed) => {
+      if (error) {
+        console.log(error)
+        embed = null
       }
-      this.setState({ embed, embedLoading: false })
+
+      this.setState({
+        embed,
+        embedLoading: false
+      })
     })
   },
 

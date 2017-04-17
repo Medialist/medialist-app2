@@ -5,7 +5,7 @@ import { createContainer } from 'meteor/react-meteor-data'
 import CampaignTopbar from './campaign-topbar'
 import CampaignInfo from './campaign-info'
 import CampaignContactList from './campaign-contact-list'
-import PostBox from './campaign-postbox'
+import CampaignPostBox from './campaign-postbox'
 import ActivityFeed from '../dashboard/activity-feed'
 import EditCampaign from './edit-campaign'
 import Clients from '/imports/api/clients/clients'
@@ -82,12 +82,14 @@ const CampaignActivityPage = React.createClass({
   onFeedback ({message, contact, status}, cb) {
     const campaignSlug = this.props.campaign.slug
     const contactSlug = contact.slug
+
     createFeedbackPost.call({contactSlug, campaignSlug, message, status}, cb)
   },
 
   onCoverage ({message, contact, status}, cb) {
     const campaignSlug = this.props.campaign.slug
     const contactSlug = contact.slug
+
     createCoveragePost.call({contactSlug, campaignSlug, message, status}, cb)
   },
 
@@ -142,7 +144,11 @@ const CampaignActivityPage = React.createClass({
               loading={loading} />
           </div>
           <div className='flex-auto px2' >
-            <PostBox campaign={campaign} contacts={contacts} onFeedback={onFeedback} onCoverage={onCoverage} />
+            <CampaignPostBox
+              campaign={campaign}
+              contacts={contacts}
+              onFeedback={onFeedback}
+              onCoverage={onCoverage} />
             <ActivityFeed data-id='campaign-activity-feed' campaign={campaign} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>

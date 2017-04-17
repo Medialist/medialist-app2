@@ -14,18 +14,27 @@ export const createEmbed = new ValidatedMethod({
   }).validator(),
 
   run ({ url }) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
     const existingDoc = Embeds.findOneEmbedRef(url)
-    if (existingDoc) return existingDoc
+
+    if (existingDoc) {
+      return existingDoc
+    }
+
     try {
       const doc = Promise.await(scrapeAndExtract(url))
       doc.scrapedBy = { name: 'scrappy', version: '0.3.0' }
       doc.createdBy = findOneUserRef(this.userId)
       doc.createdAt = new Date()
+
       const _id = Embeds.insert(doc)
+
       return Embeds.toRef({_id, ...doc})
     } catch (err) {
-      throw new Meteor.Error('createEmbed.badUrl', `Could not exract embed data from ${url}`)
+      throw new Meteor.Error('createEmbed.badUrl', `Could not extract embed data from ${url}`)
     }
   }
 })
