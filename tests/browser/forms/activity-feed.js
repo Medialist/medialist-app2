@@ -18,8 +18,15 @@ module.exports = (prefix) => ({
     assertHasNeedToKnowPostWithText: function (contact, data) {
       return this._assertHasPostWithText('need-to-know-post', contact, null, data)
     },
+    assertHasCreatedCampaignPostWithText: function (campaign, data) {
+      return this._assertHasPostWithText('create-campaign', null, campaign, data)
+    },
     _assertHasPostWithText: function (type, contact, campaign, data) {
-      let selector = `[data-id=${type}][data-contact~='${contact._id}']`
+      let selector = `[data-id=${type}]`
+
+      if (contact) {
+        selector += `[data-contact~='${contact._id}']`
+      }
 
       if (campaign) {
         selector += `[data-campaign~='${campaign._id}']`
@@ -50,6 +57,10 @@ module.exports = (prefix) => ({
 
       if (data.message) {
         this.assert.containsText(`${selector} [data-id=post-message]`, data.message)
+      }
+
+      if (data.header) {
+        this.assert.containsText(`${selector} [data-id=post-header]`, data.header)
       }
 
       return this

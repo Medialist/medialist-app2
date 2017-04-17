@@ -30,7 +30,7 @@ const Post = ({icon, summary, details, createdBy, createdAt, currentUser, type, 
         {icon}
       </div>
       <div className='flex-auto' style={{paddingLeft: 13}}>
-        <header className='pt2 pb3 f-md flex nowrap' data-id='post-text'>
+        <header className='pt2 pb3 f-md flex nowrap' data-id='post-header'>
           <YouOrName className='semibold align-middle' currentUser={currentUser} user={createdBy} />
           <div className='align-middle flex-auto truncate' style={{paddingLeft: 3}}>{summary}</div>
           <span className='f-sm semibold gray60 flex-none'>

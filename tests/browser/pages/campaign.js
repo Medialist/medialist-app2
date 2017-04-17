@@ -28,17 +28,6 @@ module.exports = {
         editCampaignTagsButton: '[data-id=edit-campaign-tags-button]'
       }
     },
-    activity: {
-      selector: '[data-id=activity-feed]',
-      elements: {
-        feedbackPost: '[data-id=feedback-post] [data-id=post-text]',
-        coveragePost: '[data-id=coverage-post] [data-id=post-text]',
-        needToKnowPost: '[data-id=need-to-know-post] [data-id=post-text]',
-        statusUpdatePost: '[data-id=status-update] [data-id=post-text]',
-        addContactsToCampaignPost: '[data-id=add-contacts-to-campaign] [data-id=post-text]',
-        createCampaignPost: '[data-id=create-campaign] [data-id=post-text]'
-      }
-    },
     editCampaignForm: editCampaignForm,
     activityFeed: activityFeed('campaign'),
     postBox: postBox,
