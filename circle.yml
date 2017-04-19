@@ -19,7 +19,7 @@ dependencies:
 test:
   override:
     - npm test
-    - npm run test:server
+    - npm run test:server:ci
     - npm run test:browser:ci
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/

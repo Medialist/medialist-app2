@@ -7,6 +7,8 @@ const resetApp = () => {
   }
 
   return new Promise((resolve, reject) => {
+    console.info('> meteor reset')
+
     const proc = spawn('meteor', ['reset'], {
       cwd: path.resolve(path.join(__dirname, '../../../')),
       env: process.env
@@ -28,7 +30,9 @@ const startApp = () => {
     proc.stdout.on('data', (data) => {
       data = data.toString('utf8').trim()
 
-      console.info(`[SERVER stdout]: ${data}`)
+      data
+        .split('\n')
+        .forEach(line => console.error(`[SERVER stdout]: ${line.trim()}`))
 
       if (data.includes('App running at:')) {
         resolve({
@@ -50,9 +54,11 @@ const startApp = () => {
       }
     })
     proc.stderr.on('data', (data) => {
-      data = data.toString('utf8').trim()
-
-      console.error(`[SERVER stderr]: ${data}`)
+      data
+        .toString('utf8')
+        .trim()
+        .split('\n')
+        .forEach(line => console.error(`[SERVER stderr]: ${line.trim()}`))
     })
     proc.on('error', (error) => reject(error))
   })

@@ -28,57 +28,72 @@ describe('createEmbed', function () {
   })
 
   // TODO: https://github.com/Medialist/medialist-app2/issues/372
-  it.skip('should scrape the url and insert the result into the Embeds collection', function (done) {
-     this.timeout(60000)
+  it('should scrape the url and insert the result into the Embeds collection', function (done) {
+    if (process.env.CI) {
+      console.warn('Not running test - see https://github.com/Medialist/medialist-app2/issues/372')
+      return done()
+    }
 
-     const url = 'http://www.theguardian.com/world/2017/mar/06/why-do-sheep-get-horny-in-winter-because-the-light-is-baaad-says-study'
-     const res = createEmbed.run.call({userId: 'alf'}, {url})
-     assert.ok(res)
+    this.timeout(60000)
 
-     const embeds = Embeds.find({}).fetch()
-     assert.equal(embeds.length, 1)
-     assert.equal(embeds[0].url, url.replace('http://', 'https://'))
+    const url = 'http://www.theguardian.com/world/2017/mar/06/why-do-sheep-get-horny-in-winter-because-the-light-is-baaad-says-study'
+    const res = createEmbed.run.call({userId: 'alf'}, {url})
+    assert.ok(res)
 
-     done()
+    const embeds = Embeds.find({}).fetch()
+    assert.equal(embeds.length, 1)
+    assert.equal(embeds[0].url, url.replace('http://', 'https://'))
+
+    done()
   })
 
   // TODO: https://github.com/Medialist/medialist-app2/issues/372
-  it.skip('should scrape urls hidden by shortening services', function (done) {
-     this.timeout(60000)
+  it('should scrape urls hidden by shortening services', function (done) {
+    if (process.env.CI) {
+      console.warn('Not running test - see https://github.com/Medialist/medialist-app2/issues/372')
+      return done()
+    }
 
-     const url = 'https://t.co/f7WPyaasSx'
-     const res = createEmbed.run.call({userId: 'alf'}, {url})
-     assert.ok(res)
+    this.timeout(60000)
 
-     const embeds = Embeds.find({}).fetch()
-     assert.equal(embeds.length, 1)
-     assert.equal(embeds[0].urls[0], url)
+    const url = 'https://t.co/f7WPyaasSx'
+    const res = createEmbed.run.call({userId: 'alf'}, {url})
+    assert.ok(res)
 
-     done()
+    const embeds = Embeds.find({}).fetch()
+    assert.equal(embeds.length, 1)
+    assert.equal(embeds[0].urls[0], url)
+
+    done()
   })
 
   // TODO: https://github.com/Medialist/medialist-app2/issues/372
-  it.skip('should not duplicate embeds if two urls redirect to the same page', function (done) {
-     this.timeout(60000)
+  it('should not duplicate embeds if two urls redirect to the same page', function (done) {
+    if (process.env.CI) {
+      console.warn('Not running test - see https://github.com/Medialist/medialist-app2/issues/372')
+      return done()
+    }
 
-     const url1 = 'https://techcrunch.com/2017/04/13/lucid-tests-a-high-speed-prototype-version-of-its-air-electric-car/'
-     assert.ok(createEmbed.run.call({
-       userId: 'alf'
-     }, {
-       url: url1
-     }))
+    this.timeout(60000)
 
-     const url2 = 'https://techcrunch.com/2017/04/13/lucid-tests-a-high-speed-prototype-version-of-its-air-electric-car'
-     assert.ok(createEmbed.run.call({
-       userId: 'alf'
-     }, {
-       url: url2
-     }))
+    const url1 = 'https://techcrunch.com/2017/04/13/lucid-tests-a-high-speed-prototype-version-of-its-air-electric-car/'
+    assert.ok(createEmbed.run.call({
+      userId: 'alf'
+    }, {
+      url: url1
+    }))
 
-     const embeds = Embeds.find({}).fetch()
-     assert.equal(embeds.length, 1)
-     assert.deepEqual(embeds[0].urls, [url1, url2])
+    const url2 = 'https://techcrunch.com/2017/04/13/lucid-tests-a-high-speed-prototype-version-of-its-air-electric-car'
+    assert.ok(createEmbed.run.call({
+      userId: 'alf'
+    }, {
+      url: url2
+    }))
 
-     done()
+    const embeds = Embeds.find({}).fetch()
+    assert.equal(embeds.length, 1)
+    assert.deepEqual(embeds[0].urls, [url1, url2])
+
+    done()
   })
 })
