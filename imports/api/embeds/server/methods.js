@@ -22,7 +22,6 @@ export const createEmbed = new ValidatedMethod({
     const existingDoc = Embeds.findOneEmbed(url)
 
     if (existingDoc) {
-      console.info('found', existingDoc)
       return Embeds.toRef(existingDoc)
     }
 
@@ -36,8 +35,6 @@ export const createEmbed = new ValidatedMethod({
       if (otherExistingDoc) {
         otherExistingDoc.urls = Array.isArray(otherExistingDoc.urls) ? otherExistingDoc.urls : []
         otherExistingDoc.urls.push(url)
-
-        console.info('actually', otherExistingDoc)
 
         Embeds.update({
           _id: otherExistingDoc._id
@@ -76,8 +73,6 @@ export const createEmbed = new ValidatedMethod({
       }
 
       embed._id = Embeds.insert(embed)
-
-      console.info('created', embed)
 
       return Embeds.toRef(embed)
     } catch (error) {
