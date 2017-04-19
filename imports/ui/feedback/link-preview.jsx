@@ -10,11 +10,16 @@ const LinkPreview = ({url, image, headline, datePublished, loading}) => {
       </div>
     )
   }
-  if (!headline) return null
+
+  if (!headline) {
+    return null
+  }
+
   const maxHeadlineLength = 76
   const text = headline.length > maxHeadlineLength ? headline.substring(0, maxHeadlineLength) + '…' : headline
   const height = 126
-  const imgWidth = image.width ? image.width * (height / image.height) : 'auto'
+  const imgWidth = image ? (image.width ? image.width * (height / image.height) : 'auto') : 'auto'
+
   return (
     <a className='flex items-center bg-gray90 border border-gray80' style={{height, overflow: 'hidden'}} target='_blank' href={url}>
       {image && image.url &&

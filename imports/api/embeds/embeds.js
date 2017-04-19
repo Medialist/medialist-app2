@@ -13,19 +13,57 @@ if (Meteor.isServer) {
   Embeds._ensureIndex({ url: 1 })
 }
 
-Embeds.toRef = ({_id, url, headline, image, entity}) => ({
+Embeds.toRef = ({_id, url, headline, image, datePublished}) => ({
   _id,
   url,
   headline,
-  image: image[0],
-  datePublished: entity && entity.datePublished
+  image,
+  datePublished
 })
 
+Embeds.findOneEmbed = (url) => (
+  Embeds.findOne({
+    $or: [{
+      url: url
+    }, {
+      urls: {
+        $in: [
+          url
+        ]
+      }
+    }]
+  }, {
+    fields: {
+      _id: 1,
+      url: 1,
+      headline: 1,
+      image: 1,
+      datePublished: 1,
+      urls: 1
+    }
+  })
+)
+
 Embeds.findOneEmbedRef = (url) => (
-  Embeds.find(
-    { $or: [ {canonicalUrl: url}, {url: url} ] },
-    { fields: {_id: 1, url: 1, headline: 1, image: 1, entity: 1} }
-  ).map(Embeds.toRef)[0]
+  Embeds.findOne({
+    $or: [{
+      url: url
+    }, {
+      urls: {
+        $in: [
+          url
+        ]
+      }
+    }]
+  }, {
+    fields: {
+      _id: 1,
+      url: 1,
+      headline: 1,
+      image: 1,
+      datePublished: 1
+    }
+  })
 )
 
 export const EmbedRefSchema = new SimpleSchema({
@@ -33,5 +71,12 @@ export const EmbedRefSchema = new SimpleSchema({
   url: { type: String, regEx: SimpleSchema.RegEx.Url },
   headline: { type: String, optional: true },
   'image.url': { type: String, regEx: SimpleSchema.RegEx.Url },
-  datePublished: { type: String, optional: true }
+  'image.width': { type: Number },
+  'image.height': { type: Number },
+  datePublished: { type: String, optional: true },
+  urls: { type: [String], regEx: SimpleSchema.RegEx.Url },
+  'scrapedBy.name': { type: String, optional: true },
+  'scrapedBy.version': { type: String, optional: true },
+  createdBy: { type: String, optional: true },
+  createdAt: { type: Date, optional: true }
 })
