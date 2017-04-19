@@ -123,10 +123,13 @@ export const createNeedToKnowPost = new ValidatedMethod({
 
     const createdBy = findOneUserRef(this.userId)
     const createdAt = new Date()
+    const url = findUrl(message)
+    const embed = Embeds.findOneEmbedRef(url)
     const post = {
       type: 'NeedToKnowPost',
       contacts: Contacts.findRefs({contactSlugs: [contactSlug]}),
       campaigns: [],
+      embeds: embed ? [embed] : [],
       message,
       createdBy,
       createdAt
