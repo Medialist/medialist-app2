@@ -6,22 +6,22 @@ module.exports = (prefix) => ({
     addContactsToCampaignPost: '[data-id=add-contacts-to-campaign]'
   },
   commands: [{
-    assertHasAddContactToCampaignPostWithText: function (contact, campaign, data) {
-      return this._assertHasPostWithText('add-contacts-to-campaign', contact, campaign, data)
+    assertHasAddContactToCampaignPostWith: function (contact, campaign, data) {
+      return this._assertHasPostWith('add-contacts-to-campaign', contact, campaign, data)
     },
-    assertHasFeedbackPostWithText: function (contact, campaign, data) {
-      return this._assertHasPostWithText('feedback-post', contact, campaign, data)
+    assertHasFeedbackPostWith: function (contact, campaign, data) {
+      return this._assertHasPostWith('feedback-post', contact, campaign, data)
     },
-    assertHasCoveragePostWithText: function (contact, campaign, data) {
-      return this._assertHasPostWithText('coverage-post', contact, campaign, data)
+    assertHasCoveragePostWith: function (contact, campaign, data) {
+      return this._assertHasPostWith('coverage-post', contact, campaign, data)
     },
-    assertHasNeedToKnowPostWithText: function (contact, data) {
-      return this._assertHasPostWithText('need-to-know-post', contact, null, data)
+    assertHasNeedToKnowPostWith: function (contact, data) {
+      return this._assertHasPostWith('need-to-know-post', contact, null, data)
     },
-    assertHasCreatedCampaignPostWithText: function (campaign, data) {
-      return this._assertHasPostWithText('create-campaign', null, campaign, data)
+    assertHasCreatedCampaignPostWith: function (campaign, data) {
+      return this._assertHasPostWith('create-campaign', null, campaign, data)
     },
-    _assertHasPostWithText: function (type, contact, campaign, data) {
+    _assertHasPostWith: function (type, contact, campaign, data) {
       let selector = `[data-id=${type}]`
 
       if (contact) {
@@ -61,6 +61,10 @@ module.exports = (prefix) => ({
 
       if (data.header) {
         this.assert.containsText(`${selector} [data-id=post-header]`, data.header)
+      }
+
+      if (data.embed) {
+        this.assert.elementPresent(`${selector} [href='${data.embed}'][data-id=link-preview]`)
       }
 
       return this

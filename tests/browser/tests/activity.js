@@ -23,7 +23,7 @@ const test = {
           .navigate()
 
         dashboardPage.section.activityFeed
-          .assertHasAddContactToCampaignPostWithText(contact, campaign, {
+          .assertHasAddContactToCampaignPostWith(contact, campaign, {
             summary: 'added',
             campaignName: campaign.name,
             contactName: contact.name,
@@ -34,7 +34,7 @@ const test = {
           .navigate(contact)
 
         contactPage.section.activityFeed
-          .assertHasAddContactToCampaignPostWithText(contact, campaign, {
+          .assertHasAddContactToCampaignPostWith(contact, campaign, {
             summary: 'added',
             campaignName: campaign.name,
             contactName: contact.name.split(' ')[0]
@@ -44,7 +44,7 @@ const test = {
           .navigate(campaign)
 
         campaignPage.section.activityFeed
-          .assertHasAddContactToCampaignPostWithText(contact, campaign, {
+          .assertHasAddContactToCampaignPostWith(contact, campaign, {
             summary: 'added',
             contactName: contact.name,
             contactOutlet: contact.outlets[0].label
@@ -86,7 +86,7 @@ const test = {
         dashboardPage.waitForElementVisible(dashboardPage.section.activityFeed.selector)
 
         dashboardPage.section.activityFeed
-          .assertHasFeedbackPostWithText(contact, campaign, {
+          .assertHasFeedbackPostWith(contact, campaign, {
             summary: 'logged feedback',
             campaignName: campaign.name,
             contactName: contact.name,
@@ -101,7 +101,7 @@ const test = {
         contactPage.waitForElementVisible(contactPage.section.activityFeed.selector)
 
         contactPage.section.activityFeed
-          .assertHasFeedbackPostWithText(contact, campaign, {
+          .assertHasFeedbackPostWith(contact, campaign, {
             summary: 'logged feedback',
             campaignName: campaign.name,
             contactStatus: contactStatus,
@@ -114,7 +114,7 @@ const test = {
         campaignPage.waitForElementVisible(campaignPage.section.activityFeed.selector)
 
         campaignPage.section.activityFeed
-        .assertHasFeedbackPostWithText(contact, campaign, {
+        .assertHasFeedbackPostWith(contact, campaign, {
           summary: 'logged feedback',
           contactName: contact.name,
           contactOutlet: contact.outlets[0].label,
@@ -158,7 +158,7 @@ const test = {
         dashboardPage.waitForElementVisible(dashboardPage.section.activityFeed.selector)
 
         dashboardPage.section.activityFeed
-          .assertHasCoveragePostWithText(contact, campaign, {
+          .assertHasCoveragePostWith(contact, campaign, {
             summary: 'logged coverage',
             campaignName: campaign.name,
             contactName: contact.name,
@@ -173,7 +173,7 @@ const test = {
         contactPage.waitForElementVisible(contactPage.section.activityFeed.selector)
 
         contactPage.section.activityFeed
-          .assertHasCoveragePostWithText(contact, campaign, {
+          .assertHasCoveragePostWith(contact, campaign, {
             summary: 'logged coverage',
             campaignName: campaign.name,
             contactStatus: contactStatus,
@@ -186,7 +186,7 @@ const test = {
         campaignPage.waitForElementVisible(campaignPage.section.activityFeed.selector)
 
         campaignPage.section.activityFeed
-        .assertHasCoveragePostWithText(contact, campaign, {
+        .assertHasCoveragePostWith(contact, campaign, {
           summary: 'logged coverage',
           contactName: contact.name,
           contactOutlet: contact.outlets[0].label,
@@ -225,7 +225,7 @@ const test = {
         dashboardPage.waitForElementVisible(dashboardPage.section.activityFeed.selector)
 
         dashboardPage.section.activityFeed
-          .assertHasNeedToKnowPostWithText(contact, {
+          .assertHasNeedToKnowPostWith(contact, {
             summary: 'shared a need-to-know',
             contactName: contact.name,
             contactOutlet: contact.outlets[0].label,
@@ -238,7 +238,7 @@ const test = {
         contactPage.waitForElementVisible(contactPage.section.activityFeed.selector)
 
         contactPage.section.activityFeed
-          .assertHasNeedToKnowPostWithText(contact, {
+          .assertHasNeedToKnowPostWith(contact, {
             summary: 'shared a need-to-know',
             message: status
           })
@@ -279,7 +279,7 @@ const test = {
         dashboardPage.waitForElementVisible(dashboardPage.section.activityFeed.selector)
 
         dashboardPage.section.activityFeed
-          .assertHasFeedbackPostWithText(contact, campaign, {
+          .assertHasFeedbackPostWith(contact, campaign, {
             summary: 'logged feedback',
             campaignName: campaign.name,
             contactName: contact.name,
@@ -294,7 +294,7 @@ const test = {
         contactPage.waitForElementVisible(contactPage.section.activityFeed.selector)
 
         contactPage.section.activityFeed
-          .assertHasFeedbackPostWithText(contact, campaign, {
+          .assertHasFeedbackPostWith(contact, campaign, {
             summary: 'logged feedback',
             campaignName: campaign.name,
             contactStatus: contactStatus,
@@ -307,7 +307,7 @@ const test = {
         campaignPage.waitForElementVisible(campaignPage.section.activityFeed.selector)
 
         campaignPage.section.activityFeed
-        .assertHasFeedbackPostWithText(contact, campaign, {
+        .assertHasFeedbackPostWith(contact, campaign, {
           summary: 'logged feedback',
           contactName: contact.name,
           contactOutlet: contact.outlets[0].label,
@@ -351,7 +351,7 @@ const test = {
         dashboardPage.waitForElementVisible(dashboardPage.section.activityFeed.selector)
 
         dashboardPage.section.activityFeed
-          .assertHasCoveragePostWithText(contact, campaign, {
+          .assertHasCoveragePostWith(contact, campaign, {
             summary: 'logged coverage',
             campaignName: campaign.name,
             contactName: contact.name,
@@ -366,7 +366,7 @@ const test = {
         contactPage.waitForElementVisible(contactPage.section.activityFeed.selector)
 
         contactPage.section.activityFeed
-          .assertHasCoveragePostWithText(contact, campaign, {
+          .assertHasCoveragePostWith(contact, campaign, {
             summary: 'logged coverage',
             campaignName: campaign.name,
             contactStatus: contactStatus,
@@ -379,12 +379,82 @@ const test = {
         campaignPage.waitForElementVisible(campaignPage.section.activityFeed.selector)
 
         campaignPage.section.activityFeed
-        .assertHasCoveragePostWithText(contact, campaign, {
+        .assertHasCoveragePostWith(contact, campaign, {
           summary: 'logged coverage',
           contactName: contact.name,
           contactOutlet: contact.outlets[0].label,
           contactStatus: contactStatus,
           message: status
+        })
+
+        done()
+      })
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should display embeds in feedback posts': function (t) {
+    if (process.env.CI) {
+      console.warn('Not running test - see https://github.com/Medialist/medialist-app2/issues/372')
+
+      t.page.main().logout()
+      t.end()
+
+      return
+    }
+
+    t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact], campaign, () => done())
+      })
+
+      const url = 'https://www.theguardian.com/technology/2017/apr/19/horizon-zero-dawn-why-best-modern-video-games-are-not-about-saving-the-world'
+      const status = `${faker.hacker.phrase()} ${url} ${faker.hacker.phrase()}`
+      const contactStatus = faker.helpers.randomize(['completed', 'hot-lead', 'contacted', 'to-contact', 'not-interested'])
+
+      t.perform((done) => {
+        const contactPage = t.page.contact()
+          .navigate(contact)
+
+        contactPage.section.postBox
+          .postFeedback(campaign, contact, contactStatus, status)
+
+        done()
+      })
+
+      t.perform((done) => {
+        const dashboardPage = t.page.dashboard()
+          .navigate()
+
+        dashboardPage.waitForElementVisible(dashboardPage.section.activityFeed.selector)
+
+        dashboardPage.section.activityFeed
+          .assertHasFeedbackPostWith(contact, campaign, {
+            embed: url
+          })
+
+        const contactPage = t.page.contact()
+          .navigate(contact)
+
+        contactPage.waitForElementVisible(contactPage.section.activityFeed.selector)
+
+        contactPage.section.activityFeed
+          .assertHasFeedbackPostWith(contact, campaign, {
+            embed: url
+          })
+
+        const campaignPage = t.page.campaign()
+          .navigate(campaign)
+
+        campaignPage.waitForElementVisible(campaignPage.section.activityFeed.selector)
+
+        campaignPage.section.activityFeed
+        .assertHasFeedbackPostWith(contact, campaign, {
+          embed: url
         })
 
         done()

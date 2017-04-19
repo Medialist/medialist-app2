@@ -1,5 +1,7 @@
 'use strict'
 
+const findUrl = require('../../../imports/lib/find-url')
+
 module.exports = {
   selector: '[data-id=post-box]',
   elements: {
@@ -56,6 +58,14 @@ module.exports = {
         .click(`[data-id=contact-status-${contactStatus}]`)
         .waitForElementVisible('@feedbackInput')
         .setValue('@feedbackInput', text)
+
+      const url = findUrl(text)
+
+      if (url) {
+        this.waitForElementVisible(`[href='${url}'][data-id=link-preview]`)
+      }
+
+      this
         .waitForElementVisible('@createPostButton')
         .click('@createPostButton')
 
@@ -102,6 +112,14 @@ module.exports = {
       this
         .waitForElementVisible('@coverageInput')
         .setValue('@coverageInput', text)
+
+      const url = findUrl(text)
+
+      if (url) {
+        this.waitForElementVisible(`[href='${url}'][data-id=link-preview]`)
+      }
+
+      this
         .waitForElementVisible('@createPostButton')
         .click('@createPostButton')
 
@@ -114,6 +132,14 @@ module.exports = {
         .waitForElementVisible('@needToKnowInput')
         .click('@needToKnowInput')
         .setValue('@needToKnowInput', text)
+
+      const url = findUrl(text)
+
+      if (url) {
+        this.waitForElementVisible(`[href='${url}'][data-id=link-preview]`)
+      }
+
+      this
         .waitForElementVisible('@createPostButton')
         .click('@createPostButton')
 

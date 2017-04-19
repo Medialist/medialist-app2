@@ -22,6 +22,7 @@ export const createEmbed = new ValidatedMethod({
     const existingDoc = Embeds.findOneEmbed(url)
 
     if (existingDoc) {
+      console.info('found', existingDoc)
       return Embeds.toRef(existingDoc)
     }
 
@@ -35,6 +36,8 @@ export const createEmbed = new ValidatedMethod({
       if (otherExistingDoc) {
         otherExistingDoc.urls = Array.isArray(otherExistingDoc.urls) ? otherExistingDoc.urls : []
         otherExistingDoc.urls.push(url)
+
+        console.info('actually', otherExistingDoc)
 
         Embeds.update({
           _id: otherExistingDoc._id
@@ -54,7 +57,7 @@ export const createEmbed = new ValidatedMethod({
         url, doc.url, doc.canonicalUrl
       ])).filter(url => !!url)
 
-      const _id = Embeds.insert({
+      const embed = {
         headline: doc.headline,
         url: doc.url || doc.canonicalUrl || url,
         image: image ? {
@@ -70,9 +73,13 @@ export const createEmbed = new ValidatedMethod({
         },
         createdBy: findOneUserRef(this.userId),
         createdAt: new Date()
-      })
+      }
 
-      return Embeds.toRef({_id, ...doc})
+      embed._id = Embeds.insert(embed)
+
+      console.info('created', embed)
+
+      return Embeds.toRef(embed)
     } catch (error) {
       console.error(error)
       throw new Meteor.Error('createEmbed.badUrl', `Could not extract embed data from ${url}`)

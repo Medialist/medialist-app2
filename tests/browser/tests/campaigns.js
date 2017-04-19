@@ -47,7 +47,7 @@ const test = {
         info.assert.attributeContains('@link2', 'href', doc.links[2].url)
 
         campaignPage.section.activityFeed
-          .assertHasCreatedCampaignPostWithText(doc, {
+          .assertHasCreatedCampaignPostWith(doc, {
             header: 'You\ncreated this campaign'
           })
 

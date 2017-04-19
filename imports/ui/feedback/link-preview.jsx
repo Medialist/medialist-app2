@@ -5,7 +5,7 @@ import Loading from '../lists/loading'
 const LinkPreview = ({url, image, headline, datePublished, loading}) => {
   if (loading) {
     return (
-      <div className='flex items-center justify-center bg-gray90 border border-gray80' style={{height: 126}}>
+      <div className='flex items-center justify-center bg-gray90 border border-gray80' style={{height: 126}} data-id='link-preview-loading' data-url={url}>
         <Loading />
       </div>
     )
@@ -21,7 +21,7 @@ const LinkPreview = ({url, image, headline, datePublished, loading}) => {
   const imgWidth = image ? (image.width ? image.width * (height / image.height) : 'auto') : 'auto'
 
   return (
-    <a className='flex items-center bg-gray90 border border-gray80' style={{height, overflow: 'hidden'}} target='_blank' href={url}>
+    <a className='flex items-center bg-gray90 border border-gray80' style={{height, overflow: 'hidden'}} target='_blank' href={url} data-id='link-preview'>
       {image && image.url &&
         <img className='flex-none' style={{height, width: imgWidth}} src={image.url} />
       }

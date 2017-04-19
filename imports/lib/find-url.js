@@ -1,5 +1,4 @@
-import trim from 'underscore.string/trim'
-
+const trim = require('underscore.string/trim')
 const urlRegex = /(https?:\/\/[^\s]+)/i
 
 const findUrl = (text) => {
@@ -12,4 +11,4 @@ const findUrl = (text) => {
   return trim(trim(res[0], '!"#$%&\'()*+,-./@:;<=>[\\]^_`{|}~'))
 }
 
-export default findUrl
+module.exports = findUrl

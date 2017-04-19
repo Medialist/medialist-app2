@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react'
 import findUrl from '/imports/lib/find-url'
 import LinkPreview from './link-preview'
 import { Meteor } from 'meteor/meteor'
+import debounce from 'lodash.debounce'
 
 const PostBoxTextArea = React.createClass({
   propTypes: {
@@ -14,13 +15,34 @@ const PostBoxTextArea = React.createClass({
   },
 
   getInitialState () {
+    this.createEmbed = debounce((url) => {
+      this.setState({
+        embedLoading: true
+      })
+
+      Meteor.call('createEmbed', {
+        url
+      }, (error, embed) => {
+        if (error) {
+          console.log(error)
+          embed = null
+        }
+
+        this.setState({
+          embed,
+          embedLoading: false
+        })
+      })
+    }, 500)
+
     return {
       embed: null,
-      embedLoading: false
+      embedLoading: false,
+      onChange: null
     }
   },
 
-  componentWillReceiveProps ({value}) {
+  componentWillReceiveProps ({value, onChange}) {
     if (value === this.props.value) {
       return
     }
@@ -38,27 +60,11 @@ const PostBoxTextArea = React.createClass({
       return
     }
 
-    this.setState({
-      embedLoading: true
-    })
-
-    Meteor.call('createEmbed', {
-      url
-    }, (error, embed) => {
-      if (error) {
-        console.log(error)
-        embed = null
-      }
-
-      this.setState({
-        embed,
-        embedLoading: false
-      })
-    })
+    this.createEmbed(url)
   },
 
   render () {
-    const {focused, placeholder, onChange, value, disabled} = this.props
+    const {focused, placeholder, value, disabled} = this.props
     const {embed, embedLoading} = this.state
     return (
       <div>
@@ -67,7 +73,7 @@ const PostBoxTextArea = React.createClass({
           className='textarea mb1 placeholder-gray60 caret-blue'
           style={{border: '0 none', overflowY: 'auto', resize: 'none', paddingLeft: '3px'}}
           placeholder={placeholder}
-          onChange={onChange}
+          onChange={this.props.onChange}
           value={value}
           disabled={disabled}
           data-id={this.props['data-id']} />
