@@ -8,7 +8,7 @@ const findUrl = (text) => {
     return null
   }
 
-  return trim(trim(res[0], '!"#$%&\'()*+,-./@:;<=>[\\]^_`{|}~'))
+  return trim(trim(res[0], '!"#$%&\'()*+,-.@:;<=>[\\]^_`{|}~'))
 }
 
 module.exports = findUrl

@@ -16,6 +16,18 @@ import {
   FeedNeedToKnowIcon,
   StatusUpdateIcon
 } from '../images/icons'
+import findUrl from '../../lib/find-url'
+
+const hideTextIfOnlyUrl = (item) => {
+  const url = findUrl(item.message)
+
+  if (url === item.message && item.embeds && item.embeds.length) {
+    // only a url was pasted and we have an embed so hide the url
+    return null
+  }
+
+  return item.message
+}
 
 const Post = ({icon, summary, details, createdBy, createdAt, currentUser, type, bgClass = 'bg-white', contacts, campaigns}) => {
   const data = {
@@ -119,7 +131,7 @@ export const FeedbackPost = ({item, currentUser, contact, campaign}) => (
     summary={<FeedbackPostSummary {...item} label='logged feedback' contact={contact} campaign={campaign} />}
     details={
       <div className='border-gray80 border-top py3 gray10' data-id='post-message'>
-        {item.message}
+        {hideTextIfOnlyUrl(item)}
         {item.embeds && item.embeds[0] ? (
           <div className='pt3'>
             <LinkPreview {...item.embeds[0]} />
@@ -138,7 +150,7 @@ export const CoveragePost = ({item, currentUser, contact, campaign}) => (
     summary={<FeedbackPostSummary {...item} label='logged coverage' contact={contact} campaign={campaign} />}
     details={
       <div className='border-gray80 border-top py3 gray10' data-id='post-message'>
-        {item.message}
+        {hideTextIfOnlyUrl(item)}
         {item.embeds && item.embeds[0] ? (
           <div className='pt3'>
             <LinkPreview {...item.embeds[0]} />
@@ -158,7 +170,12 @@ export const NeedToKnowPost = ({item, currentUser, contact}) => (
     summary={<FeedbackPostSummary {...item} label='shared a need-to-know' contact={contact} />}
     details={
       <div className='border-gray80 border-top py3 gray10' data-id='post-message'>
-        {item.message}
+        {hideTextIfOnlyUrl(item)}
+        {item.embeds && item.embeds[0] ? (
+          <div className='pt3'>
+            <LinkPreview {...item.embeds[0]} />
+          </div>
+        ) : null}
       </div>
     }
   />
