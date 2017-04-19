@@ -241,6 +241,7 @@ describe('createNeedToKnowPost', function () {
       type: 'NeedToKnowPost',
       message,
       campaigns: [],
+      embeds: [],
       contacts: [{
         _id: 'id0',
         slug: contactSlug,
