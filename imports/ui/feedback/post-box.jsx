@@ -4,11 +4,22 @@ import StatusMap from '/imports/api/contacts/status'
 import StatusLabel from './status-label'
 import StatusSelector from './status-selector'
 import PostBoxtTextArea from './post-box-textarea'
+import immutable from 'object-path-immutable'
 import { FeedbackTab, CoverageTab, NeedToKnowTab, PostBoxTabs } from '../feedback/post-box-nav'
 
 const Divider = ({show}) => (
   <div style={{width: 1, height: 14}} className={`inline-block align-middle ${show ? 'bg-gray80' : ''}`} />
 )
+
+const firstName = (contact) => {
+  const name = contact && contact.name && contact.name.split(' ')[0]
+
+  if (name) {
+    return name
+  }
+
+  return 'this contact'
+}
 
 const PostBox = React.createClass({
   propTypes: {
@@ -84,49 +95,53 @@ const FeedbackInput = React.createClass({
       posting: false
     }
   },
-  onMessageChange (evt) {
-    this.setState({message: evt.target.value})
-  },
-  onCampaignChange (campaign) {
-    this.setState({campaign: campaign})
-  },
-  onStatusChange (status) {
-    this.setState({status: status})
+  onFieldChange (event) {
+    const { name, value } = event.target
+    this.setState((s) => immutable.set(s, name, value))
   },
   onSubmit () {
-    this.setState({posting: true})
+    this.setState({
+      posting: true
+    })
+
     this.props.onSubmit(this.state, (err) => {
-      this.setState({message: '', posting: false})
-      if (err) console.error(err)
+      this.setState({
+        message: '',
+        posting: false
+      })
+
+      if (err) {
+        console.error(err)
+      }
     })
   },
   render () {
-    const {onCampaignChange, onStatusChange, onMessageChange, onSubmit} = this
-    const {focused, contact, campaigns} = this.props
-    const {message, posting, status, campaign} = this.state
-    const name = contact && contact.name && contact.name.split(' ')[0]
     return (
       <div>
         <PostBoxtTextArea
-          placeholder={`What's happening with ${name || 'this contact'}?`}
-          value={message}
-          focused={focused}
-          disabled={posting}
-          onChange={onMessageChange}
+          placeholder={`What's happening with ${firstName(this.props.contact)}?`}
+          value={this.state.message}
+          focused={this.props.focused}
+          disabled={this.state.posting}
+          onChange={this.onFieldChange}
           data-id='feedback-input' />
         <PostBoxButtons
-          focused={focused}
-          disabled={!message || posting || !status || !campaign}
-          onPost={onSubmit} >
-          <CampaignSelector contact={contact} onChange={onCampaignChange} campaigns={campaigns} campaign={campaign} />
+          focused={this.props.focused}
+          disabled={!this.state.message || this.state.posting || !this.state.status || !this.state.campaign}
+          onPost={this.onSubmit} >
+          <CampaignSelector
+            contact={this.props.contact}
+            onChange={this.onFieldChange}
+            campaigns={this.props.campaigns}
+            campaign={this.state.campaign} />
           <div className='ml3 inline-block'>
             <StatusSelector
               className='btn bg-transparent border-gray80'
               style={{padding: '6px 15px 7px'}}
-              status={status}
-              onChange={onStatusChange}
+              status={this.state.status}
+              onChange={this.onFieldChange}
             >
-              <StatusLabel name={status} />
+              <StatusLabel name={this.state.status} />
             </StatusSelector>
           </div>
         </PostBoxButtons>
@@ -153,49 +168,53 @@ const CoverageInput = React.createClass({
       posting: false
     }
   },
-  onStatusChange (status) {
-    this.setState({status: status})
-  },
-  onMessageChange (evt) {
-    this.setState({message: evt.target.value})
-  },
-  onCampaignChange (campaign) {
-    this.setState({ campaign })
+  onFieldChange (event) {
+    const { name, value } = event.target
+    this.setState((s) => immutable.set(s, name, value))
   },
   onSubmit () {
-    this.setState({posting: true})
+    this.setState({
+      posting: true
+    })
+
     this.props.onSubmit(this.state, (err) => {
-      this.setState({message: '', posting: false})
-      if (err) console.error(err)
+      this.setState({
+        message: '',
+        posting: false
+      })
+
+      if (err) {
+        console.error(err)
+      }
     })
   },
   render () {
-    const {onCampaignChange, onStatusChange, onMessageChange, onSubmit} = this
-    const {focused, contact, campaigns} = this.props
-    const {message, posting, status, campaign} = this.state
-    const name = contact && contact.name && contact.name.split(' ')[0]
     return (
       <div>
         <PostBoxtTextArea
-          placeholder={`Has ${name || 'this contact'} shared any coverage?`}
-          value={message}
-          focused={focused}
-          disabled={posting}
-          onChange={onMessageChange}
+          placeholder={`Has ${firstName(this.props.contact)} shared any coverage?`}
+          value={this.state.message}
+          focused={this.props.focused}
+          disabled={this.state.posting}
+          onChange={this.onFieldChange}
           data-id='coverage-input' />
         <PostBoxButtons
-          focused={focused}
-          disabled={!message || posting || !campaign}
-          onPost={onSubmit} >
-          <CampaignSelector contact={contact} onChange={onCampaignChange} campaigns={campaigns} campaign={campaign} />
+          focused={this.props.focused}
+          disabled={!this.state.message || this.state.posting || !this.state.campaign}
+          onPost={this.onSubmit} >
+          <CampaignSelector
+            contact={this.props.contact}
+            onChange={this.onFieldChange}
+            campaigns={this.props.campaigns}
+            campaign={this.state.campaign} />
           <div className='ml3 inline-block'>
             <StatusSelector
               className='btn bg-transparent border-gray80'
               style={{padding: '6px 15px 7px'}}
-              status={status}
-              onChange={onStatusChange}
+              status={this.state.status}
+              onChange={this.onFieldChange}
             >
-              <StatusLabel name={status} />
+              <StatusLabel name={this.state.status} />
             </StatusSelector>
           </div>
         </PostBoxButtons>
@@ -211,36 +230,45 @@ const NeedToKnowInput = React.createClass({
     onSubmit: PropTypes.func.isRequired
   },
   getInitialState () {
-    return {message: '', posting: false}
+    return {
+      message: '',
+      posting: false
+    }
   },
-  onMessageChange (evt) {
-    this.setState({message: evt.target.value})
+  onFieldChange (event) {
+    const { name, value } = event.target
+    this.setState((s) => immutable.set(s, name, value))
   },
   onSubmit () {
-    this.setState({posting: true})
+    this.setState({
+      posting: true
+    })
+
     this.props.onSubmit(this.state, (err) => {
-      this.setState({message: '', posting: false})
-      if (err) console.error(err)
+      this.setState({
+        message: '',
+        posting: false
+      })
+
+      if (err) {
+        console.error(err)
+      }
     })
   },
   render () {
-    const {onSubmit, onMessageChange} = this
-    const {message, posting} = this.state
-    const {focused, contact} = this.props
-    const name = contact && contact.name && contact.name.split(' ')[0]
     return (
       <div>
         <PostBoxtTextArea
-          placeholder={`Share something important to know about ${name}`}
-          value={message}
-          focused={focused}
-          disabled={posting}
-          onChange={onMessageChange}
+          placeholder={`Share something important to know about ${firstName(this.props.contact)}`}
+          value={this.state.message}
+          focused={this.props.focused}
+          disabled={this.state.posting}
+          onChange={this.onFieldChange}
           data-id='need-to-know-input' />
         <PostBoxButtons
-          focused={focused}
-          disabled={!message || posting}
-          onPost={onSubmit} >
+          focused={this.props.focused}
+          disabled={!this.state.message || this.state.posting}
+          onPost={this.onSubmit} >
           <button style={{padding: '7px 15px'}} className='btn bg-transparent border-gray80 bold'>B</button>
           <button style={{padding: '7px 15px'}} className='btn bg-transparent border-gray80 italic ml3'>i</button>
         </PostBoxButtons>

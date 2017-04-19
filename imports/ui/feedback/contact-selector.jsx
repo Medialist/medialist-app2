@@ -28,7 +28,9 @@ const ContactSelector = React.createClass({
     onStatusChange: PropTypes.func.isRequired
   },
   getDefaultProps () {
-    return { showStatus: true }
+    return {
+      showStatus: true
+    }
   },
   getInitialState () {
     return {
@@ -37,17 +39,31 @@ const ContactSelector = React.createClass({
     }
   },
   openDropdown () {
-    this.setState({open: true})
+    this.setState({
+      open: true
+    })
   },
   closeDropdown () {
-    this.setState({open: false, term: ''})
+    this.setState({
+      open: false,
+      term: ''
+    })
   },
   onSelectContact (contact) {
-    this.setState({open: false, term: ''})
-    this.props.onContactChange(contact)
+    this.setState({
+      open: false,
+      term: ''
+    })
+
+    this.props.onContactChange({
+      target: {
+        name: 'contact',
+        value: contact
+      }
+    })
   },
-  onStatusChange (status) {
-    this.props.onStatusChange(status)
+  onStatusChange (event) {
+    this.props.onStatusChange(event)
   },
   onTermChange (term) {
     this.setState({ term })

@@ -13,9 +13,10 @@ if (Meteor.isServer) {
   Embeds._ensureIndex({ url: 1 })
 }
 
-Embeds.toRef = ({_id, url, headline, image, datePublished}) => ({
+Embeds.toRef = ({_id, url, urls, headline, image, datePublished}) => ({
   _id,
   url,
+  urls,
   headline,
   image,
   datePublished
@@ -59,6 +60,7 @@ Embeds.findOneEmbedRef = (url) => (
     fields: {
       _id: 1,
       url: 1,
+      urls: 1,
       headline: 1,
       image: 1,
       datePublished: 1

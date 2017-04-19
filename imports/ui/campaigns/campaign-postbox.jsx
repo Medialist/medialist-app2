@@ -3,6 +3,7 @@ import ContactSelector from '../feedback/contact-selector'
 import { PostBoxButtons } from '../feedback/post-box'
 import PostBoxTextArea from '../feedback/post-box-textarea'
 import { FeedbackTab, CoverageTab, PostBoxTabs } from '../feedback/post-box-nav'
+import immutable from 'object-path-immutable'
 
 const CampaignPostBox = React.createClass({
   propTypes: {
@@ -53,20 +54,17 @@ const FeedbackInput = React.createClass({
       posting: false
     }
   },
-  onMessageChange (evt) {
-    this.setState({message: evt.target.value})
-  },
-  onContactChange (contact) {
-    const status = this.props.campaign.contacts[contact.slug]
+  onFieldChange (event) {
+    const { name, value } = event.target
+    this.setState((s) => immutable.set(s, name, value))
 
-    this.setState({
-      contact, status
-    })
-  },
-  onStatusChange (status) {
-    this.setState({
-      status
-    })
+    if (name === 'contact') {
+      const status = this.props.campaign.contacts[value.slug]
+
+      this.setState({
+        status
+      })
+    }
   },
   onSubmit () {
     this.setState({
@@ -82,7 +80,6 @@ const FeedbackInput = React.createClass({
     })
   },
   render () {
-    const {onContactChange, onMessageChange, onStatusChange, onSubmit} = this
     const {focused, contacts, campaign} = this.props
     const {message, posting, contact, status} = this.state
 
@@ -93,20 +90,20 @@ const FeedbackInput = React.createClass({
           value={message}
           focused={focused}
           disabled={posting}
-          onChange={onMessageChange}
+          onChange={this.onFieldChange}
           data-id='feedback-input'
         />
         <PostBoxButtons
           focused={focused}
           disabled={!message || posting || !status || !contact}
-          onPost={onSubmit} >
+          onPost={this.onSubmit} >
           <ContactSelector
             selectedContact={contact}
             selectedStatus={status}
             campaign={campaign}
             contacts={contacts}
-            onContactChange={onContactChange}
-            onStatusChange={onStatusChange} />
+            onContactChange={this.onFieldChange}
+            onStatusChange={this.onFieldChange} />
         </PostBoxButtons>
       </div>
     )
@@ -127,22 +124,17 @@ const CoverageInput = React.createClass({
       status: null
     }
   },
-  onMessageChange (event) {
-    this.setState({
-      message: event.target.value
-    })
-  },
-  onContactChange (contact) {
-    const status = this.props.campaign.contacts[contact.slug]
+  onFieldChange (event) {
+    const { name, value } = event.target
+    this.setState((s) => immutable.set(s, name, value))
 
-    this.setState({
-      contact, status
-    })
-  },
-  onStatusChange (status) {
-    this.setState({
-      status: status
-    })
+    if (name === 'contact') {
+      const status = this.props.campaign.contacts[value.slug]
+
+      this.setState({
+        status
+      })
+    }
   },
   onSubmit () {
     this.setState({
@@ -158,7 +150,6 @@ const CoverageInput = React.createClass({
     })
   },
   render () {
-    const {onMessageChange, onContactChange, onSubmit} = this
     const {focused, contacts, campaign} = this.props
     const {message, contact, status, posting} = this.state
     return (
@@ -168,20 +159,20 @@ const CoverageInput = React.createClass({
           value={message}
           focused={focused}
           disabled={posting}
-          onChange={onMessageChange}
+          onChange={this.onFieldChange}
           data-id='coverage-input'
         />
         <PostBoxButtons
           focused={focused}
           disabled={!message || posting || !contact}
-          onPost={onSubmit} >
+          onPost={this.onSubmit} >
           <ContactSelector
             selectedContact={contact}
             selectedStatus={status}
             campaign={campaign}
             contacts={contacts}
-            onContactChange={onContactChange}
-            onStatusChange={this.onStatusChange}
+            onContactChange={this.onFieldChange}
+            onStatusChange={this.onFieldChange}
             />
         </PostBoxButtons>
       </div>

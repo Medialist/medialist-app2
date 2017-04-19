@@ -20,13 +20,91 @@ import findUrl from '../../lib/find-url'
 
 const hideTextIfOnlyUrl = (item) => {
   const url = findUrl(item.message)
+  const embedUrls = (item.embeds && item.embeds[0] && item.embeds[0].urls) || []
 
-  if (url === item.message && item.embeds && item.embeds.length) {
-    // only a url was pasted and we have an embed so hide the url
+  // only a url was pasted and we have an embed that matches so hide the url
+  if (url === item.message && embedUrls.indexOf(url) !== -1) {
     return null
   }
 
-  return item.message
+  const lines = item.message
+    .trim()
+    .split('\n')
+    .map(line => line.trim())
+
+  // the last line of the post is the same as the embed url so hide it
+  if (embedUrls.includes(lines[lines.length - 1])) {
+    lines.pop()
+  }
+
+  // remove trailing blank lines
+  for (let i = lines.length - 1; i >= 0; i--) {
+    if (!lines[i].trim()) {
+      lines.pop()
+    }
+  }
+
+  // if the last line of the post ends with one of the urls from the embed, hide it
+  embedUrls.forEach(url => {
+    let lastLine = lines.pop()
+
+    if (lastLine && lastLine.endsWith(url)) {
+      lastLine = lastLine.substring(0, lastLine.length - url.length).trim()
+    }
+
+    // there was still text on the line so re-add it to the list
+    if (lastLine) {
+      lines.push(lastLine)
+    }
+  })
+
+  return (
+    <p>{
+      formatText(lines)
+    }</p>
+  )
+}
+
+const formatText = (lines) => {
+  return lines
+    .map((line, index, list) => {
+      const url = findUrl(line)
+      const elements = url ? turnLinksIntoClickableAnchors(line, index) : [<span key={`line-${index}`}>{line}</span>]
+
+      if (index < (list.length - 1)) {
+        elements.push(<br key={`line-${index}-break`} />)
+      }
+
+      return elements
+    })
+}
+
+const turnLinksIntoClickableAnchors = (line, index) => {
+  let url = findUrl(line)
+  const elements = []
+  let subIndex = 0
+
+  while (url) {
+    const urlStartIndex = line.indexOf(url)
+    const urlEndIndex = urlStartIndex + url.length
+
+    if (urlStartIndex > 0) {
+      elements.push(<span key={`line-${index}-${subIndex}-start`}>{line.substring(0, urlStartIndex)}</span>)
+    }
+
+    elements.push(<a href={url} target='_blank' key={`line-${index}-${subIndex}-url`} className='blue'>{url}</a>)
+
+    const restOfLine = line.substring(urlEndIndex)
+    url = findUrl(restOfLine)
+
+    if (!url && urlEndIndex < line.length) {
+      elements.push(<span key={`line-${index}-${subIndex}-end`}>{line.substring(urlEndIndex)}</span>)
+    }
+
+    line = restOfLine
+  }
+
+  return elements
 }
 
 const Post = ({icon, summary, details, createdBy, createdAt, currentUser, type, bgClass = 'bg-white', contacts, campaigns}) => {
@@ -130,10 +208,10 @@ export const FeedbackPost = ({item, currentUser, contact, campaign}) => (
     icon={<FeedFeedbackIcon className='blue-dark' style={{verticalAlign: -2}} />}
     summary={<FeedbackPostSummary {...item} label='logged feedback' contact={contact} campaign={campaign} />}
     details={
-      <div className='border-gray80 border-top py3 gray10' data-id='post-message'>
+      <div className='border-gray80 border-top gray10' data-id='post-message'>
         {hideTextIfOnlyUrl(item)}
         {item.embeds && item.embeds[0] ? (
-          <div className='pt3'>
+          <div className='pb2 mt4'>
             <LinkPreview {...item.embeds[0]} />
           </div>
         ) : null}
@@ -149,10 +227,10 @@ export const CoveragePost = ({item, currentUser, contact, campaign}) => (
     icon={<FeedCoverageIcon className='blue' />}
     summary={<FeedbackPostSummary {...item} label='logged coverage' contact={contact} campaign={campaign} />}
     details={
-      <div className='border-gray80 border-top py3 gray10' data-id='post-message'>
+      <div className='border-gray80 border-top gray10' data-id='post-message'>
         {hideTextIfOnlyUrl(item)}
         {item.embeds && item.embeds[0] ? (
-          <div className='pt3'>
+          <div className='pb2 mt4'>
             <LinkPreview {...item.embeds[0]} />
           </div>
         ) : null}
@@ -169,10 +247,10 @@ export const NeedToKnowPost = ({item, currentUser, contact}) => (
     icon={<FeedNeedToKnowIcon className='tangerine' />}
     summary={<FeedbackPostSummary {...item} label='shared a need-to-know' contact={contact} />}
     details={
-      <div className='border-gray80 border-top py3 gray10' data-id='post-message'>
+      <div className='border-gray80 border-top gray10' data-id='post-message'>
         {hideTextIfOnlyUrl(item)}
         {item.embeds && item.embeds[0] ? (
-          <div className='pt3'>
+          <div className='pb2 mt4'>
             <LinkPreview {...item.embeds[0]} />
           </div>
         ) : null}

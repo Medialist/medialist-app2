@@ -10,8 +10,13 @@ const StatusSelector = React.createClass({
     status: PropTypes.string.isRequired,
     children: PropTypes.node.isRequired
   },
-  onLinkClick (evt, status) {
-    this.props.onChange(status)
+  onLinkClick (event, status) {
+    this.props.onChange({
+      target: {
+        name: 'status',
+        value: status
+      }
+    })
   },
   render () {
     const { status, children, ...props } = this.props

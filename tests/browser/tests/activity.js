@@ -253,7 +253,7 @@ const test = {
     t.end()
   },
 
-  'Should display context sensitive feedback posts created on campagin page': function (t) {
+  'Should display context sensitive feedback posts created on campaign page': function (t) {
     t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
       t.perform((done) => {
         t.addContactsToCampaign([contact], campaign, () => done())
@@ -325,7 +325,7 @@ const test = {
     t.end()
   },
 
-  'Should display context sensitive coverage posts created on campagin page': function (t) {
+  'Should display context sensitive coverage posts created on campaign page': function (t) {
     t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
       t.perform((done) => {
         t.addContactsToCampaign([contact], campaign, () => done())

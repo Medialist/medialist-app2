@@ -5,11 +5,10 @@ import { SquareAvatar } from '../images/avatar'
 import CampaignsFilterableList from '../campaigns/campaigns-filterable-list'
 
 const CampaignButton = (props) => {
-  const { name, avatar } = props.campaign
   return (
     <div className='flex align-left' style={{maxWidth: 160}}>
-      <SquareAvatar className='flex-none' size={20} avatar={avatar} name={name} />
-      <div className='flex-auto truncate ml2 align-middle f-sm normal gray10'>{name}</div>
+      <SquareAvatar className='flex-none' size={20} avatar={props.campaign.avatar} name={props.campaign.name} />
+      <div className='flex-auto truncate ml2 align-middle f-sm normal gray10'>{props.campaign.name}</div>
       <ChevronDown className='flex-none ml1 gray40' />
     </div>
   )
@@ -23,41 +22,60 @@ const CampaignSelector = React.createClass({
     onChange: PropTypes.func.isRequired
   },
   getInitialState () {
-    const { campaigns, campaign } = this.props
     return {
       open: false,
-      campaign: campaign || (campaigns && campaigns[0])
+      campaign: this.props.campaign || (this.props.campaigns && this.props.campaigns[0])
     }
   },
   openDropdown () {
-    this.setState({open: true})
+    this.setState({
+      open: true
+    })
   },
   closeDropdown () {
-    this.setState({open: false})
+    this.setState({
+      open: false
+    })
   },
   onLinkClick (campaign) {
-    this.setState({open: false, campaign: campaign})
-    this.props.onChange(campaign)
+    this.setState({
+      open: false,
+      campaign: campaign
+    })
+
+    this.props.onChange({
+      target: {
+        name: 'campaign',
+        value: campaign
+      }
+    })
   },
   onClearFilter () {
-    this.props.onChange(null)
+    this.props.onChange({
+      target: {
+        name: 'campaign',
+        value: null
+      }
+    })
   },
   render () {
-    const { onLinkClick, closeDropdown, openDropdown, onClearFilter } = this
-    const { campaign } = this.state
-    const { contact, campaigns } = this.props
     return (
       <div className='inline-block'>
         <Dropdown>
           <button
             style={{padding: '6px 15px 6px'}}
-            className='btn bg-transparent border-gray80' onClick={openDropdown}
-            disabled={!campaigns.length}
+            className='btn bg-transparent border-gray80' onClick={this.openDropdown}
+            disabled={!this.props.campaigns.length}
             data-id='select-campaign-button'>
-            { campaign ? <CampaignButton campaign={campaign} /> : 'Select a Campaign' }
+            { this.state.campaign ? <CampaignButton campaign={this.state.campaign} /> : 'Select a Campaign' }
           </button>
-          <DropdownMenu left={-73} width={573} open={this.state.open} onDismiss={closeDropdown}>
-            <CampaignsFilterableList contact={contact} campaigns={campaigns} onFilter={onLinkClick} onClearFilter={onClearFilter} hideAllFilter />
+          <DropdownMenu left={-73} width={573} open={this.state.open} onDismiss={this.closeDropdown}>
+            <CampaignsFilterableList
+              contact={this.props.contact}
+              campaigns={this.props.campaigns}
+              onFilter={this.onLinkClick}
+              onClearFilter={this.onClearFilter}
+              hideAllFilter />
           </DropdownMenu>
         </Dropdown>
       </div>

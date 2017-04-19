@@ -13,7 +13,7 @@ const PostBoxTextArea = React.createClass({
     value: PropTypes.string,
     focused: PropTypes.bool,
     disabled: PropTypes.bool,
-    onChange: PropTypes.func,
+    onChange: PropTypes.func.isRequired,
     'data-id': PropTypes.string.isRequired
   },
 
@@ -29,6 +29,13 @@ const PostBoxTextArea = React.createClass({
 
         this.setState({
           embed
+        })
+
+        this.props.onChange({
+          target: {
+            name: 'embed',
+            value: embed
+          }
         })
       })
     }, EMBED_CREATION_WAIT)
@@ -58,18 +65,26 @@ const PostBoxTextArea = React.createClass({
     this.createEmbed(url)
   },
 
+  onChange (event) {
+    this.props.onChange({
+      target: {
+        name: 'message',
+        value: event.target.value
+      }
+    })
+  },
+
   render () {
-    const {focused, placeholder, value, disabled} = this.props
     return (
       <div>
         <textarea
-          rows={focused ? '3' : '1'}
+          rows={this.props.focused ? '3' : '1'}
           className='textarea placeholder-gray60 caret-blue'
           style={{border: '0 none', overflowY: 'auto', resize: 'none', paddingLeft: '3px'}}
-          placeholder={placeholder}
-          onChange={this.props.onChange}
-          value={value}
-          disabled={disabled}
+          placeholder={this.props.placeholder}
+          onChange={this.onChange}
+          value={this.props.value}
+          disabled={this.props.disabled}
           data-id={this.props['data-id']} />
         {this.state.embed ? (
           <div className='mb3'>
