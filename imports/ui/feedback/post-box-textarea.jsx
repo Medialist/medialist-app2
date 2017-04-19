@@ -4,6 +4,9 @@ import LinkPreview from './link-preview'
 import { Meteor } from 'meteor/meteor'
 import debounce from 'lodash.debounce'
 
+// how long to wait before we try to create an embed preview from a url in the post text
+const EMBED_CREATION_WAIT = 500
+
 const PostBoxTextArea = React.createClass({
   propTypes: {
     placeholder: PropTypes.string.isRequired,
@@ -33,7 +36,7 @@ const PostBoxTextArea = React.createClass({
           embedLoading: false
         })
       })
-    }, 500)
+    }, EMBED_CREATION_WAIT)
 
     return {
       embed: null,
