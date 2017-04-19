@@ -43,7 +43,7 @@ const PostBox = React.createClass({
         <div style={{padding: '0 1px'}}>
           <div className='bg-white shadow-2 p3 pb0'>
             { selected === 'Feedback' && <FeedbackInput {...childProps} campaigns={campaigns} campaign={campaign} onSubmit={onFeedback} /> }
-            { selected === 'Coverage' && <CoverarageInput {...childProps} campaigns={campaigns} campaign={campaign} onSubmit={onCoverage} /> }
+            { selected === 'Coverage' && <CoverageInput {...childProps} campaigns={campaigns} campaign={campaign} onSubmit={onCoverage} /> }
             { selected === 'Need to Know' && <NeedToKnowInput {...childProps} onSubmit={onNeedToKnow} /> }
           </div>
         </div>
@@ -136,7 +136,7 @@ const FeedbackInput = React.createClass({
 })
 
 // Defaults the status to completed. User can change it.
-const CoverarageInput = React.createClass({
+const CoverageInput = React.createClass({
   propTypes: {
     contact: PropTypes.object.isRequired,
     campaign: PropTypes.object,

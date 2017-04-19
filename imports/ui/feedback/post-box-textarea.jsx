@@ -19,10 +19,6 @@ const PostBoxTextArea = React.createClass({
 
   getInitialState () {
     this.createEmbed = debounce((url) => {
-      this.setState({
-        embedLoading: true
-      })
-
       Meteor.call('createEmbed', {
         url
       }, (error, embed) => {
@@ -32,20 +28,17 @@ const PostBoxTextArea = React.createClass({
         }
 
         this.setState({
-          embed,
-          embedLoading: false
+          embed
         })
       })
     }, EMBED_CREATION_WAIT)
 
     return {
-      embed: null,
-      embedLoading: false,
-      onChange: null
+      embed: null
     }
   },
 
-  componentWillReceiveProps ({value, onChange}) {
+  componentWillReceiveProps ({value}) {
     if (value === this.props.value) {
       return
     }
@@ -54,7 +47,6 @@ const PostBoxTextArea = React.createClass({
 
     if (!url) {
       return this.setState({
-        embedLoading: false,
         embed: null
       })
     }
@@ -68,21 +60,20 @@ const PostBoxTextArea = React.createClass({
 
   render () {
     const {focused, placeholder, value, disabled} = this.props
-    const {embed, embedLoading} = this.state
     return (
       <div>
         <textarea
           rows={focused ? '3' : '1'}
-          className='textarea mb1 placeholder-gray60 caret-blue'
+          className='textarea placeholder-gray60 caret-blue'
           style={{border: '0 none', overflowY: 'auto', resize: 'none', paddingLeft: '3px'}}
           placeholder={placeholder}
           onChange={this.props.onChange}
           value={value}
           disabled={disabled}
           data-id={this.props['data-id']} />
-        {embedLoading || embed ? (
-          <div className='py3'>
-            <LinkPreview {...embed} loading={embedLoading} />
+        {this.state.embed ? (
+          <div className='mb3'>
+            <LinkPreview {...this.state.embed} />
           </div>
         ) : null }
       </div>
