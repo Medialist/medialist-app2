@@ -105,7 +105,8 @@
       "server/**"
     ],
     "globals": [
-      "Assets"
+      "Assets",
+      "Migrations"
     ]
   },
   "ava": {

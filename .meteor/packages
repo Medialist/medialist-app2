@@ -27,3 +27,4 @@ accounts-password@1.3.4
 poetic:accounts-passwordless
 email
 felixble:server-templates
+percolate:migrations
