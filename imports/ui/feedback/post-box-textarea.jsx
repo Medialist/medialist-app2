@@ -19,6 +19,10 @@ const PostBoxTextArea = React.createClass({
 
   getInitialState () {
     this.createEmbed = debounce((url) => {
+      this.setState({
+        embedLoading: true
+      })
+
       Meteor.call('createEmbed', {
         url
       }, (error, embed) => {
@@ -28,6 +32,7 @@ const PostBoxTextArea = React.createClass({
         }
 
         this.setState({
+          embedLoading: false,
           embed
         })
 
@@ -41,6 +46,7 @@ const PostBoxTextArea = React.createClass({
     }, EMBED_CREATION_WAIT)
 
     return {
+      embedLoading: false,
       embed: null
     }
   },
@@ -54,6 +60,7 @@ const PostBoxTextArea = React.createClass({
 
     if (!url) {
       return this.setState({
+        embedLoading: false,
         embed: null
       })
     }
@@ -86,9 +93,9 @@ const PostBoxTextArea = React.createClass({
           value={this.props.value}
           disabled={this.props.disabled}
           data-id={this.props['data-id']} />
-        {this.state.embed ? (
+        {this.state.embed || this.state.embedLoading ? (
           <div className='mb3'>
-            <LinkPreview {...this.state.embed} />
+            <LinkPreview {...this.state.embed} loading={this.state.embedLoading} />
           </div>
         ) : null }
       </div>

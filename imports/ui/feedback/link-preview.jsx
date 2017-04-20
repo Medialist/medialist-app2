@@ -1,7 +1,16 @@
 import React from 'react'
 import Time from '../time/time'
+import Loading from '../lists/loading'
 
-const LinkPreview = ({url, image, headline, datePublished}) => {
+const LinkPreview = ({url, image, headline, datePublished, loading}) => {
+  if (loading) {
+    return (
+      <div className='flex items-center justify-center bg-gray90 border border-gray80' style={{height: 126}} data-id='link-preview-loading' data-url={url}>
+        <Loading />
+      </div>
+    )
+  }
+
   if (!headline) {
     return null
   }
