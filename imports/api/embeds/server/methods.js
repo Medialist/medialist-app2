@@ -4,7 +4,7 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { findOneUserRef } from '/imports/api/users/users'
 import Embeds from '../embeds'
-import scrapeAndExtract from './scraper'
+import { scrapeAndExtract } from './scraper'
 import scrappyPackage from 'scrappy/package.json'
 
 export const createEmbed = new ValidatedMethod({

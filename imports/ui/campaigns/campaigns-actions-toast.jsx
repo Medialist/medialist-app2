@@ -40,20 +40,20 @@ const CampaignsActionsToast = React.createClass({
               <span className='gray20'>campaign{campaigns.length === 1 ? '' : 's'} selected</span>
             </div>
             <div className='flex-auto center'>
-              <Tooltip title='View Campaigns'>
-                <ViewIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onViewClick(campaigns)} />
+              <Tooltip title='View Contacts'>
+                <ViewIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onViewClick(campaigns)} data-id='campaign-actions-view-contacts' />
               </Tooltip>
               <Tooltip title='Add to Master list'>
-                <SectorIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onSectorClick(campaigns)} />
+                <SectorIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onSectorClick(campaigns)} data-id='campaign-actions-add-to-master-list' />
               </Tooltip>
               <Tooltip title='Add to My Campaigns'>
-                <FavouritesIcon className='svg-icon-lg px3 pointer gray60 hover-gold' onClick={() => onFavouriteClick(campaigns)} />
+                <FavouritesIcon className='svg-icon-lg px3 pointer gray60 hover-gold' onClick={() => onFavouriteClick(campaigns)} data-id='campaign-actions-add-to-my-campaigns' />
               </Tooltip>
               <Tooltip title='Add Tags'>
-                <TagIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onTagClick(campaigns)} />
+                <TagIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onTagClick(campaigns)} data-id='campaign-actions-add-tags' />
               </Tooltip>
               <Tooltip title='Delete Campaigns'>
-                <DeleteIcon className='svg-icon-lg px3 pointer gray60 hover-red' onClick={() => onDeleteClick(campaigns)} />
+                <DeleteIcon className='svg-icon-lg px3 pointer gray60 hover-red' onClick={() => onDeleteClick(campaigns)} data-id='campaign-actions-delete' />
               </Tooltip>
             </div>
             <div className='flex-none'>
