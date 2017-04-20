@@ -42,7 +42,7 @@ describe('createEmbed', function () {
 
     const embeds = Embeds.find({}).fetch()
     assert.equal(embeds.length, 1)
-    assert.equal(embeds[0].url, url.replace('http://', 'https://'))
+    assert.equal(embeds[0].url, url)
 
     done()
   })
@@ -91,8 +91,10 @@ describe('createEmbed', function () {
     }))
 
     const embeds = Embeds.find({}).fetch()
+
     assert.equal(embeds.length, 1)
-    assert.deepEqual(embeds[0].urls, [url1, url2])
+    assert.equal(embeds[0].urls.includes(url1), true)
+    assert.equal(embeds[0].urls.includes(url2), true)
 
     done()
   })

@@ -13,10 +13,11 @@ if (Meteor.isServer) {
   Embeds._ensureIndex({ url: 1 })
 }
 
-Embeds.toRef = ({_id, url, urls, headline, image, datePublished}) => ({
+Embeds.toRef = ({_id, url, urls, headline, image, datePublished, outlet}) => ({
   _id,
   url,
   urls,
+  outlet,
   headline,
   image,
   datePublished
@@ -72,6 +73,7 @@ export const EmbedRefSchema = new SimpleSchema({
   _id: { type: String },
   url: { type: String, regEx: SimpleSchema.RegEx.Url },
   headline: { type: String, optional: true },
+  outlet: { type: String, optional: true },
   'image.url': { type: String, regEx: SimpleSchema.RegEx.Url },
   'image.width': { type: Number },
   'image.height': { type: Number },
