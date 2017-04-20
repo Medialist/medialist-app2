@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor'
-import embeds from '/imports/api/embeds/embeds'
-import posts from '/imports/api/posts/posts'
+import Embeds from '/imports/api/embeds/embeds'
+import Posts from '/imports/api/posts/posts'
 
 Migrations.add({
   version: 1,
-  name: 'Normalise embeds and posts',
+  name: 'Normalise embeds',
   up: () => {
-    embeds.find().forEach(embed => {
+    Embeds.find().forEach(embed => {
       const update = {}
 
       if (Array.isArray(embed.image)) {
@@ -24,39 +24,31 @@ Migrations.add({
       if (Object.keys(update).length) {
         console.info(`Updating embed ${embed._id} ${Object.keys(update)}`)
 
-        embeds.update({
+        Embeds.update({
           _id: embed._id
         }, {
           $set: update
         })
       }
     })
+  }
+})
 
-    posts.find().forEach(post => {
+Migrations.add({
+  version: 2,
+  name: 'Normalise post embeds',
+  up: () => {
+    Posts.find().forEach(post => {
       const update = {}
 
-      if (Array.isArray(post.embed)) {
-        const embeds = []
-        let updateEmbeds = false
-
-        post.embeds.forEach((embed, index) => {
-          embeds[index] = embed
-
-          if (Array.isArray(embed.image)) {
-            updateEmbeds = true
-            embeds[index].image = embed.image[0]
-          }
-        })
-
-        if (updateEmbeds) {
-          update.embeds = embeds
-        }
+      if (Array.isArray(post.embeds)) {
+        update.embeds = post.embeds.map(embed => Embeds.toRef(Embeds.findOne({_id: embed._id})))
       }
 
       if (Object.keys(update).length) {
         console.info(`Updating post ${post._id} ${Object.keys(update)}`)
 
-        posts.update({
+        Posts.update({
           _id: post._id
         }, {
           $set: update
