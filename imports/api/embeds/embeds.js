@@ -38,6 +38,7 @@ Embeds.findOneEmbed = (url) => (
     fields: {
       _id: 1,
       url: 1,
+      outlet: 1,
       headline: 1,
       image: 1,
       datePublished: 1,
@@ -60,6 +61,7 @@ Embeds.findOneEmbedRef = (url) => (
   }, {
     fields: {
       _id: 1,
+      outlet: 1,
       url: 1,
       urls: 1,
       headline: 1,

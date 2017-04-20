@@ -5,10 +5,13 @@ import { jsonLdUrlFinder, jsonLdTitleFinder, jsonLdImageFinder, jsonLdPublishedD
 import { openGraphUrlFinder, openGraphTitleFinder, openGraphImageFinder, openGraphPublishedDateFinder, openGraphOutletFinder } from './open-graph'
 
 const findOne = (metadata, finders) => {
-  return finders
-    .map(finder => finder(metadata))
-    .filter(value => !!value)
-    .pop()
+  const flatten = arr => arr.reduce((acc, val) => acc.concat(Array.isArray(val) ? flatten(val) : val), [])
+
+  return flatten(
+    finders
+      .map(finder => finder(metadata))
+      .filter(value => !!value)
+  ).pop()
 }
 
 const findOneDate = (metadata, finders) => {
