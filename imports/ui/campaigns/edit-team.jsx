@@ -9,6 +9,7 @@ import { CircleAvatar } from '../images/avatar'
 import Tooltip from '../navigation/tooltip'
 import getAvatar from '/imports/lib/get-avatar'
 import toUserRef from '/imports/lib/to-user-ref'
+import withSnackbar from '../snackbar/with-snackbar'
 
 const AddTeamMate = React.createClass({
   PropTypes: {
@@ -71,7 +72,7 @@ const AddTeamMate = React.createClass({
   }
 })
 
-const AddTeamMateContainer = React.createClass({
+const AddTeamMateContainer = withSnackbar(React.createClass({
   propTypes: {
     onDismiss: PropTypes.func.isRequired,
     campaign: PropTypes.object.isRequired,
@@ -110,7 +111,16 @@ const AddTeamMateContainer = React.createClass({
     const _id = this.props.campaign._id
 
     if (teamMateIds.length > 0) {
-      Meteor.call('Campaigns/setTeamMates', { userIds: teamMateIds, _id })
+      Meteor.call('Campaigns/setTeamMates', { userIds: teamMateIds, _id }, (error) => {
+        if (error) {
+          console.log(error)
+          this.props.snackbar.error('campaign-team-update-failure')
+
+          return
+        }
+
+        this.props.snackbar.show(`Updated campaign team`, 'campaign-team-update-success')
+      })
     }
 
     this.onReset()
@@ -146,7 +156,7 @@ const AddTeamMateContainer = React.createClass({
     const props = Object.assign({}, this, this.state, this.props)
     return <AddTeamMate{...props} />
   }
-})
+}))
 
 const AddTeamMateWrapper = createContainer((props) => {
   const sub = Meteor.subscribe('users')

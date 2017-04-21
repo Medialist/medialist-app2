@@ -13,8 +13,9 @@ import ClientAutocomplete from './client-autocomplete'
 import { create, update } from '/imports/api/campaigns/methods'
 import { MedialistCreateSchema } from '/imports/api/campaigns/campaigns'
 import { Form, Input, Textarea, Button } from '@achingbrain/react-validation'
+import withSnackbar from '../snackbar/with-snackbar'
 
-const EditCampaign = React.createClass({
+const EditCampaign = withSnackbar(React.createClass({
   propTypes: {
     router: PropTypes.object.isRequired,
     open: PropTypes.bool.isRequired,
@@ -85,13 +86,28 @@ const EditCampaign = React.createClass({
     }
 
     if (this.props.campaign) {
-      update.call({ _id: this.props.campaign._id, ...data }, (err, res) => {
-        if (err) return console.error('Failed to edit campaign', err)
+      update.call({ _id: this.props.campaign._id, ...data }, (error) => {
+        if (error) {
+          console.log(error)
+          this.props.snackbar.error('campaign-update-failure')
+
+          return
+        }
+
+        this.props.snackbar.show(`Updated ${data.name}`, 'campaign-update-success')
+
         this.props.onDismiss()
       })
     } else {
-      create.call(data, (err, slug) => {
-        if (err) return console.error('Failed to create campaign', err)
+      create.call(data, (error, slug) => {
+        if (error) {
+          console.log(error)
+          this.props.snackbar.error('campaign-create-failure')
+
+          return
+        }
+
+        this.props.snackbar.show(`Updated ${data.name}`, 'campaign-create-success')
         this.props.router.push(`/campaign/${slug}`)
       })
     }
@@ -196,6 +212,6 @@ const EditCampaign = React.createClass({
       </Form>
     )
   }
-})
+}))
 
 export default Modal(withRouter(EditCampaign))

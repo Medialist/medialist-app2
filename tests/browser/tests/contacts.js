@@ -46,6 +46,8 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
       .populate(contact)
       .submit()
 
+    t.page.main().waitForSnackbarMessage('contact-create-success')
+
     t.perform((done) => {
       t.db.findContact({
         name: contact.name

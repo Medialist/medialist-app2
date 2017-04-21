@@ -21,6 +21,8 @@ const test = {
         .addToTeam(user2)
         .saveTeamEdit()
 
+      t.page.main().waitForSnackbarMessage('campaign-team-update-success')
+
       t.perform((done) => {
         t.db.findCampaign({
           _id: campaign._id
@@ -54,6 +56,8 @@ const test = {
         .removeFromTeam(user1)
         .removeFromTeam(user2)
         .saveTeamEdit()
+
+      t.page.main().waitForSnackbarMessage('campaign-team-update-success')
 
       t.perform((done) => {
         t.db.findCampaign({

@@ -12,9 +12,12 @@ Meteor.methods({
     if (!campaign) throw new Meteor.Error('Cannot find campaign')
 
     if (user.myCampaigns.some((m) => m._id === campaign._id)) {
-      return Meteor.users.update(this.userId, { $pull: { myCampaigns: { _id: campaign._id } } })
+      Meteor.users.update(this.userId, { $pull: { myCampaigns: { _id: campaign._id } } })
+
+      return false
     }
-    return Meteor.users.update(this.userId, { $push: { myCampaigns: {
+
+    Meteor.users.update(this.userId, { $push: { myCampaigns: {
       _id: campaign._id,
       name: campaign.name,
       slug: campaign.slug,
@@ -22,5 +25,7 @@ Meteor.methods({
       clientName: campaign.client && campaign.client.name,
       updatedAt: new Date()
     } } })
+
+    return true
   }
 })

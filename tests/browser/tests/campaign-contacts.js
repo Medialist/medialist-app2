@@ -23,6 +23,8 @@ const test = {
         .add(contact2)
         .save()
 
+      t.page.main().waitForSnackbarMessage('batch-add-contacts-to-campaign-success')
+
       t.perform((done) => {
         t.db.findCampaign({
           _id: campaign._id
@@ -57,6 +59,8 @@ const test = {
           .selectRow(1)
 
         campaignContactsPage.removeContacts()
+
+        t.page.main().waitForSnackbarMessage('batch-remove-contacts-from-campaign-success')
 
         t.perform((done) => {
           t.db.findContacts({

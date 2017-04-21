@@ -27,6 +27,8 @@ const test = {
       .populate(campaign)
       .submit()
 
+    t.page.main().waitForSnackbarMessage('campaign-create-success')
+
     t.perform((done) => {
       t.db.findCampaign({
         name: campaign.name

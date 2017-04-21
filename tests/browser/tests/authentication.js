@@ -17,8 +17,7 @@ const test = {
       .sendKeys('@emailField', faker.internet.email())
       .waitForElementVisible('@sendEmailButton')
       .click('@sendEmailButton')
-      .waitForElementVisible('@errorMessage')
-      .assert.containsText('@errorMessage', 'Please use a @test.medialist.io address')
+      .assert.visible('@invalidDomainErrorMessage')
 
     t.end()
   },

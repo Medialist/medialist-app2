@@ -7,6 +7,7 @@ import Tooltip from '../navigation/tooltip'
 import CampaignContact from './campaign-contact'
 import createSearchContainer from '../contacts/search-container'
 import { addContactsToCampaign } from '/imports/api/contacts/methods'
+import withSnackbar from '../snackbar/with-snackbar'
 
 const AddContact = React.createClass({
   propTypes: {
@@ -92,7 +93,7 @@ const AddContact = React.createClass({
 
 const SearchableAddContact = createSearchContainer(AddContact)
 
-const AddContactContainer = React.createClass({
+const AddContactContainer = withSnackbar(React.createClass({
   propTypes: {
     onCreate: PropTypes.func.isRequired,
     onDismiss: PropTypes.func.isRequired,
@@ -136,7 +137,14 @@ const AddContactContainer = React.createClass({
     const campaignSlug = this.props.campaign.slug
 
     if (contactSlugs.length > 0) {
-      addContactsToCampaign.call({contactSlugs, campaignSlug})
+      addContactsToCampaign.call({contactSlugs, campaignSlug}, (error) => {
+        if (error) {
+          console.log(error)
+          return this.props.snackbar.error('batch-add-contacts-to-campaign-success')
+        }
+
+        this.props.snackbar.show(`Added ${contactSlugs.length} Contact${contactSlugs.length > 1 ? 's' : ''} to Campaign`, 'batch-add-contacts-to-campaign-success')
+      })
     }
 
     this.onReset()
@@ -187,7 +195,7 @@ const AddContactContainer = React.createClass({
         selectedContacts={selectedContacts} />
     )
   }
-})
+}))
 
 export default Modal(AddContactContainer)
 

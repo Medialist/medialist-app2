@@ -4,7 +4,7 @@ module.exports = {
   url: 'http://localhost:3000/',
   elements: {
     emailField: '[data-id=authenticate-email-field]',
-    errorMessage: '.error-message',
+    invalidDomainErrorMessage: '[data-id=error-message-invalid-domain]',
     sendEmailButton: '[data-id=authenticate-send-email-button]',
     onboardingNameField: '[data-id=onboarding-name-field]',
     onboardingCompleteButton: '[data-id=onboarding-save-button]'

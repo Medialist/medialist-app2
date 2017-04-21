@@ -29,6 +29,9 @@ module.exports = {
         .click('@userInfoMenu')
         .waitForElementVisible('@logOutLink')
         .click('@logOutLink')
+    },
+    waitForSnackbarMessage: function (type) {
+      this.waitForElementVisible(`[data-id=snackbar] [data-id=snackbar-message][data-message-type=${type}]`)
     }
   }]
 }

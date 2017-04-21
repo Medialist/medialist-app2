@@ -10,8 +10,9 @@ import AddToMasterList from '../master-lists/add-to-master-list'
 import AddTags from '../tags/add-tags'
 import Tooltip from '../navigation/tooltip'
 import { update } from '../../api/campaigns/methods'
+import withSnackbar from '../snackbar/with-snackbar'
 
-const CampaignInfo = React.createClass({
+const CampaignInfo = withSnackbar(React.createClass({
   propTypes: {
     campaign: PropTypes.object,
     user: PropTypes.object,
@@ -52,21 +53,37 @@ const CampaignInfo = React.createClass({
     console.log(tags)
   },
 
-  onAvatarChange (e) {
-    const { _id } = this.props.campaign
-    update.call({ _id, avatar: e.url }, (err) => {
-      if (err) console.error('Failed to update campaign avatar', err)
+  onAvatarChange (event) {
+    update.call({
+      _id: this.props.campaign._id,
+      avatar: event.url
+    }, (error) => {
+      if (error) {
+        console.error('Failed to update campaign avatar', error)
+
+        this.props.snackbar.error('campaign-avatar-update-failure')
+
+        return
+      }
+
+      this.props.snackbar.show('Updated campaign avatar', 'campaign-avatar-update-success')
     })
   },
 
-  onAvatarError (err) {
-    console.error('Failed to change avatar', err)
-    console.log('TODO: toast error message')
+  onAvatarError (error) {
+    console.error('Failed to change avatar', error)
+    this.props.snackbar.error('campaign-avatar-update-failure')
   },
 
   onToggleFavourite () {
-    Meteor.call('campaigns/toggle-favourite', this.props.campaign.slug, (err) => {
-      if (err) console.error('Could not toggle favourite status for campaign', err)
+    Meteor.call('campaigns/toggle-favourite', this.props.campaign.slug, (error, state) => {
+      if (error) {
+        console.error('Could not toggle favourite status for campaign', error)
+
+        this.props.snackbar.error('campaign-favourite-failure')
+      }
+
+      this.props.snackbar.show(`Campaign ${state ? 'added to' : 'removed from'} your favourites`, 'campaign-info-favourite-success')
     })
   },
 
@@ -168,7 +185,7 @@ const CampaignInfo = React.createClass({
       </div>
     )
   }
-})
+}))
 
 function prettyUrl (url) {
   url = url.replace(/^https?:\/\//i, '')

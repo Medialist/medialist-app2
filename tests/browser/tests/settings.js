@@ -27,7 +27,7 @@ const test = {
     settingsPage.section.profile.waitForElementVisible('@updateProfileButton')
     settingsPage.section.profile.click('@updateProfileButton')
 
-    t.waitForElementVisible('[data-id=snackbar] [data-id=snackbar-message][data-message-type=profile-update-success]')
+    t.page.main().waitForSnackbarMessage('profile-update-success')
 
     t.perform(function (done) {
       t.db.findUser({

@@ -26,6 +26,8 @@ const test = {
         .populate(updated)
         .submit()
 
+      t.page.main().waitForSnackbarMessage('contact-update-success')
+
       t.perform((done) => {
         t.db.findContact({
           name: updated.name
@@ -59,6 +61,8 @@ const test = {
       addToCampaign
         .searchForCampaign(campaign)
         .selectSearchResult(campaign)
+
+      t.page.main().waitForSnackbarMessage('batch-add-contacts-to-campaign-success')
 
       infoSection.assert.attributeContains('[data-id=contact-campaigns-list] a', 'href', `/campaign/${campaign.slug}`)
 

@@ -39,7 +39,7 @@ export default Object.assign(rules, {
       return value && value.toString().trim()
     },
     hint: value => {
-      return <p className='error-message f-sm mt1'>This field is required</p>
+      return <p className='error-message f-sm mt1' data-id='error-message-required-field'>This field is required</p>
     }
   },
 
@@ -48,7 +48,7 @@ export default Object.assign(rules, {
       return Boolean(SIGNIN_EMAIL_DOMAIN_REGEX.exec(value))
     },
     hint: value => {
-      return <p className='error-message f-sm mt1'>Please use a {SIGNIN_EMAIL_DOMAIN_HINT} address</p>
+      return <p className='error-message f-sm mt1' data-id='error-message-invalid-domain'>Please use a {SIGNIN_EMAIL_DOMAIN_HINT} address</p>
     }
   },
 
@@ -61,7 +61,7 @@ export default Object.assign(rules, {
       return validator.isEmail(value)
     },
     hint: value => {
-      return <p className='error-message f-sm mt1'>Looks like this isn’t a valid email</p>
+      return <p className='error-message f-sm mt1' data-id='error-message-invalid-email'>Looks like this isn’t a valid email</p>
     }
   },
 
@@ -74,7 +74,7 @@ export default Object.assign(rules, {
       return !value.match(/^https?/)
     },
     hint: value => {
-      return <p className='error-message f-sm mt1'>Please enter their username</p>
+      return <p className='error-message f-sm mt1' data-id='error-message-invalid-username'>Please enter their username</p>
     }
   },
 
@@ -87,7 +87,7 @@ export default Object.assign(rules, {
       return value.match(/^https?/)
     },
     hint: value => {
-      return <p className='error-message f-sm mt1'>Please enter a valid URL</p>
+      return <p className='error-message f-sm mt1' data-id='error-message-invalid-url'>Please enter a valid URL</p>
     }
   },
 
@@ -102,7 +102,7 @@ export default Object.assign(rules, {
       return true
     },
     hint: value => {
-      return <p className='error-message f-sm mt1'>Please enter a value</p>
+      return <p className='error-message f-sm mt1' data-id='error-message-required-pair'>Please enter a value</p>
     }
   }
 })
