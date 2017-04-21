@@ -20,7 +20,12 @@ import findUrl from '../../lib/find-url'
 
 const hideTextIfOnlyUrl = (item) => {
   const url = findUrl(item.message)
-  const embedUrls = (item.embeds && item.embeds[0] && item.embeds[0].urls) || []
+  const embed = (item.embeds && item.embeds[0]) || {}
+  const embedUrls = embed.urls || []
+
+  if (embed.url && !embedUrls.includes(embed.url)) {
+    embedUrls.push(embed.url)
+  }
 
   // only a url was pasted and we have an embed that matches so hide the url
   if (url === item.message && embedUrls.indexOf(url) !== -1) {
