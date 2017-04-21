@@ -36,12 +36,12 @@ export default withSnackbar(React.createClass({
       if (error) {
         console.error('Failed to update user', error)
 
-        this.props.snackbar.show('Could not update your profile')
+        this.props.snackbar.error('Could not update your profile', 'profile-update-failure')
 
         return
       }
 
-      this.props.snackbar.show('Your profile has been updated')
+      this.props.snackbar.show('Your profile has been updated', 'profile-update-success')
     })
   },
   onFieldChange (event) {

@@ -4,8 +4,8 @@ const app = require('./fixtures/app')
 const mongo = require('./fixtures/mongo')
 const ddp = require('./fixtures/ddp')
 const http = require('http')
-const APP_URL = 'http://127.0.0.1:3000'
-const MONGO_URL = 'mongodb://127.0.0.1:3001/meteor'
+const APP_URL = 'http://localhost:3000'
+const MONGO_URL = 'mongodb://localhost:3001/meteor'
 let server
 
 module.exports = {

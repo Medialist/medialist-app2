@@ -8,7 +8,8 @@ const withSnackbar = (component) => {
 
     contextTypes: {
       snackbar: PropTypes.shape({
-        show: PropTypes.func.isRequired
+        show: PropTypes.func.isRequired,
+        error: PropTypes.func.isRequired
       }).isRequired
     },
 

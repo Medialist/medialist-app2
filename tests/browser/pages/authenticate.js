@@ -10,6 +10,23 @@ module.exports = {
     onboardingCompleteButton: '[data-id=onboarding-save-button]'
   },
   commands: [{
+    ensureNoSession: function () {
+      this
+        .navigate()
+
+      this.api.executeAsync(function (done) {
+        if (Object.keys(window.localStorage).length) {
+          setTimeout(() => {
+            window.localStorage.clear()
+            done()
+          }, 500)
+        } else {
+          done()
+        }
+      }, [])
+
+      return this
+    },
     register: function () {
       const user = {
         email: faker.internet.email(null, null, 'test.medialist.io'),
@@ -18,6 +35,7 @@ module.exports = {
       }
 
       this
+        .ensureNoSession()
         .navigate()
         .waitForElementVisible('@emailField')
         .setValue('@emailField', user.email)

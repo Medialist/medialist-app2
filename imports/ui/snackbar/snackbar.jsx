@@ -14,7 +14,9 @@ const SnackbarItem = React.createClass({
   propTypes: {
     onDismiss: PropTypes.func.isRequired,
     children: PropTypes.node,
-    style: PropTypes.object
+    style: PropTypes.object,
+    error: PropTypes.bool,
+    type: PropTypes.string
   },
   getInitialState () {
     return this.startDismissTimer({})
@@ -39,8 +41,11 @@ const SnackbarItem = React.createClass({
       <div
         onMouseEnter={() => this.setState(this.stopDismissTimer)}
         onMouseLeave={() => this.setState(this.startDismissTimer)}
-        className='inline-block p4 left-align shadow-1 bg-gray10'
-        style={{...this.props.style}}>
+        className={`inline-block p4 left-align shadow-1 ${this.props.error ? 'bg-not-interested' : 'bg-gray10'}`}
+        style={{...this.props.style}}
+        data-id='snackbar-message'
+        data-message-type={this.props.type}
+        >
         <div className='white inline-block align-middle'>
           {this.props.children}
         </div>
@@ -71,9 +76,23 @@ const Snackbar = React.createClass({
   childContextTypes: {
     snackbar: PropTypes.object.isRequired
   },
-  show (message) {
-    const id = Math.random()
-    const item = { id, message: message }
+  show (message, type) {
+    this.showItem({
+      message: message,
+      error: false,
+      type: type
+    })
+  },
+  error (message, type) {
+    this.showItem({
+      message: message,
+      error: true,
+      type: type
+    })
+  },
+  showItem (item) {
+    item.id = Math.random()
+
     this.setState((s) => {
       // message is possibly an array o nodes that should be treated as 1 item.
       const items = s.items.concat([item])
@@ -91,13 +110,14 @@ const Snackbar = React.createClass({
       // This provides the api for calling snackbar from other components
       // Usage:  snackbar.show(node)
       snackbar: {
-        show: this.show
+        show: this.show,
+        error: this.error
       }
     }
   },
   render () {
     return (
-      <div>
+      <div data-id='snackbar'>
         {this.props.children}
         <div className='snackbars' style={{
           position: 'fixed',
@@ -112,7 +132,7 @@ const Snackbar = React.createClass({
             transitionLeaveTimeout={350}>
             {this.state.items.map((item, index) => (
               <div className='mb4 right-align' key={item.id}>
-                <SnackbarItem onDismiss={() => this.remove(item.id)}>
+                <SnackbarItem onDismiss={() => this.remove(item.id)} error={item.error} type={item.type}>
                   {item.message}
                 </SnackbarItem>
               </div>

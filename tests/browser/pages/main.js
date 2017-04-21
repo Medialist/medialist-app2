@@ -23,7 +23,7 @@ module.exports = {
 
       return t.page.contacts()
     },
-    logout: function (t) {
+    logout: function () {
       this
         .waitForElementVisible('@userInfoMenu')
         .click('@userInfoMenu')
