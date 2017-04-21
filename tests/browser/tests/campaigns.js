@@ -319,6 +319,39 @@ const test = {
 
     t.page.main().logout()
     t.end()
+  },
+
+  'Should view campaign contacts from toast menu': function (t) {
+    t.createDomain(['campaign', 'contact', 'contact', 'contact'], (campaign, contact1, contact2, contact3, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact1, contact2], campaign, () => done())
+      })
+
+      const campaignsPage = t.page.campaigns()
+        .navigate()
+
+      campaignsPage.section.campaignTable
+        .searchFor(campaign.name)
+        .selectRow(0)
+
+      campaignsPage.section.toast.viewContacts()
+
+      t.assert.urlEquals(`http://localhost:3000/contacts?campaign=${campaign.slug}`)
+
+      t.page.contacts()
+        .section.contactTable.isInResults(contact1)
+
+      t.page.contacts()
+        .section.contactTable.isInResults(contact2)
+
+      t.page.contacts()
+        .section.contactTable.isNotInResults(contact3)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   }
 }
 

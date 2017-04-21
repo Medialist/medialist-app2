@@ -20,7 +20,14 @@ module.exports = {
         addToMyCampaigns: '[data-id=campaign-actions-add-to-my-campaigns]',
         addTags: '[data-id=campaign-actions-add-tags]',
         deleteCampaigns: '[data-id=campaign-actions-delete]'
-      }
+      },
+      commands: [{
+        viewContacts: function () {
+          this
+            .waitForElementVisible('@viewContacts')
+            .click('@viewContacts')
+        }
+      }]
     }
   },
   commands: [{

@@ -16,7 +16,7 @@ const ContactLink = ({contact, campaign}) => {
   const campaignUrl = campaign ? `/campaign/${campaign.slug}` : ''
   const to = campaignUrl + contactUrl
   return (
-    <Link to={to} className='nowrap' data-id='contact-link'>
+    <Link to={to} className='nowrap' data-id='contact-link' data-contact={contact._id}>
       <CircleAvatar avatar={avatar} name={name} />
       <span className='ml3 semibold'>{name}</span>
     </Link>

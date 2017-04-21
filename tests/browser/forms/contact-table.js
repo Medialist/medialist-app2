@@ -37,6 +37,12 @@ module.exports = {
         .click(selector)
 
       return this
+    },
+    isInResults: function (contact) {
+      this.assert.elementPresent(`[data-id=contact-link][data-contact='${contact._id}']`)
+    },
+    isNotInResults: function (contact) {
+      this.assert.elementNotPresent(`[data-id=contact-link][data-contact='${contact._id}']`)
     }
   }]
 }
