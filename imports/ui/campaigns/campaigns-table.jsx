@@ -110,6 +110,7 @@ const CampaignsTable = React.createClass({
         <tbody>
           {campaigns.map((campaign, index) => {
             const { _id, slug, name, avatar, client, purpose, updatedAt, updatedBy } = campaign
+            const clientName = client && client.name
             return (
               <SelectableRow data={campaign} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id} data-id={`campaigns-table-row-${index}`}>
                 <td className='left-align'>
@@ -118,9 +119,11 @@ const CampaignsTable = React.createClass({
                     <span className='ml3 semibold'>{name}</span>
                   </Link>
                 </td>
-                <td className='left-align truncate'>{client && client.name}</td>
                 <td className='left-align truncate'>
-                  {purpose || <span className='gray60'>No key message yet</span>}
+                  {clientName || <span className='gray60'>No client</span>}
+                </td>
+                <td className='left-align truncate'>
+                  {purpose || <span className='gray60'>No key message</span>}
                 </td>
                 {contactSlug && (
                   <td className='left-align' style={{overflow: 'visible'}}>

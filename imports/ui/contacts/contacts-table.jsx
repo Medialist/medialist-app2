@@ -143,8 +143,12 @@ const ContactsTable = React.createClass({
                   <td className='left-align'>
                     <ContactLink contact={contact} campaign={campaign} />
                   </td>
-                  <td className='left-align'>{(outlets && outlets.length) ? outlets[0].value : null}</td>
-                  <td className='left-align'>{(outlets && outlets.length) ? outlets[0].label : null}</td>
+                  <td className='left-align'>
+                    {(outlets && outlets.length) ? outlets[0].value : <span className='gray60'>No title</span>}
+                  </td>
+                  <td className='left-align'>
+                    {(outlets && outlets.length) ? outlets[0].label : <span className='gray60'>No outlet</span>}
+                  </td>
                   <td className='left-align'>
                     <DisplayEmail emails={emails} />
                   </td>
@@ -175,12 +179,18 @@ const ContactsTable = React.createClass({
 })
 
 const DisplayEmail = ({ emails }) => {
-  if (!emails || !emails.length) return null
+  if (!emails || !emails.length) {
+    return <span className='gray60'>No email</span>
+  }
+
   return <a href={`mailto:${emails[0].value}`}>{emails[0].value}</a>
 }
 
 const DisplayPhone = ({ phones }) => {
-  if (!phones || !phones.length) return null
+  if (!phones || !phones.length) {
+    return <span className='gray60'>No phone</span>
+  }
+
   return <a href={`tel:${phones[0].value}`}>{phones[0].value}</a>
 }
 

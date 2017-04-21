@@ -37,7 +37,7 @@ const AddToMasterListModal = Modal(React.createClass({
     const { type, title, onDismiss, allMasterLists, children } = this.props
     const { selectedMasterLists } = this.state
     return (
-      <div>
+      <div data-id='add-to-list-modal'>
         <div className='pt6 center'>
           <span className='f-xl'>{title}</span>
         </div>
@@ -58,9 +58,9 @@ const AddToMasterListModal = Modal(React.createClass({
         </div>
         <div className='p4 bg-white'>
           <div className='clearfix'>
-            <button className='btn bg-completed white right' onClick={onSave}>Save Changes</button>
-            <button className='btn bg-transparent gray40 right mr2' onClick={onDismiss}>Cancel</button>
-            <Link to={`/settings/${type.toLowerCase()}-master-lists`} className='btn bg-transparent blue'>Manage Master Lists</Link>
+            <button className='btn bg-completed white right' onClick={onSave} data-id='add-to-list-modal-save-button'>Save Changes</button>
+            <button className='btn bg-transparent gray40 right mr2' onClick={onDismiss} data-id='add-to-list-modal-cancel-button'>Cancel</button>
+            <Link to={`/settings/${type.toLowerCase()}-master-lists`} className='btn bg-transparent blue' data-id='add-to-list-modal-manage-lists-button'>Manage Master Lists</Link>
           </div>
         </div>
       </div>
@@ -81,7 +81,9 @@ const MasterListBtn = ({item, type, selected, onSelect, onDeselect}) => {
           <div
             className='flex flex-column justify-center normal f-lg pointer px1 hover-display-trigger'
             style={{height: '100%'}}
-            onClick={() => selected ? onDeselect(item) : onSelect(item)}>
+            onClick={() => selected ? onDeselect(item) : onSelect(item)}
+            data-id='master-list-button'
+            data-item={item._id}>
             <label className='block mb1 pointer nowrap truncate'>{name}</label>
             <label style={{textTransform: 'lowercase'}} className={`display-none f-xxs pointer ${!selected && 'blue'} hover-display-block`}>
               {`${items.length} ${items.length === 1 ? type.substring(0, type.length - 1) : type}`}

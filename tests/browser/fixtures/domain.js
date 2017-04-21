@@ -63,9 +63,17 @@ function user () {
   }
 }
 
+function campaignList () {
+  return {
+    type: 'Campaigns',
+    name: faker.company.catchPhraseAdjective()
+  }
+}
+
 module.exports = {
   campaign,
   contact,
   user,
-  labelValue
+  labelValue,
+  campaignList
 }
