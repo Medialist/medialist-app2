@@ -38,7 +38,7 @@ describe('batchAddToMasterLists', function () {
     })
   })
 
-  it('should add all contacts to all master lists', function () {
+  it('should add all contacts to all Contact Lists', function () {
     const contacts = Array(3).fill(0).map((_, index) => ({
       _id: `${index}`,
       slug: `${index}`,

@@ -24,7 +24,7 @@ module.exports = {
         tags: '[data-id=campaign-tags]',
         editCampaignInfoButton: '[data-id=edit-campaign-info-button]',
         editCampaignTeamMembersButton: '[data-id=edit-campaign-team-members-button]',
-        editCampaignMasterListsButton: '[data-id=edit-campaign-master-lists-button]',
+        editCampaignMasterListsButton: '[data-id=edit-campaign-campaign-lists-button]',
         editCampaignTagsButton: '[data-id=edit-campaign-tags-button]'
       }
     },

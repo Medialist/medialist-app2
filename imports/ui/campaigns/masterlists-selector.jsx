@@ -17,6 +17,9 @@ const MasterListsSelector = React.createClass({
       showMoreOpen: false
     }
   },
+  componentWillReceiveProps () {
+    this.resetState()
+  },
   resetState () {
     this.setState({
       hideItemsAfterIndex: null,
@@ -44,14 +47,24 @@ const MasterListsSelector = React.createClass({
     this.calculateSize()
   },
   calculateSize () {
-    if (this.state.hideItemsAfterIndex !== null) return
+    if (this.state.hideItemsAfterIndex !== null) {
+      return
+    }
+
     const {items} = this.props
     const itemWidthBuffer = 180
     const maxWidth = this.containerEl.clientWidth - itemWidthBuffer
     let hideItemsAfterIndex = this.itemElements
       .findIndex((el) => el.getBoundingClientRect().right > maxWidth)
-    if (hideItemsAfterIndex === -1) hideItemsAfterIndex = items.length
-    if (hideItemsAfterIndex === this.state.hideItemsAfterIndex) return
+
+    if (hideItemsAfterIndex === -1) {
+      hideItemsAfterIndex = items.length
+    }
+
+    if (hideItemsAfterIndex === this.state.hideItemsAfterIndex) {
+      return
+    }
+
     this.setState({ hideItemsAfterIndex })
   },
   render () {
@@ -72,7 +85,7 @@ const MasterListsSelector = React.createClass({
         <div className={`nowrap ${hideItemsAfterIndex === null ? 'opacity-0' : ''}`}>
           {moreItems.length === 0 &&
             <Link to={settingsUrl} className='right inline-block p4 align-middle f-xs underline gray40 hover-blue'>
-              Manage Master Lists
+              Manage {this.props.type.substring(0, this.props.type.length - 1)} Lists
             </Link>
           }
           {visibleItems.map((item, i) =>
@@ -103,7 +116,7 @@ const MasterListsSelector = React.createClass({
                   <div className='py2 mt3 bg-gray90 center'>
                     <Link
                       to={settingsUrl}
-                      className='underline f-xs gray40'>Manage Master Lists</Link>
+                      className='underline f-xs gray40'>Manage {this.props.type.substring(0, this.props.type.length - 1)} Lists</Link>
                   </div>
                 </nav>
               </DropdownMenu>

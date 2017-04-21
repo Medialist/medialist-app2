@@ -129,7 +129,7 @@ const CampaignInfo = React.createClass({
           </div>
         </section>
         <section>
-          <InfoHeader name='Master Lists' onClick={onAddToMasterList} data-id='edit-campaign-master-lists-button' />
+          <InfoHeader name='Campaign Lists' onClick={onAddToMasterList} data-id='edit-campaign-campaign-lists-button' />
           <div className='py3'>
             {masterLists.map((m) => (
               <Link to={`/campaigns?list=${m.slug}`} className='pointer p2 blue f-sm' key={m._id}>
@@ -157,7 +157,7 @@ const CampaignInfo = React.createClass({
           document={campaign}
           masterlists={masterLists}
           type='Campaigns'
-          title={`Add ${name} to a Master List`} />
+          title={`Add ${name} to a Campaign List`} />
         <AddTags
           type='Campaigns'
           open={addTagsOpen}

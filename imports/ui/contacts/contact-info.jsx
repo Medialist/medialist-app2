@@ -134,7 +134,7 @@ const ContactInfo = React.createClass({
           </div>
         </section>
         <section>
-          <InfoHeader name='Master Lists' onClick={onAddToMasterList} data-id='edit-contact-master-lists-button' />
+          <InfoHeader name='Contact Lists' onClick={onAddToMasterList} data-id='edit-contact-contact-lists-button' />
           <div className='py3'>
             {masterLists.map((m) => (
               <Link to={`/contacts?list=${m.slug}`} className='pointer p2 blue f-sm' key={m._id}>
@@ -165,7 +165,7 @@ const ContactInfo = React.createClass({
           onSave={onAddContactToMasterLists}
           selected={masterLists}
           type='Contacts'
-          title={`Add ${name} to a Master List`} />
+          title={`Add ${name} to a Contact List`} />
         <AddTags
           type='Contacts'
           open={addTagsOpen}

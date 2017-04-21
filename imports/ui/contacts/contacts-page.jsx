@@ -111,7 +111,7 @@ const ContactsPage = withSnackbar(React.createClass({
         console.log(err)
         return snackbar.show('Sorry, that didn\'t work')
       }
-      snackbar.show(`Added ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'} to ${masterLists.length} ${masterLists.length === 1 ? 'Master List' : 'Master Lists'}`)
+      snackbar.show(`Added ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'} to ${masterLists.length} ${masterLists.length === 1 ? 'Contact List' : 'Contact Lists'}`)
     })
   },
 
@@ -264,7 +264,7 @@ const ContactsPage = withSnackbar(React.createClass({
           open={this.state.addToMasterListsOpen}
           onDismiss={() => this.setState({addToMasterListsOpen: false})}
           onSave={this.onAddAllToMasterLists}
-          title='Add Contacts to a Master List'>
+          title='Add to a Contact List'>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddToMasterList>
       </div>

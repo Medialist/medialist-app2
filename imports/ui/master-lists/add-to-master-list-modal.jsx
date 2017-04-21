@@ -60,7 +60,7 @@ const AddToMasterListModal = Modal(React.createClass({
           <div className='clearfix'>
             <button className='btn bg-completed white right' onClick={onSave} data-id='add-to-list-modal-save-button'>Save Changes</button>
             <button className='btn bg-transparent gray40 right mr2' onClick={onDismiss} data-id='add-to-list-modal-cancel-button'>Cancel</button>
-            <Link to={`/settings/${type.toLowerCase()}-master-lists`} className='btn bg-transparent blue' data-id='add-to-list-modal-manage-lists-button'>Manage Master Lists</Link>
+            <Link to={`/settings/${type.toLowerCase()}-master-lists`} className='btn bg-transparent blue' data-id='add-to-list-modal-manage-lists-button'>Manage {this.props.type.substring(0, this.props.type.length - 1)} Lists</Link>
           </div>
         </div>
       </div>
@@ -98,9 +98,9 @@ const MasterListBtn = ({item, type, selected, onSelect, onDeselect}) => {
 const EmptyMasterLists = ({type}) => {
   return (
     <div className='mx-auto' style={{height: 321, paddingTop: 90}}>
-      <div className='center'>Looks like we haven’t created a Campaigns Master List yet…</div>
+      <div className='center'>Looks like there aren't any {type.substring(0, type.length - 1)} Lists yet…</div>
       <div className='center mt4'>
-        <Link className='btn bg-blue-dark white' to={`/settings/${type.toLowerCase()}-master-lists`}>Create a Master List</Link>
+        <Link className='btn bg-blue-dark white' to={`/settings/${type.toLowerCase()}-master-lists`}>Create a {type.substring(0, type.length - 1)} List</Link>
       </div>
     </div>
   )

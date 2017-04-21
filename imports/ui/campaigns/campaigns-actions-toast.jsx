@@ -43,7 +43,7 @@ const CampaignsActionsToast = React.createClass({
               <Tooltip title='View Contacts'>
                 <ViewIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onViewClick(campaigns)} data-id='campaign-actions-view-contacts' />
               </Tooltip>
-              <Tooltip title='Add to Master list'>
+              <Tooltip title='Add to Campaign List'>
                 <SectorIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onSectorClick(campaigns)} data-id='campaign-actions-add-to-campaign-list' />
               </Tooltip>
               <Tooltip title='Add to My Campaigns'>

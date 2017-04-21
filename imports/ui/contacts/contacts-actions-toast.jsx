@@ -43,8 +43,8 @@ const ContactsActionsToast = React.createClass({
               <Tooltip title='Add to Campaigns'>
                 <FeedCampaignIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onCampaignClick(contacts)} data-id='contact-actions-add-to-campaign' />
               </Tooltip>
-              <Tooltip title='Add to Master list'>
-                <SectorIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onSectorClick(contacts)} data-id='contact-actions-add-to-master-list' />
+              <Tooltip title='Add to Contact List'>
+                <SectorIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onSectorClick(contacts)} data-id='contact-actions-add-to-contact-list' />
               </Tooltip>
               <Tooltip title='Add to My Contacts'>
                 <FavouritesIcon className='svg-icon-lg px3 pointer gray60 hover-gold' onClick={() => onFavouriteClick(contacts)} data-id='contact-actions-add-to-my-contacts' />
