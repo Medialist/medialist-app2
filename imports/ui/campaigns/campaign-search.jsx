@@ -19,7 +19,7 @@ const CampaignSearch = ({
   loading
 }) => (
   <div>
-    <div className='bg-white shadow-2 m4 mt8'>
+    <div className='bg-white shadow-2 m4 mt8' data-id='campaigns-table'>
       <div className='p4 flex items-center'>
         <div className='flex-auto'>
           <SearchBox onTermChange={onTermChange} placeholder='Search campaigns...' data-id='search-campaigns-input'>

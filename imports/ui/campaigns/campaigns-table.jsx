@@ -69,7 +69,7 @@ const CampaignsTable = React.createClass({
     }, {})
 
     return (
-      <table className='table' data-id={`campaigns-table${this.props.searching ? '-search-results' : ''}`}>
+      <table className='table' data-id={`campaigns-table${this.props.searching ? '-search-results' : '-unfiltered'}`}>
         <thead>
           <tr className='bg-gray90'>
             <th className='right-align' style={{width: 34, paddingRight: 0, borderRight: '0 none'}}>
@@ -108,10 +108,10 @@ const CampaignsTable = React.createClass({
           </tr>
         </thead>
         <tbody>
-          {campaigns.map((campaign) => {
+          {campaigns.map((campaign, index) => {
             const { _id, slug, name, avatar, client, purpose, updatedAt, updatedBy } = campaign
             return (
-              <SelectableRow data={campaign} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id}>
+              <SelectableRow data={campaign} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id} data-id={`campaigns-table-row-${index}`}>
                 <td className='left-align'>
                   <Link to={`/campaign/${slug}`} className='nowrap' data-id='campaign-link'>
                     <SquareAvatar avatar={avatar} name={name} />

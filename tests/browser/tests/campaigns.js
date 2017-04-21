@@ -92,10 +92,12 @@ const test = {
 
   'Should search for campaigns': function (t) {
     t.createDomain(['campaign'], (campaign, done) => {
-      t.page.main()
+      const campaignsPage = t.page.main()
         .navigateToCampaigns(t)
-        .searchForCampaign(campaign.name)
-        .selectSearchResult(campaign.name)
+
+      campaignsPage.section.campaignTable
+        .searchFor(campaign.name)
+        .clickRow(0)
 
       t.assert.urlEquals(`http://localhost:3000/campaign/${campaign.slug}`)
 

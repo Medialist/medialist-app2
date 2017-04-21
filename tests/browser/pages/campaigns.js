@@ -1,34 +1,29 @@
 'use strict'
 
 const editCampaignForm = require('../forms/edit-campaign-form')
+const campaignTable = require('../forms/campaign-table')
 
 module.exports = {
   url: 'http://localhost:3000/campaigns',
   elements: {
     newCampaignButton: '[data-id=create-campaign-button]',
-    searchCampaignsInput: '[data-id=search-campaigns-input]',
-    editCampaignButton: '[data-id=edit-campaign-button]',
-    campaignLink: '[data-id=campaign-link]',
-    campaignsTable: '[data-id=campaigns-table]',
-    campaignsTableSearchResults: '[data-id=campaigns-table-search-results]'
+    editCampaignButton: '[data-id=edit-campaign-button]'
   },
   sections: {
-    editCampaignForm: editCampaignForm
+    editCampaignForm: editCampaignForm,
+    campaignTable: campaignTable,
+    toast: {
+      selector: '[data-id=campaign-actions-toast]',
+      elements: {
+        viewContacts: '[data-id=campaign-actions-view-contacts]',
+        addToMasterList: '[data-id=campaign-actions-add-to-master-list]',
+        addToMyCampaigns: '[data-id=campaign-actions-add-to-my-campaigns]',
+        addTags: '[data-id=campaign-actions-add-tags]',
+        deleteCampaigns: '[data-id=campaign-actions-delete]'
+      }
+    }
   },
   commands: [{
-    searchForCampaign: function (query) {
-      this.waitForElementVisible('@searchCampaignsInput')
-      this.clearValue('@searchCampaignsInput')
-      this.setValue('@searchCampaignsInput', query)
-      this.waitForElementVisible('@campaignsTableSearchResults')
 
-      return this
-    },
-    selectSearchResult: function (query) {
-      this.waitForElementVisible('@campaignLink')
-      this.click('@campaignLink')
-
-      return this
-    }
   }]
 }
