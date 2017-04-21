@@ -21,6 +21,8 @@ const test = {
         .addToTeam(user2)
         .saveTeamEdit()
 
+      t.page.main().waitForSnackbarMessage('campaign-update-team-success')
+
       t.perform((done) => {
         t.db.findCampaign({
           _id: campaign._id

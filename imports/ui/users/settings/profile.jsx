@@ -34,9 +34,9 @@ export default withSnackbar(React.createClass({
       }
     }, (error) => {
       if (error) {
-        console.error('Failed to update user', error)
+        console.error('Failed to update profile', error)
 
-        this.props.snackbar.error('Could not update your profile', 'profile-update-failure')
+        this.props.snackbar.error('profile-update-failure')
 
         return
       }

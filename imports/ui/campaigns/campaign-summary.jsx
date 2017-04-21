@@ -15,16 +15,16 @@ const CamapignSummary = withSnackbar(React.createClass({
   },
   onAvatarChange (e) {
     const { _id } = this.props.campaign
-    update.call({ _id, avatar: e.url }, (err) => {
-      if (err) {
-        console.error('Failed to update campaign avatar', err)
-        this.props.snackbar.show('There was a problem updating the image.')
+    update.call({ _id, avatar: e.url }, (error) => {
+      if (error) {
+        console.error('Failed to update campaign avatar', error)
+        this.props.snackbar.error('campaign-avatar-update-error')
       }
     })
   },
-  onAvatarError (err) {
-    console.error('Failed to change avatar', err)
-    this.props.snackbar.show('There was a problem updating the image.')
+  onAvatarError (error) {
+    console.error('Failed to change avatar', error)
+    this.props.snackbar.error('campaign-avatar-update-error')
   },
   render () {
     const { onAvatarError, onAvatarChange } = this

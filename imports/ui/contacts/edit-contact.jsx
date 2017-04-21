@@ -121,9 +121,9 @@ const EditContact = withSnackbar(React.createClass({
     })
   },
 
-  onAvatarError (err) {
-    console.error('Failed to change avatar', err)
-    this.props.snackbar.show('There was a problem updating the image.')
+  onAvatarError (error) {
+    console.error('Failed to change avatar', error)
+    this.props.snackbar.error('contact-edit-avatar-failure')
   },
 
   onAutocomplete ({name, value}) {
@@ -330,10 +330,10 @@ const EditContactForm = withSnackbar(React.createClass({
       if (error) {
         console.log(error)
 
-        return this.props.snackbar.show('Sorry, that didn\'t work')
+        return this.props.snackbar.error('contact-update-failure')
       }
 
-      this.props.snackbar.show(`Updated ${details.name.split(' ')[0]}`)
+      this.props.snackbar.show(`Updated ${details.name.split(' ')[0]}`, 'contact-update-success')
       this.props.onDismiss(id)
     })
   },
@@ -367,10 +367,10 @@ const CreateContactForm = withSnackbar(React.createClass({
       if (error) {
         console.log(error)
 
-        return this.props.snackbar.show('Sorry, that didn\'t work')
+        return this.props.snackbar.error('contact-create-failure')
       }
 
-      this.props.snackbar.show(`Created ${details.name.split(' ')[0]}`)
+      this.props.snackbar.show(`Created ${details.name.split(' ')[0]}`, 'contact-create-failure')
       this.props.onDismiss(id)
     })
   },

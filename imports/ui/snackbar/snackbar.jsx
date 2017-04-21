@@ -84,6 +84,11 @@ const Snackbar = React.createClass({
     })
   },
   error (message, type) {
+    if (!type) {
+      type = message
+      message = 'Sorry, that didn\'t work'
+    }
+
     this.showItem({
       message: message,
       error: true,

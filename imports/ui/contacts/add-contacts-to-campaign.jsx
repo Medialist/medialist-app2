@@ -69,23 +69,25 @@ const AddContactsToCampaignsContainer = withSnackbar(React.createClass({
   },
 
   onAdd (item) {
-    const {contacts, snackbar, onDismiss} = this.props
+    const {contacts, onDismiss} = this.props
     const contactSlugs = contacts.map((c) => c.slug)
     const campaignSlug = item.slug
-    addContactsToCampaign.call({contactSlugs, campaignSlug}, (err, res) => {
-      if (err) {
-        console.log(err)
-        return snackbar.show('Sorry, that didn\'t work')
+    addContactsToCampaign.call({contactSlugs, campaignSlug}, (error) => {
+      if (error) {
+        console.log(error)
+        return this.props.snackbar.error('batch-add-contacts-to-campaign-success')
       }
+
       onDismiss()
-      return snackbar.show((
+
+      return this.props.snackbar.show((
         <div>
           <span>Added {contacts.length} {contacts.length === 1 ? 'contact' : 'contacts'} to </span>
           <Link to={`/campaign/${item.slug}`} className='underline semibold'>
             {item.name}
           </Link>
         </div>
-      ))
+      ), 'batch-add-contacts-to-campaign-success')
     })
   },
 

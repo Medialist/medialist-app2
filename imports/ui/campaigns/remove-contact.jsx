@@ -2,8 +2,9 @@ import React, { PropTypes } from 'react'
 import Modal from '../navigation/modal'
 import { removeContactsFromCampaign } from '/imports/api/contacts/methods'
 import AvatarList from '../lists/avatar-list'
+import withSnackbar from '../snackbar/with-snackbar'
 
-const RemoveContact = React.createClass({
+const RemoveContact = withSnackbar(React.createClass({
   propTypes: {
     open: PropTypes.bool,
     contacts: PropTypes.array.isRequired,
@@ -17,6 +18,16 @@ const RemoveContact = React.createClass({
     removeContactsFromCampaign.call({
       contactSlugs: this.props.contacts.map(contact => contact.slug),
       campaignSlug: this.props.campaign.slug
+    }, (error) => {
+      if (error) {
+        console.error('Failed to remove contacts from campaign', error)
+
+        this.props.snackbar.error('batch-remove-contacts-from-campaign-failure')
+
+        return
+      }
+
+      this.props.snackbar.show(`Removed ${this.props.contacts.length} Contact${this.props.contacts.length > 1 ? 's' : ''} from Campaign`, 'batch-remove-contacts-from-campaign-success')
     })
 
     this.props.onDismiss(true)
@@ -45,7 +56,7 @@ const RemoveContact = React.createClass({
       </div>
     )
   }
-})
+}))
 
 export default Modal(RemoveContact, {
   width: 500

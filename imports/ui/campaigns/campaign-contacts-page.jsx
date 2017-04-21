@@ -37,10 +37,14 @@ const CampaignContactsPage = React.createClass({
 
     if (contactsAllCount) {
       const addContactModalOpen = !this.state.addContactModalOpen
-      this.setState({ addContactModalOpen })
+      this.setState({
+        addContactModalOpen
+      })
     } else {
       const createContactModalOpen = !this.state.createContactModalOpen
-      this.setState({ createContactModalOpen })
+      this.setState({
+        createContactModalOpen
+      })
     }
   },
 

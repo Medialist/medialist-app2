@@ -80,9 +80,9 @@ const ContactsPage = withSnackbar(React.createClass({
     batchFavouriteContacts.call({contactSlugs}, (err, res) => {
       if (err) {
         console.log(err)
-        return snackbar.show('Sorry, that didn\'t work')
+        return snackbar.error('contacts-batch-favourite-contacts-failure')
       }
-      snackbar.show(`Favourited ${contactSlugs.length} ${contactSlugs.length === 1 ? 'contact' : 'contacts'}`)
+      snackbar.show(`Favourited ${contactSlugs.length} ${contactSlugs.length === 1 ? 'contact' : 'contacts'}`, 'contacts-batch-favourite-contacts-success')
     })
   },
 
@@ -94,9 +94,9 @@ const ContactsPage = withSnackbar(React.createClass({
     batchAddTags.call({type: 'Contacts', slugs, names}, (err, res) => {
       if (err) {
         console.log(err)
-        return snackbar.show('Sorry, that didn\'t work')
+        return snackbar.error('contacts-batch-tag-contacts-failure')
       }
-      snackbar.show(`Add ${names.length} ${names.length === 1 ? 'tag' : 'tags'} to ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'}`)
+      snackbar.show(`Add ${names.length} ${names.length === 1 ? 'tag' : 'tags'} to ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'}`, 'contacts-batch-tag-contacts-success')
     })
   },
 
@@ -109,9 +109,9 @@ const ContactsPage = withSnackbar(React.createClass({
     batchAddToMasterLists.call({type: 'Contacts', slugs, masterListIds}, (err, res) => {
       if (err) {
         console.log(err)
-        return snackbar.show('Sorry, that didn\'t work')
+        return snackbar.error('contacts-batch-add-to-contacts-list-failure')
       }
-      snackbar.show(`Added ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'} to ${masterLists.length} ${masterLists.length === 1 ? 'Contact List' : 'Contact Lists'}`)
+      snackbar.show(`Added ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'} to ${masterLists.length} ${masterLists.length === 1 ? 'Contact List' : 'Contact Lists'}`, 'contacts-batch-add-to-contacts-list-success')
     })
   },
 
@@ -122,10 +122,10 @@ const ContactsPage = withSnackbar(React.createClass({
     batchRemoveContacts.call({contactIds}, (err, res) => {
       if (err) {
         console.log(err)
-        return snackbar.show('Sorry, that didn\'t work')
+        return snackbar.error('contacts-batch-delete-contacts-failure')
       }
       this.setState({ selections: [] })
-      snackbar.show(`Deleted ${contactIds.length} ${contactIds.length === 1 ? 'contacts' : 'contact'}`)
+      snackbar.show(`Deleted ${contactIds.length} ${contactIds.length === 1 ? 'contacts' : 'contact'}`, 'contacts-batch-delete-contacts-success')
     })
   },
 

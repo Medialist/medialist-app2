@@ -86,9 +86,9 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
     batchAddTags.call({type: 'Campaigns', slugs, names}, (err, res) => {
       if (err) {
         console.log(err)
-        snackbar.show('Sorry, that didn\'t work')
+        snackbar.error('campaigns-batch-tag-error')
       }
-      snackbar.show(`Add ${names.length} ${names.length === 1 ? 'tag' : 'tags'} to ${slugs.length} ${slugs.length === 1 ? 'campaign' : 'campaigns'}`)
+      snackbar.show(`Add ${names.length} ${names.length === 1 ? 'tag' : 'tags'} to ${slugs.length} ${slugs.length === 1 ? 'campaign' : 'campaigns'}`, 'campaigns-batch-tag-success')
     })
   },
 
@@ -99,9 +99,9 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
     batchFavouriteCampaigns.call({campaignSlugs}, (err, res) => {
       if (err) {
         console.log(err)
-        snackbar.show('Sorry, that didn\'t work.')
+        snackbar.error('campaigns-batch-favourite-error')
       }
-      snackbar.show(`Favourited ${campaignSlugs.length} ${campaignSlugs.length === 1 ? 'campaign' : 'campaigns'}`)
+      snackbar.show(`Favourited ${campaignSlugs.length} ${campaignSlugs.length === 1 ? 'campaign' : 'campaigns'}`, 'campaigns-batch-favourite-success')
     })
   },
 
@@ -113,9 +113,9 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
     batchAddToMasterLists.call({type: 'Campaigns', slugs, masterListIds}, (err, res) => {
       if (err) {
         console.log(err)
-        return snackbar.show('Sorry, that didn\'t work')
+        return snackbar.error('campaigns-batch-add-to-campaign-list-error')
       }
-      snackbar.show(`Added ${slugs.length} ${slugs.length === 1 ? 'campaign' : 'campaigns'} to ${masterLists.length} ${masterLists.length === 1 ? 'Campaign List' : 'Campaign Lists'}`)
+      snackbar.show(`Added ${slugs.length} ${slugs.length === 1 ? 'campaign' : 'campaigns'} to ${masterLists.length} ${masterLists.length === 1 ? 'Campaign List' : 'Campaign Lists'}`, 'campaigns-batch-add-to-campaign-list-success')
     })
   },
 
