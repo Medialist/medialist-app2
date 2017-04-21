@@ -4,8 +4,9 @@ import { Form, Input, Button } from '@achingbrain/react-validation'
 import { CircleAvatar } from '../../images/avatar'
 import { LockIcon } from '../../images/icons'
 import EditableAvatarWithButtons from '../../images/editable-avatar-with-buttons'
+import withSnackbar from '../../snackbar/with-snackbar'
 
-export default React.createClass({
+export default withSnackbar(React.createClass({
   propTypes: {
     user: PropTypes.object
   },
@@ -34,7 +35,13 @@ export default React.createClass({
     }, (error) => {
       if (error) {
         console.error('Failed to update user', error)
+
+        this.props.snackbar.show('Could not update your profile')
+
+        return
       }
+
+      this.props.snackbar.show('Your profile has been updated')
     })
   },
   onFieldChange (event) {
@@ -102,9 +109,9 @@ export default React.createClass({
             className='btn white bg-blue w24'
             disabled={false}
             data-id='update-profile-button'
-          >Save changes</Button>
+          >Update Profile</Button>
         </div>
       </Form>
     )
   }
-})
+}))
