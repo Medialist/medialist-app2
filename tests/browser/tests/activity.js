@@ -56,6 +56,7 @@ const test = {
       done()
     })
 
+    t.page.main().logout()
     t.end()
   },
 
@@ -127,6 +128,7 @@ const test = {
       done()
     })
 
+    t.page.main().logout()
     t.end()
   },
 
@@ -198,6 +200,7 @@ const test = {
       done()
     })
 
+    t.page.main().logout()
     t.end()
   },
 
@@ -246,6 +249,7 @@ const test = {
       done()
     })
 
+    t.page.main().logout()
     t.end()
   },
 
@@ -317,6 +321,7 @@ const test = {
       done()
     })
 
+    t.page.main().logout()
     t.end()
   },
 
@@ -388,6 +393,7 @@ const test = {
       done()
     })
 
+    t.page.main().logout()
     t.end()
   },
 
@@ -457,6 +463,7 @@ const test = {
       done()
     })
 
+    t.page.main().logout()
     t.end()
   }
 }

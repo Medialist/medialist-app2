@@ -42,6 +42,7 @@ const test = {
       done()
     })
 
+    t.page.main().logout()
     t.end()
   }
 }

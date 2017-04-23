@@ -29,6 +29,7 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
       .waitForElementVisible('@status')
       .assert.containsText('@status', 'Created 1 contacts and updated 0 contacts.')
 
+    t.page.main().logout()
     t.end()
   },
 
@@ -59,6 +60,7 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
       })
     })
 
+    t.page.main().logout()
     t.end()
   },
 
@@ -76,6 +78,7 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
       done()
     })
 
+    t.page.main().logout()
     t.end()
   }
 }
