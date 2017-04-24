@@ -112,7 +112,7 @@ const CampaignsTable = React.createClass({
             const { _id, slug, name, avatar, client, purpose, updatedAt, updatedBy } = campaign
             const clientName = client && client.name
             return (
-              <SelectableRow data={campaign} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id} data-id={`campaigns-table-row-${index}`}>
+              <SelectableRow data={campaign} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id} data-id={`campaigns-table-row-${index}`} data-item={_id}>
                 <td className='left-align'>
                   <Link to={`/campaign/${slug}`} className='nowrap' data-id='campaign-link'>
                     <SquareAvatar avatar={avatar} name={name} />

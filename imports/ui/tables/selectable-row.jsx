@@ -3,7 +3,7 @@ import classnames from 'classnames'
 import Checkbox from './checkbox'
 
 const SelectableRow = ({ selected, data, children, onSelectChange, className, ...props }) => (
-  <tr className={classnames(className, 'hover-opacity-trigger', { active: selected })} data-id={props['data-id']}>
+  <tr className={classnames(className, 'hover-opacity-trigger', { active: selected })} data-id={props['data-id']} data-item={props['data-item']}>
     <td className='right-align' style={{paddingRight: 0}}>
       <Checkbox
         className={classnames('hover-opacity-100', { 'opacity-0': !selected })}

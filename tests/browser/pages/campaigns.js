@@ -26,11 +26,15 @@ module.exports = {
           this
             .waitForElementVisible('@viewContacts')
             .click('@viewContacts')
+
+          return this
         },
-        addToCampaignList: function (campaignList) {
+        addToCampaignList: function () {
           this
             .waitForElementVisible('@addToCampaignList')
             .click('@addToCampaignList')
+
+          return this
         }
       }]
     },
@@ -42,17 +46,31 @@ module.exports = {
         manageListsButton: '[data-id=add-to-list-modal-manage-lists-button]'
       },
       commands: [{
-        addToCampaignList: function (campaignList) {
+        selectCampaignList: function (campaignList) {
           const selector = `[data-id=master-list-button][data-item='${campaignList._id}']`
 
           this
             .waitForElementVisible(selector)
             .click(selector)
+
+          return this
+        },
+        save: function () {
+          this
+            .waitForElementVisible('@saveButton')
+            .click('@saveButton')
+
+          return this
         }
       }]
     }
   },
   commands: [{
+    navigateToCampaignList: function (campaignList) {
+      this.api.url('http://localhost:3000/campaigns?list=' + campaignList.slug)
+      this.waitForElementVisible(this.section.campaignTable.selector)
 
+      return this
+    }
   }]
 }

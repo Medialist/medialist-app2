@@ -110,6 +110,36 @@ const test = {
 
     t.page.main().logout()
     t.end()
+  },
+
+  'Should add to campaign list from toast menu': function (t) {
+    t.createDomain(['campaignList', 'campaign'], (campaignList, campaign, done) => {
+      const campaignsPage = t.page.campaigns()
+        .navigate()
+
+      campaignsPage.section.campaignTable
+        .searchFor(campaign.name)
+        .selectRow(0)
+
+      campaignsPage.section.toast.addToCampaignList()
+      campaignsPage.section.campaignListsModal
+        .selectCampaignList(campaignList)
+        .save()
+
+      t.page.main().waitForSnackbarMessage('campaigns-batch-add-to-campaign-list-success')
+
+      campaignsPage
+        .navigateToCampaignList(campaignList)
+
+      campaignsPage.section.campaignTable
+        .searchFor(campaign.name)
+        .assertInSearchResults(campaign)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   }
 }
 

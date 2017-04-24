@@ -16,6 +16,8 @@ import AddTags from '../tags/add-tags'
 import AbbreviatedAvatarList from '../lists/abbreviated-avatar-list'
 import AddToMasterList from '../master-lists/add-to-master-list'
 import campaignsSearchQueryContainer from './campaign-search-query-container'
+import CampaignLink from '../campaigns/campaign-link'
+import CampaignListLink from '../master-lists/campaign-list-link'
 
 const CampaignsPage = withSnackbar(withRouter(React.createClass({
   propTypes: {
@@ -113,9 +115,13 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
     batchAddToMasterLists.call({type: 'Campaigns', slugs, masterListIds}, (err, res) => {
       if (err) {
         console.log(err)
-        return snackbar.error('campaigns-batch-add-to-campaign-list-error')
+        return snackbar.error('campaigns-batch-add-to-campaign-list-failure')
       }
-      snackbar.show(`Added ${slugs.length} ${slugs.length === 1 ? 'campaign' : 'campaigns'} to ${masterLists.length} ${masterLists.length === 1 ? 'Campaign List' : 'Campaign Lists'}`, 'campaigns-batch-add-to-campaign-list-success')
+
+      const name = slugs.length > 1 ? `${slugs.length} campaigns` : <CampaignLink campaign={this.state.selections[0]} linkClassName='semibold white underline' />
+      const list = masterLists.length > 1 ? `${masterLists.length} Campaign Lists` : <CampaignListLink campaignList={masterLists[0]} linkClassName='semibold white underline' />
+
+      snackbar.show(<span>Added {name} to {list}</span>, 'campaigns-batch-add-to-campaign-list-success')
     })
   },
 

@@ -7,6 +7,7 @@ import YouOrName from '../users/you-or-name'
 import Status from '../feedback/status'
 import LinkPreview from '../feedback/link-preview'
 import CampaignPreview from '../campaigns/campaign-preview'
+import CampaignLink from '../campaigns/campaign-link'
 import {
   ChevronRight,
   FeedCampaignIcon,
@@ -142,12 +143,6 @@ const ContactLink = ({contact, ...props}) => (
   <Link to={`/contact/${contact.slug}`} data-id='contact-link' {...props}>
     <span className='semibold gray10' data-id='contact-name'>{contact.name}</span>
     { contact.outletName && <span className='gray10' data-id='contact-outlet'> ({contact.outletName})</span> }
-  </Link>
-)
-
-const CampaignLink = ({campaign}) => (
-  <Link className='semibold gray10' to={`/campaign/${campaign.slug}`} data-id='campaign-link'>
-    <span data-id='campaign-name'>{campaign.name}</span>
   </Link>
 )
 

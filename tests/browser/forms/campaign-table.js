@@ -37,6 +37,13 @@ module.exports = {
         .click(selector)
 
       return this
+    },
+    assertInSearchResults: function (campaign) {
+      const selector = `[data-item=${campaign._id}]`
+
+      this.assert.visible(selector)
+
+      return this
     }
   }]
 }
