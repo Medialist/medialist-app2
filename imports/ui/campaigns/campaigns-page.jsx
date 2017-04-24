@@ -90,7 +90,8 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
         console.log(err)
         snackbar.error('campaigns-batch-tag-error')
       }
-      snackbar.show(`Add ${names.length} ${names.length === 1 ? 'tag' : 'tags'} to ${slugs.length} ${slugs.length === 1 ? 'campaign' : 'campaigns'}`, 'campaigns-batch-tag-success')
+
+      snackbar.show(`Added ${names.length} ${names.length === 1 ? 'tag' : 'tags'} to ${slugs.length} ${slugs.length === 1 ? 'campaign' : 'campaigns'}`, 'campaigns-batch-tag-success')
     })
   },
 
@@ -103,7 +104,10 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
         console.log(err)
         snackbar.error('campaigns-batch-favourite-error')
       }
-      snackbar.show(`Favourited ${campaignSlugs.length} ${campaignSlugs.length === 1 ? 'campaign' : 'campaigns'}`, 'campaigns-batch-favourite-success')
+
+      const name = campaignSlugs.length > 1 ? `${campaignSlugs.length} campaigns` : <CampaignLink campaign={this.state.selections[0]} linkClassName='semibold white underline' />
+
+      snackbar.show(<span>Favourited {name}</span>, 'campaigns-batch-favourite-success')
     })
   },
 

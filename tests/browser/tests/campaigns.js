@@ -121,7 +121,7 @@ const test = {
         .searchFor(campaign.name)
         .selectRow(0)
 
-      campaignsPage.section.toast.addToCampaignList()
+      campaignsPage.section.toast.openAddToCampaignListsModal()
       campaignsPage.section.campaignListsModal
         .selectCampaignList(campaignList)
         .save()
@@ -130,6 +130,33 @@ const test = {
 
       campaignsPage
         .navigateToCampaignList(campaignList)
+
+      campaignsPage.section.campaignTable
+        .searchFor(campaign.name)
+        .assertInSearchResults(campaign)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should favourite campaigns from toast menu': function (t) {
+    t.createDomain(['campaign'], (campaign, done) => {
+      const campaignsPage = t.page.campaigns()
+        .navigate()
+
+      campaignsPage.section.campaignTable
+        .searchFor(campaign.name)
+        .selectRow(0)
+
+      campaignsPage.section.toast.favouriteCampaigns()
+
+      t.page.main().waitForSnackbarMessage('campaigns-batch-favourite-success')
+
+      campaignsPage
+        .navigateToMyCampaigns()
 
       campaignsPage.section.campaignTable
         .searchFor(campaign.name)
