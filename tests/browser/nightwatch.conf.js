@@ -1,7 +1,6 @@
 'use strict'
 
 const seleniumServer = require('selenium-server/package.json')
-const tmp = require('tmp')
 
 const configure = (obj) => {
   Object.keys(obj).forEach(key => {
@@ -56,9 +55,6 @@ const config = {
         browserName: defaults.BROWSER,
         javascriptEnabled: true,
         acceptSslCerts: true,
-        chromeOptions: {
-          args: [`user-data-dir=${tmp.dirSync().name}`]
-        },
         loggingPrefs: {
           browser: 'ALL'
         }
