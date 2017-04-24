@@ -12,12 +12,13 @@ import withSnackbar from '../snackbar/with-snackbar'
 import { batchAddTags } from '/imports/api/tags/methods'
 import { batchFavouriteCampaigns } from '/imports/api/campaigns/methods'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
-import AddTags from '../tags/add-tags'
+import AddTagsModal from '../tags/add-tags-modal'
 import AbbreviatedAvatarList from '../lists/abbreviated-avatar-list'
 import AddToMasterList from '../master-lists/add-to-master-list'
 import campaignsSearchQueryContainer from './campaign-search-query-container'
 import CampaignLink from '../campaigns/campaign-link'
 import CampaignListLink from '../master-lists/campaign-list-link'
+import TagLink from './tag-link'
 
 const CampaignsPage = withSnackbar(withRouter(React.createClass({
   propTypes: {
@@ -85,13 +86,16 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
     const { selections } = this.state
     const slugs = selections.map((s) => s.slug)
     const names = tags.map((t) => t.name)
-    batchAddTags.call({type: 'Campaigns', slugs, names}, (err, res) => {
-      if (err) {
-        console.log(err)
+    batchAddTags.call({type: 'Campaigns', slugs, names}, (error) => {
+      if (error) {
+        console.log(error)
         snackbar.error('campaigns-batch-tag-error')
       }
 
-      snackbar.show(`Added ${names.length} ${names.length === 1 ? 'tag' : 'tags'} to ${slugs.length} ${slugs.length === 1 ? 'campaign' : 'campaigns'}`, 'campaigns-batch-tag-success')
+      const name = slugs.length > 1 ? `${slugs.length} campaigns` : <CampaignLink campaign={this.state.selections[0]} linkClassName='semibold white underline' />
+      const tag = names.length > 1 ? `${names.length} tags` : <TagLink tag={names[0]} type='campaign' linkClassName='semibold white underline' />
+
+      snackbar.show(<span>Added {tag} to {name}</span>, 'campaigns-batch-tag-success')
     })
   },
 
@@ -99,9 +103,9 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
     const { snackbar } = this.props
     const { selections } = this.state
     const campaignSlugs = selections.map((c) => c.slug)
-    batchFavouriteCampaigns.call({campaignSlugs}, (err, res) => {
-      if (err) {
-        console.log(err)
+    batchFavouriteCampaigns.call({campaignSlugs}, (error) => {
+      if (error) {
+        console.log(error)
         snackbar.error('campaigns-batch-favourite-error')
       }
 
@@ -185,14 +189,14 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
           onTagClick={() => this.setState({addTagsOpen: true})}
           onDeleteClick={() => snackbar.show('TODO: delete campaigns')}
           onDeselectAllClick={this.onDeselectAllClick} />
-        <AddTags
+        <AddTagsModal
           type='Campaigns'
           open={this.state.addTagsOpen}
           onDismiss={() => this.setState({addTagsOpen: false})}
           onUpdateTags={this.onTagAll}
           title='Tag these Campaigns'>
           <AbbreviatedAvatarList items={selections} shape='square' />
-        </AddTags>
+        </AddTagsModal>
         <AddToMasterList
           type='Campaigns'
           open={this.state.addToMasterListsOpen}

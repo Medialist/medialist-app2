@@ -78,6 +78,14 @@ module.exports = {
           return this
         }
       }]
+    },
+    tagSelectorModal: {
+      selector: '[data-id=tag-selector-modal]',
+      elements: {
+        searchInput: '[data-id=tag-search-input]',
+        saveButton: '[data-id=tag-selector-modal-save-button]',
+        cancelButton: '[data-id=tag-selector-modal-cancel-button]',
+      }
     }
   },
   commands: [{

@@ -21,7 +21,7 @@ import { batchFavouriteContacts, batchRemoveContacts } from '/imports/api/contac
 import { batchAddTags } from '/imports/api/tags/methods'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import withSnackbar from '../snackbar/with-snackbar'
-import AddTags from '../tags/add-tags'
+import AddTagsModal from '../tags/add-tags-modal'
 import AbbreviatedAvatarList from '../lists/abbreviated-avatar-list'
 import AddToMasterList from '../master-lists/add-to-master-list'
 import NearBottomContainer from '../navigation/near-bottom-container'
@@ -251,14 +251,14 @@ const ContactsPage = withSnackbar(React.createClass({
           open={this.state.AddContactsToCampaignModalOpen}>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddContactsToCampaign>
-        <AddTags
+        <AddTagsModal
           type='Contacts'
           open={this.state.addTagsOpen}
           onDismiss={() => this.setState({addTagsOpen: false})}
           onUpdateTags={this.onTagAll}
           title='Tag these Contacts'>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
-        </AddTags>
+        </AddTagsModal>
         <AddToMasterList
           type='Contacts'
           open={this.state.addToMasterListsOpen}

@@ -7,7 +7,7 @@ import { SquareAvatar, CircleAvatar } from '../images/avatar'
 import { BioIcon, FavouritesIcon, FavouritesIconGold, WebsiteIcon } from '../images/icons'
 import InfoHeader from '../lists/info-header'
 import AddToMasterList from '../master-lists/add-to-master-list'
-import AddTags from '../tags/add-tags'
+import AddTagsModal from '../tags/add-tags-modal'
 import Tooltip from '../navigation/tooltip'
 import { update } from '../../api/campaigns/methods'
 import withSnackbar from '../snackbar/with-snackbar'
@@ -175,7 +175,7 @@ const CampaignInfo = withSnackbar(React.createClass({
           masterlists={masterLists}
           type='Campaigns'
           title={`Add ${name} to a Campaign List`} />
-        <AddTags
+        <AddTagsModal
           type='Campaigns'
           open={addTagsOpen}
           onDismiss={dismissAddTags}

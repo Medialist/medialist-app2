@@ -2,6 +2,7 @@
 
 const domain = require('../fixtures/domain')
 const assertions = require('../fixtures/assertions')
+const faker = require('faker')
 
 const test = {
   '@tags': ['campaigns'],
@@ -12,7 +13,7 @@ const test = {
     t.page.authenticate()
       .register()
   },
-
+/*
   'Should create new campaign': function (t) {
     const campaignsPage = t.page.main()
       .navigateToCampaigns(t)
@@ -154,6 +155,39 @@ const test = {
       campaignsPage.section.toast.favouriteCampaigns()
 
       t.page.main().waitForSnackbarMessage('campaigns-batch-favourite-success')
+
+      campaignsPage
+        .navigateToMyCampaigns()
+
+      campaignsPage.section.campaignTable
+        .searchFor(campaign.name)
+        .assertInSearchResults(campaign)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+*/
+  'Should add tags to campaigns from toast menu': function (t) {
+    const tag = faker.hacker.noun()
+
+    t.createDomain(['campaign'], (campaign, done) => {
+      const campaignsPage = t.page.campaigns()
+        .navigate()
+
+      campaignsPage.section.campaignTable
+        .searchFor(campaign.name)
+        .selectRow(0)
+
+      campaignsPage.section.toast.openAddTagsToCampaignModal()
+
+      campaignsPage.section.tagSelectorModal
+        .addTag(tag)
+        .save()
+
+      t.page.main().waitForSnackbarMessage('campaigns-batch-tag-success')
 
       campaignsPage
         .navigateToMyCampaigns()
