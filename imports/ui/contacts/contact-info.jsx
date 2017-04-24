@@ -7,7 +7,7 @@ import { EmailIcon, FavouritesIconGold, FavouritesIcon, PhoneIcon, BioIcon, Mobi
 import { setMasterLists } from '/imports/api/master-lists/methods'
 import InfoHeader from '../lists/info-header'
 import AddToMasterList from '../master-lists/add-to-master-list'
-import AddTags from '../tags/add-tags'
+import AddTagsModal from '../tags/add-tags-modal'
 import Tooltip from '../navigation/tooltip'
 import { SocialIcon } from '../social/social'
 
@@ -166,7 +166,7 @@ const ContactInfo = React.createClass({
           selected={masterLists}
           type='Contacts'
           title={`Add ${name} to a Contact List`} />
-        <AddTags
+        <AddTagsModal
           type='Contacts'
           open={addTagsOpen}
           onDismiss={dismissAddTags}

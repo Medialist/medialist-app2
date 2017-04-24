@@ -6,18 +6,19 @@ import { createContainer } from 'meteor/react-meteor-data'
 import CampaignSearch from './campaign-search'
 import MasterListsSelector from './masterlists-selector'
 import CampaignsActionsToast from './campaigns-actions-toast'
-import EditCampaign from './edit-campaign'
+import { CreateCampaignModal } from './edit-campaign'
 import CampaignListEmpty from './campaign-list-empty'
 import withSnackbar from '../snackbar/with-snackbar'
 import { batchAddTags } from '/imports/api/tags/methods'
 import { batchFavouriteCampaigns } from '/imports/api/campaigns/methods'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
-import AddTags from '../tags/add-tags'
+import AddTagsModal from '../tags/add-tags-modal'
 import AbbreviatedAvatarList from '../lists/abbreviated-avatar-list'
 import AddToMasterList from '../master-lists/add-to-master-list'
 import campaignsSearchQueryContainer from './campaign-search-query-container'
 import CampaignLink from '../campaigns/campaign-link'
 import CampaignListLink from '../master-lists/campaign-list-link'
+import TagLink from './tag-link'
 
 const CampaignsPage = withSnackbar(withRouter(React.createClass({
   propTypes: {
@@ -37,7 +38,7 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
   getInitialState () {
     return {
       selections: [],
-      editCampaignOpen: false,
+      createCampaignModalOpen: false,
       addTagsOpen: false,
       addToMasterListsOpen: false
     }
@@ -45,8 +46,8 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
 
   componentDidMount () {
     const { location: { pathname, query }, router } = this.props
-    if (query && query.editCampaignOpen) {
-      this.setState({ editCampaignOpen: true })
+    if (query && query.createCampaignModalOpen) {
+      this.setState({ createCampaignModalOpen: true })
       router.replace(pathname)
     }
   },
@@ -63,9 +64,9 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
     this.setState({ selections: [] })
   },
 
-  toggleEditCampaign () {
+  toggleCreateCampaignModal () {
     this.setState((s) => ({
-      editCampaignOpen: !s.editCampaignOpen
+      createCampaignModalOpen: !s.createCampaignModalOpen
     }))
   },
 
@@ -85,13 +86,16 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
     const { selections } = this.state
     const slugs = selections.map((s) => s.slug)
     const names = tags.map((t) => t.name)
-    batchAddTags.call({type: 'Campaigns', slugs, names}, (err, res) => {
-      if (err) {
-        console.log(err)
+    batchAddTags.call({type: 'Campaigns', slugs, names}, (error) => {
+      if (error) {
+        console.log(error)
         snackbar.error('campaigns-batch-tag-error')
       }
 
-      snackbar.show(`Added ${names.length} ${names.length === 1 ? 'tag' : 'tags'} to ${slugs.length} ${slugs.length === 1 ? 'campaign' : 'campaigns'}`, 'campaigns-batch-tag-success')
+      const name = slugs.length > 1 ? `${slugs.length} campaigns` : <CampaignLink campaign={this.state.selections[0]} linkClassName='semibold white underline' />
+      const tag = names.length > 1 ? `${names.length} tags` : <TagLink tag={names[0]} type='campaign' linkClassName='semibold white underline' />
+
+      snackbar.show(<span>Added {tag} to {name}</span>, 'campaigns-batch-tag-success')
     })
   },
 
@@ -99,9 +103,9 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
     const { snackbar } = this.props
     const { selections } = this.state
     const campaignSlugs = selections.map((c) => c.slug)
-    batchFavouriteCampaigns.call({campaignSlugs}, (err, res) => {
-      if (err) {
-        console.log(err)
+    batchFavouriteCampaigns.call({campaignSlugs}, (error) => {
+      if (error) {
+        console.log(error)
         snackbar.error('campaigns-batch-favourite-error')
       }
 
@@ -139,12 +143,17 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
   render () {
     const { campaignCount, campaigns, selectedMasterListSlug, loading, total, sort, term, snackbar, selectedTags, onTermChange, onSortChange } = this.props
     const { onSelectionsChange, onMasterListChange, onViewSelection, onFavouriteAll, onTagRemove } = this
-    const { selections, editCampaignOpen } = this.state
+    const { selections, createCampaignModalOpen } = this.state
 
     if (!loading && campaignCount === 0) {
       return (<div>
-        <CampaignListEmpty onAddCampaign={this.toggleEditCampaign} />
-        <EditCampaign onDismiss={this.toggleEditCampaign} open={editCampaignOpen} />
+        <CampaignListEmpty
+          onAddCampaign={this.toggleCreateCampaignModal}
+        />
+        <CreateCampaignModal
+          onDismiss={this.toggleCreateCampaignModal}
+          open={createCampaignModalOpen}
+        />
       </div>)
     }
 
@@ -160,10 +169,12 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
               onChange={onMasterListChange} />
           </div>
           <div className='flex-none bg-white center px4'>
-            <button className='btn bg-completed white mx4' onClick={this.toggleEditCampaign} data-id='create-campaign-button'>New Campaign</button>
+            <button className='btn bg-completed white mx4' onClick={this.toggleCreateCampaignModal} data-id='create-campaign-button'>New Campaign</button>
           </div>
         </div>
-        <EditCampaign onDismiss={this.toggleEditCampaign} open={editCampaignOpen} />
+        <CreateCampaignModal
+          onDismiss={this.toggleCreateCampaignModal}
+          open={createCampaignModalOpen} />
         <CampaignSearch {...{
           onTermChange,
           selectedTags,
@@ -185,14 +196,14 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
           onTagClick={() => this.setState({addTagsOpen: true})}
           onDeleteClick={() => snackbar.show('TODO: delete campaigns')}
           onDeselectAllClick={this.onDeselectAllClick} />
-        <AddTags
+        <AddTagsModal
           type='Campaigns'
           open={this.state.addTagsOpen}
           onDismiss={() => this.setState({addTagsOpen: false})}
           onUpdateTags={this.onTagAll}
           title='Tag these Campaigns'>
           <AbbreviatedAvatarList items={selections} shape='square' />
-        </AddTags>
+        </AddTagsModal>
         <AddToMasterList
           type='Campaigns'
           open={this.state.addToMasterListsOpen}

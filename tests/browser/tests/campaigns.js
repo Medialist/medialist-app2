@@ -2,6 +2,7 @@
 
 const domain = require('../fixtures/domain')
 const assertions = require('../fixtures/assertions')
+const faker = require('faker')
 
 const test = {
   '@tags': ['campaigns'],
@@ -132,7 +133,6 @@ const test = {
         .navigateToCampaignList(campaignList)
 
       campaignsPage.section.campaignTable
-        .searchFor(campaign.name)
         .assertInSearchResults(campaign)
 
       done()
@@ -160,6 +160,38 @@ const test = {
 
       campaignsPage.section.campaignTable
         .searchFor(campaign.name)
+        .assertInSearchResults(campaign)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should add tags to campaigns from toast menu': function (t) {
+    const tag = faker.hacker.noun()
+
+    t.createDomain(['campaign'], (campaign, done) => {
+      const campaignsPage = t.page.campaigns()
+        .navigate()
+
+      campaignsPage.section.campaignTable
+        .searchFor(campaign.name)
+        .selectRow(0)
+
+      campaignsPage.section.toast.openAddTagsToCampaignModal()
+
+      campaignsPage.section.tagSelectorModal
+        .addTag(tag)
+        .save()
+
+      t.page.main().waitForSnackbarMessage('campaigns-batch-tag-success')
+
+      campaignsPage
+        .navigateToTag(tag)
+
+      campaignsPage.section.campaignTable
         .assertInSearchResults(campaign)
 
       done()

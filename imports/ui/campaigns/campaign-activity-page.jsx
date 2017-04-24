@@ -7,7 +7,7 @@ import CampaignInfo from './campaign-info'
 import CampaignContactList from './campaign-contact-list'
 import CampaignPostBox from './campaign-postbox'
 import ActivityFeed from '../dashboard/activity-feed'
-import EditCampaign from './edit-campaign'
+import { EditCampaignModal } from './edit-campaign'
 import Clients from '/imports/api/clients/clients'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
@@ -113,7 +113,7 @@ const CampaignActivityPage = React.createClass({
       onShowCreateContact,
       onAddCampaignToMasterLists
     } = this
-    const { campaign, contacts, contactsCount, clients, teamMates, loading, user } = this.props
+    const { campaign, contacts, contactsCount, teamMates, loading, user } = this.props
     const {
       createContactModalOpen,
       addContactModalOpen,
@@ -135,7 +135,10 @@ const CampaignActivityPage = React.createClass({
               onEditTeamClick={toggleEditTeamModal}
               user={user}
               onAddCampaignToMasterLists={onAddCampaignToMasterLists} />
-            <EditCampaign campaign={campaign} open={editModalOpen} onDismiss={toggleEditModal} clients={clients} />
+            <EditCampaignModal
+              campaign={campaign}
+              open={editModalOpen}
+              onDismiss={toggleEditModal} />
             <EditTeam
               campaign={campaign}
               open={editTeamModalOpen}

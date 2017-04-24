@@ -9,9 +9,9 @@ import CampaignSummary from './campaign-summary'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
 import { CreateContactModal } from '../contacts/edit-contact'
-import AddContact from './add-contact'
+import AddContactModal from './add-contact'
 import { StatusIndex } from '/imports/api/contacts/status'
-import RemoveContact from './remove-contact'
+import RemoveContactModal from './remove-contact'
 
 const CampaignContactsPage = React.createClass({
   propTypes: {
@@ -168,13 +168,13 @@ const CampaignContactsPage = React.createClass({
           onDismiss={onCreateContactModalDismiss}
           campaign={campaign}
           prefill={contactPrefillData} />
-        <AddContact
+        <AddContactModal
           open={addContactModalOpen}
           onDismiss={onAddContactModalDismiss}
           onCreate={onShowCreateContact}
           campaign={campaign}
           campaignContacts={contacts} />
-        <RemoveContact
+        <RemoveContactModal
           open={removeContactModalOpen}
           onDismiss={onRemoveContactModalDismiss}
           campaign={campaign}

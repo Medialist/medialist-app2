@@ -15,11 +15,18 @@ import { MedialistCreateSchema } from '/imports/api/campaigns/campaigns'
 import { Form, Input, Textarea, Button } from '@achingbrain/react-validation'
 import withSnackbar from '../snackbar/with-snackbar'
 
+const inputSize = (value) => {
+  if (!value || value.length < 14) {
+    return 15
+  }
+
+  return value.length + 2
+}
+
 const EditCampaign = withSnackbar(React.createClass({
   propTypes: {
-    router: PropTypes.object.isRequired,
-    open: PropTypes.bool.isRequired,
-    onDismiss: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired,
+    onCancel: PropTypes.func.isRequired,
     campaign: PropTypes.object
   },
   getInitialState () {
@@ -85,57 +92,21 @@ const EditCampaign = withSnackbar(React.createClass({
       data.purpose = null
     }
 
-    if (this.props.campaign) {
-      update.call({ _id: this.props.campaign._id, ...data }, (error) => {
-        if (error) {
-          console.log(error)
-          this.props.snackbar.error('campaign-update-failure')
-
-          return
-        }
-
-        this.props.snackbar.show(`Updated ${data.name}`, 'campaign-update-success')
-
-        this.props.onDismiss()
-      })
-    } else {
-      create.call(data, (error, slug) => {
-        if (error) {
-          console.log(error)
-          this.props.snackbar.error('campaign-create-failure')
-
-          return
-        }
-
-        this.props.snackbar.show(`Updated ${data.name}`, 'campaign-create-success')
-        this.props.router.push(`/campaign/${slug}`)
-      })
-    }
-  },
-  onReset () {
-    this.props.onDismiss()
+    this.props.onSubmit(data)
   },
   onDismissErrorBanner () {
     this.setState({
       errorHeader: null
     })
   },
-  inputSize (value) {
-    if (!value || value.length < 14) return 15
-    return value.length + 2
-  },
   render () {
-    if (!this.props.open) return null
-    const { onReset, onAvatarChange, onAvatarError, onDismissErrorBanner, inputSize } = this
-    const { campaign } = this.props
-    const { avatar, name, purpose, clientName, links } = this.state
     return (
       <Form className='relative' data-id='edit-campaign-form' onSubmit={this.onSubmit} ref={(form) => { this.form = form }}>
-        <ValidationBanner error={this.state.errorHeader} onDismiss={onDismissErrorBanner} />
+        <ValidationBanner error={this.state.errorHeader} onDismiss={this.onDismissErrorBanner} />
         <div className='px4 py6 center border-bottom border-gray80'>
-          <EditableAvatar className='ml2' avatar={avatar} onChange={onAvatarChange} onError={onAvatarError} menuTop={-50}>
+          <EditableAvatar className='ml2' avatar={this.state.avatar} onChange={this.onAvatarChange} onError={this.onAvatarError} menuTop={-50}>
             <div className='bg-gray60 center rounded mx-auto' style={{height: '110px', width: '110px', lineHeight: '110px'}}>
-              { avatar ? <img src={avatar} width='100%' height='100%' /> : <CameraIcon className='svg-icon-xl' /> }
+              { this.state.avatar ? <img src={this.state.avatar} width='100%' height='100%' /> : <CameraIcon className='svg-icon-xl' /> }
             </div>
           </EditableAvatar>
           <div>
@@ -147,8 +118,8 @@ const EditCampaign = withSnackbar(React.createClass({
               placeholder='Campaign name'
               type='text'
               name='name'
-              value={name}
-              size={inputSize(name)}
+              value={this.state.name}
+              size={inputSize(this.state.name)}
               onChange={this.onFieldChange}
               validations={['required']} />
           </div>
@@ -164,7 +135,7 @@ const EditCampaign = withSnackbar(React.createClass({
                 data-id='client-input'
                 name='clientName'
                 placeholder='Client'
-                value={clientName}
+                value={this.state.clientName}
                 onSelect={this.onAutocomplete}
                 onChange={this.onFieldChange}
               />
@@ -179,7 +150,7 @@ const EditCampaign = withSnackbar(React.createClass({
                 type='text'
                 rows='5'
                 name='purpose'
-                value={purpose}
+                value={this.state.purpose}
                 placeholder='Key Message'
                 onChange={this.onFieldChange}
                 data-id='key-message-input'
@@ -188,14 +159,14 @@ const EditCampaign = withSnackbar(React.createClass({
           </FormSection>
 
           <FormSection label='Links' addLinkText='Add another link' addLinkId='add-link-button' onAdd={this.addLink}>
-            {links.map((link, index) => (
+            {this.state.links.map((link, index) => (
               <FormField icon={<WebsiteIcon />} key={index}>
                 <Input
                   className='input flex-auto placeholder-gray60'
                   data-id={`link-input-${index}`}
                   name={`links.${index}.url`}
                   type='text'
-                  value={links[index].url || undefined}
+                  value={link.url || undefined}
                   placeholder='Links'
                   onChange={this.onFieldChange}
                   validations={['url']} />
@@ -205,13 +176,80 @@ const EditCampaign = withSnackbar(React.createClass({
         </div>
         <div className='p4 right'>
           <Button className='btn bg-completed white right' data-id='save-campaign-button' disabled={false}>
-            {campaign ? 'Save Changes' : 'Create Campaign'}
+            {this.props.campaign ? 'Save Changes' : 'Create Campaign'}
           </Button>
-          <button className='btn bg-transparent gray40 right mr2' onClick={onReset}>Cancel</button>
+          <button className='btn bg-transparent gray40 right mr2' onClick={this.props.onCancel}>Cancel</button>
         </div>
       </Form>
     )
   }
 }))
 
-export default Modal(withRouter(EditCampaign))
+const EditCampaignForm = withRouter(withSnackbar(React.createClass({
+  propTypes: {
+    campaign: PropTypes.object.isRequired
+  },
+
+  onSubmit (details) {
+    update.call({ _id: this.props.campaign._id, ...details }, (error) => {
+      if (error) {
+        console.log(error)
+        this.props.snackbar.error('campaign-update-failure')
+
+        return
+      }
+
+      this.props.snackbar.show(`Updated ${details.name}`, 'campaign-update-success')
+      this.props.onDismiss()
+    })
+  },
+
+  onDelete () {
+
+  },
+
+  render () {
+    return (
+      <EditCampaign
+        campaign={this.props.campaign}
+        onSubmit={this.onSubmit}
+        onDelete={this.onDelete}
+        onCancel={this.props.onDismiss}
+       />
+    )
+  }
+})))
+
+const CreateCampaignForm = withRouter(withSnackbar(React.createClass({
+  propTypes: {
+
+  },
+
+  onSubmit (details) {
+    create.call(details, (error, slug) => {
+      if (error) {
+        console.log(error)
+        this.props.snackbar.error('campaign-create-failure')
+
+        return
+      }
+
+      this.props.snackbar.show(`Created ${details.name}`, 'campaign-create-success')
+      this.props.router.push(`/campaign/${slug}`)
+      this.props.onDismiss()
+    })
+  },
+
+  render () {
+    return (
+      <EditCampaign
+        onSubmit={this.onSubmit}
+        onCancel={this.props.onDismiss}
+       />
+    )
+  }
+})))
+
+export const EditCampaignModal = Modal(EditCampaignForm)
+
+export const CreateCampaignModal = Modal(CreateCampaignForm)

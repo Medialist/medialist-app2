@@ -8,12 +8,14 @@ const Tag = (props) => {
       className='inline-block bg-gray10 pointer rounded mr1 mb1 select-none'
       style={{height: 28, lineHeight: 1.5, ...style}}
       onClick={onClick}>
-      <div
-        style={{fontWeight: 800, transform: 'scale(1.5)'}}
-        className='inline-block px2 py1 gray40 f-xxs semibold'
-        onClick={() => onRemove(props)}>
-        &times;
-      </div>
+      {onRemove && (
+        <div
+          style={{fontWeight: 800, transform: 'scale(1.5)'}}
+          className='inline-block px2 py1 gray40 f-xxs semibold'
+          onClick={() => onRemove(props)}>
+          &times;
+        </div>
+      )}
       {children}
     </div>
   )
@@ -21,7 +23,7 @@ const Tag = (props) => {
 
 Tag.propTypes = {
   onClick: PropTypes.func,
-  onRemove: PropTypes.func.isRequired,
+  onRemove: PropTypes.func,
   style: PropTypes.object,
   children: PropTypes.node
 }

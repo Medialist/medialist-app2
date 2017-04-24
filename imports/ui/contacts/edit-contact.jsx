@@ -18,10 +18,9 @@ import withSnackbar from '../snackbar/with-snackbar'
 
 const EditContact = withSnackbar(React.createClass({
   propTypes: {
-    open: PropTypes.bool,
     contact: PropTypes.object,
     onSubmit: PropTypes.func.isRequired,
-    onDismiss: PropTypes.func.isRequired,
+    onCancel: PropTypes.func.isRequired,
     onDelete: PropTypes.func
   },
 
@@ -176,7 +175,6 @@ const EditContact = withSnackbar(React.createClass({
 
   render () {
     const { onAvatarChange, onAvatarError, onAddJob, onAddEmail, onAddPhone, onAddSocial, inputSize, onScrollChange, onDismissErrorBanner } = this
-    const { onDismiss } = this.props
     const { name, avatar, outlets, emails, phones, socials, fixHeaderPosition } = this.state
     return (
       <Form data-id='edit-contact-form' className='relative' onSubmit={this.onSubmit} ref={(form) => { this.form = form }}>
@@ -309,7 +307,7 @@ const EditContact = withSnackbar(React.createClass({
         <div className='flex items-center p4 bg-white border-top border-gray80'>
           {this.props.onDelete && <button className='flex-none btn bg-transparent not-interested' onClick={this.props.onDelete}>Delete Contact</button>}
           <div className='flex-auto right-align'>
-            <button className='btn bg-transparent gray40 mr2' onClick={onDismiss}>Cancel</button>
+            <button className='btn bg-transparent gray40 mr2' onClick={this.props.onCancel}>Cancel</button>
             <Button className='btn bg-completed white' data-id='edit-contact-form-submit-button' disabled={false}>Save Changes</Button>
           </div>
         </div>
@@ -320,8 +318,6 @@ const EditContact = withSnackbar(React.createClass({
 
 const EditContactForm = withSnackbar(React.createClass({
   propTypes: {
-    open: PropTypes.bool.isRequired,
-    onDismiss: PropTypes.func.isRequired,
     contact: PropTypes.object.isRequired
   },
 
@@ -334,7 +330,7 @@ const EditContactForm = withSnackbar(React.createClass({
       }
 
       this.props.snackbar.show(`Updated ${details.name.split(' ')[0]}`, 'contact-update-success')
-      this.props.onDismiss(id)
+      this.props.onDismiss()
     })
   },
 
@@ -345,11 +341,10 @@ const EditContactForm = withSnackbar(React.createClass({
   render () {
     return (
       <EditContact
-        open={this.props.open}
         contact={this.props.contact}
         onSubmit={this.onSubmit}
         onDelete={this.onDelete}
-        onDismiss={this.props.onDismiss}
+        onCancel={this.props.onDismiss}
        />
     )
   }
@@ -357,8 +352,6 @@ const EditContactForm = withSnackbar(React.createClass({
 
 const CreateContactForm = withSnackbar(React.createClass({
   propTypes: {
-    open: PropTypes.bool.isRequired,
-    onDismiss: PropTypes.func.isRequired,
     prefill: PropTypes.object
   },
 
@@ -371,17 +364,16 @@ const CreateContactForm = withSnackbar(React.createClass({
       }
 
       this.props.snackbar.show(`Created ${details.name.split(' ')[0]}`, 'contact-create-success')
-      this.props.onDismiss(id)
+      this.props.onDismiss()
     })
   },
 
   render () {
     return (
       <EditContact
-        open={this.props.open}
         contact={this.props.prefill}
         onSubmit={this.onSubmit}
-        onDismiss={this.props.onDismiss}
+        onCancel={this.props.onDismiss}
        />
     )
   }

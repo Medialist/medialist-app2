@@ -31,21 +31,21 @@ const ContactPage = withSnackbar(React.createClass({
 
   getInitialState () {
     return {
-      editContactOpen: false,
+      editContactModalOpen: false,
       addToCampaignOpen: false
     }
   },
 
   componentDidMount () {
     const { location: { pathname, query }, router } = this.props
-    if (query && query.editContactOpen) {
-      this.setState({ editContactOpen: true })
+    if (query && query.editContactModalOpen) {
+      this.setState({ editContactModalOpen: true })
       router.replace(pathname)
     }
   },
 
-  toggleEditContact () {
-    this.setState((s) => ({ editContactOpen: !s.editContactOpen }))
+  toggleEditContactModal () {
+    this.setState((s) => ({ editContactModalOpen: !s.editContactModalOpen }))
   },
 
   toggleAddToCampaign () {
@@ -71,7 +71,7 @@ const ContactPage = withSnackbar(React.createClass({
 
   render () {
     const { contact, campaigns, campaign, user, masterlists, needToKnows, loading } = this.props
-    const { editContactOpen, addToCampaignOpen } = this.state
+    const { editContactModalOpen, addToCampaignOpen } = this.state
     if (!contact) return null
     return (
       <div>
@@ -83,7 +83,7 @@ const ContactPage = withSnackbar(React.createClass({
               contact={contact}
               user={user}
               masterlists={masterlists}
-              onEditClick={this.toggleEditContact}
+              onEditClick={this.toggleEditContactModal}
               onAddToCampaignClick={this.toggleAddToCampaign}
             />
           </div>
@@ -104,8 +104,8 @@ const ContactPage = withSnackbar(React.createClass({
           </div>
         </div>
         <EditContactModal
-          open={editContactOpen}
-          onDismiss={this.toggleEditContact}
+          open={editContactModalOpen}
+          onDismiss={this.toggleEditContactModal}
           contact={contact} />
         <AddContactsToCampaigns
           title={`Add ${contact.name.split(' ')[0]} to a Campaign`}

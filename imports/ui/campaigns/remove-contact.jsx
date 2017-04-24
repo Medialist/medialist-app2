@@ -6,10 +6,8 @@ import withSnackbar from '../snackbar/with-snackbar'
 
 const RemoveContact = withSnackbar(React.createClass({
   propTypes: {
-    open: PropTypes.bool,
     contacts: PropTypes.array.isRequired,
-    campaign: PropTypes.object.isRequired,
-    onDismiss: PropTypes.func.isRequired
+    campaign: PropTypes.object.isRequired
   },
 
   onDelete (event) {
@@ -28,15 +26,8 @@ const RemoveContact = withSnackbar(React.createClass({
       }
 
       this.props.snackbar.show(`Removed ${this.props.contacts.length} Contact${this.props.contacts.length > 1 ? 's' : ''} from Campaign`, 'batch-remove-contacts-from-campaign-success')
+      this.props.onDismiss()
     })
-
-    this.props.onDismiss(true)
-  },
-
-  onCancel (event) {
-    event.preventDefault()
-
-    this.props.onDismiss(false)
   },
 
   render () {
@@ -49,7 +40,7 @@ const RemoveContact = withSnackbar(React.createClass({
 
         <div className='flex items-center p4 bg-white border-top border-gray80'>
           <div className='flex-auto right-align'>
-            <button className='btn bg-transparent gray40 mr2' onClick={this.onCancel} data-id='cancel-remove-contact-from-campaign-button'>No, Keep Contact{this.props.contacts.length > 1 ? 's' : ''}</button>
+            <button className='btn bg-transparent gray40 mr2' onClick={this.props.onDismiss} data-id='cancel-remove-contact-from-campaign-button'>No, Keep Contact{this.props.contacts.length > 1 ? 's' : ''}</button>
             <button className='btn bg-not-interested white' onClick={this.onDelete} data-id='confirm-remove-contact-from-campaign-button'>Yes, Remove Contact{this.props.contacts.length > 1 ? 's' : ''}</button>
           </div>
         </div>
