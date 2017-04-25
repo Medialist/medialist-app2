@@ -13,7 +13,7 @@ const test = {
     t.page.authenticate()
       .register()
   },
-/*
+
   'Should create new campaign': function (t) {
     const campaignsPage = t.page.main()
       .navigateToCampaigns(t)
@@ -169,7 +169,7 @@ const test = {
     t.page.main().logout()
     t.end()
   },
-*/
+
   'Should add tags to campaigns from toast menu': function (t) {
     const tag = faker.hacker.noun()
 
@@ -190,10 +190,9 @@ const test = {
       t.page.main().waitForSnackbarMessage('campaigns-batch-tag-success')
 
       campaignsPage
-        .navigateToMyCampaigns()
+        .navigateToTag(tag)
 
       campaignsPage.section.campaignTable
-        .searchFor(campaign.name)
         .assertInSearchResults(campaign)
 
       done()

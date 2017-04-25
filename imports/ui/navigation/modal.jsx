@@ -26,15 +26,19 @@ export default (Component, opts = {}) => {
 
   class Modal extends React.Component {
     onDismiss (event) {
-      event.preventDefault()
-      this.props.onDismiss(event)
+      if (event) {
+        event.preventDefault()
+      }
+
+      if (this.props.onDismiss) {
+        this.props.onDismiss(event)
+      }
     }
 
     onBackgroundClick (event) {
       // ignore bubbled events
       if (event.target === event.currentTarget) {
-        event.preventDefault()
-        this.props.onDismiss(event)
+        this.onDismiss(event)
       }
     }
 
@@ -45,6 +49,9 @@ export default (Component, opts = {}) => {
 
       // Prevent scrolling of the page when modal is open. Modal has internal scrollable section
       const style = 'height:100%; overflow:hidden'
+      const componentProps = Object.assign({}, this.props, {
+        onDismiss: this.onDismiss.bind(this)
+      })
 
       return (
         <div>
@@ -54,7 +61,7 @@ export default (Component, opts = {}) => {
               <div className='absolute right-0 pointer px4 py3 gray20 hover-fill-trigger' style={{zIndex: 3}} onClick={(event) => this.onDismiss(event)}>
                 <Close />
               </div>
-              <Component {...this.props} />
+              <Component {...componentProps} />
             </div>
           </div>
         </div>
@@ -64,7 +71,7 @@ export default (Component, opts = {}) => {
 
   Modal.propTypes = {
     open: PropTypes.bool.isRequired,
-    onDismiss: PropTypes.func.isRequired
+    onDismiss: PropTypes.func
   }
 
   return Modal
