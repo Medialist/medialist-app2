@@ -68,6 +68,13 @@ module.exports = (prefix) => ({
       }
 
       return this
+    },
+    assertHasNoPostsForCampaign: function (campaign) {
+      const selector = `[data-campaign~='${campaign._id}']`
+
+      this.assert.elementNotPresent(selector)
+
+      return this
     }
   }]
 })

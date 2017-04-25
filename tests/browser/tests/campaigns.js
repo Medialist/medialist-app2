@@ -221,6 +221,12 @@ const test = {
         .assertNoResults()
         .assertNotInSearchResults(campaign)
 
+      const dashboardPage = t.page.dashboard()
+        .navigate()
+
+      dashboardPage.section.activityFeed
+        .assertHasNoPostsForCampaign(campaign)
+
       done()
     })
 
