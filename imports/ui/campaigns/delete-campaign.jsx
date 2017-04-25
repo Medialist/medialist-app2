@@ -34,6 +34,7 @@ const DeleteCampaigns = withSnackbar(React.createClass({
         <div className='center px4 pt4 pb6'>
           <h3 className='normal f-xl m4'>Are you sure you want to <strong>delete {this.props.campaigns.length > 1 ? 'these campaigns' : 'this campaign'}</strong>?</h3>
           <AvatarList items={this.props.campaigns} maxAvatars={10} className='my4 px4' />
+          <h4 className='normal f-xl'>Deleted campaigns can't be retrieved.</h4>
         </div>
 
         <div className='flex items-center p4 bg-white border-top border-gray80'>
