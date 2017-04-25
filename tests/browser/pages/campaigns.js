@@ -50,6 +50,13 @@ module.exports = {
             .click('@addTagsToCampaign')
 
           return this
+        },
+        openDeleteCampaignsModal: function () {
+          this
+            .waitForElementVisible('@deleteCampaigns')
+            .click('@deleteCampaigns')
+
+          return this
         }
       }]
     },
@@ -102,6 +109,29 @@ module.exports = {
           this
             .waitForElementVisible('@saveButton')
             .click('@saveButton')
+
+          return this
+        },
+        cancel: function () {
+          this
+            .waitForElementVisible('@cancelButton')
+            .click('@cancelButton')
+
+          return this
+        }
+      }]
+    },
+    deleteCampaignsModal: {
+      selector: '[data-id=delete-campaigns-modal]',
+      elements: {
+        confirmButton: '[data-id=confirm-delete-campaigns-button]',
+        cancelButton: '[data-id=cancel-delete-campaigns-button]'
+      },
+      commands: [{
+        confirm: function (tag) {
+          this
+            .waitForElementVisible('@confirmButton')
+            .click('@confirmButton')
 
           return this
         },

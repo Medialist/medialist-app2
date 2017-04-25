@@ -5,7 +5,8 @@ module.exports = {
   elements: {
     searchInput: '[data-id=search-campaigns-input]',
     searchResults: '[data-id=campaigns-table-search-results]',
-    unfilteredList: '[data-id=campaigns-table-unfiltered]'
+    unfilteredList: '[data-id=campaigns-table-unfiltered]',
+    noResults: '[data-id=campaign-table-empty]'
   },
   commands: [{
     searchFor: function (query) {
@@ -42,6 +43,18 @@ module.exports = {
       const selector = `[data-item='${campaign._id}']`
 
       this.assert.visible(selector)
+
+      return this
+    },
+    assertNotInSearchResults: function (campaign) {
+      const selector = `[data-item='${campaign._id}']`
+
+      this.assert.elementNotPresent(selector)
+
+      return this
+    },
+    assertNoResults: function () {
+      this.assert.visible('@noResults')
 
       return this
     }

@@ -168,6 +168,13 @@ export const MedialistCreateSchema = new SimpleSchema({
   }
 })
 
+export const MedialistRemoveSchema = new SimpleSchema({
+  _ids: {
+    type: [String],
+    regEx: SimpleSchema.RegEx.Id
+  }
+})
+
 export const MedialistAddTeamMatesSchema = new SimpleSchema({
   _id: {
     type: String,

@@ -60,7 +60,7 @@ const CampaignsTable = React.createClass({
     const { sort, onSortChange, campaigns, selections, loading, contactSlug } = this.props
 
     if (!loading && !campaigns.length) {
-      return <p className='p4 mb2 f-xl semibold center'>No campaigns yet</p>
+      return <p className='p4 mb2 f-xl semibold center' data-id='campaign-table-empty'>No campaigns found</p>
     }
 
     const selectionsById = selections.reduce((memo, selection) => {

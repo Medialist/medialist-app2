@@ -4,21 +4,32 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import escapeRegExp from 'lodash.escaperegexp'
 import createUniqueSlug, { checkAllSlugsExist } from '/imports/lib/slug'
-import Campaigns, { MedialistSchema, MedialistUpdateSchema, MedialistCreateSchema, MedialistAddTeamMatesSchema, MedialistRemoveTeamMateSchema } from './campaigns'
+import Campaigns, { MedialistSchema, MedialistUpdateSchema, MedialistCreateSchema, MedialistRemoveSchema, MedialistAddTeamMatesSchema, MedialistRemoveTeamMateSchema } from './campaigns'
 import Clients from '/imports/api/clients/clients'
 import Uploadcare from '/imports/lib/uploadcare'
 import Posts from '/imports/api/posts/posts'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import getAvatar from '/imports/lib/get-avatar'
+import MasterLists from '/imports/api/master-lists/master-lists'
+import Contacts from '/imports/api/contacts/contacts'
 
 function findOrCreateClientRef (name) {
-  if (!name) return null
+  if (!name) {
+    return null
+  }
+
   const nameRegex = new RegExp('^' + escapeRegExp(name) + '$', 'i')
   const client = Clients.findOne({ name: nameRegex })
+
   if (client) {
-    return {_id: client._id, name: client.name}
+    return {
+      _id: client._id,
+      name: client.name
+    }
   }
+
   const _id = Clients.insert({ name })
+
   return {_id, name}
 }
 
@@ -161,6 +172,65 @@ export const create = new ValidatedMethod({
     })
 
     return slug
+  }
+})
+
+export const remove = new ValidatedMethod({
+  name: 'Campaigns/remove',
+  validate: MedialistRemoveSchema.validator(),
+  run ({ _ids }) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    _ids.forEach(_id => {
+      const slug = Campaigns.findOne({
+        _id: _id
+      }, {
+        fields: {
+          'slug': 1
+        }
+      })
+      .slug
+
+      Campaigns.remove({
+        _id: _id
+      })
+
+      // Remove campaigns from user favourites
+      Meteor.users.update({}, {
+        $pull: {
+          'myCampaigns': {
+            '_id': _id
+          }
+        }
+      }, {
+        multi: true
+      })
+
+      // Remove campaigns from campaign lists
+      MasterLists.update({}, {
+        $pull: {
+          items: _id
+        }
+      }, {
+        multi: true
+      })
+
+      // Remove campaigns from contacts
+      Contacts.update({}, {
+        $pull: {
+          'campaigns': slug
+        }
+      }, {
+        multi: true
+      })
+
+      // remove all posts relating to campagins
+      Posts.remove({
+        'campaigns.$._id': _id
+      })
+    })
   }
 })
 
