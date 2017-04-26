@@ -3,19 +3,19 @@
 module.exports = {
   selector: '[data-id=contacts-table]',
   elements: {
-    searchContactsInput: '[data-id=search-contacts-input]',
-    contactsTableSearchResults: '[data-id=contacts-table-search-results]',
-    contactsTableUnfiltered: '[data-id=contacts-table-unfiltered]',
+    searchInput: '[data-id=search-contacts-input]',
+    searchResults: '[data-id=contacts-table-search-results]',
+    unfilteredList: '[data-id=contacts-table-unfiltered]',
     noResults: '[data-id=contacts-table-empty]'
   },
   commands: [{
     searchFor: function (query) {
       this
-        .waitForElementVisible('@searchContactsInput')
-        .clearValue('@searchContactsInput')
-        .waitForElementVisible('@contactsTableUnfiltered')
-        .setValue('@searchContactsInput', query)
-        .waitForElementVisible('@contactsTableSearchResults')
+        .waitForElementVisible('@searchInput')
+        .clearValue('@searchInput')
+        .waitForElementVisible('@unfilteredList')
+        .setValue('@searchInput', query)
+        .waitForElementVisible('@searchResults')
 
       return this
     },

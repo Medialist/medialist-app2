@@ -184,6 +184,7 @@ export const remove = new ValidatedMethod({
     }
 
     _ids.forEach(_id => {
+      // get slugs from ids
       const slug = Campaigns.findOne({
         _id: _id
       }, {
@@ -198,7 +199,9 @@ export const remove = new ValidatedMethod({
       })
 
       // Remove campaigns from user favourites
-      Meteor.users.update({}, {
+      Meteor.users.update({
+        'myCampaigns._id': _id
+      }, {
         $pull: {
           'myCampaigns': {
             '_id': _id
@@ -209,7 +212,9 @@ export const remove = new ValidatedMethod({
       })
 
       // Remove campaigns from campaign lists
-      MasterLists.update({}, {
+      MasterLists.update({
+        type: 'Campaigns'
+      }, {
         $pull: {
           items: _id
         }
@@ -226,9 +231,30 @@ export const remove = new ValidatedMethod({
         multi: true
       })
 
-      // remove all posts relating to campagins
+      // remove campaign from posts
+      Posts.update({
+        campaigns: {
+          _id: _id
+        }
+      }, {
+        $pull: {
+          campaigns: {
+            _id: _id
+          }
+        }
+      }, {
+        multi: true
+      })
+
+      // remove posts with no campaigns that are not need-to-know
       Posts.remove({
-        'campaigns.$._id': _id
+        type: {
+          $nin: ['NeedToKnowPost']
+        },
+        campaigns: {
+          $exists: true,
+          $size: 0
+        }
       })
     })
   }

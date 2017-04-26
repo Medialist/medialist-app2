@@ -17,7 +17,7 @@ import createSearchContainer from './search-container'
 import AddContactsToCampaign from './add-contacts-to-campaign'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import CountTag, { AvatarTag } from '../tags/tag'
-import { batchFavouriteContacts, batchRemoveContacts } from '/imports/api/contacts/methods'
+import { batchFavouriteContacts } from '/imports/api/contacts/methods'
 import { batchAddTags } from '/imports/api/tags/methods'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import withSnackbar from '../snackbar/with-snackbar'
@@ -27,6 +27,7 @@ import AddToMasterList from '../master-lists/add-to-master-list'
 import NearBottomContainer from '../navigation/near-bottom-container'
 import SubscriptionLimitContainer from '../navigation/subscription-limit-container'
 import Loading from '../lists/loading'
+import DeleteContactsModal from './delete-contacts-modal'
 
 /*
  * ContactPage and ContactsPageContainer
@@ -46,10 +47,11 @@ const ContactsPage = withSnackbar(React.createClass({
     return {
       selections: [],
       isDropdownOpen: false,
-      addContactModalOpen: false,
-      AddContactsToCampaignModalOpen: false,
-      addTagsOpen: false,
-      addToMasterListsOpen: false
+      addContactModal: false,
+      addContactsToCampaignModal: false,
+      addTagsModal: false,
+      addToMasterListsModal: false,
+      deleteContactsModal: false
     }
   },
 
@@ -67,10 +69,6 @@ const ContactsPage = withSnackbar(React.createClass({
 
   onSelectionsChange (selections) {
     this.setState({ selections })
-  },
-
-  onDeselectAllClick () {
-    this.setState({ selections: [] })
   },
 
   onFavouriteAll () {
@@ -115,18 +113,18 @@ const ContactsPage = withSnackbar(React.createClass({
     })
   },
 
-  onDeleteAllClick () {
-    const { snackbar } = this.props
-    const { selections } = this.state
-    const contactIds = selections.map((s) => s._id)
-    batchRemoveContacts.call({contactIds}, (err, res) => {
-      if (err) {
-        console.log(err)
-        return snackbar.error('contacts-batch-delete-contacts-failure')
-      }
-      this.setState({ selections: [] })
-      snackbar.show(`Deleted ${contactIds.length} ${contactIds.length === 1 ? 'contacts' : 'contact'}`, 'contacts-batch-delete-contacts-success')
+  clearSelection () {
+    this.setState({
+      selections: []
     })
+  },
+
+  showModal (modal) {
+    this.hideModals()
+
+    this.setState((s) => ({
+      [modal]: true
+    }))
   },
 
   onDropdownArrowClick () {
@@ -141,8 +139,19 @@ const ContactsPage = withSnackbar(React.createClass({
     this.setState({ isDropdownOpen: false })
   },
 
-  toggleAddContactModal () {
-    this.setState({ addContactModalOpen: !this.state.addContactModalOpen })
+  clearSelectionAndHideModals () {
+    this.clearSelection()
+    this.hideModals()
+  },
+
+  hideModals () {
+    this.setState({
+      addContactModal: false,
+      addContactsToCampaignModal: false,
+      addTagsModal: false,
+      addToMasterListsModal: false,
+      deleteContactsModal: false
+    })
   },
 
   onCampaignRemove (campaign) {
@@ -176,7 +185,7 @@ const ContactsPage = withSnackbar(React.createClass({
               onChange={onMasterListChange} />
           </div>
           <div className='flex-none bg-white center px4' style={{width: 240}}>
-            <button className='btn bg-completed white mr1' onClick={this.toggleAddContactModal} data-id='new-contact-button'>New Contact</button>
+            <button className='btn bg-completed white mr1' onClick={() => this.showModal('addContactModal')} data-id='new-contact-button'>New Contact</button>
             <Dropdown>
               <button className='btn bg-completed white' onClick={this.onDropdownArrowClick} data-id='contact-actions-button'>
                 <Arrow direction='down' style={{ marginLeft: 0 }} />
@@ -233,40 +242,45 @@ const ContactsPage = withSnackbar(React.createClass({
         </div>
         { loading && <div className='center p4'><Loading /></div> }
         <ContactsActionsToast
-          contacts={selections}
-          onCampaignClick={() => this.setState({AddContactsToCampaignModalOpen: true})}
-          onSectorClick={() => this.setState({addToMasterListsOpen: true})}
-          onFavouriteClick={this.onFavouriteAll}
-          onTagClick={() => this.setState({addTagsOpen: true})}
-          onDeleteClick={this.onDeleteAllClick}
-          onDeselectAllClick={this.onDeselectAllClick} />
+          contacts={this.state.selections}
+          onCampaignClick={() => this.showModal('addContactsToCampaignModal')}
+          onSectorClick={() => this.showModal('addToMasterListsModal')}
+          onFavouriteClick={() => this.onFavouriteAll()}
+          onTagClick={() => this.showModal('addTagsModal')}
+          onDeleteClick={() => this.showModal('deleteContactsModal')}
+          onDeselectAllClick={() => this.clearSelection()} />
         <CreateContactModal
-          onDismiss={this.toggleAddContactModal}
-          open={this.state.addContactModalOpen} />
+          onDismiss={() => this.hideModals()}
+          open={this.state.addContactModal} />
         <AddContactsToCampaign
           title='Add these Contacts to a Campaign'
-          contacts={selections}
-          onDismiss={() => this.setState({AddContactsToCampaignModalOpen: false})}
-          onSubmit={() => this.setState({AddContactsToCampaignModalOpen: false})}
-          open={this.state.AddContactsToCampaignModalOpen}>
+          contacts={this.state.selections}
+          onDismiss={() => this.hideModals()}
+          open={this.state.addContactsToCampaignModal}>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddContactsToCampaign>
         <AddTagsModal
           type='Contacts'
-          open={this.state.addTagsOpen}
-          onDismiss={() => this.setState({addTagsOpen: false})}
+          open={this.state.addTagsModal}
+          onDismiss={() => this.hideModals()}
           onUpdateTags={this.onTagAll}
           title='Tag these Contacts'>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddTagsModal>
         <AddToMasterList
           type='Contacts'
-          open={this.state.addToMasterListsOpen}
-          onDismiss={() => this.setState({addToMasterListsOpen: false})}
+          open={this.state.addToMasterListsModal}
+          onDismiss={() => this.hideModals()}
           onSave={this.onAddAllToMasterLists}
           title='Add to a Contact List'>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddToMasterList>
+        <DeleteContactsModal
+          open={this.state.deleteContactsModal}
+          contacts={this.state.selections}
+          onDelete={() => this.clearSelectionAndHideModals()}
+          onDismiss={() => this.hideModals()}
+        />
       </div>
     )
   }

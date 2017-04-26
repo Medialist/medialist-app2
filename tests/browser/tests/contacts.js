@@ -198,6 +198,33 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
 
     t.page.main().logout()
     t.end()
+  },
+
+  'Should delete contacts from toast menu': function (t) {
+    t.createDomain(['contact'], (contact, done) => {
+      const contactsPage = t.page.contacts()
+        .navigate()
+
+      contactsPage.section.contactTable
+        .searchFor(contact.name)
+        .selectRow(0)
+
+      contactsPage.section.toast.openDeleteContactsModal()
+
+      contactsPage.section.deleteContactsModal
+        .confirm()
+
+      t.page.main().waitForSnackbarMessage('batch-delete-contacts-success')
+
+      contactsPage.section.contactTable
+        .assertNoResults()
+        .assertNotInSearchResults(contact)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   }
 }
 

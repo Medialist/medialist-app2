@@ -19,7 +19,7 @@ import campaignsSearchQueryContainer from './campaign-search-query-container'
 import CampaignLink from '../campaigns/campaign-link'
 import CampaignListLink from '../master-lists/campaign-list-link'
 import TagLink from './tag-link'
-import DeleteCampaignsModal from './delete-campaign'
+import DeleteCampaignsModal from './delete-campaigns-modal'
 
 const CampaignsPage = withSnackbar(withRouter(React.createClass({
   propTypes: {
@@ -62,25 +62,39 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
     this.setState({ selections })
   },
 
-  onDeselectAllClick () {
+  clearSelectionAndHideModals () {
+    this.clearSelection()
+    this.hideModals()
+  },
+
+  clearSelection () {
     this.setState({
       selections: []
     })
   },
 
-  toggleModal (modal) {
+  showModal (modal) {
+    this.hideModals()
+
     this.setState((s) => ({
-      [modal]: !s[modal]
+      [modal]: true
     }))
   },
 
+  hideModals () {
+    this.setState({
+      createCampaignModal: false,
+      addTagsToCampaignsModal: false,
+      addToCampaignListsModal: false,
+      deleteCampaignsModal: false
+    })
+  },
+
   onViewSelection () {
-    const { router } = this.props
-    const { selections } = this.state
-    router.push({
+    this.props.router.push({
       pathname: '/contacts',
       query: {
-        campaign: selections.map((s) => s.slug)
+        campaign: this.state.selections.map((s) => s.slug)
       }
     })
   },
@@ -149,10 +163,10 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
     if (!loading && campaignCount === 0) {
       return (<div>
         <CampaignListEmpty
-          onAddCampaign={() => this.toggleModal('createCampaignModal')}
+          onAddCampaign={() => this.showModal('createCampaignModal')}
         />
         <CreateCampaignModal
-          onDismiss={() => this.toggleModal('createCampaignModal')}
+          onDismiss={() => this.hideModals()}
           open={this.state.createCampaignModal}
         />
       </div>)
@@ -170,11 +184,11 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
               onChange={this.onMasterListChange} />
           </div>
           <div className='flex-none bg-white center px4'>
-            <button className='btn bg-completed white mx4' onClick={() => this.toggleModal('createCampaignModal')} data-id='create-campaign-button'>New Campaign</button>
+            <button className='btn bg-completed white mx4' onClick={() => this.showModal('createCampaignModal')} data-id='create-campaign-button'>New Campaign</button>
           </div>
         </div>
         <CreateCampaignModal
-          onDismiss={() => this.toggleModal('createCampaignModal')}
+          onDismiss={() => this.hideModals()}
           open={this.state.createCampaignModal} />
         <CampaignSearch {...{
           onTermChange,
@@ -192,15 +206,15 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
         <CampaignsActionsToast
           campaigns={selections}
           onViewClick={this.onViewSelection}
-          onSectorClick={() => this.toggleModal('addToCampaignListsModal')}
+          onSectorClick={() => this.showModal('addToCampaignListsModal')}
           onFavouriteClick={this.onFavouriteAll}
-          onTagClick={() => this.toggleModal('addTagsToCampaignsModal')}
-          onDeleteClick={() => this.toggleModal('deleteCampaignsModal')}
-          onDeselectAllClick={this.onDeselectAllClick} />
+          onTagClick={() => this.showModal('addTagsToCampaignsModal')}
+          onDeleteClick={() => this.showModal('deleteCampaignsModal')}
+          onDeselectAllClick={() => this.clearSelection()} />
         <AddTagsModal
           type='Campaigns'
           open={this.state.addTagsToCampaignsModal}
-          onDismiss={() => this.toggleModal('addTagsToCampaignsModal')}
+          onDismiss={() => this.hideModals()}
           onUpdateTags={this.onTagAll}
           title='Tag these Campaigns'>
           <AbbreviatedAvatarList items={this.state.selections} shape='square' />
@@ -208,7 +222,7 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
         <AddToMasterList
           type='Campaigns'
           open={this.state.addToCampaignListsModal}
-          onDismiss={() => this.toggleModal('addToCampaignListsModal')}
+          onDismiss={() => this.hideModals()}
           onSave={this.onAddAllToMasterLists}
           title='Add to a Campaign List'>
           <AbbreviatedAvatarList
@@ -217,12 +231,10 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
         </AddToMasterList>
         <DeleteCampaignsModal
           open={this.state.deleteCampaignsModal}
-          onDismiss={() => {
-            this.onDeselectAllClick()
-            this.toggleModal('deleteCampaignsModal')
-          }}
           campaigns={this.state.selections}
-          title='Add to a Campaign List' />
+          onDelete={() => this.clearSelectionAndHideModals()}
+          onDismiss={() => this.hideModals()}
+        />
       </div>
     )
   }

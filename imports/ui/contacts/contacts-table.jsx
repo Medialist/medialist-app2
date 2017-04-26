@@ -73,7 +73,7 @@ const ContactsTable = React.createClass({
     const { sort, onSortChange, contacts, selections, campaign, loading } = this.props
 
     if (!loading && !contacts.length) {
-      return <p className='pt2 pb5 mt0 f-xl semibold center'>No contacts found</p>
+      return <p className='pt2 pb5 mt0 f-xl semibold center' data-id='contacts-table-empty'>No contacts found</p>
     }
 
     const selectionsById = selections.reduce((memo, selection) => {
@@ -144,10 +144,10 @@ const ContactsTable = React.createClass({
                     <ContactLink contact={contact} campaign={campaign} />
                   </td>
                   <td className='left-align'>
-                    {(outlets && outlets.length) ? outlets[0].value : <span className='gray60'>No title</span>}
+                    {(outlets && outlets.length && outlets[0].value) ? outlets[0].value : <span className='gray60'>No title</span>}
                   </td>
                   <td className='left-align'>
-                    {(outlets && outlets.length) ? outlets[0].label : <span className='gray60'>No outlet</span>}
+                    {(outlets && outlets.length && outlets[0].label) ? outlets[0].label : <span className='gray60'>No outlet</span>}
                   </td>
                   <td className='left-align'>
                     <DisplayEmail emails={emails} />

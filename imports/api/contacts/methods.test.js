@@ -3,6 +3,8 @@ import { resetDatabase } from 'meteor/xolvio:cleaner'
 import assert from 'assert'
 import Contacts from './contacts'
 import Campaigns from '../campaigns/campaigns'
+import Posts from '../posts/posts'
+import MasterLists from '../master-lists/master-lists'
 import {
   addContactsToCampaign,
   removeContactsFromCampaign,
@@ -200,14 +202,12 @@ describe('batchRemoveContacts', function () {
   })
 
   it('should validate the parameters', function () {
-    assert.throws(() => batchRemoveContacts.validate({}), /Contact ids is required/)
-    assert.throws(() => batchRemoveContacts.validate({ contactIds: 'foo' }), /must be an array/)
-    assert.doesNotThrow(() => batchRemoveContacts.validate({ contactIds: ['kKz46qgWmbGHrznJC'] }))
+    assert.throws(() => batchRemoveContacts.validate({}), /Ids is required/)
+    assert.throws(() => batchRemoveContacts.validate({ _ids: 'foo' }), /must be an array/)
+    assert.doesNotThrow(() => batchRemoveContacts.validate({ _ids: ['kKz46qgWmbGHrznJC'] }))
   })
 
-  // TODO: it should use a deleted flag
-  // TODO: it should it remove them from plenty other places too.
-  it('should remove the contact from Contacts and all users myContacts array', function () {
+  it('should remove the contact from Contacts and all other places', function () {
     const contacts = Array(3).fill(0).map((_, index) => ({
       _id: `${index}`,
       slug: `${index}`,
@@ -224,9 +224,59 @@ describe('batchRemoveContacts', function () {
     users[1].myContacts = [{_id: '2'}, {_id: '0'}]
     users.forEach((u) => Meteor.users.insert(u))
 
+    MasterLists.insert({
+      type: 'Contacts',
+      name: 'A master list',
+      items: [
+        contacts[0]._id,
+        contacts[1]._id,
+        contacts[2]._id
+      ]
+    })
+
+    Campaigns.insert({
+      name: 'A campaign',
+      contacts: {
+        [contacts[0].slug]: 'to-contact',
+        [contacts[1].slug]: 'to-contact',
+        [contacts[2].slug]: 'to-contact'
+      }
+    })
+
+    Posts.insert({
+      name: 'A post with contact 0',
+      type: 'FeedbackPost',
+      contacts: [{
+        _id: contacts[0]._id
+      }]
+    })
+    Posts.insert({
+      name: 'A post with contact 1',
+      type: 'FeedbackPost',
+      contacts: [{
+        _id: contacts[1]._id
+      }]
+    })
+    Posts.insert({
+      name: 'A post with contact 0 1 and 2',
+      type: 'CoveragePost',
+      contacts: [{
+        _id: contacts[0]._id
+      }, {
+        _id: contacts[1]._id
+      }, {
+        _id: contacts[2]._id
+      }]
+    })
+    Posts.insert({
+      name: 'An unrelated post',
+      type: 'CampaignPost',
+      contacts: []
+    })
+
     const userId = 'jake'
-    const contactIds = ['0', '2']
-    batchRemoveContacts.run.call({userId}, {contactIds})
+    const _ids = ['0', '2']
+    batchRemoveContacts.run.call({userId}, {_ids})
 
     const user0 = Meteor.users.findOne({_id: '0'})
     assert.equal(user0.myContacts.length, 1)
@@ -234,6 +284,22 @@ describe('batchRemoveContacts', function () {
 
     const user1 = Meteor.users.findOne({_id: '1'})
     assert.equal(user1.myContacts.length, 0)
+
+    const list = MasterLists.findOne({name: 'A master list'})
+    assert.equal(list.items.length, 1)
+    assert.deepEqual(list.items, ['1'])
+
+    const campaign = Campaigns.findOne({name: 'A campaign'})
+    assert.equal(Object.keys(campaign.contacts).length, 1)
+    assert.deepEqual(campaign.contacts, {'1': 'to-contact'})
+
+    assert.equal(Posts.findOne({name: 'A post with contact 0'}), null)
+    assert.ok(Posts.findOne({name: 'A post with contact 1'}))
+    assert.ok(Posts.findOne({name: 'An unrelated post'}))
+
+    const postWithAllContacts = Posts.findOne({name: 'A post with contact 0 1 and 2'})
+    assert.equal(postWithAllContacts.contacts.length, 1)
+    assert.deepEqual(postWithAllContacts.contacts, [{_id: '1'}])
   })
 })
 

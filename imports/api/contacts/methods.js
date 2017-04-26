@@ -7,6 +7,7 @@ import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import Campaigns from '../campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
 import Contacts, { ContactSchema, ContactCreateSchema } from './contacts'
+import MasterLists from '/imports/api/master-lists/master-lists'
 
 /*
  * Add mulitple Contacts to 1 Campaign
@@ -164,24 +165,94 @@ export const batchFavouriteContacts = new ValidatedMethod({
 
 /*
  * Delete an array of contacts by id
- * Remove from all users myContacts array before deleting.
- * TODO: refactor to use a deletedAt flag instead of removing.
  */
 export const batchRemoveContacts = new ValidatedMethod({
   name: 'batchRemoveContacts',
 
   validate: new SimpleSchema({
-    contactIds: { type: [String] }
+    _ids: { type: [String] }
   }).validator(),
 
-  run ({contactIds}) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
-    Meteor.users.update(
-      { 'myContacts._id': { $in: contactIds } },
-      { $pull: { myContacts: { _id: { $in: contactIds } } } },
-      { multi: true }
-    )
-    return Contacts.remove({ _id: { $in: contactIds } })
+  run ({ _ids }) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    _ids.forEach(_id => {
+      // get slugs from ids
+      const slug = Contacts.findOne({
+        _id: _id
+      }, {
+        fields: {
+          'slug': 1
+        }
+      })
+      .slug
+
+      // remove contact
+      Contacts.remove({
+        _id: _id
+      })
+
+      // remove contacts from users favourites
+      Meteor.users.update({
+        'myContacts._id': _id
+      }, {
+        $pull: {
+          myContacts: {
+            _id: _id
+          }
+        }
+      }, {
+        multi: true
+      })
+
+      // Remove contacts from contact lists
+      MasterLists.update({
+        type: 'Contacts'
+      }, {
+        $pull: {
+          items: _id
+        }
+      }, {
+        multi: true
+      })
+
+      // Remove contacts from campaigns
+      Campaigns.update({}, {
+        $unset: {
+          [`contacts.${slug}`]: ''
+        }
+      }, {
+        multi: true
+      })
+
+      // remove contact from all posts
+      Posts.update({
+        contacts: {
+          _id: _id
+        }
+      }, {
+        $pull: {
+          contacts: {
+            _id: _id
+          }
+        }
+      }, {
+        multi: true
+      })
+
+      // remove contact related posts with no contacts
+      Posts.remove({
+        type: {
+          $in: ['FeedbackPost', 'CoveragePost', 'NeedToKnowPost']
+        },
+        contacts: {
+          $exists: true,
+          $size: 0
+        }
+      })
+    })
   }
 })
 

@@ -1,13 +1,15 @@
 import { Meteor } from 'meteor/meteor'
 import assert from 'assert'
 import Faker from 'faker'
-import { create, update, addTeamMates, removeTeamMate } from './methods'
+import { create, update, remove, addTeamMates, removeTeamMate } from './methods'
 import Campaigns from './campaigns'
 import { batchFavouriteCampaigns } from './methods'
 import Clients from '/imports/api/clients/clients'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
+import MasterLists from '../master-lists/master-lists'
+import Posts from '../posts/posts'
 
-describe('Contacts/batchFavouriteCampaigns', function () {
+describe('Campaigns/batchFavouriteCampaigns', function () {
   beforeEach(function () {
     resetDatabase()
   })
@@ -47,7 +49,7 @@ describe('Contacts/batchFavouriteCampaigns', function () {
   })
 })
 
-describe('Medialist update method', function () {
+describe('Campaign update method', function () {
   beforeEach(function () {
     resetDatabase()
   })
@@ -117,7 +119,7 @@ describe('Medialist update method', function () {
   })
 })
 
-describe('Medialist create method', function () {
+describe('Campaign create method', function () {
   beforeEach(function () {
     resetDatabase()
   })
@@ -186,7 +188,7 @@ describe('Medialist create method', function () {
   })
 })
 
-describe('Medialist add team members method', function () {
+describe('Campaign add team members method', function () {
   beforeEach(function () {
     resetDatabase()
   })
@@ -239,7 +241,7 @@ describe('Medialist add team members method', function () {
   })
 })
 
-describe('Medialist remove team members method', function () {
+describe('Campaign remove team members method', function () {
   beforeEach(function () {
     resetDatabase()
   })
@@ -277,5 +279,106 @@ describe('Medialist remove team members method', function () {
     removeTeamMate.run.call({ userId: userIds[0] }, payload)
     const updatedCampaign = Campaigns.findOne(campaignId)
     assert.equal(updatedCampaign.team.length, 2)
+  })
+})
+
+describe('Campaign remove method', function () {
+  beforeEach(function () {
+    resetDatabase()
+  })
+
+  it('should require the user to be logged in', function () {
+    assert.throws(() => remove.run.call({}, {}), /You must be logged in/)
+  })
+
+  it('should validate the parameters', function () {
+    assert.throws(() => remove.validate({}), /Ids is required/)
+    assert.throws(() => remove.validate({ _ids: 'foo' }), /must be an array/)
+    assert.doesNotThrow(() => remove.validate({ _ids: ['kKz46qgWmbGHrznJC'] }))
+  })
+
+  it('should remove the campaign from Campaigns and all other places', function () {
+    const campaigns = Array(3).fill(0).map((_, index) => ({
+      _id: `${index}`,
+      slug: `${index}`,
+      name: `${index}`
+    }))
+    campaigns.forEach((c) => Campaigns.insert(c))
+    const users = Array(2).fill(0).map((_, index) => ({
+      _id: `${index}`,
+      name: `${index}`
+    }))
+    users[0].myCampaigns = [{_id: '0'}, {_id: '1'}]
+    users[1].myCampaigns = [{_id: '2'}, {_id: '0'}]
+    users.forEach((u) => Meteor.users.insert(u))
+
+    MasterLists.insert({
+      type: 'Campaigns',
+      name: 'A master list',
+      items: [
+        campaigns[0]._id,
+        campaigns[1]._id,
+        campaigns[2]._id
+      ]
+    })
+
+    Posts.insert({
+      name: 'A post with campaign 0',
+      type: 'FeedbackPost',
+      campaigns: [{
+        _id: campaigns[0]._id
+      }]
+    })
+    Posts.insert({
+      name: 'A post with campaign 1',
+      type: 'FeedbackPost',
+      campaigns: [{
+        _id: campaigns[1]._id
+      }]
+    })
+    Posts.insert({
+      name: 'A post with campaigns 0 1 and 2',
+      type: 'CoveragePost',
+      campaigns: [{
+        _id: campaigns[0]._id
+      }, {
+        _id: campaigns[1]._id
+      }, {
+        _id: campaigns[2]._id
+      }]
+    })
+    Posts.insert({
+      name: 'An unrelated post',
+      type: 'NeedToKnowPost',
+      contacts: [{_id: 'a-contact'}],
+      campaigns: []
+    })
+
+    const userId = 'jake'
+    const _ids = ['0', '2']
+    remove.run.call({userId}, {_ids})
+
+    const user0 = Meteor.users.findOne({_id: '0'})
+    assert.equal(user0.myCampaigns.length, 1)
+    assert.deepEqual(user0.myCampaigns[0], {_id: '1'})
+
+    const user1 = Meteor.users.findOne({_id: '1'})
+    assert.equal(user1.myCampaigns.length, 0)
+
+    const list = MasterLists.findOne({name: 'A master list'})
+    assert.equal(list.items.length, 1)
+    assert.deepEqual(list.items, ['1'])
+
+    assert.equal(Campaigns.findOne({_id: '0'}), null)
+    assert.ok(Campaigns.findOne({_id: '1'}))
+    assert.equal(Campaigns.findOne({_id: '2'}), null)
+
+    assert.equal(Posts.findOne({name: 'A post with campaign 0'}), null)
+    assert.ok(Posts.findOne({name: 'A post with campaign 1'}))
+    assert.ok(Posts.findOne({name: 'An unrelated post'}))
+
+    const postWithAllCampaigns = Posts.findOne({name: 'A post with campaigns 0 1 and 2'})
+    assert.equal(postWithAllCampaigns.campaigns.length, 1)
+    assert.deepEqual(postWithAllCampaigns.campaigns, [{_id: '1'}])
   })
 })
