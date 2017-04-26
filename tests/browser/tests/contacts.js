@@ -110,6 +110,35 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
 
     t.page.main().logout()
     t.end()
+  },
+
+  'Should add to contact list from toast menu': function (t) {
+    t.createDomain(['contactList', 'contact'], (contactList, contact, done) => {
+      const contactsPage = t.page.contacts()
+        .navigate()
+
+      contactsPage.section.contactTable
+        .searchFor(contact.name)
+        .selectRow(0)
+
+      contactsPage.section.toast.openAddToContactListsModal()
+      contactsPage.section.contactListsModal
+        .selectList(contactList)
+        .save()
+
+      t.page.main().waitForSnackbarMessage('contacts-batch-add-to-contact-list-success')
+
+      contactsPage
+        .navigateToContactList(contactList)
+
+      contactsPage.section.contactTable
+        .assertInSearchResults(contact)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   }
 }
 

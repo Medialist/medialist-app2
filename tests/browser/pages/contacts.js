@@ -10,7 +10,8 @@ const campaignSelectorModal = require('../components/campaign-selector-modal')
 module.exports = {
   url: 'http://localhost:3000/contacts',
   elements: {
-    newContactButton: '[data-id=new-contact-button]'
+    newContactButton: '[data-id=new-contact-button]',
+    myContactsButton: '[data-slug=my]'
   },
   sections: {
     editContactForm: editContactForm,
@@ -68,6 +69,25 @@ module.exports = {
     deleteContactsModal: deleteModal('delete-contacts-modal')
   },
   commands: [{
+    navigateToContactList: function (contactList) {
+      this.api.url('http://localhost:3000/contacts?list=' + contactList.slug)
+      this.waitForElementVisible(this.section.contactTable.selector)
 
+      return this
+    },
+    navigateToMyContacts: function () {
+      this.navigate()
+        .waitForElementVisible('@myContactsButton')
+        .click('@myContactsButton')
+        .waitForElementVisible(this.section.contactTable.selector)
+
+      return this
+    },
+    navigateToTag: function (tag) {
+      this.api.url('http://localhost:3000/contacts?tag=' + tag)
+      this.waitForElementVisible(this.section.contactTable.selector)
+
+      return this
+    }
   }]
 }

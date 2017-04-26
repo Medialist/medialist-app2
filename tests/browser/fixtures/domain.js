@@ -70,10 +70,18 @@ function campaignList () {
   }
 }
 
+function contactList () {
+  return {
+    type: 'Contacts',
+    name: faker.company.catchPhraseAdjective()
+  }
+}
+
 module.exports = {
   campaign,
   contact,
   user,
   labelValue,
-  campaignList
+  campaignList,
+  contactList
 }

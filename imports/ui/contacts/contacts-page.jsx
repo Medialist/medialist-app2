@@ -109,9 +109,9 @@ const ContactsPage = withSnackbar(React.createClass({
     batchAddToMasterLists.call({type: 'Contacts', slugs, masterListIds}, (err, res) => {
       if (err) {
         console.log(err)
-        return snackbar.error('contacts-batch-add-to-contacts-list-failure')
+        return snackbar.error('contacts-batch-add-to-contact-list-failure')
       }
-      snackbar.show(`Added ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'} to ${masterLists.length} ${masterLists.length === 1 ? 'Contact List' : 'Contact Lists'}`, 'contacts-batch-add-to-contacts-list-success')
+      snackbar.show(`Added ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'} to ${masterLists.length} ${masterLists.length === 1 ? 'Contact List' : 'Contact Lists'}`, 'contacts-batch-add-to-contact-list-success')
     })
   },
 

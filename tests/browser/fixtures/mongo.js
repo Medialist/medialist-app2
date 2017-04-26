@@ -38,6 +38,7 @@ module.exports = (url) => {
     findUser: findOne.bind(null, db, 'users'),
     findContact: findOne.bind(null, db, 'contacts'),
     findContacts: findMany.bind(null, db, 'contacts'),
-    findCampaignList: findOne.bind(null, db, 'MasterLists')
+    findCampaignList: findOne.bind(null, db, 'MasterLists'),
+    findContactList: findOne.bind(null, db, 'MasterLists')
   }
 }
