@@ -139,7 +139,7 @@ const ContactsTable = React.createClass({
                 updatedBy
               } = contact
               return (
-                <SelectableRow data={contact} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id} data-id={`contacts-table-row-${index}`}>
+                <SelectableRow data={contact} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id} data-id={`contacts-table-row-${index}`} data-item={_id}>
                   <td className='left-align'>
                     <ContactLink contact={contact} campaign={campaign} />
                   </td>

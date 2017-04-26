@@ -80,6 +80,36 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
 
     t.page.main().logout()
     t.end()
+  },
+
+  'Should add contacts to a campaign from toast menu': function (t) {
+    t.createDomain(['contact', 'campaign'], (contact, campaign, done) => {
+      const contactsPage = t.page.main()
+        .navigateToContacts(t)
+
+      contactsPage.section.contactTable
+        .searchFor(contact.name)
+        .selectRow(0)
+
+      contactsPage.section.toast.openAddContactsToCampaignModal()
+
+      contactsPage.section.campaignSelectorModal
+        .searchForCampaign(campaign)
+        .selectSearchResult(campaign)
+
+      t.page.main().waitForSnackbarMessage('batch-add-contacts-to-campaign-success')
+
+      const campaignContactsPage = t.page.campaignContacts()
+        .navigate(campaign)
+
+      campaignContactsPage.section.contactTable
+        .assertInSearchResults(contact)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   }
 }
 

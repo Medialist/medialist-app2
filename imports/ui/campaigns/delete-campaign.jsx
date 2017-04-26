@@ -39,8 +39,8 @@ const DeleteCampaigns = withSnackbar(React.createClass({
 
         <div className='flex items-center p4 bg-white border-top border-gray80'>
           <div className='flex-auto right-align'>
-            <button className='btn bg-transparent gray40 mr2' onClick={this.props.onDismiss} data-id='cancel-delete-campaigns-button'>No, Keep Campaign{this.props.campaigns.length > 1 ? 's' : ''}</button>
-            <button className='btn bg-not-interested white' onClick={this.onDelete} data-id='confirm-delete-campaigns-button'>Yes, Delete Campaign{this.props.campaigns.length > 1 ? 's' : ''}</button>
+            <button className='btn bg-transparent gray40 mr2' onClick={this.props.onDismiss} data-id='cancel-delete-button'>No, Keep Campaign{this.props.campaigns.length > 1 ? 's' : ''}</button>
+            <button className='btn bg-not-interested white' onClick={this.onDelete} data-id='confirm-delete-button'>Yes, Delete Campaign{this.props.campaigns.length > 1 ? 's' : ''}</button>
           </div>
         </div>
       </div>

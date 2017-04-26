@@ -2,6 +2,9 @@
 
 const editCampaignForm = require('../forms/edit-campaign-form')
 const campaignTable = require('../forms/campaign-table')
+const addtoListsModal = require('../forms/add-to-lists-modal')
+const tagSelectorModal = require('../forms/tag-selector-modal')
+const deleteModal = require('../forms/delete-modal')
 
 module.exports = {
   url: 'http://localhost:3000/campaigns',
@@ -60,90 +63,9 @@ module.exports = {
         }
       }]
     },
-    campaignListsModal: {
-      selector: '[data-id=add-to-list-modal]',
-      elements: {
-        saveButton: '[data-id=add-to-list-modal-save-button]',
-        cancelButton: '[data-id=add-to-list-modal-cancel-button]',
-        manageListsButton: '[data-id=add-to-list-modal-manage-lists-button]'
-      },
-      commands: [{
-        selectCampaignList: function (campaignList) {
-          const selector = `[data-id=master-list-button][data-item='${campaignList._id}']`
-
-          this
-            .waitForElementVisible(selector)
-            .click(selector)
-
-          return this
-        },
-        save: function () {
-          this
-            .waitForElementVisible('@saveButton')
-            .click('@saveButton')
-
-          return this
-        }
-      }]
-    },
-    tagSelectorModal: {
-      selector: '[data-id=tag-selector-modal]',
-      elements: {
-        searchInput: '[data-id=tag-search-input]',
-        createNewTag: '[data-id=create-new-tag]',
-        saveButton: '[data-id=tag-selector-modal-save-button]',
-        cancelButton: '[data-id=tag-selector-modal-cancel-button]'
-      },
-      commands: [{
-        addTag: function (tag) {
-          this
-            .waitForElementVisible('@searchInput')
-            .clearValue('@searchInput')
-            .setValue('@searchInput', tag)
-            .waitForElementVisible('@createNewTag')
-            .click('@createNewTag')
-
-          return this
-        },
-        save: function () {
-          this
-            .waitForElementVisible('@saveButton')
-            .click('@saveButton')
-
-          return this
-        },
-        cancel: function () {
-          this
-            .waitForElementVisible('@cancelButton')
-            .click('@cancelButton')
-
-          return this
-        }
-      }]
-    },
-    deleteCampaignsModal: {
-      selector: '[data-id=delete-campaigns-modal]',
-      elements: {
-        confirmButton: '[data-id=confirm-delete-campaigns-button]',
-        cancelButton: '[data-id=cancel-delete-campaigns-button]'
-      },
-      commands: [{
-        confirm: function (tag) {
-          this
-            .waitForElementVisible('@confirmButton')
-            .click('@confirmButton')
-
-          return this
-        },
-        cancel: function () {
-          this
-            .waitForElementVisible('@cancelButton')
-            .click('@cancelButton')
-
-          return this
-        }
-      }]
-    }
+    campaignListsModal: addtoListsModal('add-to-list-modal'),
+    tagSelectorModal: tagSelectorModal('tag-selector-modal'),
+    deleteCampaignsModal: deleteModal('delete-campaigns-modal')
   },
   commands: [{
     navigateToCampaignList: function (campaignList) {

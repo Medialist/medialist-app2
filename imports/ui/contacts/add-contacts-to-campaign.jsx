@@ -47,7 +47,7 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
         <div className='mb6'>{children}</div>
         <div className='py3 pl4 flex border-top border-bottom border-gray80'>
           <SearchBlueIcon className='flex-none' />
-          <input ref={(input) => input && input.focus()} className='flex-auto f-sm pa2 mx2' placeholder='Search campaigns' onChange={onChange} style={{outline: 'none'}} onKeyPress={onKeyPress} value={term} data-id='add-contacts-to-campaign-search-input' />
+          <input ref={(input) => input && input.focus()} className='flex-auto f-sm pa2 mx2' placeholder='Search campaigns' onChange={onChange} style={{outline: 'none'}} onKeyPress={onKeyPress} value={term} data-id='search-input' />
         </div>
         <div style={{height: '413px', overflowY: 'auto'}}>
           <ResultList onAdd={onAdd} results={campaigns} searching={Boolean(term)} />
@@ -130,7 +130,9 @@ const AddContactsToCampaignsContainer = withSnackbar(React.createClass({
   }
 }))
 
-export default Modal(AddContactsToCampaignsContainer)
+export default Modal(AddContactsToCampaignsContainer, {
+  'data-id': 'campaign-selector-modal'
+})
 
 const CampaignResult = (props) => {
   const {style, avatar, name, client, updatedAt} = props
@@ -164,7 +166,7 @@ const ResultList = React.createClass({
     const { results, onAdd } = this.props
 
     return (
-      <div data-id={`campaign-list${this.props.searching ? '-search-results' : ''}`}>
+      <div data-id={`${this.props.searching ? 'search-results' : 'unfiltered'}`}>
         {results.map((res) => {
           const {slug, contacts} = res
           const contactCount = Object.keys(contacts).length

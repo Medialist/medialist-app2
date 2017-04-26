@@ -52,14 +52,14 @@ const test = {
 
       const contactPage = t.page.contact()
       const infoSection = contactPage.section.info
-      const addToCampaign = contactPage.section.addToCampaign
+      const campaignSelectorModal = contactPage.section.campaignSelectorModal
 
       infoSection.waitForElementVisible('@editContactCampaignsButton')
       infoSection.click('@editContactCampaignsButton')
 
-      contactPage.waitForElementVisible(addToCampaign.selector)
+      contactPage.waitForElementVisible(campaignSelectorModal.selector)
 
-      addToCampaign
+      campaignSelectorModal
         .searchForCampaign(campaign)
         .selectSearchResult(campaign)
 

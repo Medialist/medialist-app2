@@ -5,7 +5,8 @@ module.exports = {
   elements: {
     searchContactsInput: '[data-id=search-contacts-input]',
     contactsTableSearchResults: '[data-id=contacts-table-search-results]',
-    contactsTableUnfiltered: '[data-id=contacts-table-unfiltered]'
+    contactsTableUnfiltered: '[data-id=contacts-table-unfiltered]',
+    noResults: '[data-id=contacts-table-empty]'
   },
   commands: [{
     searchFor: function (query) {
@@ -43,6 +44,25 @@ module.exports = {
     },
     isNotInResults: function (contact) {
       this.assert.elementNotPresent(`[data-id=contact-link][data-contact='${contact._id}']`)
+    },
+    assertInSearchResults: function (contact) {
+      const selector = `[data-item='${contact._id}']`
+
+      this.assert.visible(selector)
+
+      return this
+    },
+    assertNotInSearchResults: function (contact) {
+      const selector = `[data-item='${contact._id}']`
+
+      this.assert.elementNotPresent(selector)
+
+      return this
+    },
+    assertNoResults: function () {
+      this.assert.visible('@noResults')
+
+      return this
     }
   }]
 }

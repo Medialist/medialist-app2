@@ -156,6 +156,7 @@ const CampaignContactsPage = React.createClass({
           />
         </div>
         <ContactsActionsToast
+          campaign={campaign}
           contacts={selections}
           onCampaignClick={() => console.log('TODO: add contacts to campaign')}
           onSectorClick={() => console.log('TODO: add/edit sectors')}

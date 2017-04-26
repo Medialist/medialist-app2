@@ -3,6 +3,7 @@
 const editContactForm = require('../forms/edit-contact-form')
 const activityFeed = require('../forms/activity-feed')
 const postBox = require('../forms/post-box')
+const campaignSelectorModal = require('../forms/campaign-selector-modal')
 
 module.exports = {
   url: 'http://localhost:3000/contacts',
@@ -19,35 +20,7 @@ module.exports = {
         editContactTagsButton: '[data-id=edit-contact-tags-button]'
       }
     },
-    addToCampaign: {
-      selector: '[data-id=add-contacts-to-campaign-form]',
-      elements: {
-        searchInput: '[data-id=add-contacts-to-campaign-search-input]',
-        searchResults: '[data-id=campaign-list-search-results]',
-        addButton: '[data-id=add-button]'
-      },
-      commands: [{
-        searchForCampaign: function (campaign) {
-          this.waitForElementVisible('@searchInput')
-          this.clearValue('@searchInput')
-          this.setValue('@searchInput', campaign.name)
-
-          this.waitForElementVisible('@searchResults')
-
-          return this
-        },
-        selectSearchResult: function (campaign) {
-          this.waitForElementPresent('@addButton')
-          this.moveToElement('@addButton', 1, 1)
-          this.waitForElementVisible('@addButton')
-          this.click('@addButton')
-
-          this.waitForElementNotPresent(this.selector)
-
-          return this
-        }
-      }]
-    },
+    campaignSelectorModal: campaignSelectorModal,
     editContactForm: editContactForm,
     activityFeed: activityFeed('contact'),
     postBox: postBox

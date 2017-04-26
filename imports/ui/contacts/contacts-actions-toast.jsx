@@ -11,6 +11,7 @@ import {
 
 const ContactsActionsToast = React.createClass({
   propTypes: {
+    campaign: PropTypes.object,
     contacts: PropTypes.array.isRequired,
     onCampaignClick: PropTypes.func.isRequired,
     onSectorClick: PropTypes.func.isRequired,
@@ -22,6 +23,7 @@ const ContactsActionsToast = React.createClass({
 
   render () {
     const {
+      campaign,
       contacts,
       onCampaignClick,
       onSectorClick,
@@ -52,8 +54,8 @@ const ContactsActionsToast = React.createClass({
               <Tooltip title='Add Tags'>
                 <TagIcon className='svg-icon-lg px3 pointer gray60 hover-blue' onClick={() => onTagClick(contacts)} data-id='contact-actions-add-tags' />
               </Tooltip>
-              <Tooltip title='Remove Contacts'>
-                <DeleteIcon className='svg-icon-lg px3 pointer gray60 hover-red' onClick={() => onDeleteClick(contacts)} data-id='contact-actions-remove' />
+              <Tooltip title={`${campaign ? 'Remove' : 'Delete'} Contacts`}>
+                <DeleteIcon className='svg-icon-lg px3 pointer gray60 hover-red' onClick={() => onDeleteClick(contacts)} data-id={`contact-actions-${campaign ? 'remove' : 'delete'}`} />
               </Tooltip>
             </div>
             <div className='flex-none'>
