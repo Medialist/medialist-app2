@@ -80,9 +80,9 @@ const ContactsPage = withSnackbar(React.createClass({
     batchFavouriteContacts.call({contactSlugs}, (err, res) => {
       if (err) {
         console.log(err)
-        return snackbar.error('contacts-batch-favourite-contacts-failure')
+        return snackbar.error('batch-favourite-contacts-failure')
       }
-      snackbar.show(`Favourited ${contactSlugs.length} ${contactSlugs.length === 1 ? 'contact' : 'contacts'}`, 'contacts-batch-favourite-contacts-success')
+      snackbar.show(`Favourited ${contactSlugs.length} ${contactSlugs.length === 1 ? 'contact' : 'contacts'}`, 'batch-favourite-contacts-success')
     })
   },
 
@@ -94,9 +94,9 @@ const ContactsPage = withSnackbar(React.createClass({
     batchAddTags.call({type: 'Contacts', slugs, names}, (err, res) => {
       if (err) {
         console.log(err)
-        return snackbar.error('contacts-batch-tag-contacts-failure')
+        return snackbar.error('batch-tag-contacts-failure')
       }
-      snackbar.show(`Add ${names.length} ${names.length === 1 ? 'tag' : 'tags'} to ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'}`, 'contacts-batch-tag-contacts-success')
+      snackbar.show(`Add ${names.length} ${names.length === 1 ? 'tag' : 'tags'} to ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'}`, 'batch-tag-contacts-success')
     })
   },
 

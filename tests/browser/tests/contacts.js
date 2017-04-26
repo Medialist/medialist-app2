@@ -139,6 +139,65 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
 
     t.page.main().logout()
     t.end()
+  },
+
+  'Should favourite contacts from toast menu': function (t) {
+    t.createDomain(['contact'], (contact, done) => {
+      const contactsPage = t.page.contacts()
+        .navigate()
+
+      contactsPage.section.contactTable
+        .searchFor(contact.name)
+        .selectRow(0)
+
+      contactsPage.section.toast.favouriteContacts()
+
+      t.page.main().waitForSnackbarMessage('batch-favourite-contacts-success')
+
+      contactsPage
+        .navigateToMyContacts()
+
+      contactsPage.section.contactTable
+        .searchFor(contact.name)
+        .assertInSearchResults(contact)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should add tags to contacts from toast menu': function (t) {
+    const tag = faker.hacker.noun()
+
+    t.createDomain(['contact'], (contact, done) => {
+      const contactsPage = t.page.contacts()
+        .navigate()
+
+      contactsPage.section.contactTable
+        .searchFor(contact.name)
+        .selectRow(0)
+
+      contactsPage.section.toast.openAddTagsToContactsModal()
+
+      contactsPage.section.tagSelectorModal
+        .addTag(tag)
+        .save()
+
+      t.page.main().waitForSnackbarMessage('batch-tag-contacts-success')
+
+      contactsPage
+        .navigateToTag(tag)
+
+      contactsPage.section.contactTable
+        .assertInSearchResults(contact)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   }
 }
 
