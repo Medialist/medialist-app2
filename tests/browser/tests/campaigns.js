@@ -124,7 +124,7 @@ const test = {
 
       campaignsPage.section.toast.openAddToCampaignListsModal()
       campaignsPage.section.campaignListsModal
-        .selectCampaignList(campaignList)
+        .selectList(campaignList)
         .save()
 
       t.page.main().waitForSnackbarMessage('campaigns-batch-add-to-campaign-list-success')

@@ -1,9 +1,9 @@
 'use strict'
 
-const editContactForm = require('../forms/edit-contact-form')
-const activityFeed = require('../forms/activity-feed')
-const postBox = require('../forms/post-box')
-const campaignSelectorModal = require('../forms/campaign-selector-modal')
+const editContactForm = require('../components/edit-contact-form')
+const activityFeed = require('../components/activity-feed')
+const postBox = require('../components/post-box')
+const campaignSelectorModal = require('../components/campaign-selector-modal')
 
 module.exports = {
   url: 'http://localhost:3000/contacts',

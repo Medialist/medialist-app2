@@ -1,6 +1,6 @@
 'use strict'
 
-const contactTable = require('../forms/contact-table')
+const contactTable = require('../components/contact-table')
 
 module.exports = {
   url: 'http://localhost:3000/campaigns',

@@ -1,10 +1,10 @@
 'use strict'
 
-const editCampaignForm = require('../forms/edit-campaign-form')
-const campaignTable = require('../forms/campaign-table')
-const addtoListsModal = require('../forms/add-to-lists-modal')
-const tagSelectorModal = require('../forms/tag-selector-modal')
-const deleteModal = require('../forms/delete-modal')
+const editCampaignForm = require('../components/edit-campaign-form')
+const campaignTable = require('../components/campaign-table')
+const addtoListsModal = require('../components/add-to-lists-modal')
+const tagSelectorModal = require('../components/tag-selector-modal')
+const deleteModal = require('../components/delete-modal')
 
 module.exports = {
   url: 'http://localhost:3000/campaigns',

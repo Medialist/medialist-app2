@@ -1,11 +1,11 @@
 'use strict'
 
-const editContactForm = require('../forms/edit-contact-form')
-const contactTable = require('../forms/contact-table')
-const addtoListsModal = require('../forms/add-to-lists-modal')
-const tagSelectorModal = require('../forms/tag-selector-modal')
-const deleteModal = require('../forms/delete-modal')
-const campaignSelectorModal = require('../forms/campaign-selector-modal')
+const editContactForm = require('../components/edit-contact-form')
+const contactTable = require('../components/contact-table')
+const addtoListsModal = require('../components/add-to-lists-modal')
+const tagSelectorModal = require('../components/tag-selector-modal')
+const deleteModal = require('../components/delete-modal')
+const campaignSelectorModal = require('../components/campaign-selector-modal')
 
 module.exports = {
   url: 'http://localhost:3000/contacts',

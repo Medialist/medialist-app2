@@ -1,8 +1,8 @@
 'use strict'
 
-const editCampaignForm = require('../forms/edit-campaign-form')
-const activityFeed = require('../forms/activity-feed')
-const postBox = require('../forms/post-box')
+const editCampaignForm = require('../components/edit-campaign-form')
+const activityFeed = require('../components/activity-feed')
+const postBox = require('../components/post-box')
 
 module.exports = {
   url: 'http://localhost:3000/campaigns',
