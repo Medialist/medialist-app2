@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import Modal from '../navigation/modal'
 import AvatarList from '../lists/avatar-list'
 import withSnackbar from '../snackbar/with-snackbar'

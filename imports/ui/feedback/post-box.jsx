@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import CampaignSelector from './campaign-selector'
 import StatusMap from '/imports/api/contacts/status'
 import StatusLabel from './status-label'

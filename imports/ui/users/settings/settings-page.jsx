@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor'
 import MasterLists from '/imports/api/master-lists/master-lists'
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import { Link } from 'react-router'
 import { createContainer } from 'meteor/react-meteor-data'
 import { SettingsIcon, ChevronRight } from '../../images/icons'

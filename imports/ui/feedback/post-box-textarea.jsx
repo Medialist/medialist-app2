@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import findUrl from '/imports/lib/find-url'
 import LinkPreview from './link-preview'
 import { Meteor } from 'meteor/meteor'

@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import { ChevronDown } from '../images/icons'
 import { Dropdown, DropdownMenu } from '../navigation/dropdown'
 import { SquareAvatar } from '../images/avatar'

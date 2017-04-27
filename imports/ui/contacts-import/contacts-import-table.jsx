@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from '../lists/dropdown-menu'
 import { SelectedIcon, ChevronDown } from '../images/icons'

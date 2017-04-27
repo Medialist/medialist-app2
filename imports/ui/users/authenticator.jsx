@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import SignInPage from '../sign-in/sign-in-page'
 import OnboardingPage from './onboarding-page'
 import Loading from '../lists/loading'

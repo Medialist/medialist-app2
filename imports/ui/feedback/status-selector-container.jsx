@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import StatusSelector from './status-selector'
 import { createFeedbackPost } from '/imports/api/posts/methods'
 

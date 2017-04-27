@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import CampaignContact from './campaign-contact'
 import StatusLabel from '../feedback/status-label'
 

@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import { SortableIcon, SortedAscIcon, SortedDescIcon } from '../images/icons'
 import classnames from 'classnames/dedupe'
 

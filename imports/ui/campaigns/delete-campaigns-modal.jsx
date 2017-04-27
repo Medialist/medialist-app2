@@ -1,5 +1,6 @@
 
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import Modal from '../navigation/modal'
 import { remove } from '/imports/api/campaigns/methods'
 import AvatarList from '../lists/avatar-list'

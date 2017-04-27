@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import CampaignsFilterableList from '../campaigns/campaigns-filterable-list'
 import { Dropdown, DropdownMenu } from '../navigation/dropdown'
 import { ChevronDown } from '../images/icons'

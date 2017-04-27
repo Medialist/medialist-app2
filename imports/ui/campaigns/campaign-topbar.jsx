@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import Topbar from '../navigation/topbar'
 import NavLink from '../navigation/nav-link'
 

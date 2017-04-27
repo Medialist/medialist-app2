@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import { Select, Option } from '../navigation/select'
 import { StatusValues } from '/imports/api/contacts/status'
 import StatusLabel from './status-label'

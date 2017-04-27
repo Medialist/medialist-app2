@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import UploadcareLauncher from '../editable-avatar/uploadcare-launcher'
 import TwitterScraper from '../editable-avatar/twitter-scraper'
 import { TwitterIconGrey, UploadIcon, RemoveIcon } from '../icons'

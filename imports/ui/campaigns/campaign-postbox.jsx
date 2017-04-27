@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import ContactSelector from '../feedback/contact-selector'
 import { PostBoxButtons } from '../feedback/post-box'
 import PostBoxTextArea from '../feedback/post-box-textarea'

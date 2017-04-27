@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 
 // HOC to wrap a thing that wants to make snacks
 // Assumes you have a Snackbar component higer up the tree
