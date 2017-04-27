@@ -152,8 +152,8 @@ const ContactsPage = withSnackbar(React.createClass({
   },
 
   clearSelectionAndHideModals () {
-    this.clearSelection()
     this.hideModals()
+    this.clearSelection()
   },
 
   hideModals () {

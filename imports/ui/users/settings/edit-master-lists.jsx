@@ -76,8 +76,8 @@ const EditMasterLists = React.createClass({
   },
 
   clearSelectionAndHideModals () {
-    this.clearSelection()
     this.hideModals()
+    this.clearSelection()
   },
 
   clearSelection () {

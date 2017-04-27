@@ -11,6 +11,7 @@ module.exports = (dataId) => ({
       this
         .waitForElementVisible('@confirmButton')
         .click('@confirmButton')
+        .waitForElementNotPresent(this.selector)
 
       return this
     },
@@ -18,6 +19,7 @@ module.exports = (dataId) => ({
       this
         .waitForElementVisible('@cancelButton')
         .click('@cancelButton')
+        .waitForElementNotPresent(this.selector)
 
       return this
     }

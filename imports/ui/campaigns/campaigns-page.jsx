@@ -66,8 +66,8 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
   },
 
   clearSelectionAndHideModals () {
-    this.clearSelection()
     this.hideModals()
+    this.clearSelection()
   },
 
   clearSelection () {
