@@ -22,7 +22,7 @@ const ContactPreviewsList = (props) => {
         ))}
         {!contacts.length && (
           <Link
-            to='/contacts?editContactOpen=true'
+            to='/contacts?createContact=true'
             className='block py1 pl1 underline semibold blue'
             style={{ marginLeft: '21px' }}
             title='Create a new contact'>

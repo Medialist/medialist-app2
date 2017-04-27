@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor'
-import MasterLists from '../../../api/master-lists/master-lists'
+import MasterLists from '/imports/api/master-lists/master-lists'
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import { createContainer } from 'meteor/react-meteor-data'
@@ -7,6 +7,7 @@ import { SettingsIcon, ChevronRight } from '../../images/icons'
 import SettingsProfile from './profile'
 import CampaignsMasterLists from './campaigns-master-lists'
 import ContactsMasterLists from './contacts-master-lists'
+import withSnackbar from '../../snackbar/with-snackbar'
 
 const menuItems = [
   {label: 'Profile', slug: 'profile'},
@@ -14,7 +15,7 @@ const menuItems = [
   {label: 'Contact Lists', slug: 'contacts-master-lists'}
 ]
 
-const SettingsPage = React.createClass({
+const SettingsPage = withSnackbar(React.createClass({
   propTypes: {
     user: PropTypes.object.isRequired,
     campaignsMasterLists: PropTypes.array,
@@ -23,20 +24,41 @@ const SettingsPage = React.createClass({
   },
   getInitialState () {
     return {
-      selectedMenuItem: this.props.params.selected || 'profile'
+      selectedMenuItem: this.props.params.selected || 'profile',
+      deleteListModal: false
     }
   },
   componentWillReceiveProps (props) {
     this.setState({selectedMenuItem: props.params.selected || 'profile'})
   },
   onAddMasterList ({type, name}) {
-    Meteor.call('MasterLists/create', {type, name})
+    Meteor.call('MasterLists/create', {type, name}, (error) => {
+      const eventType = type.toLowerCase().substring(0, type.length - 1)
+
+      if (error) {
+        console.error(error)
+        this.props.snackbar.error(`create-${eventType}-list-failure`)
+      } else {
+        this.props.snackbar.show(`Created ${name}`, `create-${eventType}-list-success`)
+      }
+    })
   },
-  onUpdateMasterList ({_id, name}) {
-    Meteor.call('MasterLists/update', {_id, name})
+  onUpdateMasterList ({type, name, _id}) {
+    Meteor.call('MasterLists/update', {_id, name}, (error) => {
+      const eventType = type.toLowerCase().substring(0, type.length - 1)
+
+      if (error) {
+        console.error(error)
+        this.props.snackbar.error(`update-${eventType}-list-failure`)
+      } else {
+        this.props.snackbar.show(`Updated ${name}`, `update-${eventType}-list-success`)
+      }
+    })
   },
-  onDeleteMasterList (_id) {
-    Meteor.call('MasterLists/delete', {_id})
+  onDeleteMasterList (type, name, _id) {
+    this.setState({
+      deleteListModal: true
+    })
   },
   render () {
     const { user, campaignsMasterLists, contactsMasterLists } = this.props
@@ -67,7 +89,7 @@ const SettingsPage = React.createClass({
       </div>
     )
   }
-})
+}))
 
 export default createContainer(() => {
   return {

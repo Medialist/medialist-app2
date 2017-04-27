@@ -55,6 +55,18 @@ const ContactsPage = withSnackbar(React.createClass({
     }
   },
 
+  componentDidMount () {
+    const { location: { pathname, query }, router } = this.props
+
+    if (query && query.createContact) {
+      this.setState({
+        addContactModal: true
+      })
+
+      router.replace(pathname)
+    }
+  },
+
   onMasterListChange (selectedMasterListSlug) {
     this.props.setQuery({ selectedMasterListSlug })
   },

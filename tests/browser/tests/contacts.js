@@ -54,6 +54,8 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
         name: contact.name
       })
       .then((doc) => {
+        t.assert.urlEquals(`http://localhost:3000/contact/${doc.slug}`)
+
         assertions.contactsAreEqual(t, contact, doc)
 
         done()

@@ -268,7 +268,10 @@ export const createContact = new ValidatedMethod({
   }).validator(),
 
   run ({details}) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
     // return if a matching twitter handle already exists
     const existingContact = details.twitter && Contacts.findOne({ 'socials.label': 'Twitter', 'socials.value': details.twitter })
     if (existingContact) return existingContact
@@ -291,7 +294,7 @@ export const createContact = new ValidatedMethod({
 
     // Save the contact
     check(contact, ContactSchema)
-    const contactId = Contacts.insert(contact)
+    Contacts.insert(contact)
 
     addToMyFavourites({
       userId: this.userId,
@@ -299,7 +302,7 @@ export const createContact = new ValidatedMethod({
       updatedAt: createdAt
     })
 
-    return contactId
+    return slug
   }
 })
 

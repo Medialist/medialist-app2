@@ -7,7 +7,7 @@ const copy = 'Campaign Lists help keep your Campaigns organised. Look for them a
 
 const CampaignsMasterLists = (props) => {
   return (
-    <SettingsMasterList type={type} copy={copy}>
+    <SettingsMasterList type={type} copy={copy} data-id='campaign-lists'>
       <EditMasterLists type={type} {...props} />
     </SettingsMasterList>
   )

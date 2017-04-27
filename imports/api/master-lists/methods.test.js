@@ -142,23 +142,13 @@ describe('master-lists-delete', function () {
   })
 
   it('should not allow the deletion of an existing MasterList unless logged in', function () {
-    assert.throws(() => del.run({ _id: masterListId }), /You must be logged in/)
+    assert.throws(() => del.run({ _ids: [masterListId] }), /You must be logged in/)
   })
 
-  it('should not allow the deletion of a non-existent MasterList', function () {
-    assert.throws(() => del.run.call({ userId: 123 }, { _id: Random.id() }), /MasterList not found/)
-  })
-
-  it('should not allow the deletion of an already deleted MasterList', function () {
-    MasterLists.update({}, { $set: { deleted: new Date() } })
-    assert.throws(() => del.run.call({ userId: 123 }, { _id: masterListId }), /MasterList not found/)
-  })
-
-  it('should allow the deletion of an existing MasterList', function () {
-    del.run.call({ userId: 123 }, { _id: masterListId })
+  it('should allow the deletion of a existing MasterList', function () {
+    del.run.call({ userId: 123 }, { _ids: [masterListId] })
     const masterList = MasterLists.findOne(masterListId)
-    assert.ok(masterList)
-    assert.ok(masterList.deleted)
+    assert.strictEqual(masterList, undefined)
     assert.strictEqual(Contacts.findOne({ 'masterLists._id': masterListId }), undefined)
   })
 })

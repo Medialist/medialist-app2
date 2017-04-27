@@ -87,22 +87,35 @@ export const create = new ValidatedMethod({
 export const del = new ValidatedMethod({
   name: 'MasterLists/delete',
   validate: MasterListDelSchema.validator(),
-  run ({_id}) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
+  run ({_ids}) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
 
-    const masterList = MasterLists.findOne({ _id: _id, deleted: null })
-    if (!masterList) throw new Meteor.Error('MasterList not found')
+    _ids.forEach(_id => {
+      const masterList = MasterLists.findOne({
+        _id: _id
+      })
 
-    MasterLists.update({ _id: _id }, { $set: { deleted: new Date() } })
-
-    const refCollection = (masterList.type === 'Contacts') ? Contacts : Campaigns
-    return refCollection.update({
-      'masterLists._id': _id
-    }, {
-      $pull: {
-        masterLists: { _id: _id }
+      if (!masterList) {
+        return
       }
-    }, { multi: true })
+
+      MasterLists.remove({
+        _id: _id
+      })
+
+      const refCollection = (masterList.type === 'Contacts') ? Contacts : Campaigns
+      refCollection.update({
+        'masterLists._id': _id
+      }, {
+        $pull: {
+          masterLists: { _id: _id }
+        }
+      }, {
+        multi: true
+      })
+    })
   }
 })
 

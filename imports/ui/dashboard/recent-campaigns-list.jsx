@@ -27,7 +27,7 @@ const RecentCampaignsList = React.createClass({
             ))
             : (
               <Link
-                to='/campaigns?editCampaignOpen=true'
+                to='/campaigns?createCampaign=true'
                 className='block py1 pl1 underline semibold blue'
                 style={{ marginLeft: '21px' }}
                 title='Create a new campaign'>

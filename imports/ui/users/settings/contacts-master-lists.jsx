@@ -7,7 +7,7 @@ const copy = 'Contact Lists help keep your Contacts organised. Look for them acr
 
 const ContactsMasterLists = (props) => {
   return (
-    <SettingsMasterList type={type} copy={copy}>
+    <SettingsMasterList type={type} copy={copy} data-id='contact-lists'>
       <EditMasterLists type={type} {...props} />
     </SettingsMasterList>
   )

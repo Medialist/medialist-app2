@@ -48,8 +48,11 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
 
   componentDidMount () {
     const { location: { pathname, query }, router } = this.props
-    if (query && query.createCampaignModalOpen) {
-      this.setState({ createCampaignModalOpen: true })
+    if (query && query.createCampaign) {
+      this.setState({
+        createCampaignModal: true
+      })
+
       router.replace(pathname)
     }
   },

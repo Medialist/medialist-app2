@@ -45,6 +45,164 @@ const test = {
 
     t.page.main().logout()
     t.end()
+  },
+
+  'Should add a new campaign list': function (t) {
+    const name = faker.hacker.noun()
+
+    const settingsPage = t.page.settings()
+      .navigateToCampaignLists()
+
+    settingsPage.section.campaignLists
+      .createNewList(name)
+
+    t.page.main().waitForSnackbarMessage('create-campaign-list-success')
+
+    t.perform(function (done) {
+      t.db.findCampaignList({
+        name: name
+      })
+      .then(function (doc) {
+        t.assert.equal(doc.name, name)
+
+        done()
+      })
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should edit a campaign list': function (t) {
+    const newName = faker.hacker.noun()
+
+    t.createDomain(['campaignList'], (campaignList, done) => {
+      const settingsPage = t.page.settings()
+        .navigateToCampaignLists()
+
+      settingsPage.section.campaignLists
+        .updateListName(campaignList, newName)
+
+      t.page.main().waitForSnackbarMessage('update-campaign-list-success')
+
+      t.perform(function (done) {
+        t.db.findCampaignList({
+          name: newName
+        })
+        .then(function (doc) {
+          t.assert.equal(doc.name, newName)
+
+          done()
+        })
+      })
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should delete a campaign list': function (t) {
+    t.createDomain(['campaignList'], (campaignList, done) => {
+      const settingsPage = t.page.settings()
+        .navigateToCampaignLists()
+
+      settingsPage.section.campaignLists
+        .openDeleteListsModal(campaignList)
+
+      settingsPage.section.deleteListsModal
+        .confirm()
+
+      t.page.main().waitForSnackbarMessage('delete-campaign-lists-success')
+
+      settingsPage.section.campaignLists
+        .assertNotInList(campaignList)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should add a new contact list': function (t) {
+    const name = faker.hacker.noun()
+
+    const settingsPage = t.page.settings()
+      .navigateToContactLists()
+
+    settingsPage.section.contactLists
+      .createNewList(name)
+
+    t.page.main().waitForSnackbarMessage('create-contact-list-success')
+
+    t.perform(function (done) {
+      t.db.findContactList({
+        name: name
+      })
+      .then(function (doc) {
+        t.assert.equal(doc.name, name)
+
+        done()
+      })
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should edit a contact list': function (t) {
+    const newName = faker.hacker.noun()
+
+    t.createDomain(['contactList'], (contactList, done) => {
+      const settingsPage = t.page.settings()
+        .navigateToContactLists()
+
+      settingsPage.section.contactLists
+        .updateListName(contactList, newName)
+
+      t.page.main().waitForSnackbarMessage('update-contact-list-success')
+
+      t.perform(function (done) {
+        t.db.findContactList({
+          name: newName
+        })
+        .then(function (doc) {
+          t.assert.equal(doc.name, newName)
+
+          done()
+        })
+      })
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should delete a contact list': function (t) {
+    t.createDomain(['contactList'], (contactList, done) => {
+      const settingsPage = t.page.settings()
+        .navigateToContactLists()
+
+      settingsPage.section.contactLists
+        .openDeleteListsModal(contactList)
+
+      settingsPage.section.deleteListsModal
+        .confirm()
+
+      t.page.main().waitForSnackbarMessage('delete-contact-lists-success')
+
+      settingsPage.section.contactLists
+        .assertNotInList(contactList)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   }
 }
 

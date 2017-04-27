@@ -36,14 +36,6 @@ const ContactPage = withSnackbar(React.createClass({
     }
   },
 
-  componentDidMount () {
-    const { location: { pathname, query }, router } = this.props
-    if (query && query.editContactModalOpen) {
-      this.setState({ editContactModalOpen: true })
-      router.replace(pathname)
-    }
-  },
-
   toggleEditContactModal () {
     this.setState((s) => ({ editContactModalOpen: !s.editContactModalOpen }))
   },

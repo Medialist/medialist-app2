@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import { withRouter } from 'react-router'
 import cloneDeep from 'lodash.clonedeep'
 import immutable from 'object-path-immutable'
 import { ContactCreateSchema } from '/imports/api/contacts/contacts'
@@ -350,13 +351,13 @@ const EditContactForm = withSnackbar(React.createClass({
   }
 }))
 
-const CreateContactForm = withSnackbar(React.createClass({
+const CreateContactForm = withRouter(withSnackbar(React.createClass({
   propTypes: {
     prefill: PropTypes.object
   },
 
   onSubmit (details) {
-    createContact.call({details}, (error, id) => {
+    createContact.call({details}, (error, slug) => {
       if (error) {
         console.log(error)
 
@@ -364,6 +365,7 @@ const CreateContactForm = withSnackbar(React.createClass({
       }
 
       this.props.snackbar.show(`Created ${details.name.split(' ')[0]}`, 'contact-create-success')
+      this.props.router.push(`/contact/${slug}`)
       this.props.onDismiss()
     })
   },
@@ -377,7 +379,7 @@ const CreateContactForm = withSnackbar(React.createClass({
        />
     )
   }
-}))
+})))
 
 export const EditContactModal = Modal(EditContactForm)
 

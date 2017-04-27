@@ -5,7 +5,7 @@ const SettingsPanelMasterLists = (props) => {
   const { type, copy, children } = props
   const Icon = type === 'Contacts' ? FeedContactIcon : SectorIcon
   return (
-    <section className='pt4'>
+    <section className='pt4' data-id={props['data-id']}>
       <div className='center my4'>
         <Icon className='svg-icon-lg blue' />
       </div>
