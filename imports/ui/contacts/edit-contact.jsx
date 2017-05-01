@@ -15,8 +15,9 @@ import EditableAvatar from '../images/editable-avatar/editable-avatar'
 import Scroll from '../navigation/scroll'
 import Modal from '../navigation/modal'
 import { Form, Input, Button } from '@achingbrain/react-validation'
-import { createContact, updateContact } from '/imports/api/contacts/methods'
+import { createContact, updateContact, batchRemoveContacts } from '/imports/api/contacts/methods'
 import withSnackbar from '../snackbar/with-snackbar'
+import { Dropdown, DropdownMenu } from '../navigation/dropdown'
 
 const EditContact = withSnackbar(React.createClass({
   propTypes: {
@@ -61,7 +62,8 @@ const EditContact = withSnackbar(React.createClass({
       phones: atLeastOne(contact.phones, {label: 'Phone', value: ''}),
       socials,
       fixHeaderPosition: false,
-      errorHeader: null
+      errorHeader: null,
+      deleteMenuOpen: false
     })
     return state
   },
@@ -173,6 +175,24 @@ const EditContact = withSnackbar(React.createClass({
     if (scrollTop < threashold && fixHeaderPosition) {
       this.setState({fixHeaderPosition: false})
     }
+  },
+
+  openDeleteMenu (event) {
+    event.preventDefault()
+
+    this.setState({
+      deleteMenuOpen: true
+    })
+  },
+
+  closeDeleteMenu (event) {
+    if (event) {
+      event.preventDefault()
+    }
+
+    this.setState({
+      deleteMenuOpen: false
+    })
   },
 
   render () {
@@ -307,9 +327,21 @@ const EditContact = withSnackbar(React.createClass({
         </Scroll>
 
         <div className='flex items-center p4 bg-white border-top border-gray80'>
-          {this.props.onDelete && <button className='flex-none btn bg-transparent not-interested' onClick={this.props.onDelete}>Delete Contact</button>}
+          {this.props.onDelete && <Dropdown>
+            <button className='flex-none btn bg-transparent not-interested' onClick={(event) => this.openDeleteMenu(event)} data-id='delete-contact-button'>Delete Contact</button>
+            <DropdownMenu width={430} left={0} top={-270} arrowPosition='bottom' arrowAlign='left' arrowMarginLeft='55px' open={this.state.deleteMenuOpen} onDismiss={() => this.closeDeleteMenu()}>
+              <div className='p1'>
+                <p className='center m6'>Are you sure you want to <strong>delete this contact</strong>?</p>
+                <p className='center m6'>Deleted contacts can't be retrieved.</p>
+                <div className='flex-auto center m6'>
+                  <button className='btn bg-transparent gray40 mr2' onClick={(event) => this.closeDeleteMenu(event)} data-id='cancel-delete-contact-button'>No, Keep Contact</button>
+                  <button className='btn bg-not-interested white' onClick={(event) => this.props.onDelete(event)} data-id='confirm-delete-contact-button'>Yes, Delete Contact</button>
+                </div>
+              </div>
+            </DropdownMenu>
+          </Dropdown>}
           <div className='flex-auto right-align'>
-            <button className='btn bg-transparent gray40 mr2' onClick={this.props.onCancel}>Cancel</button>
+            <button className='btn bg-transparent gray40 mr2' onClick={this.props.onCancel} data-id='edit-contact-form-cancel-button'>Cancel</button>
             <Button className='btn bg-completed white' data-id='edit-contact-form-submit-button' disabled={false}>Save Changes</Button>
           </div>
         </div>
@@ -318,7 +350,7 @@ const EditContact = withSnackbar(React.createClass({
   }
 }))
 
-const EditContactForm = withSnackbar(React.createClass({
+const EditContactForm = withRouter(withSnackbar(React.createClass({
   propTypes: {
     contact: PropTypes.object.isRequired
   },
@@ -336,8 +368,19 @@ const EditContactForm = withSnackbar(React.createClass({
     })
   },
 
-  onDelete () {
+  onDelete (event) {
+    event.preventDefault()
 
+    batchRemoveContacts.call({_ids: [this.props.contact._id]}, (error) => {
+      if (error) {
+        console.log(error)
+
+        return this.props.snackbar.error('contact-delete-failure')
+      }
+
+      this.props.snackbar.show(`Deleted ${this.props.contact.name}`, 'contact-delete-success')
+      this.props.router.push('/contacts')
+    })
   },
 
   render () {
@@ -350,7 +393,7 @@ const EditContactForm = withSnackbar(React.createClass({
        />
     )
   }
-}))
+})))
 
 const CreateContactForm = withRouter(withSnackbar(React.createClass({
   propTypes: {

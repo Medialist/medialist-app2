@@ -45,7 +45,7 @@ const Container = ({open, top = 0, children}) => (
 )
 
 // An arrow tip that appears at the top middle of the dropdown menu
-const MenuArrow = ({height}) => {
+const MenuArrowUp = ({height}) => {
   const side = Math.sqrt(2) * height
   return (
     <div style={{
@@ -66,6 +66,35 @@ const MenuArrow = ({height}) => {
         borderRadius: '2px 0 0 0',
         background: 'white',
         boxShadow: '0px 1px 10px 0px rgba(0,0,0,0.20)'
+      }} />
+    </div>
+  )
+}
+
+// An arrow tip that appears at the bottom middle of the dropdown menu
+const MenuArrowDown = ({height, align = 'center', marginLeft = 'auto', marginRight = 'auto'}) => {
+  const side = Math.round(Math.sqrt(2) * height)
+  return (
+    <div style={{
+      zIndex: 600,
+      width: '100%',
+      height: `${height + 5}px`,
+      textAlign: align,
+      overflow: 'hidden'
+    }}>
+      <div style={{
+        display: 'inline-block',
+        position: 'relative',
+        width: `${side}px`,
+        height: `${side}px`,
+        transform: `translate(0, ${height / 2}px) rotate(45deg)`,
+        borderRadius: '2px 0 0 0',
+        background: 'white',
+        boxShadow: '0px 1px 10px 0px rgba(0,0,0,0.20)',
+        top: `-${height + 2}px`,
+        left: marginLeft,
+        right: marginRight,
+        zIndex: 601
       }} />
     </div>
   )
@@ -100,15 +129,16 @@ const Menu = ({children}) => (
   </div>
 )
 
-export const DropdownMenu = ({open, width, left, top = 0, arrowHeight = 12, onDismiss, children}) => {
+export const DropdownMenu = ({open, width, left, top = 0, arrowHeight = 12, arrowPosition = 'top', arrowAlign, arrowMarginLeft, arrowMarginRight, onDismiss, children}) => {
   return (
     <Container open={open} top={top + arrowHeight}>
       <Overlay onClick={onDismiss} />
-      <MenuArrow height={arrowHeight} />
       <MenuPosition width={width} left={left}>
+        {arrowPosition === 'top' && <MenuArrowUp height={arrowHeight} align={arrowAlign} marginLeft={arrowMarginLeft} marginRight={arrowMarginRight} />}
         <Menu>
           {children}
         </Menu>
+        {arrowPosition === 'bottom' && <MenuArrowDown height={arrowHeight} align={arrowAlign} marginLeft={arrowMarginLeft} marginRight={arrowMarginRight} />}
       </MenuPosition>
     </Container>
   )

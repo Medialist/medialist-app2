@@ -46,6 +46,54 @@ const test = {
     t.end()
   },
 
+  'Should delete an existing contact': function (t) {
+    t.createDomain(['contact'], (contact, done) => {
+      const contactPage = t.page.contact()
+        .navigate(contact)
+        .editContact()
+
+      contactPage.section.editContactForm
+        .openDeleteConfirmation(contact)
+        .confirmDeletion()
+
+      t.page.main().waitForSnackbarMessage('contact-delete-success')
+
+      t.assert.urlEquals('http://localhost:3000/contacts')
+
+      t.page.contacts().section.contactTable
+        .searchForWithoutFinding(contact.name)
+        .assertNotInSearchResults(contact)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should cancel delete an existing contact': function (t) {
+    t.createDomain(['contact'], (contact, done) => {
+      const contactPage = t.page.contact()
+        .navigate(contact)
+        .editContact()
+
+      contactPage.section.editContactForm
+        .openDeleteConfirmation(contact)
+        .cancelDeletion()
+
+      // should have gone back to edit contact form
+      contactPage.assert.visible(contactPage.section.editContactForm.selector)
+
+      contactPage.section.editContactForm
+        .cancel()
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
   'Should add contact to campaign from contact page': function (t) {
     t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
       t.page.contact().navigate(contact)

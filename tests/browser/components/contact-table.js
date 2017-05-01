@@ -19,6 +19,16 @@ module.exports = {
 
       return this
     },
+    searchForWithoutFinding: function (query) {
+      this
+        .waitForElementVisible('@searchInput')
+        .clearValue('@searchInput')
+        .waitForElementVisible('@unfilteredList')
+        .setValue('@searchInput', query)
+        .waitForElementVisible('@noResults')
+
+      return this
+    },
     selectRow: function (index) {
       const rowSelector = `[data-id=contacts-table-row-${index}]`
       const checkboxSelector = `[data-id=contacts-table-row-${index}-checkbox-label]`

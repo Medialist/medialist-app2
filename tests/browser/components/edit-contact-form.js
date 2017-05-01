@@ -25,7 +25,11 @@ module.exports = {
     pinterestInput: '[data-id=social-input-pinterest]',
     otherWebsiteInput: '[data-id=social-input-8]',
     addSocialButton: '[data-id=add-social-button]',
-    submitButton: '[data-id=edit-contact-form-submit-button]'
+    submitButton: '[data-id=edit-contact-form-submit-button]',
+    cancelButton: '[data-id=edit-contact-form-cancel-button]',
+    deleteContactButton: '[data-id=delete-contact-button]',
+    confirmDeleteContactButton: '[data-id=confirm-delete-contact-button]',
+    cancelDeleteContactButton: '[data-id=cancel-delete-contact-button]'
   },
   commands: [{
     verifyEditFormContents: function (contact) {
@@ -124,6 +128,39 @@ module.exports = {
       this.click('@submitButton')
 
       this.waitForElementNotPresent(this.selector)
+
+      return this
+    },
+    cancel: function () {
+      this.click('@cancelButton')
+
+      this.waitForElementNotPresent(this.selector)
+
+      return this
+    },
+    openDeleteConfirmation: function () {
+      this.waitForElementPresent('@deleteContactButton')
+      this.click('@deleteContactButton')
+
+      this.waitForElementPresent('@confirmDeleteContactButton')
+
+      return this
+    },
+    confirmDeletion: function () {
+      this.waitForElementPresent('@confirmDeleteContactButton')
+      this.click('@confirmDeleteContactButton')
+
+      this.waitForElementNotPresent(this.selector)
+
+      return this
+    },
+    cancelDeletion: function () {
+      this.waitForElementPresent('@cancelDeleteContactButton')
+      this.click('@cancelDeleteContactButton')
+
+      this.waitForElementNotVisible('@cancelDeleteContactButton')
+
+      return this
     }
   }]
 }
