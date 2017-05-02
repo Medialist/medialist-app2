@@ -207,8 +207,8 @@ const EditContact = withSnackbar(React.createClass({
             <div className='center f-xl gray20'>{name || 'Create Contact'}</div>
           </div>
         </div>
-        <Scroll height={'calc(95vh - 76px)'} onScrollChange={onScrollChange}>
-          <div className={`py6 center bg-white border-bottom border-gray80`}>
+        <Scroll height={'calc(95vh - 76px)'} onScrollChange={onScrollChange} className='bg-gray90'>
+          <div className='py6 center bg-white border-bottom border-gray80 bg-white'>
             <EditableAvatar avatar={avatar} onChange={onAvatarChange} onError={onAvatarError} menuTop={-20}>
               <div className='bg-gray60 center circle mx-auto' style={{height: '110px', width: '110px', lineHeight: '110px', overflowY: 'hidden'}}>
                 { avatar ? <img src={avatar} width='110' height='110' /> : <CameraIcon className='svg-icon-xl' /> }
@@ -230,7 +230,7 @@ const EditContact = withSnackbar(React.createClass({
             </div>
           </div>
 
-          <div className='bg-gray90 pb6'>
+          <div className='pb6'>
             <FormSection label='Jobs' addLinkText='Add another job' addLinkId='add-job-button' onAdd={onAddJob}>
               {outlets.map((outlet, index) => (
                 <FormField key={index} icon={<FilledCircle />}>

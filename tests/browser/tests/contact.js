@@ -71,7 +71,7 @@ const test = {
     t.end()
   },
 
-  'Should cancel delete an existing contact': function (t) {
+  'Should cancel deleting an existing contact': function (t) {
     t.createDomain(['contact'], (contact, done) => {
       const contactPage = t.page.contact()
         .navigate(contact)

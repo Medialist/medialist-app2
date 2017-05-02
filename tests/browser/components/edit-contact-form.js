@@ -27,9 +27,9 @@ module.exports = {
     addSocialButton: '[data-id=add-social-button]',
     submitButton: '[data-id=edit-contact-form-submit-button]',
     cancelButton: '[data-id=edit-contact-form-cancel-button]',
-    deleteContactButton: '[data-id=delete-contact-button]',
-    confirmDeleteContactButton: '[data-id=confirm-delete-contact-button]',
-    cancelDeleteContactButton: '[data-id=cancel-delete-contact-button]'
+    deleteButton: '[data-id=delete-contact-button]',
+    confirmDeleteButton: '[data-id=confirm-delete-contact-button]',
+    cancelDeleteButton: '[data-id=cancel-delete-contact-button]'
   },
   commands: [{
     verifyEditFormContents: function (contact) {
@@ -139,26 +139,26 @@ module.exports = {
       return this
     },
     openDeleteConfirmation: function () {
-      this.waitForElementPresent('@deleteContactButton')
-      this.click('@deleteContactButton')
+      this.waitForElementPresent('@deleteButton')
+      this.click('@deleteButton')
 
-      this.waitForElementPresent('@confirmDeleteContactButton')
+      this.waitForElementPresent('@confirmDeleteButton')
 
       return this
     },
     confirmDeletion: function () {
-      this.waitForElementPresent('@confirmDeleteContactButton')
-      this.click('@confirmDeleteContactButton')
+      this.waitForElementPresent('@confirmDeleteButton')
+      this.click('@confirmDeleteButton')
 
       this.waitForElementNotPresent(this.selector)
 
       return this
     },
     cancelDeletion: function () {
-      this.waitForElementPresent('@cancelDeleteContactButton')
-      this.click('@cancelDeleteContactButton')
+      this.waitForElementPresent('@cancelDeleteButton')
+      this.click('@cancelDeleteButton')
 
-      this.waitForElementNotVisible('@cancelDeleteContactButton')
+      this.waitForElementNotVisible('@cancelDeleteButton')
 
       return this
     }

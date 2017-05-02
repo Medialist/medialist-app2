@@ -7,7 +7,11 @@ module.exports = {
     clientInput: '[data-id=client-input]',
     keyMessageInput: '[data-id=key-message-input]',
     addLinkButton: '[data-id=add-link-button]',
-    submitButton: '[data-id=save-campaign-button]'
+    submitButton: '[data-id=save-campaign-button]',
+    cancelButton: '[data-id=edit-campaign-form-cancel-button]',
+    deleteButton: '[data-id=delete-campaign-button]',
+    confirmDeleteButton: '[data-id=confirm-delete-campaign-button]',
+    cancelDeleteButton: '[data-id=cancel-delete-campaign-button]'
   },
   commands: [{
     verifyEditFormContents: function (campaign) {
@@ -52,6 +56,37 @@ module.exports = {
       this.click('@submitButton')
 
       this.waitForElementNotPresent(this.selector)
+    },
+    cancel: function () {
+      this.click('@cancelButton')
+
+      this.waitForElementNotPresent(this.selector)
+
+      return this
+    },
+    openDeleteConfirmation: function () {
+      this.waitForElementPresent('@deleteButton')
+      this.click('@deleteButton')
+
+      this.waitForElementPresent('@confirmDeleteButton')
+
+      return this
+    },
+    confirmDeletion: function () {
+      this.waitForElementPresent('@confirmDeleteButton')
+      this.click('@confirmDeleteButton')
+
+      this.waitForElementNotPresent(this.selector)
+
+      return this
+    },
+    cancelDeletion: function () {
+      this.waitForElementPresent('@cancelDeleteButton')
+      this.click('@cancelDeleteButton')
+
+      this.waitForElementNotVisible('@cancelDeleteButton')
+
+      return this
     }
   }]
 }
