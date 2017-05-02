@@ -64,7 +64,7 @@ const CampaignFilter = React.createClass({
             </span>
           )}
         </div>
-        <DropdownMenu top={-16} left={-73} width={573} open={open} onDismiss={closeDropdown}>
+        <DropdownMenu top={-16} left={-73} width={573} arrowAlign='left' arrowMarginLeft='125px' open={open} onDismiss={closeDropdown}>
           {loading ? null : <CampaignsFilterableList contact={contact} campaigns={campaigns} onFilter={onFilter} onClearFilter={onClearFilter} />}
         </DropdownMenu>
       </Dropdown>

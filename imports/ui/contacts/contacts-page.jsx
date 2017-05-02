@@ -202,7 +202,7 @@ const ContactsPage = withSnackbar(React.createClass({
               <button className='btn bg-completed white' onClick={this.onDropdownArrowClick} data-id='contact-actions-button'>
                 <Arrow direction='down' style={{ marginLeft: 0 }} />
               </button>
-              <DropdownMenu width={210} left={-165} top={0} open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
+              <DropdownMenu width={210} left={-165} top={0} arrowAlign='right' arrowMarginRight='15px' open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
                 <nav className='block py1'>
                   <Link to='/contacts/import' className='block px3 py2 f-md normal gray20 hover-bg-gray90' activeClassName='active' onClick={this.onLinkClick} data-id='import-contacts-button'>
                     <FeedContactIcon />

@@ -45,8 +45,9 @@ const Container = ({open, top = 0, children}) => (
 )
 
 // An arrow tip that appears at the top middle of the dropdown menu
-const MenuArrowUp = ({height}) => {
-  const side = Math.sqrt(2) * height
+const MenuArrowUp = ({height, align = 'center', marginLeft = 'auto', marginRight = 'auto'}) => {
+  const side = Math.round(Math.sqrt(2) * height)
+
   return (
     <div style={{
       zIndex: 600,
@@ -54,7 +55,7 @@ const MenuArrowUp = ({height}) => {
       width: '100%',
       height: `${height}px`,
       top: `-${height}px`,
-      textAlign: 'center',
+      textAlign: align,
       overflow: 'hidden'
     }}>
       <div style={{
@@ -65,6 +66,8 @@ const MenuArrowUp = ({height}) => {
         transform: `translate(0, ${height / 2}px) rotate(45deg)`,
         borderRadius: '2px 0 0 0',
         background: 'white',
+        left: marginLeft,
+        right: marginRight,
         boxShadow: '0px 1px 10px 0px rgba(0,0,0,0.20)'
       }} />
     </div>
@@ -74,6 +77,7 @@ const MenuArrowUp = ({height}) => {
 // An arrow tip that appears at the bottom middle of the dropdown menu
 const MenuArrowDown = ({height, align = 'center', marginLeft = 'auto', marginRight = 'auto'}) => {
   const side = Math.round(Math.sqrt(2) * height)
+
   return (
     <div style={{
       zIndex: 600,
