@@ -92,6 +92,94 @@ const test = {
 
     t.page.main().logout()
     t.end()
+  },
+
+  'Should add contact to campaign from contact page': function (t) {
+    t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
+      const contactPage = t.page.contact()
+        .navigate(contact)
+
+      contactPage.section.info
+        .waitForElementVisible('@editContactCampaignsButton')
+        .click('@editContactCampaignsButton')
+
+      const campaignSelectorModal = contactPage.section.campaignSelectorModal
+
+      contactPage.waitForElementVisible(campaignSelectorModal.selector)
+
+      campaignSelectorModal
+        .searchForCampaign(campaign)
+        .selectSearchResult(campaign)
+
+      t.page.main().waitForSnackbarMessage('batch-add-contacts-to-campaign-success')
+
+      contactPage.section.info.assert.attributeContains('[data-id=contact-campaigns-list] a', 'href', `/campaign/${campaign.slug}`)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should add campaign to campaign list from campaign page': function (t) {
+    t.createDomain(['campaign', 'campaignList'], (campaign, campaignList, done) => {
+      const campaignPage = t.page.campaign()
+        .navigate(campaign)
+
+      campaignPage.section.info
+        .waitForElementVisible('@editCampaignMasterListsButton')
+        .click('@editCampaignMasterListsButton')
+
+      const campaignListsModal = campaignPage.section.campaignListsModal
+
+      campaignPage.waitForElementVisible(campaignListsModal.selector)
+
+      campaignListsModal
+        .selectList(campaignList)
+        .save()
+
+      t.page.main().waitForSnackbarMessage('update-campaign-campaign-lists-success')
+
+      campaignPage.section.info.assert.attributeContains('a[data-id=campaign-list-link]', 'href', `/campaigns?list=${campaignList.slug}`)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should remove campaign from campaign list from campaign page': function (t) {
+    t.createDomain(['campaign', 'campaignList'], (campaign, campaignList, done) => {
+      t.perform((done) => {
+        t.addCampaignsToCampaignLists([campaign], [campaignList], () => done())
+      })
+
+      const campaignPage = t.page.campaign()
+        .navigate(campaign)
+
+      campaignPage.section.info
+        .waitForElementVisible('@editCampaignMasterListsButton')
+        .click('@editCampaignMasterListsButton')
+
+      const campaignListsModal = campaignPage.section.campaignListsModal
+
+      campaignPage.waitForElementVisible(campaignListsModal.selector)
+
+      campaignListsModal
+        .deselectList(campaignList)
+        .save()
+
+      t.page.main().waitForSnackbarMessage('update-campaign-campaign-lists-success')
+
+      campaignPage.section.info.assert.elementNotPresent('a[data-id=campaign-list-link]')
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   }
 }
 

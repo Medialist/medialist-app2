@@ -12,14 +12,15 @@ import AddTagsModal from '../tags/add-tags-modal'
 import Tooltip from '../navigation/tooltip'
 import { update } from '../../api/campaigns/methods'
 import withSnackbar from '../snackbar/with-snackbar'
+import CampaignListLink from '../master-lists/campaign-list-link'
+import { setMasterLists } from '/imports/api/master-lists/methods'
 
 const CampaignInfo = withSnackbar(React.createClass({
   propTypes: {
     campaign: PropTypes.object,
     user: PropTypes.object,
     onEditClick: PropTypes.func,
-    onEditTeamClick: PropTypes.func,
-    onAddCampaignToMasterLists: PropTypes.func
+    onEditTeamClick: PropTypes.func
   },
 
   getInitialState () {
@@ -40,6 +41,22 @@ const CampaignInfo = withSnackbar(React.createClass({
 
   dismissAddToMasterList () {
     this.setState({addToMasterListOpen: false})
+  },
+
+  onAddCampaignToMasterLists (masterLists) {
+    setMasterLists.call({
+      type: 'Campaigns',
+      item: this.props.campaign._id,
+      masterLists: masterLists.map(masterList => masterList._id)
+    }, (error) => {
+      if (error) {
+        console.error(error)
+
+        return this.props.snackbar.error('update-campaign-campaign-lists-failure')
+      }
+
+      this.props.snackbar.show(`Updated Campaign Lists`, 'update-campaign-campaign-lists-success')
+    })
   },
 
   onAddTags () {
@@ -100,8 +117,8 @@ const CampaignInfo = withSnackbar(React.createClass({
       dismissAddTags,
       onUpdateTags
     } = this
-    const { addToMasterListOpen, addTagsOpen } = this.state
-    const { onEditClick, onEditTeamClick, user, campaign, onAddCampaignToMasterLists } = this.props
+    const { addTagsOpen } = this.state
+    const { onEditClick, onEditTeamClick, user, campaign } = this.props
     const { name, client, avatar, purpose, links, team, tags, masterLists } = this.props.campaign
     const isFavourite = user.myCampaigns.some((m) => m._id === campaign._id)
     const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
@@ -148,11 +165,12 @@ const CampaignInfo = withSnackbar(React.createClass({
         </section>
         <section>
           <InfoHeader name='Campaign Lists' onClick={onAddToMasterList} data-id='edit-campaign-campaign-lists-button' />
-          <div className='py3'>
-            {masterLists.map((m) => (
-              <Link to={`/campaigns?list=${m.slug}`} className='pointer p2 blue f-sm' key={m._id}>
-                {m.name}
-              </Link>
+          <div className='px2 py3'>
+            {masterLists.map((list, index) => (
+              <span className='inline-block mr1' key={list._id}>
+                <CampaignListLink campaignList={list} linkClassName='pointer blue f-sm semibold' />
+                {masterLists.length > 1 && index < masterLists.length - 1 ? ',' : ''}
+              </span>
             ))}
           </div>
         </section>
@@ -169,11 +187,10 @@ const CampaignInfo = withSnackbar(React.createClass({
           </div>
         </section>
         <AddToMasterList
-          open={addToMasterListOpen}
+          open={this.state.addToMasterListOpen}
           onDismiss={dismissAddToMasterList}
-          onSave={onAddCampaignToMasterLists}
-          document={campaign}
-          masterlists={masterLists}
+          onSave={(masterLists) => this.onAddCampaignToMasterLists(masterLists)}
+          selectedMasterLists={masterLists}
           type='Campaigns'
           title={`Add ${name} to a Campaign List`} />
         <AddTagsModal

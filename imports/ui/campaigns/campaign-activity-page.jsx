@@ -14,7 +14,6 @@ import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import { createFeedbackPost, createCoveragePost } from '/imports/api/posts/methods'
-import { setMasterLists } from '/imports/api/master-lists/methods'
 import { CreateContactModal } from '../contacts/edit-contact'
 import AddContact from './add-contact'
 import EditTeam from './edit-team'
@@ -66,10 +65,6 @@ const CampaignActivityPage = React.createClass({
     })
   },
 
-  onAddCampaignToMasterLists ({item, masterLists}) {
-    setMasterLists.call({ type: 'Campaigns', item, masterLists })
-  },
-
   toggleEditModal () {
     const editModalOpen = !this.state.editModalOpen
     this.setState({ editModalOpen })
@@ -111,8 +106,7 @@ const CampaignActivityPage = React.createClass({
       toggleEditTeamModal,
       onFeedback,
       onCoverage,
-      onShowCreateContact,
-      onAddCampaignToMasterLists
+      onShowCreateContact
     } = this
     const { campaign, contacts, contactsCount, teamMates, loading, user } = this.props
     const {
@@ -134,8 +128,7 @@ const CampaignActivityPage = React.createClass({
               campaign={campaign}
               onEditClick={toggleEditModal}
               onEditTeamClick={toggleEditTeamModal}
-              user={user}
-              onAddCampaignToMasterLists={onAddCampaignToMasterLists} />
+              user={user} />
             <EditCampaignModal
               campaign={campaign}
               open={editModalOpen}

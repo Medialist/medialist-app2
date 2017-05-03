@@ -141,7 +141,7 @@ const AddContactContainer = withSnackbar(React.createClass({
       addContactsToCampaign.call({contactSlugs, campaignSlug}, (error) => {
         if (error) {
           console.log(error)
-          return this.props.snackbar.error('batch-add-contacts-to-campaign-success')
+          return this.props.snackbar.error('batch-add-contacts-to-campaign-failure')
         }
 
         this.props.snackbar.show(`Added ${contactSlugs.length} Contact${contactSlugs.length > 1 ? 's' : ''} to Campaign`, 'batch-add-contacts-to-campaign-success')

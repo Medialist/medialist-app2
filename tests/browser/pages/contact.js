@@ -4,6 +4,7 @@ const editContactForm = require('../components/edit-contact-form')
 const activityFeed = require('../components/activity-feed')
 const postBox = require('../components/post-box')
 const campaignSelectorModal = require('../components/campaign-selector-modal')
+const addToListsModal = require('../components/add-to-lists-modal')
 
 module.exports = {
   url: 'http://localhost:3000/contacts',
@@ -23,7 +24,8 @@ module.exports = {
     campaignSelectorModal: campaignSelectorModal,
     editContactForm: editContactForm,
     activityFeed: activityFeed('contact'),
-    postBox: postBox
+    postBox: postBox,
+    contactListsModal: addToListsModal('add-to-list-modal')
   },
   commands: [{
     navigate: function (contact) {

@@ -11,8 +11,10 @@ import AddToMasterList from '../master-lists/add-to-master-list'
 import AddTagsModal from '../tags/add-tags-modal'
 import Tooltip from '../navigation/tooltip'
 import { SocialIcon } from '../social/social'
+import withSnackbar from '../snackbar/with-snackbar'
+import ContactListLink from '../master-lists/contact-list-link'
 
-const ContactInfo = React.createClass({
+const ContactInfo = withSnackbar(React.createClass({
   propTypes: {
     campaigns: PropTypes.array,
     contact: PropTypes.object,
@@ -38,8 +40,20 @@ const ContactInfo = React.createClass({
     this.setState({addToMasterListOpen: false})
   },
 
-  onAddContactToMasterLists ({item, masterLists}) {
-    setMasterLists.call({type: 'Contacts', item, masterLists})
+  onAddContactToMasterLists (masterLists) {
+    setMasterLists.call({
+      type: 'Contacts',
+      item: this.props.contact._id,
+      masterLists: masterLists.map(masterList => masterList._id)
+    }, (error) => {
+      if (error) {
+        console.error(error)
+
+        return this.props.snackbar.error('update-contact-contact-lists-failure')
+      }
+
+      this.props.snackbar.show(`Updated ${this.props.contact.name.split(' ')[0]}'s Contact Lists`, 'update-contact-contact-lists-success')
+    })
   },
 
   onAddTags () {
@@ -136,11 +150,12 @@ const ContactInfo = React.createClass({
         </section>
         <section>
           <InfoHeader name='Contact Lists' onClick={onAddToMasterList} data-id='edit-contact-contact-lists-button' />
-          <div className='py3'>
-            {masterLists.map((m) => (
-              <Link to={`/contacts?list=${m.slug}`} className='pointer p2 blue f-sm' key={m._id}>
-                {m.name}
-              </Link>
+          <div className='px2 py3'>
+            {masterLists.map((list, index) => (
+              <span className='inline-block mr1' key={list._id}>
+                <ContactListLink contactList={list} linkClassName='pointer blue f-sm semibold' />
+                {masterLists.length > 1 && index < masterLists.length - 1 ? ',' : ''}
+              </span>
             ))}
           </div>
         </section>
@@ -164,7 +179,7 @@ const ContactInfo = React.createClass({
           open={addToMasterListOpen}
           onDismiss={dismissAddToMasterList}
           onSave={onAddContactToMasterLists}
-          selected={masterLists}
+          selectedMasterLists={masterLists}
           type='Contacts'
           title={`Add ${name} to a Contact List`} />
         <AddTagsModal
@@ -177,7 +192,7 @@ const ContactInfo = React.createClass({
       </div>
     )
   }
-})
+}))
 
 const ContactItems = React.createClass({
   propTypes: {

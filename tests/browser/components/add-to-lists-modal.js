@@ -17,6 +17,15 @@ module.exports = (dataId) => ({
 
       return this
     },
+    deselectList: function (list) {
+      const selector = `[data-id=master-list-button][data-item='${list._id}']`
+
+      this
+        .waitForElementVisible(selector)
+        .click(selector)
+
+      return this
+    },
     save: function () {
       this
         .waitForElementVisible('@saveButton')

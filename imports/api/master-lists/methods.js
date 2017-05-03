@@ -173,23 +173,64 @@ export const setMasterLists = new ValidatedMethod({
   name: 'MasterLists/setMasterLists',
   validate: MasterListsSetMasterLists.validator(),
   run ({type, item, masterLists}) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
 
     const refCollection = (type === 'Contacts') ? Contacts : Campaigns
     const itemDocument = refCollection.findOne({_id: item})
-    if (!itemDocument) throw new Meteor.Error(`${type.substring(0, type.length - 1)} not found`)
+
+    if (!itemDocument) {
+      throw new Meteor.Error(`${type.substring(0, type.length - 1)} not found`)
+    }
 
     const removeItemsFromMasterListsIds = itemDocument.masterLists.filter((oldListItem) => masterLists.indexOf(oldListItem) === -1)
 
-    MasterLists.update({_id: {$in: masterLists}}, {$addToSet: {items: item}}, {multi: true})
+    MasterLists.update({
+      _id: {
+        $in: masterLists
+      }
+    }, {
+      $addToSet: {
+        items: item
+      }
+    }, {
+      multi: true
+    })
 
-    MasterLists.update(
-      { _id: { $in: removeItemsFromMasterListsIds } },
-      { $pull: { items: item } },
-      { multi: true }
-    )
+    MasterLists.update({
+      _id: {
+        $in: removeItemsFromMasterListsIds
+      }
+    }, {
+      $pull: {
+        items: item
+      }
+    }, {
+      multi: true
+    })
 
-    return refCollection.update({_id: item}, {$set: {masterLists}})
+    const masterListRefs = MasterLists
+      .find({
+        _id: {
+          $in: masterLists
+        }
+      }, {
+        fields: {
+          _id: 1,
+          name: 1,
+          slug: 1
+        }
+      })
+      .fetch()
+
+    refCollection.update({
+      _id: item
+    }, {
+      $set: {
+        masterLists: masterListRefs
+      }
+    })
   }
 })
 

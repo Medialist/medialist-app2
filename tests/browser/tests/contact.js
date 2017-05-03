@@ -96,14 +96,14 @@ const test = {
 
   'Should add contact to campaign from contact page': function (t) {
     t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
-      t.page.contact().navigate(contact)
-
       const contactPage = t.page.contact()
-      const infoSection = contactPage.section.info
-      const campaignSelectorModal = contactPage.section.campaignSelectorModal
+        .navigate(contact)
 
-      infoSection.waitForElementVisible('@editContactCampaignsButton')
-      infoSection.click('@editContactCampaignsButton')
+      contactPage.section.info
+        .waitForElementVisible('@editContactCampaignsButton')
+        .click('@editContactCampaignsButton')
+
+      const campaignSelectorModal = contactPage.section.campaignSelectorModal
 
       contactPage.waitForElementVisible(campaignSelectorModal.selector)
 
@@ -113,7 +113,67 @@ const test = {
 
       t.page.main().waitForSnackbarMessage('batch-add-contacts-to-campaign-success')
 
-      infoSection.assert.attributeContains('[data-id=contact-campaigns-list] a', 'href', `/campaign/${campaign.slug}`)
+      contactPage.section.info.assert.attributeContains('[data-id=contact-campaigns-list] a', 'href', `/campaign/${campaign.slug}`)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should add contact to contact list from contact page': function (t) {
+    t.createDomain(['contact', 'contactList'], (contact, contactList, done) => {
+      const contactPage = t.page.contact()
+        .navigate(contact)
+
+      contactPage.section.info
+        .waitForElementVisible('@editContactMasterListsButton')
+        .click('@editContactMasterListsButton')
+
+      const contactListsModal = contactPage.section.contactListsModal
+
+      contactPage.waitForElementVisible(contactListsModal.selector)
+
+      contactListsModal
+        .selectList(contactList)
+        .save()
+
+      t.page.main().waitForSnackbarMessage('update-contact-contact-lists-success')
+
+      contactPage.section.info.assert.attributeContains('a[data-id=contact-list-link]', 'href', `/contacts?list=${contactList.slug}`)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should remove contact from contact list from contact page': function (t) {
+    t.createDomain(['contact', 'contactList'], (contact, contactList, done) => {
+      t.perform((done) => {
+        t.addContactsToContactLists([contact], [contactList], () => done())
+      })
+
+      const contactPage = t.page.contact()
+        .navigate(contact)
+
+      contactPage.section.info
+        .waitForElementVisible('@editContactMasterListsButton')
+        .click('@editContactMasterListsButton')
+
+      const contactListsModal = contactPage.section.contactListsModal
+
+      contactPage.waitForElementVisible(contactListsModal.selector)
+
+      contactListsModal
+        .deselectList(contactList)
+        .save()
+
+      t.page.main().waitForSnackbarMessage('update-contact-contact-lists-success')
+
+      contactPage.section.info.assert.elementNotPresent('a[data-id=contact-list-link]')
 
       done()
     })
