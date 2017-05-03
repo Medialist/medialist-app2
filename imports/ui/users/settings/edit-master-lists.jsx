@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router'
 import { MenuCampaignIcon, DeleteIcon, FeedEditIcon } from '/imports/ui/images/icons'
 import Tooltip from '/imports/ui/navigation/tooltip'
 import DeleteListsModal from '/imports/ui/users/settings/delete-lists-modal'
@@ -212,8 +213,12 @@ const MasterListsItem = (props) => {
         onBlur={() => onUpdate(_id)}
         onKeyDown={(e) => triggerUpdate(_id, e.key)}
         data-id='list-name-input' />
-      <div className='flex-none ml4 right-align gray40' style={{width: 20}}>{items.length}</div>
-      <MenuCampaignIcon className='ml2 flex-none gray60' />
+      <div className='flex-none ml4 right-align gray40 hover-color-trigger'>
+        <Link to={`/${masterlist.type.toLowerCase()}?list=${masterlist.slug}`} className='hover-blue'>
+          {items.length}
+          <MenuCampaignIcon className='ml1 flex-none gray60 hover-blue' />
+        </Link>
+      </div>
       {!disabled ? <SaveBtn
         onUpdate={onUpdate}
         _id={_id}
