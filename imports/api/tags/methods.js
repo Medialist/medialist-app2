@@ -28,8 +28,7 @@ const createTagsWhereNecessary = (names) => {
     .map((t) => (
       Object.assign(t, {
         contactsCount: 0,
-        campaignsCount: 0,
-        users: {}
+        campaignsCount: 0
       })
     ))
 
@@ -80,13 +79,12 @@ const updateTaggedItems = (userId, Collection, countField, slugs, t) => {
     multi: true
   })
 
-  // Update counts and users on tags
+  // Update counts on tags
   Tags.update({
     slug: t.slug
   }, {
     $inc: {
-      [countField]: added,
-      [`users.${userId}`]: 1
+      [countField]: added
     }
   }, {
     multi: true
@@ -94,6 +92,14 @@ const updateTaggedItems = (userId, Collection, countField, slugs, t) => {
 }
 
 const setTaggedItems = (userId, _id, tags, Collection, countField) => {
+  const item = Collection.findOne({_id: _id}, {tags: 1})
+
+  if (!item) {
+    return
+  }
+
+  const existingTags = item.tags
+
   Collection.update({
     _id: _id
   }, {
@@ -103,34 +109,60 @@ const setTaggedItems = (userId, _id, tags, Collection, countField) => {
     }
   })
 
-  tags.forEach(tag => {
-    const count = Collection.find({
-      'tags.slug': tag.slug
-    }).count()
+  const removedTags = existingTags
+    .filter(t1 => !tags.find(t2 => t1.slug === t2.slug))
+  const addedTags = tags
+    .filter(t1 => !existingTags.find(t2 => t1.slug === t2.slug))
 
-    // Update counts
+  removedTags
+  .forEach(tag => {
+    // Update counts on contacts/campaigns
     Collection.update({
       'tags.slug': tag.slug
     }, {
       $inc: {
-        'tags.$.count': count
+        'tags.$.count': -1
       }
     }, {
       multi: true
     })
 
-    // Update counts and users on tags
+    // Update counts on tags
     Tags.update({
       slug: tag.slug
     }, {
       $inc: {
-        [countField]: count,
-        [`users.${userId}`]: 1
+        [countField]: -1
       }
     }, {
       multi: true
     })
   })
+
+  addedTags
+    .forEach(tag => {
+      // Update counts on contacts/campaigns
+      Collection.update({
+        'tags.slug': tag.slug
+      }, {
+        $inc: {
+          'tags.$.count': 1
+        }
+      }, {
+        multi: true
+      })
+
+      // Update counts on tags
+      Tags.update({
+        slug: tag.slug
+      }, {
+        $inc: {
+          [countField]: 1
+        }
+      }, {
+        multi: true
+      })
+    })
 }
 
 /*
