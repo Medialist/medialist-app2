@@ -80,7 +80,7 @@ const TagSelector = React.createClass({
             data-id='tag-search-input'>
             <div style={{marginBottom: -4}} >
               {this.state.selectedTags.map((tag) =>
-                <Tag name={tag.name} count={tag[countField]} key={tag.slug} onRemove={() => this.onRemoveTag(tag)} />
+                <Tag name={tag.name} count={tag[countField] || tag.count} key={tag.slug} onRemove={() => this.onRemoveTag(tag)} />
               )}
             </div>
           </SearchBox>
