@@ -170,7 +170,7 @@ const test = {
   },
 
   'Should add tags to campaigns from toast menu': function (t) {
-    const tag = faker.hacker.noun()
+    const tag = `${faker.hacker.noun()}-${faker.hacker.noun()}-${faker.hacker.noun()}`
 
     t.createDomain(['campaign'], (campaign, done) => {
       const campaignsPage = t.page.campaigns()

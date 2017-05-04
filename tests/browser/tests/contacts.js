@@ -171,7 +171,7 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
   },
 
   'Should add tags to contacts from toast menu': function (t) {
-    const tag = faker.hacker.noun()
+    const tag = `${faker.hacker.noun()}-${faker.hacker.noun()}-${faker.hacker.noun()}`
 
     t.createDomain(['contact'], (contact, done) => {
       const contactsPage = t.page.contacts()

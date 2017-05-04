@@ -184,7 +184,7 @@ const test = {
   },
 
   'Should add tags to contact on contact page': function (t) {
-    const tag = faker.hacker.noun()
+    const tag = `${faker.hacker.noun()}-${faker.hacker.noun()}-${faker.hacker.noun()}`
 
     t.createDomain(['contact'], (contact, done) => {
       const contactPage = t.page.contact()
@@ -214,7 +214,7 @@ const test = {
   },
 
   'Should remove tags from contact on contact page': function (t) {
-    const tag = faker.hacker.noun()
+    const tag = `${faker.hacker.noun()}-${faker.hacker.noun()}-${faker.hacker.noun()}`
 
     t.createDomain(['contact', 'contactList'], (contact, contactList, done) => {
       t.perform((done) => {
@@ -250,7 +250,7 @@ const test = {
   },
 
   'Should cancel removing tags from contact on contact page': function (t) {
-    const tag = faker.hacker.noun()
+    const tag = `${faker.hacker.noun()}-${faker.hacker.noun()}-${faker.hacker.noun()}`
 
     t.createDomain(['contact', 'contactList'], (contact, contactList, done) => {
       t.perform((done) => {
