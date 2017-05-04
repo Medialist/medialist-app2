@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = (dataId) => ({
-  selector: `[data-id=${dataId}]`,
+  selector: `[data-id='${dataId}']`,
   elements: {
     addNewListButton: '[data-id=add-new-list-button]',
     newListInput: '[data-id=add-new-list-input]',

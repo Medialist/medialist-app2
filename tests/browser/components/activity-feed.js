@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = (prefix) => ({
-  selector: `[data-id=${prefix}-activity-feed]`,
+  selector: `[data-id='${prefix}-activity-feed']`,
   elements: {
     addContactsToCampaignPost: '[data-id=add-contacts-to-campaign]'
   },
@@ -22,7 +22,7 @@ module.exports = (prefix) => ({
       return this._assertHasPostWith('create-campaign', null, campaign, data)
     },
     _assertHasPostWith: function (type, contact, campaign, data) {
-      let selector = `[data-id=${type}]`
+      let selector = `[data-id='${type}']`
 
       if (contact) {
         selector += `[data-contact~='${contact._id}']`

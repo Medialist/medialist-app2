@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = (dataId) => ({
-  selector: `[data-id=${dataId}]`,
+  selector: `[data-id='${dataId}']`,
   elements: {
     searchInput: '[data-id=tag-search-input]',
     createNewTag: '[data-id=create-new-tag]',
@@ -20,7 +20,7 @@ module.exports = (dataId) => ({
       return this
     },
     removeTag: function (tag) {
-      const selector = `[data-tag=${tag}] [data-id=remove-tag-button]`
+      const selector = `[data-tag='${tag}'] [data-id=remove-tag-button]`
 
       this
         .waitForElementVisible('@searchInput')

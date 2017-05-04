@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = (dataId) => ({
-  selector: `[data-id=${dataId}]`,
+  selector: `[data-id='${dataId}']`,
   elements: {
     saveButton: '[data-id=add-to-list-modal-save-button]',
     cancelButton: '[data-id=add-to-list-modal-cancel-button]',
