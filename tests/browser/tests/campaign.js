@@ -184,7 +184,7 @@ const test = {
   },
 
   'Should add tags to campaign on campaign page': function (t) {
-    const tag = `${faker.hacker.noun()}-${faker.hacker.noun()}-${faker.hacker.noun()}`
+    const tag = `${faker.hacker.noun()}-${faker.hacker.noun()}-${faker.hacker.noun()}`.toLowerCase().replace(/[^a-z0-9_-]/g, '')
 
     t.createDomain(['campaign'], (campaign, done) => {
       const campaignPage = t.page.campaign()
@@ -214,7 +214,7 @@ const test = {
   },
 
   'Should remove tags from campaign on campaign page': function (t) {
-    const tag = `${faker.hacker.noun()}-${faker.hacker.noun()}-${faker.hacker.noun()}`
+    const tag = `${faker.hacker.noun()}-${faker.hacker.noun()}-${faker.hacker.noun()}`.toLowerCase().replace(/[^a-z0-9_-]/g, '')
 
     t.createDomain(['campaign', 'campaignList'], (campaign, campaignList, done) => {
       t.perform((done) => {
@@ -250,7 +250,7 @@ const test = {
   },
 
   'Should cancel removing tags from campaign on campaign page': function (t) {
-    const tag = `${faker.hacker.noun()}-${faker.hacker.noun()}-${faker.hacker.noun()}`
+    const tag = `${faker.hacker.noun()}-${faker.hacker.noun()}-${faker.hacker.noun()}`.toLowerCase().replace(/[^a-z0-9_-]/g, '')
 
     t.createDomain(['campaign', 'campaignList'], (campaign, campaignList, done) => {
       t.perform((done) => {
