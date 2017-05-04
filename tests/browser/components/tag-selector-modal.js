@@ -19,6 +19,17 @@ module.exports = (dataId) => ({
 
       return this
     },
+    removeTag: function (tag) {
+      const selector = `[data-tag=${tag}] [data-id=remove-tag-button]`
+
+      this
+        .waitForElementVisible('@searchInput')
+        .waitForElementVisible(selector)
+        .click(selector)
+        .waitForElementNotPresent(selector)
+
+      return this
+    },
     save: function () {
       this
         .waitForElementVisible('@saveButton')

@@ -383,7 +383,8 @@ describe('master-lists-set-masterlists', function () {
     setMasterLists.run.call({userId: 123}, { type: 'Campaigns', item: campaignId, masterLists: [masterListIds[0], masterListIds[1]] })
     const campaign = Campaigns.findOne({_id: campaignId})
     assert.equal(campaign.masterLists.indexOf(masterListIds[2]), -1, 'campaign is not added to a masterlist if it is not specified')
-    assert.ok(campaign.masterLists.indexOf(masterListIds[0]) > -1 && campaign.masterLists.indexOf(masterListIds[1]) > -1, 'campaign is added to all masterlists that are specified')
+    assert.ok(campaign.masterLists.find(list => list._id === masterListIds[0]), 'campaign is added to all masterlists that are specified')
+    assert.ok(campaign.masterLists.find(list => list._id === masterListIds[1]), 'campaign is added to all masterlists that are specified')
     const masterLists = MasterLists.find({items: {$size: 1}}).fetch()
     assert.equal(masterLists.length, 2, '2 masterLists records have an the same item inserted')
     // update the item removing from one masterlist and adding to another

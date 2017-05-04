@@ -184,8 +184,6 @@ export const setMasterLists = new ValidatedMethod({
       throw new Meteor.Error(`${type.substring(0, type.length - 1)} not found`)
     }
 
-    const removeItemsFromMasterListsIds = itemDocument.masterLists.filter((oldListItem) => masterLists.indexOf(oldListItem) === -1)
-
     MasterLists.update({
       _id: {
         $in: masterLists
@@ -197,6 +195,10 @@ export const setMasterLists = new ValidatedMethod({
     }, {
       multi: true
     })
+
+    const removeItemsFromMasterListsIds = itemDocument.masterLists
+      .map(list => list._id)
+      .filter((oldListItem) => masterLists.indexOf(oldListItem) === -1)
 
     MasterLists.update({
       _id: {

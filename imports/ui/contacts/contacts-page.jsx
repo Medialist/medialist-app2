@@ -106,7 +106,7 @@ const ContactsPage = withSnackbar(React.createClass({
         console.log(err)
         return snackbar.error('batch-tag-contacts-failure')
       }
-      snackbar.show(`Add ${names.length} ${names.length === 1 ? 'tag' : 'tags'} to ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'}`, 'batch-tag-contacts-success')
+      snackbar.show(`Added ${names.length} ${names.length === 1 ? 'tag' : 'tags'} to ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'}`, 'batch-tag-contacts-success')
     })
   },
 

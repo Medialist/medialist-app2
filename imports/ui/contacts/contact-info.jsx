@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router'
 import { Meteor } from 'meteor/meteor'
 import { CircleAvatar, SquareAvatar, avatarStyle } from '../images/avatar'
-import CountTag from '../tags/tag'
+import { LinkedTag } from '../tags/tag'
 import { EmailIcon, FavouritesIconGold, FavouritesIcon, PhoneIcon, BioIcon, MobileIcon, AddressIcon } from '../images/icons'
 import { setMasterLists } from '/imports/api/master-lists/methods'
 import InfoHeader from '../lists/info-header'
@@ -65,17 +65,25 @@ const ContactInfo = withSnackbar(React.createClass({
   },
 
   onUpdateTags (tags) {
-    console.log(tags)
+    Meteor.call('Tags/set', {
+      type: 'Contacts',
+      _id: this.props.contact._id,
+      tags: tags.map((t) => t.name)
+    }, (error) => {
+      if (error) {
+        console.error(error)
+
+        return this.props.snackbar.error('update-contact-tags-failure')
+      }
+
+      this.props.snackbar.show(`Updated ${this.props.contact.name.split(' ')[0]}'s tags`, 'update-contact-tags-success')
+    })
   },
 
   onToggleFavourite () {
     Meteor.call('contacts/toggle-favourite', this.props.contact.slug, (err) => {
       if (err) console.error('Could not toggle favourite status for contact', err)
     })
-  },
-
-  onTagRemove (tag) {
-    console.log('TODO: remove tags from contact info')
   },
 
   render () {
@@ -86,8 +94,7 @@ const ContactInfo = withSnackbar(React.createClass({
       onAddContactToMasterLists,
       onAddTags,
       dismissAddTags,
-      onUpdateTags,
-      onTagRemove
+      onUpdateTags
     } = this
     const { addToMasterListOpen, addTagsOpen } = this.state
     const { user: { myContacts }, contact, campaigns, onAddToCampaignClick } = this.props
@@ -162,17 +169,7 @@ const ContactInfo = withSnackbar(React.createClass({
         <section>
           <InfoHeader name='Tags' onClick={onAddTags} data-id='edit-contact-tags-button' />
           <div className='px2 py3'>
-            {tags.map((t) => {
-              return (
-                <Link to={`/contacts?tag=${t.slug}`} key={t.slug}>
-                  <CountTag
-                    name={t.name}
-                    count={t.count}
-                    onRemove={onTagRemove}
-                  />
-                </Link>
-              )
-            })}
+            {tags.map((t) => (<LinkedTag to={`/contacts?tag=${t.slug}`} name={t.name} count={t.count} key={t.slug} />))}
           </div>
         </section>
         <AddToMasterList

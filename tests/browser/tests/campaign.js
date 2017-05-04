@@ -2,6 +2,7 @@
 
 const domain = require('../fixtures/domain')
 const assertions = require('../fixtures/assertions')
+const faker = require('faker')
 
 const test = {
   '@tags': ['campaign'],
@@ -174,6 +175,106 @@ const test = {
       t.page.main().waitForSnackbarMessage('update-campaign-campaign-lists-success')
 
       campaignPage.section.info.assert.elementNotPresent('a[data-id=campaign-list-link]')
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should add tags to campaign on campaign page': function (t) {
+    const tag = faker.hacker.noun()
+
+    t.createDomain(['campaign'], (campaign, done) => {
+      const campaignPage = t.page.campaign()
+        .navigate(campaign)
+
+      campaignPage.section.info
+        .waitForElementVisible('@editCampaignTagsButton')
+        .click('@editCampaignTagsButton')
+
+      const tagSelectorModal = campaignPage.section.tagSelectorModal
+
+      campaignPage.waitForElementVisible(tagSelectorModal.selector)
+
+      campaignPage.section.tagSelectorModal
+        .addTag(tag)
+        .save()
+
+      t.page.main().waitForSnackbarMessage('update-campaign-tags-success')
+
+      campaignPage.section.info.assert.attributeContains('a[data-id=tag-link]', 'href', `/campaigns?tag=${tag}`)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should remove tags from campaign on campaign page': function (t) {
+    const tag = faker.hacker.noun()
+
+    t.createDomain(['campaign', 'campaignList'], (campaign, campaignList, done) => {
+      t.perform((done) => {
+        t.tagCampaigns([campaign], [tag], () => done())
+      })
+
+      const campaignPage = t.page.campaign()
+        .navigate(campaign)
+
+      campaignPage.section.info.assert.attributeContains('a[data-id=tag-link]', 'href', `/campaigns?tag=${tag}`)
+
+      campaignPage.section.info
+        .waitForElementVisible('@editCampaignTagsButton')
+        .click('@editCampaignTagsButton')
+
+      const tagSelectorModal = campaignPage.section.tagSelectorModal
+
+      campaignPage.waitForElementVisible(tagSelectorModal.selector)
+
+      campaignPage.section.tagSelectorModal
+        .removeTag(tag)
+        .save()
+
+      t.page.main().waitForSnackbarMessage('update-campaign-tags-success')
+
+      campaignPage.section.info.assert.elementNotPresent('a[data-id=tag-link]')
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should cancel removing tags from campaign on campaign page': function (t) {
+    const tag = faker.hacker.noun()
+
+    t.createDomain(['campaign', 'campaignList'], (campaign, campaignList, done) => {
+      t.perform((done) => {
+        t.tagCampaigns([campaign], [tag], () => done())
+      })
+
+      const campaignPage = t.page.campaign()
+        .navigate(campaign)
+
+      campaignPage.section.info.assert.attributeContains('a[data-id=tag-link]', 'href', `/campaigns?tag=${tag}`)
+
+      campaignPage.section.info
+        .waitForElementVisible('@editCampaignTagsButton')
+        .click('@editCampaignTagsButton')
+
+      const tagSelectorModal = campaignPage.section.tagSelectorModal
+
+      campaignPage.waitForElementVisible(tagSelectorModal.selector)
+
+      campaignPage.section.tagSelectorModal
+        .removeTag(tag)
+        .cancel()
+
+      campaignPage.section.info.assert.attributeContains('a[data-id=tag-link]', 'href', `/campaigns?tag=${tag}`)
 
       done()
     })

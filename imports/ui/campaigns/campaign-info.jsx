@@ -1,8 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Link } from 'react-router'
 import { Meteor } from 'meteor/meteor'
-import CountTag from '../tags/tag'
+import { LinkedTag } from '../tags/tag'
 import EditableAvatar from '../images/editable-avatar'
 import { SquareAvatar, CircleAvatar } from '../images/avatar'
 import { BioIcon, FavouritesIcon, FavouritesIconGold, WebsiteIcon } from '../images/icons'
@@ -68,7 +67,19 @@ const CampaignInfo = withSnackbar(React.createClass({
   },
 
   onUpdateTags (tags) {
-    console.log(tags)
+    Meteor.call('Tags/set', {
+      type: 'Campaigns',
+      _id: this.props.campaign._id,
+      tags: tags.map((t) => t.name)
+    }, (error) => {
+      if (error) {
+        console.error(error)
+
+        return this.props.snackbar.error('update-campaign-tags-failure')
+      }
+
+      this.props.snackbar.show(`Updated ${this.props.campaign.name} tags`, 'update-campaign-tags-success')
+    })
   },
 
   onAvatarChange (event) {
@@ -177,13 +188,7 @@ const CampaignInfo = withSnackbar(React.createClass({
         <section>
           <InfoHeader name='Tags' onClick={onAddTags} data-id='edit-campaign-tags-button' />
           <div className='px2 py3'>
-            {tags.map((t) => {
-              return (
-                <Link to={`/campaigns?tag=${t.slug}`} key={t.slug}>
-                  <CountTag name={t.name} count={t.count} />
-                </Link>
-              )
-            })}
+            {tags.map((t) => (<LinkedTag to={`/campaigns?tag=${t.slug}`} name={t.name} count={t.count} key={t.slug} />))}
           </div>
         </section>
         <AddToMasterList

@@ -2,6 +2,7 @@
 
 const domain = require('../fixtures/domain')
 const assertions = require('../fixtures/assertions')
+const faker = require('faker')
 
 const test = {
   '@tags': ['contact'],
@@ -174,6 +175,106 @@ const test = {
       t.page.main().waitForSnackbarMessage('update-contact-contact-lists-success')
 
       contactPage.section.info.assert.elementNotPresent('a[data-id=contact-list-link]')
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should add tags to contact on contact page': function (t) {
+    const tag = faker.hacker.noun()
+
+    t.createDomain(['contact'], (contact, done) => {
+      const contactPage = t.page.contact()
+        .navigate(contact)
+
+      contactPage.section.info
+        .waitForElementVisible('@editContactTagsButton')
+        .click('@editContactTagsButton')
+
+      const tagSelectorModal = contactPage.section.tagSelectorModal
+
+      contactPage.waitForElementVisible(tagSelectorModal.selector)
+
+      contactPage.section.tagSelectorModal
+        .addTag(tag)
+        .save()
+
+      t.page.main().waitForSnackbarMessage('update-contact-tags-success')
+
+      contactPage.section.info.assert.attributeContains('a[data-id=tag-link]', 'href', `/contacts?tag=${tag}`)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should remove tags from contact on contact page': function (t) {
+    const tag = faker.hacker.noun()
+
+    t.createDomain(['contact', 'contactList'], (contact, contactList, done) => {
+      t.perform((done) => {
+        t.tagContacts([contact], [tag], () => done())
+      })
+
+      const contactPage = t.page.contact()
+        .navigate(contact)
+
+      contactPage.section.info.assert.attributeContains('a[data-id=tag-link]', 'href', `/contacts?tag=${tag}`)
+
+      contactPage.section.info
+        .waitForElementVisible('@editContactTagsButton')
+        .click('@editContactTagsButton')
+
+      const tagSelectorModal = contactPage.section.tagSelectorModal
+
+      contactPage.waitForElementVisible(tagSelectorModal.selector)
+
+      contactPage.section.tagSelectorModal
+        .removeTag(tag)
+        .save()
+
+      t.page.main().waitForSnackbarMessage('update-contact-tags-success')
+
+      contactPage.section.info.assert.elementNotPresent('a[data-id=tag-link]')
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should cancel removing tags from contact on contact page': function (t) {
+    const tag = faker.hacker.noun()
+
+    t.createDomain(['contact', 'contactList'], (contact, contactList, done) => {
+      t.perform((done) => {
+        t.tagContacts([contact], [tag], () => done())
+      })
+
+      const contactPage = t.page.contact()
+        .navigate(contact)
+
+      contactPage.section.info.assert.attributeContains('a[data-id=tag-link]', 'href', `/contacts?tag=${tag}`)
+
+      contactPage.section.info
+        .waitForElementVisible('@editContactTagsButton')
+        .click('@editContactTagsButton')
+
+      const tagSelectorModal = contactPage.section.tagSelectorModal
+
+      contactPage.waitForElementVisible(tagSelectorModal.selector)
+
+      contactPage.section.tagSelectorModal
+        .removeTag(tag)
+        .cancel()
+
+      contactPage.section.info.assert.attributeContains('a[data-id=tag-link]', 'href', `/contacts?tag=${tag}`)
 
       done()
     })

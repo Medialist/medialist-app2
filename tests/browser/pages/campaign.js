@@ -4,6 +4,7 @@ const editCampaignForm = require('../components/edit-campaign-form')
 const activityFeed = require('../components/activity-feed')
 const postBox = require('../components/post-box')
 const addToListsModal = require('../components/add-to-lists-modal')
+const tagSelectorModal = require('../components/tag-selector-modal')
 
 module.exports = {
   url: 'http://localhost:3000/campaigns',
@@ -33,6 +34,7 @@ module.exports = {
     activityFeed: activityFeed('campaign'),
     postBox: postBox,
     campaignListsModal: addToListsModal('add-to-list-modal'),
+    tagSelectorModal: tagSelectorModal('tag-selector-modal'),
     editTeamMembersForm: {
       selector: '[data-id=edit-campaign-team-modal]',
       elements: {
