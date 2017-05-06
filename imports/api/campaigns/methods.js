@@ -73,11 +73,7 @@ export const update = new ValidatedMethod({
     const now = new Date()
 
     data.updatedAt = now
-    data.updatedBy = {
-      _id: user._id,
-      name: user.profile.name,
-      avatar: getAvatar(user)
-    }
+    data.updatedBy = findOneUserRef(user._id)
 
     const result = Campaigns.update({ _id }, { $set: data })
 
@@ -276,11 +272,7 @@ export const addTeamMates = new ValidatedMethod({
 
     const $set = {
       updatedAt: now,
-      updatedBy: {
-        _id: user._id,
-        name: user.profile.name,
-        avatar: getAvatar(user)
-      }
+      updatedBy: findOneUserRef(user._id)
     }
     const pushIds = userIds.filter((_id) => !campaign.team.some((t) => t._id === _id))
     const $push = {
@@ -328,11 +320,7 @@ export const removeTeamMate = new ValidatedMethod({
 
     const $set = {
       updatedAt: now,
-      updatedBy: {
-        _id: user._id,
-        name: user.profile.name,
-        avatar: getAvatar(user)
-      }
+      updatedBy: findOneUserRef(user._id)
     }
     const $pull = { team: { _id: userId } }
 
@@ -375,11 +363,7 @@ export const setTeamMates = new ValidatedMethod({
 
     const $set = {
       updatedAt: now,
-      updatedBy: {
-        _id: user._id,
-        name: user.profile.name,
-        avatar: getAvatar(user)
-      },
+      updatedBy: findOneUserRef(user._id),
       team: Meteor.users.find({
         _id: {
           $in: userIds

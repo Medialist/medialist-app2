@@ -15,6 +15,7 @@ import Contacts from '../contacts/contacts'
 import Campaigns from '../campaigns/campaigns'
 import findUniqueSlug from '/imports/lib/slug'
 import { TypeSchema } from '/imports/lib/schema'
+import { findOneUserRef } from '/imports/api/users/users'
 
 /*
  * Add an array of Campaigns/Contacts to an array of master lists.
@@ -69,17 +70,31 @@ export const create = new ValidatedMethod({
   name: 'MasterLists/create',
   validate: MasterListCreationSchema.validator(),
   run ({ type, name }) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
-    const lists = MasterLists.find(
-      {type: type},
-      {sort: {order: -1}, limit: 1}
-    ).fetch()
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    const lists = MasterLists.find({
+      type: type
+    }, {
+      sort: {
+        order: -1
+      },
+      limit: 1
+    }).fetch()
+
     const order = lists.reduce((p, doc) => {
       return doc.order + 1
     }, 0)
+
     const doc = {type, name, order, items: []}
     doc.slug = findUniqueSlug(doc.name, MasterLists)
+
     check(doc, MasterListSchema)
+
+    doc.createdAt = new Date()
+    doc.createdBy = findOneUserRef(this.userId)
+
     return MasterLists.insert(doc)
   }
 })
@@ -123,12 +138,25 @@ export const update = new ValidatedMethod({
   name: 'MasterLists/update',
   validate: MasterListUpdateSchema.validator(),
   run ({ _id, name }) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
 
     const masterList = MasterLists.findOne({ _id, deleted: null })
-    if (!masterList) throw new Meteor.Error('MasterList not found')
 
-    MasterLists.update({ _id }, { $set: { name } })
+    if (!masterList) {
+      throw new Meteor.Error('MasterList not found')
+    }
+
+    MasterLists.update({
+      _id
+    }, {
+      $set: {
+        name,
+        updatedAt: new Date(),
+        updatedBy: findOneUserRef(this.userId)
+      }
+    })
 
     const refCollection = (masterList.type === 'Contacts') ? Contacts : Campaigns
     return refCollection.update({

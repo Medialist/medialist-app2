@@ -81,8 +81,21 @@ describe('batchAddToMasterLists', function () {
 })
 
 describe('master-lists-create', function () {
+  let userId
+
   beforeEach(function () {
     resetDatabase()
+
+    userId = Meteor.users.insert({
+      profile: {
+        name: 'TESTER'
+      },
+      services: {
+        twitter: {
+          profile_image_url_https: 'http://example.org/user.jpg'
+        }
+      }
+    })
   })
 
   it('should fail if type or name is missing', function () {
@@ -114,7 +127,7 @@ describe('master-lists-create', function () {
 
   it('If all is well it should create a new master-list', function () {
     const id = create.run.call(
-      { userId: '123' },
+      { userId: userId },
       { name: 'Hello', type: 'Contacts' }
     )
     assert.ok(id)
@@ -155,9 +168,11 @@ describe('master-lists-delete', function () {
 
 describe('master-lists-update', function () {
   let masterListId
+  let userId
 
   beforeEach(function () {
     resetDatabase()
+
     masterListId = MasterLists.insert({
       type: 'Campaigns',
       name: Faker.company.companyName(),
@@ -165,7 +180,19 @@ describe('master-lists-update', function () {
       items: Array(3).fill(0).map(() => Random.id()),
       order: 0
     })
+
     Campaigns.insert({ masterLists: [{ _id: masterListId }] })
+
+    userId = Meteor.users.insert({
+      profile: {
+        name: 'TESTER'
+      },
+      services: {
+        twitter: {
+          profile_image_url_https: 'http://example.org/user.jpg'
+        }
+      }
+    })
   })
 
   it('should not allow a MasterList update unless logged in', function () {
@@ -173,16 +200,16 @@ describe('master-lists-update', function () {
   })
 
   it('should not allow an update to a non-existent MasterList', function () {
-    assert.throws(() => update.run.call({ userId: 123 }, { _id: Random.id(), name: Faker.company.companyName() }), /MasterList not found/)
+    assert.throws(() => update.run.call({ userId: userId }, { _id: Random.id(), name: Faker.company.companyName() }), /MasterList not found/)
   })
 
   it('should not allow an update to a MasterList field other than name', function () {
-    assert.throws(() => update.validate.call({ userId: 123 }, { _id: masterListId, slug: Faker.commerce.productMaterial() }), /slug is not allowed by the schema/)
+    assert.throws(() => update.validate.call({ userId: userId }, { _id: masterListId, slug: Faker.commerce.productMaterial() }), /slug is not allowed by the schema/)
   })
 
   it('should correctly update an existing MasterList', function () {
     const newName = Faker.company.companyName()
-    update.run.call({ userId: 123 }, { _id: masterListId, name: newName })
+    update.run.call({ userId: userId }, { _id: masterListId, name: newName })
     const masterList = MasterLists.findOne({ _id: masterListId })
     assert.equal(masterList.name, newName)
     const campaign = Campaigns.findOne()
