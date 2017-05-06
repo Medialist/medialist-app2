@@ -95,8 +95,8 @@ const SettingsPage = withSnackbar(React.createClass({
 export default createContainer(() => {
   return {
     user: Meteor.user(),
-    contactsMasterLists: MasterLists.find({type: 'Contacts'}).fetch(),
-    campaignsMasterLists: MasterLists.find({type: 'Campaigns'}).fetch()
+    contactsMasterLists: MasterLists.find({type: 'Contacts'}, {sort: {createdAt: -1}}).fetch(),
+    campaignsMasterLists: MasterLists.find({type: 'Campaigns'}, {sort: {createdAt: -1}}).fetch()
   }
 }, SettingsPage)
 
