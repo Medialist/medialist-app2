@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { check, Match } from 'meteor/check'
+import escapeRegExp from 'lodash.escaperegexp'
 import Contacts from './contacts'
 
 /**
@@ -40,7 +41,7 @@ export const searchContacts = ({
     query.slug = { $in: myContacts.map((c) => c.slug) }
   }
   if (term && term.length >= minSearchLength) {
-    const termRegExp = new RegExp(term, 'gi')
+    const termRegExp = new RegExp(escapeRegExp(term), 'gi')
     query.$or = [
       { name: termRegExp },
       { 'outlets.value': termRegExp },

@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { check } from 'meteor/check'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
+import escapeRegExp from 'lodash.escaperegexp'
 import slugify, { checkAllSlugsExist } from '/imports/lib/slug'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import Campaigns from '../campaigns/campaigns'
@@ -356,8 +357,12 @@ export const searchOutlets = new ValidatedMethod({
   }).validator(),
 
   run ({term, field}) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
-    const termRegExp = new RegExp('^' + term, 'i')
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    const termRegExp = new RegExp('^' + escapeRegExp(term), 'i')
+
     const suggestions = Contacts
       .find(
         {[`outlets.${field}`]: termRegExp},
@@ -367,6 +372,7 @@ export const searchOutlets = new ValidatedMethod({
       .reduce((res, arr) => res.concat(arr), [])
       .map((outlet) => outlet[field])
       .filter((s) => s.match(termRegExp))
+
     return suggestions
   }
 })

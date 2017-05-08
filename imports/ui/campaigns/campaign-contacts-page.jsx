@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Meteor } from 'meteor/meteor'
+import escapeRegExp from 'lodash.escaperegexp'
 import { createContainer } from 'meteor/react-meteor-data'
 import ContactsTable from '../contacts/contacts-table'
 import SearchBox from '../lists/search-box'
@@ -202,7 +203,7 @@ const ContactsTableContainer = createContainer((props) => {
   const contactIds = campaign.contacts ? Object.keys(campaign.contacts) : []
   let query = { slug: { $in: contactIds } }
   if (term) {
-    const filterRegExp = new RegExp(term, 'gi')
+    const filterRegExp = new RegExp(escapeRegExp(term), 'gi')
     query = {
       $and: [
         { slug: { $in: contactIds } },

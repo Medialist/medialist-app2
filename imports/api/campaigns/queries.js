@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { check, Match } from 'meteor/check'
+import escapeRegExp from 'lodash.escaperegexp'
 import Campaigns from './campaigns'
 
 /**
@@ -40,7 +41,7 @@ export const searchCampaigns = ({
     query[`contacts.${contactSlug}`] = { $exists: true }
   }
   if (term && term.length >= minSearchLength) {
-    const termRegExp = new RegExp(term, 'gi')
+    const termRegExp = new RegExp(escapeRegExp(term), 'gi')
     query.$or = [
       { name: termRegExp },
       { 'purpose': termRegExp },

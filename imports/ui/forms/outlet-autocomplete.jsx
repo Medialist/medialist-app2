@@ -6,6 +6,7 @@ const OutletAutocomplete = createContainer((props) => {
   const {field, value: term} = props
   if (!term || term.length < 1) return {suggestions: []}
   const suggestions = searchOutlets.call({field, term})
+  console.info('suggestions', suggestions)
   return {suggestions}
 }, ValidatedAutocomplete)
 
