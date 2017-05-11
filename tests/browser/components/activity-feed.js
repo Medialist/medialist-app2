@@ -1,5 +1,19 @@
 'use strict'
 
+const createPostSelector = (type, contact, campaign) => {
+  let postSelector = `[data-id='${type}']`
+
+  if (contact) {
+    postSelector += `[data-contact~='${contact._id}']`
+  }
+
+  if (campaign) {
+    postSelector += `[data-campaign~='${campaign._id}']`
+  }
+
+  return postSelector
+}
+
 module.exports = (prefix) => ({
   selector: `[data-id='${prefix}-activity-feed']`,
   elements: {
@@ -69,8 +83,108 @@ module.exports = (prefix) => ({
 
       return this
     },
+    deleteCoveragePostWith: function (contact, campaign) {
+      return this._deletePostWith('coverage-post', contact, campaign)
+    },
+    _deletePostWith: function (type, contact, campaign) {
+      let postSelector = createPostSelector(type, contact, campaign)
+
+      const confirmDeletePostSelector = `${postSelector} [data-id=confirm-delete-button]`
+
+      this
+        ._openDeleteModal(type, contact, campaign)
+        .waitForElementPresent(confirmDeletePostSelector)
+        .click(confirmDeletePostSelector)
+        .waitForElementNotPresent(postSelector)
+
+      return this
+    },
+    cancelDeleteCoveragePostWith: function (contact, campaign) {
+      return this._cancelDeletePostWith('coverage-post', contact, campaign)
+    },
+    _cancelDeletePostWith: function (type, contact, campaign) {
+      let postSelector = createPostSelector(type, contact, campaign)
+
+      const cancelDeletePostSelector = `${postSelector} [data-id=cancel-delete-button]`
+      const deletePostModalSelector = `${postSelector} [data-id=delete-post-modal]`
+
+      this
+        ._openDeleteModal(type, contact, campaign)
+        .waitForElementPresent(cancelDeletePostSelector)
+        .click(cancelDeletePostSelector)
+        .waitForElementNotPresent(deletePostModalSelector)
+
+      return this
+    },
+    _openDeleteModal: function (type, contact, campaign) {
+      let postSelector = createPostSelector(type, contact, campaign)
+
+      const openDropDownSelector = `${postSelector} [data-id=open-post-menu-button]`
+      const deletePostSelector = `${postSelector} [data-id=delete-post-button]`
+      const deletePostModalSelector = `${postSelector} [data-id=delete-post-modal]`
+
+      this
+        .waitForElementPresent(openDropDownSelector)
+        .click(openDropDownSelector)
+        .waitForElementPresent(deletePostSelector)
+        .click(deletePostSelector)
+        .waitForElementPresent(deletePostModalSelector)
+
+      return this
+    },
+    assertHasPostsForCampaign: function (campaign) {
+      const selector = `[data-campaign~='${campaign._id}']`
+
+      this.assert.elementPresent(selector)
+
+      return this
+    },
     assertHasNoPostsForCampaign: function (campaign) {
       const selector = `[data-campaign~='${campaign._id}']`
+
+      this.assert.elementNotPresent(selector)
+
+      return this
+    },
+
+    assertHasCoveragePostsForCampaign: function (campaign) {
+      return this._assertHasPostForCampaign('coverage-post', campaign)
+    },
+    _assertHasPostForCampaign: function (type, campaign) {
+      const selector = `[data-id='${type}'][data-campaign~='${campaign._id}']`
+
+      this.assert.elementPresent(selector)
+
+      return this
+    },
+
+    assertHasNoCoveragePostsForCampaign: function (campaign) {
+      return this._assertHasNoPostForCampaign('coverage-post', campaign)
+    },
+    _assertHasNoPostForCampaign: function (type, campaign) {
+      const selector = `[data-id='${type}'][data-campaign~='${campaign._id}']`
+
+      this.assert.elementNotPresent(selector)
+
+      return this
+    },
+
+    assertHasCoveragePostsForContact: function (contact) {
+      return this._assertHasPostForContact('coverage-post', contact)
+    },
+    _assertHasPostForContact: function (type, contact) {
+      const selector = `[data-id='${type}'][data-contact~='${contact._id}']`
+
+      this.assert.elementPresent(selector)
+
+      return this
+    },
+
+    assertHasNoCoveragePostsForContact: function (contact) {
+      return this._assertHasNoPostForContact('coverage-post', contact)
+    },
+    _assertHasNoPostForContact: function (type, contact) {
+      const selector = `[data-id='${type}'][data-contact~='${contact._id}']`
 
       this.assert.elementNotPresent(selector)
 

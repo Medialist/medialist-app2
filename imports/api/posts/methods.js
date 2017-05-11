@@ -153,3 +153,26 @@ export const createNeedToKnowPost = new ValidatedMethod({
     })
   }
 })
+
+export const remove = new ValidatedMethod({
+  name: 'deletePost',
+
+  validate: new SimpleSchema({
+    _ids: {
+      type: [String],
+      regEx: SimpleSchema.RegEx.Id
+    }
+  }).validator(),
+
+  run ({ _ids }) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    Posts.remove({
+      _id: {
+        $in: _ids
+      }
+    })
+  }
+})

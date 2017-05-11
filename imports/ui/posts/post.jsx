@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Link } from 'react-router'
 import dasherise from 'dasherize'
 import { CircleAvatar } from '../images/avatar'
@@ -10,6 +11,7 @@ import CampaignPreview from '../campaigns/campaign-preview'
 import CampaignLink from '../campaigns/campaign-link'
 import {
   ChevronRight,
+  ChevronOpenDown,
   FeedCampaignIcon,
   FeedContactIcon,
   FeedCoverageIcon,
@@ -17,7 +19,10 @@ import {
   FeedNeedToKnowIcon,
   StatusUpdateIcon
 } from '../images/icons'
+import { Dropdown, DropdownMenu } from '../navigation/dropdown'
+import { Option } from '../navigation/select'
 import findUrl from '../../lib/find-url'
+import DeletePostModal from './delete-post-modal'
 
 const hideTextIfOnlyUrl = (item) => {
   const url = findUrl(item.message)
@@ -113,30 +118,112 @@ const turnLinksIntoClickableAnchors = (line, index) => {
   return elements
 }
 
-const Post = ({icon, summary, details, createdBy, createdAt, currentUser, type, bgClass = 'bg-white', contacts, campaigns}) => {
-  const data = {
-    'data-contact': contacts.map(contact => contact._id).join(' '),
-    'data-campaign': campaigns.map(campaigns => campaigns._id).join(' ')
+class Post extends React.Component {
+  constructor (props) {
+    super(props)
+
+    this.state = {
+      menuOpen: false,
+      deleteOpen: false
+    }
   }
 
-  return (
-    <article className={`flex rounded px4 pt3 pb2 mb2 shadow-2 ${bgClass}`} data-id={dasherise(type)} {...data}>
-      <div className='flex-none' style={{paddingTop: 1}}>
-        <CircleAvatar size={38} avatar={createdBy.avatar} name={createdBy.name} style={{marginRight: 13}} />
-        {icon}
-      </div>
-      <div className='flex-auto' style={{paddingLeft: 13}}>
-        <header className='pt2 pb3 f-md flex nowrap' data-id='post-header'>
-          <YouOrName className='semibold align-middle' currentUser={currentUser} user={createdBy} />
-          <div className='align-middle flex-auto truncate' style={{paddingLeft: 3}}>{summary}</div>
-          <span className='f-sm semibold gray60 flex-none'>
-            <Time date={createdAt} />
-          </span>
-        </header>
-        {details}
-      </div>
-    </article>
-  )
+  openMenu (event) {
+    event.preventDefault()
+
+    this.setState({
+      menuOpen: true,
+      deleteOpen: false
+    })
+  }
+
+  closeMenu () {
+    this.setState({
+      menuOpen: false,
+      deleteOpen: false
+    })
+  }
+
+  editPost (event) {
+    event.preventDefault()
+  }
+
+  deletePost (event) {
+    event.preventDefault()
+
+    this.setState({
+      menuOpen: false,
+      deleteOpen: true
+    })
+  }
+
+  render () {
+    const data = {
+      'data-contact': this.props.contacts.map(contact => contact._id).join(' '),
+      'data-campaign': this.props.campaigns.map(campaigns => campaigns._id).join(' ')
+    }
+
+    return (
+      <article className={`flex rounded px4 pt3 pb2 mb2 shadow-2 ${this.props.bgClass}`} data-id={dasherise(this.props.type)} {...data}>
+        <div className='flex-none' style={{paddingTop: 1}}>
+          <CircleAvatar size={38} avatar={this.props.createdBy.avatar} name={this.props.createdBy.name} style={{marginRight: 13}} />
+          {this.props.icon}
+        </div>
+        <div className='flex-auto' style={{paddingLeft: 13}}>
+          <header className='pt2 pb3 f-md flex nowrap' data-id='post-header'>
+            <YouOrName className='semibold align-middle' currentUser={this.props.currentUser} user={this.props.createdBy} />
+            <div className='align-middle flex-auto truncate' style={{paddingLeft: 3}}>{this.props.summary}</div>
+            <span className='f-sm semibold gray60 flex-none'>
+              <Time date={this.props.createdAt} />
+            </span>
+            {this.props.editable && (
+              <Dropdown className='f-sm semibold gray60 flex-none' data-id='post-menu'>
+                <ChevronOpenDown onClick={(event) => this.openMenu(event)} data-id='open-post-menu-button' className='ml1' />
+                <DropdownMenu width={180} left={-150} top={-2} arrowPosition='top' arrowAlign='right' arrowMarginRight='11px' open={this.state.menuOpen} onDismiss={() => this.closeMenu()}>
+                  <nav className='p1'>
+                    {/*
+                      <Option onClick={event => this.editPost(event)} data-id='edit-post-button'>
+                        <span className='ml2 gray20 regular'>Edit Coverage</span>
+                      </Option>
+                    */}
+                    <Option onClick={event => this.deletePost(event)} data-id='delete-post-button'>
+                      <span className='ml2 gray20 regular'>Delete</span>
+                    </Option>
+                  </nav>
+                </DropdownMenu>
+              </Dropdown>
+            )}
+          </header>
+          {this.props.details}
+        </div>
+        <DeletePostModal
+          open={this.state.deleteOpen}
+          post={{_id: this.props._id, type: this.props.type}}
+          onDelete={(event) => this.closeMenu(event)}
+          onDismiss={(event) => this.closeMenu(event)}
+        />
+      </article>
+    )
+  }
+}
+
+Post.propTypes = {
+  _id: PropTypes.string.isRequired,
+  icon: PropTypes.object,
+  summary: PropTypes.any,
+  details: PropTypes.any,
+  createdBy: PropTypes.object,
+  createdAt: PropTypes.object,
+  currentUser: PropTypes.object,
+  type: PropTypes.string,
+  bgClass: PropTypes.string,
+  contacts: PropTypes.array,
+  campaign: PropTypes.object,
+  editable: PropTypes.bool
+}
+
+Post.defaultProps = {
+  bgClass: 'bg-white'
 }
 
 const ContactLink = ({contact, ...props}) => (
@@ -217,6 +304,7 @@ export const FeedbackPost = ({item, currentUser, contact, campaign}) => (
         ) : null}
       </div>
     }
+    editable
   />
 )
 
@@ -236,6 +324,7 @@ export const CoveragePost = ({item, currentUser, contact, campaign}) => (
         ) : null}
       </div>
     }
+    editable
   />
 )
 
@@ -256,6 +345,7 @@ export const NeedToKnowPost = ({item, currentUser, contact}) => (
         ) : null}
       </div>
     }
+    editable
   />
 )
 

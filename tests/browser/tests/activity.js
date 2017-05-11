@@ -465,6 +465,151 @@ const test = {
 
     t.page.main().logout()
     t.end()
+  },
+
+  'Should delete a post from the campaign page': function (t) {
+    t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact], campaign, () => done())
+      })
+
+      const status = faker.hacker.phrase()
+      const contactStatus = faker.helpers.randomize(['completed', 'hot-lead', 'contacted', 'to-contact', 'not-interested'])
+
+      t.perform((done) => {
+        const campaignPage = t.page.campaign()
+          .navigate(campaign)
+
+        campaignPage.section.postBox
+          .postCoverage(contact, contactStatus, status)
+
+        campaignPage.section.activityFeed
+          .assertHasCoveragePostsForContact(contact)
+
+        campaignPage.section.activityFeed
+          .deleteCoveragePostWith(contact, campaign)
+
+        campaignPage.section.activityFeed
+          .assertHasNoCoveragePostsForContact(contact)
+
+        done()
+      })
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should delete a post from the contact page': function (t) {
+    t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact], campaign, () => done())
+      })
+
+      const status = faker.hacker.phrase()
+      const contactStatus = faker.helpers.randomize(['completed', 'hot-lead', 'contacted', 'to-contact', 'not-interested'])
+
+      t.perform((done) => {
+        const contactPage = t.page.contact()
+          .navigate(contact)
+
+        contactPage.section.postBox
+          .postCoverage(campaign, contact, contactStatus, status)
+
+        contactPage.section.activityFeed
+          .assertHasCoveragePostsForCampaign(campaign)
+
+        contactPage.section.activityFeed
+          .deleteCoveragePostWith(contact, campaign)
+
+        contactPage.section.activityFeed
+          .assertHasNoCoveragePostsForCampaign(campaign)
+
+        done()
+      })
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should delete a post from the dashboard page': function (t) {
+    t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact], campaign, () => done())
+      })
+
+      const status = faker.hacker.phrase()
+      const contactStatus = faker.helpers.randomize(['completed', 'hot-lead', 'contacted', 'to-contact', 'not-interested'])
+
+      t.perform((done) => {
+        const contactPage = t.page.contact()
+          .navigate(contact)
+
+        contactPage.section.postBox
+          .postCoverage(campaign, contact, contactStatus, status)
+
+        const dashboardPage = t.page.dashboard()
+          .navigate()
+
+        dashboardPage.waitForElementVisible(dashboardPage.section.activityFeed.selector)
+
+        dashboardPage.section.activityFeed
+          .assertHasCoveragePostsForContact(contact)
+
+        dashboardPage.section.activityFeed
+          .deleteCoveragePostWith(contact, campaign)
+
+        dashboardPage.section.activityFeed
+          .assertHasNoCoveragePostsForContact(contact)
+
+        done()
+      })
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should cancel deleting a post from the campaign page': function (t) {
+    t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact], campaign, () => done())
+      })
+
+      const status = faker.hacker.phrase()
+      const contactStatus = faker.helpers.randomize(['completed', 'hot-lead', 'contacted', 'to-contact', 'not-interested'])
+
+      t.perform((done) => {
+        const campaignPage = t.page.campaign()
+          .navigate(campaign)
+
+        campaignPage.section.postBox
+          .postCoverage(contact, contactStatus, status)
+
+        campaignPage.section.activityFeed
+          .assertHasCoveragePostsForContact(contact)
+
+        campaignPage.section.activityFeed
+          .cancelDeleteCoveragePostWith(contact, campaign)
+
+        campaignPage.section.activityFeed
+          .assertHasCoveragePostsForContact(contact)
+
+        done()
+      })
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   }
 }
 
