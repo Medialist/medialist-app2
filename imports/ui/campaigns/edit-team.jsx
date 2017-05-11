@@ -4,10 +4,9 @@ import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
 import { Link } from 'react-router'
 import Modal from '../navigation/modal'
-import { SearchBlueIcon, AddIcon, SelectedIcon, RemoveIcon } from '../images/icons'
+import { SearchBlueIcon, AddIcon, SelectedIcon } from '../images/icons'
 import AvatarList from '../lists/avatar-list'
 import { CircleAvatar } from '../images/avatar'
-import Tooltip from '../navigation/tooltip'
 import getAvatar from '/imports/lib/get-avatar'
 import toUserRef from '/imports/lib/to-user-ref'
 import withSnackbar from '../snackbar/with-snackbar'
@@ -197,16 +196,15 @@ const TeamMatesList = React.createClass({
           const avatar = getAvatar(teamMate)
           return (
             <div className={`flex items-center pointer border-bottom border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger ${isActive ? 'active' : ''}`} key={_id} onClick={() => this.onClick(teamMate, isActive)} data-id={`team-mate-${teamMate._id}`}>
-              <CircleAvatar avatar={avatar} name={name} />
-              <div className='inline-block pl4' style={{width: '24rem'}}>
+              <div className='flex-none'>
+                <CircleAvatar avatar={avatar} name={name} />
+              </div>
+              <div className='inline-block flex-auto pl4'>
                 <span className='f-xl gray40 py1'>{name}</span><br />
               </div>
               <div className='flex-none px4'>0 campaigns</div>
-              <div className={`flex-none pl4 pr2 ${isActive ? '' : 'opacity-0'} hover-opacity-100`}>
+              <div className={`flex-none px4 ${isActive ? '' : 'opacity-0'} hover-opacity-100`}>
                 {isActive ? <SelectedIcon data-id='selected-button' /> : <AddIcon data-id='add-button' />}
-              </div>
-              <div className={`flex-none pl2 pr4 ${isActive ? 'hover-opacity-100' : 'opacity-0'} gray20 hover-fill-trigger`}>
-                {isActive ? <Tooltip title='Remove'><RemoveIcon /></Tooltip> : <RemoveIcon />}
               </div>
             </div>
           )

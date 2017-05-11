@@ -179,10 +179,10 @@ const ResultList = React.createClass({
               <div className='flex-auto'>
                 <CampaignResult {...res} />
               </div>
-              <div className='flex-none f-sm gray40 hover-gray20' data-id='contact-count'>
+              <div className='flex-none f-sm gray40 hover-gray20 px4' data-id='contact-count'>
                 {contactCount} {contactCount === 1 ? 'contact' : 'contacts'}
               </div>
-              <div className='flex-none opacity-0 hover-opacity-100' style={{padding: '0 50px'}}>
+              <div className='flex-none opacity-0 hover-opacity-100 px4'>
                 <AddIcon data-id='add-button' />
               </div>
             </div>

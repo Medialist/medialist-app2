@@ -2,9 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
 import Modal from '../navigation/modal'
-import { SearchBlueIcon, AddIcon, SelectedIcon, RemoveIcon } from '../images/icons'
+import { SearchBlueIcon, AddIcon, SelectedIcon } from '../images/icons'
 import AvatarList from '../lists/avatar-list'
-import Tooltip from '../navigation/tooltip'
 import CampaignContact from './campaign-contact'
 import createSearchContainer from '../contacts/search-container'
 import { addContactsToCampaign } from '/imports/api/contacts/methods'
@@ -258,11 +257,8 @@ const SelectableContact = ({contact, onContactClick}) => {
       <div className='flex-none px4 f-sm gray40 hover-gray20'>
         {`${contact.campaigns.length} ${contact.campaigns.length === 1 ? 'campaign' : 'campaigns'}`}
       </div>
-      <div className='flex-none pl4 pr2 opacity-0 hover-opacity-100'>
+      <div className='flex-none px4 opacity-0 hover-opacity-100'>
         <AddIcon data-id='add-button' />
-      </div>
-      <div className='flex-none pl2 pr4 opacity-0 gray20 hover-fill-trigger'>
-        <RemoveIcon />
       </div>
     </div>
   )
@@ -278,11 +274,8 @@ const SelectedContact = ({contact, onContactClick}) => {
       <div className='flex-none px4 f-sm gray40 hover-gray20'>
         {`${contact.campaigns.length} ${contact.campaigns.length === 1 ? 'campaign' : 'campaigns'}`}
       </div>
-      <div className='flex-none pl4 pr2 hover-opacity-100'>
+      <div className='flex-none px4 hover-opacity-100'>
         <SelectedIcon />
-      </div>
-      <div className='flex-none pl2 pr4 hover-opacity-100 gray20 hover-fill-trigger'>
-        <Tooltip title='Remove'><RemoveIcon data-id='remove-button' /></Tooltip>
       </div>
     </div>
   )
@@ -297,11 +290,8 @@ const UnselectabledContact = ({contact}) => {
       <div className='flex-none px4 f-sm gray40'>
         Already in campaign
       </div>
-      <div className='flex-none pl4 pr2'>
+      <div className='flex-none px4'>
         <SelectedIcon />
-      </div>
-      <div className='flex-none pl2 pr4 opacity-0'>
-        <RemoveIcon />
       </div>
     </div>
   )
