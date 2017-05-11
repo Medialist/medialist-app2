@@ -70,7 +70,7 @@ const CampaignSelector = React.createClass({
             data-id='select-campaign-button'>
             { this.state.campaign ? <CampaignButton campaign={this.state.campaign} /> : 'Select a Campaign' }
           </button>
-          <DropdownMenu left={-73} width={573} open={this.state.open} onDismiss={this.closeDropdown}>
+          <DropdownMenu left={-73} width={573} arrowAlign='left' arrowMarginLeft='155px' open={this.state.open} onDismiss={this.closeDropdown}>
             <CampaignsFilterableList
               contact={this.props.contact}
               campaigns={this.props.campaigns}
