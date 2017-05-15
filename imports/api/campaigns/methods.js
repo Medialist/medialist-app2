@@ -4,14 +4,24 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import escapeRegExp from 'lodash.escaperegexp'
 import createUniqueSlug, { checkAllSlugsExist } from '/imports/lib/slug'
-import Campaigns, { MedialistSchema, MedialistUpdateSchema, MedialistCreateSchema, MedialistRemoveSchema, MedialistAddTeamMatesSchema, MedialistRemoveTeamMateSchema } from './campaigns'
+import Campaigns, { MedialistSchema, MedialistUpdateSchema, MedialistCreateSchema, MedialistRemoveSchema, MedialistAddTeamMatesSchema } from './campaigns'
 import Clients from '/imports/api/clients/clients'
 import Uploadcare from '/imports/lib/uploadcare'
 import Posts from '/imports/api/posts/posts'
-import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
-import getAvatar from '/imports/lib/get-avatar'
+import { addToMyFavourites, findOneUserRef, findUserRefs } from '/imports/api/users/users'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import Contacts from '/imports/api/contacts/contacts'
+import toUserRef from '/imports/lib/to-user-ref'
+
+let sendCampaignLink = () => ([])
+let createInvitationLink = () => ([])
+let findOrCreateUser = () => {}
+
+if (Meteor.isServer) {
+  sendCampaignLink = require('./server/send-campaign-link').default
+  createInvitationLink = require('./server/send-campaign-link').createInvitationLink
+  findOrCreateUser = require('./server/send-campaign-link').findOrCreateUser
+}
 
 function findOrCreateClientRef (name) {
   if (!name) {
@@ -157,7 +167,20 @@ export const create = new ValidatedMethod({
       Uploadcare.store(doc.avatar)
     }
 
-    addToMyFavourites({userId: this.userId, campaignSlugs: [slug], updatedAt: createdAt})
+    addToMyFavourites({
+      userId: this.userId,
+      campaignSlugs: [slug],
+      updatedAt: createdAt
+    })
+
+    // update campaign count
+    Meteor.users.update({
+      _id: this.userId
+    }, {
+      $inc: {
+        onCampaigns: 1
+      }
+    })
 
     // Add an entry to the activity feed
     Posts.create({
@@ -181,14 +204,16 @@ export const remove = new ValidatedMethod({
 
     _ids.forEach(_id => {
       // get slugs from ids
-      const slug = Campaigns.findOne({
+      const campaign = Campaigns.findOne({
         _id: _id
       }, {
         fields: {
-          'slug': 1
+          slug: 1,
+          team: 1
         }
       })
-      .slug
+
+      const slug = campaign.slug
 
       Campaigns.remove({
         _id: _id
@@ -202,6 +227,19 @@ export const remove = new ValidatedMethod({
           'myCampaigns': {
             '_id': _id
           }
+        }
+      }, {
+        multi: true
+      })
+
+      // update campaign counts for team members.
+      Meteor.users.update({
+        _id: {
+          $in: campaign.team.map(user => user._id)
+        }
+      }, {
+        $inc: {
+          onCampaigns: -1
         }
       }, {
         multi: true
@@ -256,101 +294,13 @@ export const remove = new ValidatedMethod({
   }
 })
 
-export const addTeamMates = new ValidatedMethod({
-  name: 'Campaigns/addTeamMates',
-  validate: MedialistAddTeamMatesSchema.validator(),
-  run ({ _id, userIds }) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
-
-    const campaign = Campaigns.findOne(_id)
-    if (!campaign) {
-      throw new Meteor.Error('Medialist not found')
-    }
-
-    const user = Meteor.users.findOne({ _id: this.userId })
-    const now = new Date()
-
-    const $set = {
-      updatedAt: now,
-      updatedBy: findOneUserRef(user._id)
-    }
-    const pushIds = userIds.filter((_id) => !campaign.team.some((t) => t._id === _id))
-    const $push = {
-      team: { $each: Meteor.users.find({ _id: { $in: pushIds } }, { fields: { 'services.twitter.profile_image_url_https': 1, 'profile.name': 1 } })
-        .fetch()
-        .map((u) => ({ _id: u._id, name: u.profile.name, avatar: getAvatar(u) }))
-      }
-    }
-
-    const result = Campaigns.update(campaign._id, { $set, $push })
-
-    // Add this campaign to the updating user's favourites if required
-    Meteor.users.update({
-      _id: this.userId,
-      'myCampaigns._id': { $ne: campaign._id }
-    }, {
-      $push: { myCampaigns: {
-        name: campaign.name,
-        slug: campaign.slug,
-        avatar: campaign.avatar,
-        clientName: campaign.client
-          ? campaign.client.name
-          : null,
-        updatedAt: now
-      } }
-    })
-
-    return result
-  }
-})
-
-export const removeTeamMate = new ValidatedMethod({
-  name: 'Campaigns/removeTeamMate',
-  validate: MedialistRemoveTeamMateSchema.validator(),
-  run ({ _id, userId }) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
-
-    const campaign = Campaigns.findOne(_id)
-    if (!campaign) {
-      throw new Meteor.Error('Medialist not found')
-    }
-
-    const user = Meteor.users.findOne({ _id: this.userId })
-    const now = new Date()
-
-    const $set = {
-      updatedAt: now,
-      updatedBy: findOneUserRef(user._id)
-    }
-    const $pull = { team: { _id: userId } }
-
-    const result = Campaigns.update(campaign._id, { $set, $pull })
-
-    // Add this campaign to the updating user's favourites if required
-    Meteor.users.update({
-      _id: this.userId,
-      'myCampaigns._id': { $ne: campaign._id }
-    }, {
-      $push: { myCampaigns: {
-        name: campaign.name,
-        slug: campaign.slug,
-        avatar: campaign.avatar,
-        clientName: campaign.client
-          ? campaign.client.name
-          : null,
-        updatedAt: now
-      } }
-    })
-
-    return result
-  }
-})
-
 export const setTeamMates = new ValidatedMethod({
   name: 'Campaigns/setTeamMates',
   validate: MedialistAddTeamMatesSchema.validator(),
-  run ({ _id, userIds }) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
+  run ({ _id, userIds, emails }) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
 
     const campaign = Campaigns.findOne(_id)
 
@@ -358,47 +308,108 @@ export const setTeamMates = new ValidatedMethod({
       throw new Meteor.Error('Medialist not found')
     }
 
-    const user = Meteor.users.findOne({ _id: this.userId })
+    const user = Meteor.users.findOne({
+      _id: this.userId
+    })
+
+    const newUserIds = sendCampaignLink(emails, user, campaign)
+
+    // dedupe user id list
+    userIds = Array.from(new Set(userIds.concat(newUserIds)))
+
     const now = new Date()
 
-    const $set = {
-      updatedAt: now,
-      updatedBy: findOneUserRef(user._id),
-      team: Meteor.users.find({
-        _id: {
-          $in: userIds
-        }
-      }, {
-        fields: {
-          'profile': 1
-        }
-      })
-        .fetch()
-        .map((u) => ({
-          _id: u._id,
-          name: u.profile.name,
-          avatar: u.profile.avatar
-        }))
-    }
+    // who used to be on the team
+    const existingUserIds = campaign.team.map(user => user._id)
 
-    const result = Campaigns.update(campaign._id, { $set })
+    // who was removed from the team
+    const removedUserIds = existingUserIds
+      .filter(id => !userIds.includes(id))
+
+    // who was added to the team
+    const addedUserIds = userIds
+      .filter(id => !existingUserIds.includes(id))
+
+    // update the team
+    const result = Campaigns.update(campaign._id, {
+      $set: {
+        updatedAt: now,
+        updatedBy: toUserRef(user),
+        team: findUserRefs(userIds)
+      }
+    })
+
+    // update campaign counts for removed users
+    Meteor.users.update({
+      _id: {
+        $in: removedUserIds
+      }
+    }, {
+      $inc: {
+        onCampaigns: -1
+      }
+    })
+
+    // update campaign counts for added users
+    Meteor.users.update({
+      _id: {
+        $in: addedUserIds
+      }
+    }, {
+      $inc: {
+        onCampaigns: 1
+      }
+    })
 
     // Add this campaign to the updating user's favourites if required
     Meteor.users.update({
       _id: this.userId,
-      'myCampaigns._id': { $ne: campaign._id }
+      'myCampaigns._id': {
+        $ne: campaign._id
+      }
     }, {
-      $push: { myCampaigns: {
-        name: campaign.name,
-        slug: campaign.slug,
-        avatar: campaign.avatar,
-        clientName: campaign.client
-          ? campaign.client.name
-          : null,
-        updatedAt: now
-      } }
+      $push: {
+        myCampaigns: {
+          name: campaign.name,
+          slug: campaign.slug,
+          avatar: campaign.avatar,
+          clientName: campaign.client ? campaign.client.name : null,
+          updatedAt: now
+        }
+      }
     })
 
     return result
+  }
+})
+
+export const createCampaignInvitationLink = new ValidatedMethod({
+  name: 'Campaigns/createInvitationLink',
+  validate: new SimpleSchema({
+    email: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Email
+    },
+    _id: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    }
+  }).validator(),
+  run ({email, _id}) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    const campaign = Campaigns.findOne({
+      _id: _id
+    })
+
+    if (!campaign) {
+      throw new Meteor.Error('No campaign found')
+    }
+
+    const user = findOrCreateUser(email)
+
+    return createInvitationLink(user, campaign)
   }
 })

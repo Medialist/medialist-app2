@@ -9,14 +9,13 @@ import { createFeedbackPost, createCoveragePost, createNeedToKnowPost } from './
 function insertTestData () {
   Meteor.users.insert({
     _id: 'alf',
-    profile: { name: 'Alfonze' },
+    profile: {
+      name: 'Alfonze',
+      avatar: 'http://stat.ic/alfoto.webp'
+    },
     myContacts: [],
     myCampaigns: [],
-    services: {
-      twitter: {
-        profile_image_url_https: 'http://stat.ic/alfoto.webp'
-      }
-    }
+    onCampaigns: 0
   })
 
   const contacts = Array(3).fill(0).map((_, index) => ({

@@ -8,6 +8,7 @@ import { SquareAvatar } from '../images/avatar'
 import { TimeFromNow } from '../time/time'
 import withSnackbar from '../snackbar/with-snackbar'
 import { addContactsToCampaign } from '/imports/api/contacts/methods'
+import { BLUE } from '/imports/ui/colours'
 
 const AddContactsToCampaigns = createSearchContainer(React.createClass({
   propTypes: {
@@ -183,7 +184,7 @@ const ResultList = React.createClass({
                 {contactCount} {contactCount === 1 ? 'contact' : 'contacts'}
               </div>
               <div className='flex-none opacity-0 hover-opacity-100 px4'>
-                <AddIcon data-id='add-button' />
+                <AddIcon data-id='add-button' style={{fill: BLUE}} />
               </div>
             </div>
           )

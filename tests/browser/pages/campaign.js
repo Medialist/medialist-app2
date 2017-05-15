@@ -38,6 +38,7 @@ module.exports = {
     editTeamMembersForm: {
       selector: '[data-id=edit-campaign-team-modal]',
       elements: {
+        emailInput: '[data-id=invite-by-email-input]',
         searchInput: '[data-id=search-team-mates-input]',
         searchResults: '[data-id=team-mates-table-search-results]',
         unfilteredList: '[data-id=team-mates-table-unfiltered]',
@@ -128,6 +129,14 @@ module.exports = {
         .moveToElement('@addButton', 1, 1)
         .waitForElementVisible('@addButton')
         .click('@addButton')
+
+      return this
+    },
+    addToTeamByEmail: function (email) {
+      this.section.editTeamMembersForm
+        .waitForElementVisible('@emailInput')
+        .clearValue('@emailInput')
+        .setValue('@emailInput', email)
 
       return this
     },

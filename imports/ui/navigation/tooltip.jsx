@@ -52,6 +52,14 @@ const sx = {
 }
 
 const Tooltip = ({ title, children, position = 'top', arrowPosition = '50%', ...props }) => {
+  if (!title) {
+    return (
+      <div style={{cursor: 'pointer'}}>
+        {children}
+      </div>
+    )
+  }
+
   const yOffset = (position === 'top') ? '-8px' : '8px'
   const boxStyle = Object.assign({ transform: `translate(-${arrowPosition}, ${yOffset})` }, sx.box, position === 'bottom' ? sx.boxBottom : {})
   const arrowStyle = Object.assign({ left: arrowPosition }, sx.arrow, position === 'bottom' ? sx.arrowBottom : {})

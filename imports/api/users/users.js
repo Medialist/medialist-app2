@@ -4,18 +4,31 @@ import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 
 export const findOneUserRef = (userId) => {
-  const user = Meteor.users.findOne(
-    { _id: userId },
-    { fields: { _id: 1, 'profile.name': 1, 'services.twitter': 1, 'profile.avatar': 1 } }
-  )
+  const user = Meteor.users.findOne({
+    _id: userId
+  }, {
+    fields: {
+      _id: 1,
+      'profile.name': 1,
+      'profile.avatar': 1
+    }
+  })
+
   return toUserRef(user)
 }
 
-export const findUserRefs = ({userIds}) => {
-  Meteor.users.find(
-    { _id: { $in: userIds } },
-    { fields: { _id: 1, 'profile.name': 1, 'services.twitter': 1, 'profile.avatar': 1 } }
-  ).map(toUserRef)
+export const findUserRefs = (userIds) => {
+  return Meteor.users.find({
+    _id: {
+      $in: userIds
+    }
+  }, {
+    fields: {
+      _id: 1,
+      'profile.name': 1,
+      'profile.avatar': 1
+    }
+  }).map(toUserRef)
 }
 
 /*

@@ -6,6 +6,7 @@ import { CircleAvatar } from '../../images/avatar'
 import { LockIcon } from '../../images/icons'
 import EditableAvatarWithButtons from '../../images/editable-avatar-with-buttons'
 import withSnackbar from '../../snackbar/with-snackbar'
+import { update } from '/imports/api/users/methods'
 
 export default withSnackbar(React.createClass({
   propTypes: {
@@ -26,13 +27,9 @@ export default withSnackbar(React.createClass({
       return
     }
 
-    Meteor.users.update({
-      _id: Meteor.userId()
-    }, {
-      $set: {
-        'profile.name': this.state.name,
-        'profile.avatar': this.state.avatar
-      }
+    update.call({
+      name: this.state.name,
+      avatar: this.state.avatar ? this.state.avatar : undefined
     }, (error) => {
       if (error) {
         console.error('Failed to update profile', error)

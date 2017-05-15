@@ -31,12 +31,12 @@ const SigningInPage = React.createClass({
           })
         }
 
-        browserHistory.push('/')
+        browserHistory.push('/' + (this.props.location.search || ''))
       })
     })
   },
   onRetry () {
-    browserHistory.push('/')
+    this.props.location.reload()
   },
   render () {
     if (this.state.errorLoggingIn) {

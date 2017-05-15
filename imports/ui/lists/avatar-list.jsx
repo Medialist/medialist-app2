@@ -48,6 +48,8 @@ const AvatarList = React.createClass({
                   {onRemove && <RemoveIcon
                     className='absolute display-none hover-display-block'
                     style={{
+                      width: `${Math.round(size * 0.66)}px`,
+                      height: `${Math.round(size * 0.66)}px`,
                       color: 'red',
                       top: '50%',
                       left: '50%',

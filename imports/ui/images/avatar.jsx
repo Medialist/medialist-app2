@@ -61,7 +61,11 @@ const Avatar = React.createClass({
 
     style.lineHeight = `${this.props.size - 8}px`
 
-    return <div style={style} className={className}><CameraIcon className='svg-icon-xl' /></div>
+    return (
+      <div style={style} className={className}>
+        <CameraIcon className='svg-icon-xl' style={{width: `${size - 10}px`, height: `${size - 10}px`, lineHeight: `${size - 5}px`}} />
+      </div>
+    )
   }
 })
 

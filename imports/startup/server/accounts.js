@@ -3,23 +3,22 @@ import { ServiceConfiguration } from 'meteor/service-configuration'
 import { Accounts } from 'meteor/accounts-base'
 import sendLoginLinkTemplate from '/imports/api/email/server/templates/send-login-link'
 
-ServiceConfiguration.configurations.upsert(
-  {
-    service: 'twitter'
-  },
-  {
-    $set: {
-      consumerKey: Meteor.settings.twitter.consumer_key,
-      secret: Meteor.settings.twitter.consumer_secret,
-      loginStyle: 'popup'
-    }
+ServiceConfiguration.configurations.upsert({
+  service: 'twitter'
+}, {
+  $set: {
+    consumerKey: Meteor.settings.twitter.consumer_key,
+    secret: Meteor.settings.twitter.consumer_secret,
+    loginStyle: 'popup'
   }
-)
+})
 
 Accounts.onCreateUser((options, user) => {
   user.profile = options.profile || {}
   user.myCampaigns = []
   user.myContacts = []
+  user.onCampaigns = 0
+
   return user
 })
 

@@ -8,6 +8,7 @@ import CampaignContact from './campaign-contact'
 import createSearchContainer from '../contacts/search-container'
 import { addContactsToCampaign } from '/imports/api/contacts/methods'
 import withSnackbar from '../snackbar/with-snackbar'
+import { BLUE } from '/imports/ui/colours'
 
 const AddContact = React.createClass({
   propTypes: {
@@ -258,7 +259,7 @@ const SelectableContact = ({contact, onContactClick}) => {
         {`${contact.campaigns.length} ${contact.campaigns.length === 1 ? 'campaign' : 'campaigns'}`}
       </div>
       <div className='flex-none px4 opacity-0 hover-opacity-100'>
-        <AddIcon data-id='add-button' />
+        <AddIcon data-id='add-button' style={{fill: BLUE}} />
       </div>
     </div>
   )
@@ -275,7 +276,7 @@ const SelectedContact = ({contact, onContactClick}) => {
         {`${contact.campaigns.length} ${contact.campaigns.length === 1 ? 'campaign' : 'campaigns'}`}
       </div>
       <div className='flex-none px4 hover-opacity-100'>
-        <SelectedIcon />
+        <SelectedIcon style={{fill: BLUE}} />
       </div>
     </div>
   )
@@ -291,7 +292,7 @@ const UnselectabledContact = ({contact}) => {
         Already in campaign
       </div>
       <div className='flex-none px4'>
-        <SelectedIcon />
+        <SelectedIcon style={{fill: BLUE}} />
       </div>
     </div>
   )

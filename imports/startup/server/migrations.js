@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor'
 import Embeds from '/imports/api/embeds/embeds'
 import Posts from '/imports/api/posts/posts'
+import Campaigns from '/imports/api/campaigns/campaigns'
 
 Migrations.add({
   version: 1,
@@ -22,8 +23,6 @@ Migrations.add({
       }
 
       if (Object.keys(update).length) {
-        console.info(`Updating embed ${embed._id} ${Object.keys(update)}`)
-
         Embeds.update({
           _id: embed._id
         }, {
@@ -46,8 +45,6 @@ Migrations.add({
       }
 
       if (Object.keys(update).length) {
-        console.info(`Updating post ${post._id} ${Object.keys(update)}`)
-
         Posts.update({
           _id: post._id
         }, {
@@ -55,6 +52,23 @@ Migrations.add({
         })
       }
     })
+  }
+})
+
+Migrations.add({
+  version: 3,
+  name: 'Add campaign counts to users',
+  up: () => {
+    Meteor.users.find()
+      .forEach(user => {
+        const campaigns = Campaigns.find({
+          'team._id': user._id
+        }).fetch().length
+
+        Meteor.users.update(user._id, {
+          onCampaigns: campaigns
+        })
+      })
   }
 })
 

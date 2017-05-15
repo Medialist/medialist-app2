@@ -8,7 +8,7 @@ const SettingsPanelMasterLists = (props) => {
   return (
     <section className='pt4' data-id={props['data-id']}>
       <div className='center my4'>
-        <Icon className='svg-icon-lg blue' />
+        <Icon className='svg-icon-lg blue' style={{width: '24px', height: '24px'}} />
       </div>
       <div className='center my4 bold f-xl'>{type.substring(0, type.length - 1)} Lists</div>
       <div className='center my4'>

@@ -6,25 +6,24 @@ import Authenticator from './users/authenticator'
 import NavBar from './navigation/navbar'
 import Snackbar from './snackbar/snackbar'
 
-const Layout = React.createClass({
-  propTypes: {
-    user: PropTypes.object
-  },
-
+class Layout extends React.Component {
   render () {
-    const { children, userId, user } = this.props
     return (
-      <Authenticator userId={userId} user={user}>
+      <Authenticator userId={this.props.userId} user={this.props.user} location={this.props.location}>
         <Snackbar>
           <div>
-            <NavBar user={user} />
-            {children}
+            <NavBar user={this.props.user} />
+            {this.props.children}
           </div>
         </Snackbar>
       </Authenticator>
     )
   }
-})
+}
+
+Layout.propTypes = {
+  user: PropTypes.object
+}
 
 export default createContainer(() => {
   const user = Meteor.user()

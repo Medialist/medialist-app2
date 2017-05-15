@@ -183,16 +183,9 @@ export const MedialistAddTeamMatesSchema = new SimpleSchema({
   userIds: {
     type: [String],
     regEx: SimpleSchema.RegEx.Id
-  }
-})
-
-export const MedialistRemoveTeamMateSchema = new SimpleSchema({
-  _id: {
-    type: String,
-    regEx: SimpleSchema.RegEx.Id
   },
-  userId: {
-    type: String,
-    regEx: SimpleSchema.RegEx.Id
+  emails: {
+    type: [String],
+    regEx: SimpleSchema.RegEx.Email
   }
 })

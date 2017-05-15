@@ -1,0 +1,13 @@
+{{sender}} has invited you to a Medialist campaign: {{campaign}}
+
+Please follow the link below:
+
+{{url}}
+
+Medialist is a simple tool to help PR teams manage contacts and campaigns.
+
+We are eager to hear your feedback at feedback@medialist.io
+
+Cheers,
+
+The team at Medialist

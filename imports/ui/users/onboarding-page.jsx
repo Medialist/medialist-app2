@@ -1,40 +1,43 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import SignInLayout from '../sign-in/sign-in-layout'
 import { Meteor } from 'meteor/meteor'
 import { browserHistory } from 'react-router'
 import { CircleAvatar } from '../images/avatar'
 import EditableAvatarWithButtons from '../images/editable-avatar-with-buttons'
 import { Form, Input, Button } from '@achingbrain/react-validation'
+import { update } from '/imports/api/users/methods'
 
-const OnboardingPage = React.createClass({
-  getInitialState () {
+class OnboardingPage extends React.Component {
+  constructor (props, context) {
+    super(props, context)
+
     const user = Meteor.user()
 
-    return {
+    this.state = {
       email: user.emails[0].address,
       avatar: '',
       name: user.emails[0].address.split('@')[0]
     }
-  },
+  }
+
   onFieldChange (event) {
     this.setState({
       [event.target.name]: event.target.value
     })
-  },
+  }
+
   onAvatarError (error) {
     console.error('Failed to change avatar', error)
     console.log('TODO: toast error message')
-  },
+  }
+
   onSubmit (event) {
     event.preventDefault()
 
-    Meteor.users.update({
-      _id: Meteor.userId()
-    }, {
-      $set: {
-        'profile.name': this.state.name,
-        'profile.avatar': this.state.avatar
-      }
+    update.call({
+      name: this.state.name,
+      avatar: this.state.avatar || undefined
     }, (error) => {
       if (error) {
         console.error('Failed to update user', error)
@@ -42,12 +45,13 @@ const OnboardingPage = React.createClass({
         return
       }
 
-      browserHistory.push('/')
+      browserHistory.push(this.props.location.query.r || '/')
     })
-  },
+  }
+
   render () {
     const content = (
-      <Form className='bg-white max-width-2 mt6 p5 mx-auto left-align shadow-2' onSubmit={this.onSubmit}>
+      <Form className='bg-white max-width-2 mt6 p5 mx-auto left-align shadow-2' onSubmit={(event) => this.onSubmit(event)}>
         <p className='semibold f-sm mt0'>Almost there...</p>
         <p className='semibold f-sm mb4'>Finish creating your profile to join your teammates on Medialist</p>
         <label className='block gray40 semibold f-sm mb1' htmlFor='email'>Email address</label>
@@ -55,8 +59,8 @@ const OnboardingPage = React.createClass({
         <p className='block gray40 semibold f-sm mb2' htmlFor='email'>Your avatar</p>
         <EditableAvatarWithButtons
           avatar={this.state.avatar}
-          onChange={this.onFieldChange}
-          onError={this.onAvatarError}>
+          onChange={(event) => this.onFieldChange(event)}
+          onError={(error) => this.onAvatarError(error)}>
           <CircleAvatar
             size={70}
             avatar={this.state.avatar}
@@ -74,7 +78,7 @@ const OnboardingPage = React.createClass({
             value={this.state.name}
             placeholder='Your name'
             data-id='onboarding-name-field'
-            onChange={this.onFieldChange}
+            onChange={(event) => this.onFieldChange(event)}
             validations={['required']}
           />
         </div>
@@ -91,6 +95,10 @@ const OnboardingPage = React.createClass({
 
     return <SignInLayout content={content} />
   }
-})
+}
+
+OnboardingPage.propTypes = {
+  location: PropTypes.object
+}
 
 export default OnboardingPage

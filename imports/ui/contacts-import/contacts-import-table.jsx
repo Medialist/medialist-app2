@@ -4,6 +4,7 @@ import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from '../lists/dropdown-menu'
 import { SelectedIcon, ChevronDown } from '../images/icons'
 import { allColumns } from './csv-to-contacts.js'
+import { BLUE } from '/imports/ui/colours'
 
 const ImportTable = React.createClass({
   propTypes: {
@@ -82,7 +83,7 @@ const ImportTable = React.createClass({
               {firstRow.map((cell, i) => (
                 <td key={i} className='left-align' style={{borderLeft: '0 none', borderRight: '0 none'}}>
                   <div className='inline-block truncate align-middle semibold f-sm gray20' style={{maxWidth: '40em'}} >{cell}</div>
-                  { cols[i] && <SelectedIcon className='ml2' style={{width: 14, height: 14}} /> }
+                  { cols[i] && <SelectedIcon className='ml2' style={{width: 14, height: 14, fill: BLUE}} /> }
                 </td>
               ))}
             </tr>

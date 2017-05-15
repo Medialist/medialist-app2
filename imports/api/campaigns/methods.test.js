@@ -1,13 +1,15 @@
 import { Meteor } from 'meteor/meteor'
+import { Random } from 'meteor/random'
 import assert from 'assert'
-import Faker from 'faker'
-import { create, update, remove, addTeamMates, removeTeamMate } from './methods'
+import faker from 'faker'
+import { create, update, remove, setTeamMates } from './methods'
 import Campaigns from './campaigns'
 import { batchFavouriteCampaigns } from './methods'
 import Clients from '/imports/api/clients/clients'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
 import MasterLists from '../master-lists/master-lists'
 import Posts from '../posts/posts'
+import toUserRef from '/imports/lib/to-user-ref'
 
 describe('Campaigns/batchFavouriteCampaigns', function () {
   beforeEach(function () {
@@ -197,86 +199,130 @@ describe('Campaign add team members method', function () {
     const _id = Campaigns.insert({})
 
     assert.throws(() => {
-      addTeamMates.run.call(
+      setTeamMates.run.call(
         { userId: null },
-        { _id, userIds: ['foobar'] }
+        { _id, userIds: ['foobar'], emails: [] }
       )
     }, /You must be logged in/)
   })
 
   it('should not add a non-existent user to a team', function () {
-    const user = { profile: { name: Faker.name.findName() }, services: { twitter: {profile_image_url_https: Faker.image.avatar()} } }
+    const user = {
+      profile: {
+        name: faker.name.findName(),
+        avatar: faker.image.avatar()
+      }
+    }
     const userId = Meteor.users.insert(user)
     const campaign = { name: 'Campaign', team: [] }
     const campaignId = Campaigns.insert(campaign)
-    const payload = { _id: campaignId, userIds: ['foobar'] }
+    const payload = { _id: campaignId, userIds: ['foobar'], emails: [] }
 
-    addTeamMates.run.call({ userId }, payload)
+    setTeamMates.run.call({ userId }, payload)
     const updatedCampaign = Campaigns.findOne(campaignId)
     assert.equal(updatedCampaign.team.length, 0)
   })
 
   it('should allow the addition of multiple team members if logged in', function () {
-    const users = Array(2).fill(0).map(() => ({ profile: { name: Faker.name.findName() }, services: { twitter: {profile_image_url_https: Faker.image.avatar()} } }))
+    const users = Array(2).fill(0).map(() => ({
+      profile: {
+        name: faker.name.findName(),
+        avatar: faker.image.avatar()
+      }
+    }))
     const userIds = users.map((user) => Meteor.users.insert(user))
     const campaign = { name: 'Campaign', team: [] }
     const campaignId = Campaigns.insert(campaign)
-    const payload = { _id: campaignId, userIds }
+    const payload = { _id: campaignId, userIds, emails: [] }
 
-    addTeamMates.run.call({ userId: userIds[0] }, payload)
+    setTeamMates.run.call({ userId: userIds[0] }, payload)
     const updatedCampaign = Campaigns.findOne(campaignId)
     assert.equal(updatedCampaign.team.length, 2)
   })
 
   it('should not duplicate team members', function () {
-    const users = Array(2).fill(0).map(() => ({ profile: { name: Faker.name.findName() }, services: { twitter: {profile_image_url_https: Faker.image.avatar()} } }))
+    const users = Array(2).fill(0).map(() => ({
+      profile: {
+        name: faker.name.findName(),
+        avatar: faker.image.avatar()
+      }
+    }))
     const userIds = users.map((user) => Meteor.users.insert(user))
     const campaign = { name: 'Campaign', team: [{ _id: userIds[1] }] }
     const campaignId = Campaigns.insert(campaign)
-    const payload = { _id: campaignId, userIds }
+    const payload = { _id: campaignId, userIds, emails: [] }
 
-    addTeamMates.run.call({ userId: userIds[0] }, payload)
+    setTeamMates.run.call({ userId: userIds[0] }, payload)
     const updatedCampaign = Campaigns.findOne(campaignId)
     assert.equal(updatedCampaign.team.length, 2)
   })
-})
 
-describe('Campaign remove team members method', function () {
-  beforeEach(function () {
-    resetDatabase()
-  })
+  it('should update team member campaign counts', function () {
+    const users = Array(3).fill(0).map(() => ({
+      _id: Random.id(),
+      profile: {
+        name: faker.name.findName(),
+        avatar: faker.image.avatar()
+      }
+    }))
 
-  it('should not allow removal of team members if not logged in', function () {
-    const _id = Campaigns.insert({})
+    users[0].onCampaigns = 1
+    users[1].onCampaigns = 1
+    users[2].onCampaigns = 0
 
-    assert.throws(() => {
-      removeTeamMate.run.call(
-        { userId: null },
-        { _id, userId: 'foobar' }
-      )
-    }, /You must be logged in/)
-  })
-
-  it('should allow the removal of a team member if logged in', function () {
-    const users = Array(2).fill(0).map(() => ({ profile: { name: Faker.name.findName() }, services: { twitter: {profile_image_url_https: Faker.image.avatar()} } }))
     const userIds = users.map((user) => Meteor.users.insert(user))
-    const campaign = { name: 'Campaign', team: userIds.map((_id) => ({ _id })) }
+    const campaign = { name: 'Campaign', team: [
+      { _id: userIds[0] },
+      { _id: userIds[1] }
+    ] }
     const campaignId = Campaigns.insert(campaign)
-    const payload = { _id: campaignId, userId: userIds[1] }
+    const payload = { _id: campaignId, userIds: [userIds[1], userIds[2]], emails: [] }
 
-    removeTeamMate.run.call({ userId: userIds[0] }, payload)
-    const updatedCampaign = Campaigns.findOne(campaignId)
-    assert.equal(updatedCampaign.team.length, 1)
+    setTeamMates.run.call({ userId: userIds[0] }, payload)
+
+    const updatedUsers = Meteor.users.find({
+      _id: {
+        $in: userIds
+      }
+    }).fetch()
+
+    assert.equal(updatedUsers.find(user => user._id === userIds[0]).onCampaigns, 0) // removed, was 1
+    assert.equal(updatedUsers.find(user => user._id === userIds[1]).onCampaigns, 1) // no change
+    assert.equal(updatedUsers.find(user => user._id === userIds[2]).onCampaigns, 1) // added, was 0
   })
 
-  it('should leave team members unchanged if supplied userId is not part of team', function () {
-    const users = Array(3).fill(0).map(() => ({ profile: { name: Faker.name.findName() }, services: { twitter: {profile_image_url_https: Faker.image.avatar()} } }))
-    const userIds = users.map((user) => Meteor.users.insert(user))
-    const campaign = { name: 'Campaign', team: userIds.slice(0, 2).map((_id) => ({ _id })) }
-    const campaignId = Campaigns.insert(campaign)
-    const payload = { _id: campaignId, userId: userIds[2] }
+  it('should add team members by email', function () {
+    Meteor.settings.public.authentication = {
+      emailDomains: [
+        'example.com', 'example.net', 'example.org'
+      ]
+    }
+    Meteor.settings.email = {
+      defaultFrom: 'foo@bar.com'
+    }
 
-    removeTeamMate.run.call({ userId: userIds[0] }, payload)
+    const users = Array(2).fill(0).map(() => ({
+      _id: Random.id(),
+      profile: {
+        name: faker.name.findName(),
+        avatar: faker.image.avatar()
+      },
+      onCampaigns: 0
+    }))
+    users.forEach(user => Meteor.users.insert(user))
+
+    const campaignId = Campaigns.insert({
+      name: 'Campaign',
+      team: [toUserRef(users[0])]
+    })
+    const payload = {
+      _id: campaignId,
+      userIds: [users[0]._id],
+      emails: [faker.internet.exampleEmail()]
+    }
+
+    setTeamMates.run.call({ userId: users[0]._id }, payload)
+
     const updatedCampaign = Campaigns.findOne(campaignId)
     assert.equal(updatedCampaign.team.length, 2)
   })
@@ -298,19 +344,28 @@ describe('Campaign remove method', function () {
   })
 
   it('should remove the campaign from Campaigns and all other places', function () {
+    const campaignIds = Array(3).fill(0).map(() => Random.id())
+    const users = Array(2).fill(0).map((_, index) => ({
+      _id: Random.id(),
+      profile: {
+        name: `${index}`
+      }
+    }))
+    users[0].myCampaigns = [{_id: campaignIds[0]}, {_id: campaignIds[1]}]
+    users[0].onCampaigns = 3
+    users[1].myCampaigns = [{_id: campaignIds[2]}, {_id: campaignIds[0]}]
+    users[1].onCampaigns = 2
+    users.forEach((u) => Meteor.users.insert(u))
+
     const campaigns = Array(3).fill(0).map((_, index) => ({
-      _id: `${index}`,
+      _id: campaignIds[index],
       slug: `${index}`,
       name: `${index}`
     }))
+    campaigns[0].team = [toUserRef(users[0]), toUserRef(users[1])]
+    campaigns[1].team = [toUserRef(users[0])]
+    campaigns[2].team = [toUserRef(users[1])]
     campaigns.forEach((c) => Campaigns.insert(c))
-    const users = Array(2).fill(0).map((_, index) => ({
-      _id: `${index}`,
-      name: `${index}`
-    }))
-    users[0].myCampaigns = [{_id: '0'}, {_id: '1'}]
-    users[1].myCampaigns = [{_id: '2'}, {_id: '0'}]
-    users.forEach((u) => Meteor.users.insert(u))
 
     MasterLists.insert({
       type: 'Campaigns',
@@ -355,23 +410,25 @@ describe('Campaign remove method', function () {
     })
 
     const userId = 'jake'
-    const _ids = ['0', '2']
+    const _ids = [campaigns[0]._id, campaigns[2]._id]
     remove.run.call({userId}, {_ids})
 
-    const user0 = Meteor.users.findOne({_id: '0'})
+    const user0 = Meteor.users.findOne({_id: users[0]._id})
     assert.equal(user0.myCampaigns.length, 1)
-    assert.deepEqual(user0.myCampaigns[0], {_id: '1'})
+    assert.deepEqual(user0.myCampaigns[0], {_id: campaigns[1]._id})
+    assert.equal(user0.onCampaigns, 2)
 
-    const user1 = Meteor.users.findOne({_id: '1'})
+    const user1 = Meteor.users.findOne({_id: users[1]._id})
     assert.equal(user1.myCampaigns.length, 0)
+    assert.equal(user1.onCampaigns, 0)
 
     const list = MasterLists.findOne({name: 'A master list'})
     assert.equal(list.items.length, 1)
-    assert.deepEqual(list.items, ['1'])
+    assert.deepEqual(list.items, [campaigns[1]._id])
 
-    assert.equal(Campaigns.findOne({_id: '0'}), null)
-    assert.ok(Campaigns.findOne({_id: '1'}))
-    assert.equal(Campaigns.findOne({_id: '2'}), null)
+    assert.equal(Campaigns.findOne({_id: campaigns[0]._id}), null)
+    assert.ok(Campaigns.findOne({_id: campaigns[1]._id}))
+    assert.equal(Campaigns.findOne({_id: campaigns[2]._id}), null)
 
     assert.equal(Posts.findOne({name: 'A post with campaign 0'}), null)
     assert.ok(Posts.findOne({name: 'A post with campaign 1'}))
@@ -379,6 +436,6 @@ describe('Campaign remove method', function () {
 
     const postWithAllCampaigns = Posts.findOne({name: 'A post with campaigns 0 1 and 2'})
     assert.equal(postWithAllCampaigns.campaigns.length, 1)
-    assert.deepEqual(postWithAllCampaigns.campaigns, [{_id: '1'}])
+    assert.deepEqual(postWithAllCampaigns.campaigns, [{_id: campaigns[1]._id}])
   })
 })

@@ -28,6 +28,7 @@ const CampaignContact = ({ contact, campaign, style, highlighted, ...props }) =>
     </div>
   )
 }
+
 CampaignContact.propTypes = {
   contact: PropTypes.object.isRequired,
   campaign: PropTypes.object

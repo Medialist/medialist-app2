@@ -1,10 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { browserHistory } from 'react-router'
 import SignInPage from '../sign-in/sign-in-page'
 import OnboardingPage from './onboarding-page'
 import Loading from '../lists/loading'
 
-const Authenticator = ({ userId, user, children }) => {
+const Authenticator = ({ userId, user, children, location }) => {
   if (userId && !user) {
     // the user object arrives after page load
     return <div className='center p4'><Loading /></div>
@@ -15,7 +16,13 @@ const Authenticator = ({ userId, user, children }) => {
   }
 
   if (!user.profile || !user.profile.name) {
-    return <OnboardingPage />
+    return <OnboardingPage location={location} />
+  }
+
+  if (location.query.r) {
+    browserHistory.push(location.query.r)
+
+    return null
   }
 
   return <div>{children || null}</div>
@@ -23,7 +30,8 @@ const Authenticator = ({ userId, user, children }) => {
 
 Authenticator.propTypes = {
   user: PropTypes.object,
-  userId: PropTypes.string
+  userId: PropTypes.string,
+  location: PropTypes.object
 }
 
 export default Authenticator
