@@ -3,24 +3,45 @@ import { check, Match } from 'meteor/check'
 import Posts from '../posts'
 
 Meteor.publish('posts', function (opts) {
-  if (!this.userId) return this.ready()
+  if (!this.userId) {
+    return this.ready()
+  }
+
   opts = opts || {}
   check(opts, {
-    campaignSlug: Match.Optional(String),
-    contactSlug: Match.Optional(String),
+    campaign: Match.Optional(String),
+    contact: Match.Optional(String),
     message: Match.Optional(Boolean),
     types: Match.Optional([String]),
     limit: Match.Optional(Number)
   })
 
-  var query = {}
-  if (opts.campaignSlug) query['campaigns.slug'] = opts.campaignSlug
-  if (opts.contactSlug) query['contacts.slug'] = opts.contactSlug
-  if (opts.message) query.message = { $exists: true }
-  if (opts.types) query.type = { $in: opts.types }
+  const query = {}
 
-  var options = {
-    sort: { createdAt: -1 },
+  if (opts.campaign) {
+    query['campaigns._id'] = opts.campaign
+  }
+
+  if (opts.contact) {
+    query['contacts._id'] = opts.contact
+  }
+
+  if (opts.message) {
+    query.message = {
+      $exists: true
+    }
+  }
+
+  if (opts.types) {
+    query.type = {
+      $in: opts.types
+    }
+  }
+
+  const options = {
+    sort: {
+      createdAt: -1
+    },
     limit: opts.limit || 1
   }
 

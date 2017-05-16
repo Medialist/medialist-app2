@@ -230,9 +230,7 @@ export const batchRemoveContacts = new ValidatedMethod({
 
       // remove contact from all posts
       Posts.update({
-        contacts: {
-          _id: _id
-        }
+        'contacts._id': _id
       }, {
         $pull: {
           contacts: {

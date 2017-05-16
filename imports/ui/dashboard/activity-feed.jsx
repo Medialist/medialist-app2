@@ -91,19 +91,35 @@ const ActivityListContainer = createContainer((props) => {
   const subs = [
     Meteor.subscribe('campaign-favourites'),
     Meteor.subscribe('posts', {
-      campaignSlug: campaign && campaign.slug,
-      contactSlug: contact && contact.slug,
+      campaign: campaign && campaign._id,
+      contact: contact && contact._id,
       limit,
       types
     })
   ]
+
   const query = {
-    type: { $in: types }
+    type: {
+      $in: types
+    }
   }
-  if (campaign) query['campaigns.slug'] = campaign.slug
-  if (contact) query['contacts.slug'] = contact.slug
-  const items = Posts.find(query, { sort: { createdAt: -1 }, limit }).fetch()
+
+  if (campaign) {
+    query['campaigns._id'] = campaign._id
+  }
+
+  if (contact) {
+    query['contacts._id'] = contact._id
+  }
+
+  const items = Posts.find(query, {
+    sort: {
+      createdAt: -1
+    },
+    limit
+  }).fetch()
   const loading = subs.some((s) => !s.ready())
+
   return {
     loading,
     currentUser: Meteor.user(),

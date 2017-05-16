@@ -232,7 +232,7 @@ export const remove = new ValidatedMethod({
         multi: true
       })
 
-      // update campaign counts for team members.
+      // update campaign counts for team members
       Meteor.users.update({
         _id: {
           $in: campaign.team.map(user => user._id)
@@ -267,9 +267,7 @@ export const remove = new ValidatedMethod({
 
       // remove campaign from posts
       Posts.update({
-        campaigns: {
-          _id: _id
-        }
+        'campaigns._id': _id
       }, {
         $pull: {
           campaigns: {
