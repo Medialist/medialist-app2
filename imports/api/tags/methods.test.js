@@ -1,8 +1,8 @@
 import { resetDatabase } from 'meteor/xolvio:cleaner'
 import assert from 'assert'
-import Contacts from '../contacts/contacts'
-import Tags from './tags'
-import { batchAddTags, setTags } from './methods'
+import Contacts from '/imports/api/contacts/contacts'
+import Tags from '/imports/api/tags/tags'
+import { batchAddTags, setTags } from '/imports/api/tags/methods'
 
 describe('Tags/batchAddTags', function () {
   let contacts = []

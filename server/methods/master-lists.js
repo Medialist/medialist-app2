@@ -6,4 +6,4 @@ import {
   removeItem,
   itemCount,
   typeCount
-} from '../../imports/api/master-lists/methods'
+} from '/imports/api/master-lists/methods'

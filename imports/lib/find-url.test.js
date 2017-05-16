@@ -1,4 +1,4 @@
-import findUrl from './find-url'
+import findUrl from '/imports/lib/find-url'
 import assert from 'assert'
 
 describe('find-url', function () {

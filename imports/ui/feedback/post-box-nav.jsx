@@ -1,5 +1,5 @@
 import React from 'react'
-import { FeedFeedbackIcon, FeedCoverageIcon, FeedNeedToKnowIcon } from '../images/icons'
+import { FeedFeedbackIcon, FeedCoverageIcon, FeedNeedToKnowIcon } from '/imports/ui/images/icons'
 
 const Tab = ({selected, onClick, children, ...props}) => {
   const className = `inline-block pl3 pr4 py3 pointer f-sm semibold ${selected ? 'bg-white shadow-2' : 'gray60'}`

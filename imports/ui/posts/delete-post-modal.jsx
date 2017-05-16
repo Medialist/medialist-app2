@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Modal from '../navigation/modal'
+import Modal from '/imports/ui/navigation/modal'
 import { remove } from '/imports/api/posts/methods'
-import withSnackbar from '../snackbar/with-snackbar'
-import DeleteConfirmation from '../navigation/delete-confirmation'
+import withSnackbar from '/imports/ui/snackbar/with-snackbar'
+import DeleteConfirmation from '/imports/ui/navigation/delete-confirmation'
 import dasherise from 'dasherize'
 
 const DeletePost = withSnackbar(React.createClass({

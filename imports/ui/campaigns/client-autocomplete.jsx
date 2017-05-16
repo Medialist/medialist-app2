@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
 import escapeRegExp from 'lodash.escaperegexp'
 import Clients from '/imports/api/clients/clients'
-import Autocomplete from '../lists/autocomplete'
+import Autocomplete from '/imports/ui/lists/autocomplete'
 
 const ClientAutocomplete = createContainer((props) => {
   const sub = Meteor.subscribe('clients')

@@ -1,6 +1,6 @@
 import React from 'react'
-import CampaignPreview from './campaign-preview'
-import StatusLabel from '../feedback/status-label'
+import CampaignPreview from '/imports/ui/campaigns/campaign-preview'
+import StatusLabel from '/imports/ui/feedback/status-label'
 
 export default ({campaign, contact}) => {
   const slug = contact ? contact.slug : null

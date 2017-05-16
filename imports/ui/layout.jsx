@@ -2,9 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
-import Authenticator from './users/authenticator'
-import NavBar from './navigation/navbar'
-import Snackbar from './snackbar/snackbar'
+import Authenticator from '/imports/ui/users/authenticator'
+import NavBar from '/imports/ui/navigation/navbar'
+import Snackbar from '/imports/ui/snackbar/snackbar'
 
 class Layout extends React.Component {
   render () {

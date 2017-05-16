@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import CampaignContact from './campaign-contact'
-import StatusLabel from '../feedback/status-label'
+import CampaignContact from '/imports/ui/campaigns/campaign-contact'
+import StatusLabel from '/imports/ui/feedback/status-label'
 
 const CampaignContacts = ({campaign, contacts, onSelectContact}) => {
   if (!contacts) return null

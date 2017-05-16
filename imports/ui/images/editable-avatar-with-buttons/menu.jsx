@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import UploadcareLauncher from '../editable-avatar/uploadcare-launcher'
-import TwitterScraper from '../editable-avatar/twitter-scraper'
-import { TwitterIconGrey, UploadIcon, RemoveIcon } from '../icons'
-import { Dropdown, DropdownMenu } from '../../navigation/dropdown'
+import UploadcareLauncher from '/imports/ui/images/editable-avatar/uploadcare-launcher'
+import TwitterScraper from '/imports/ui/images/editable-avatar/twitter-scraper'
+import { TwitterIconGrey, UploadIcon, RemoveIcon } from '/imports/ui/images/icons'
+import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
 
 const EditableAvatarMenu = React.createClass({
   propTypes: {

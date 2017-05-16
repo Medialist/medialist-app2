@@ -2,8 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
 import debounce from 'lodash.debounce'
-import { ChevronDown } from '../images/icons'
-import { Dropdown, DropdownMenu } from '../navigation/dropdown'
+import { ChevronDown } from '/imports/ui/images/icons'
+import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
 
 const MasterListsSelector = React.createClass({
   propTypes: {

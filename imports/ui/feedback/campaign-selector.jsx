@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { ChevronDown } from '../images/icons'
-import { Dropdown, DropdownMenu } from '../navigation/dropdown'
-import { SquareAvatar } from '../images/avatar'
-import CampaignsFilterableList from '../campaigns/campaigns-filterable-list'
+import { ChevronDown } from '/imports/ui/images/icons'
+import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
+import { SquareAvatar } from '/imports/ui/images/avatar'
+import CampaignsFilterableList from '/imports/ui/campaigns/campaigns-filterable-list'
 
 const CampaignButton = (props) => {
   return (

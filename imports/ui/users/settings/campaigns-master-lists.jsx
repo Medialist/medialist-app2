@@ -1,6 +1,6 @@
 import React from 'react'
-import SettingsMasterList from './settings-master-lists'
-import EditMasterLists from './edit-master-lists'
+import SettingsMasterList from '/imports/ui/users/settings/settings-master-lists'
+import EditMasterLists from '/imports/ui/users/settings/edit-master-lists'
 
 const type = 'Campaigns'
 const copy = 'Campaign Lists help keep your Campaigns organised. Look for them across the top of the Campaigns page.'

@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import { CircleAvatar, SquareAvatar, avatarStyle } from '../images/avatar'
-import Tooltip from '../navigation/tooltip'
-import { RemoveIcon } from '../images/icons'
+import { CircleAvatar, SquareAvatar, avatarStyle } from '/imports/ui/images/avatar'
+import Tooltip from '/imports/ui/navigation/tooltip'
+import { RemoveIcon } from '/imports/ui/images/icons'
 
 const AvatarList = React.createClass({
   propTypes: {

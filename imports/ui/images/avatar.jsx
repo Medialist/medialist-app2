@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames/dedupe'
-import { CameraIcon } from './icons'
+import { CameraIcon } from '/imports/ui/images/icons'
 
 const defaultSize = 30
 

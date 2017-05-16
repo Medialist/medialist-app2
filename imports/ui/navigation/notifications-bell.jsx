@@ -4,9 +4,9 @@ import { Link } from 'react-router'
 import Dropdown from 'rebass/dist/Dropdown'
 import DropdownMenu from 'rebass/dist/DropdownMenu'
 import Button from 'rebass/dist/Button'
-import { NotificationBell, ChevronRight } from '../images/icons'
-import { Notifications, NotificationsSummary } from '../users/notification'
-import { dropdownMenuStyle } from '../common-styles'
+import { NotificationBell, ChevronRight } from '/imports/ui/images/icons'
+import { Notifications, NotificationsSummary } from '/imports/ui/users/notification'
+import { dropdownMenuStyle } from '/imports/ui/common-styles'
 
 const NotificationsBell = React.createClass({
   propTypes: {

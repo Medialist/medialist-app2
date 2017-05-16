@@ -1,11 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Dropdown, DropdownMenu } from '../navigation/dropdown'
-import { CircleAvatar } from '../images/avatar'
-import { ChevronDown } from '../images/icons'
-import StatusSelector from '../feedback/status-selector'
-import ContactFilterableList from '../contacts/contact-filterable-list'
-import StatusLabel from '../feedback/status-label'
+import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
+import { CircleAvatar } from '/imports/ui/images/avatar'
+import { ChevronDown } from '/imports/ui/images/icons'
+import StatusSelector from '/imports/ui/feedback/status-selector'
+import ContactFilterableList from '/imports/ui/contacts/contact-filterable-list'
+import StatusLabel from '/imports/ui/feedback/status-label'
 
 const ContactButton = (props) => {
   const { name, avatar } = props.contact

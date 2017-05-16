@@ -1,7 +1,7 @@
 import React from 'react'
 import { withRouter } from 'react-router'
-import Topbar from '../navigation/topbar'
-import ImportTable from './contacts-import-table'
+import Topbar from '/imports/ui/navigation/topbar'
+import ImportTable from '/imports/ui/contacts-import/contacts-import-table'
 
 export default withRouter(React.createClass({
   getInitialState () {

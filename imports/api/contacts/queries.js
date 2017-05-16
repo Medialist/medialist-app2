@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor'
 import { check, Match } from 'meteor/check'
 import escapeRegExp from 'lodash.escaperegexp'
-import Contacts from './contacts'
+import Contacts from '/imports/api/contacts/contacts'
 
 /**
  * Find contacts that match a search term and other criteria.

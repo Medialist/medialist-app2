@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Dropdown, DropdownMenu } from '../navigation/dropdown'
+import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
 import { Input } from '@achingbrain/react-validation'
 
 export default React.createClass({

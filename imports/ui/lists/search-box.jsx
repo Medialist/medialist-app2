@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { SearchIcon } from '../images/icons'
+import { SearchIcon } from '/imports/ui/images/icons'
 import debounce from 'lodash.debounce'
 
 const SearchBox = React.createClass({

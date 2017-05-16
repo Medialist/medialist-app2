@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Modal from '../navigation/modal'
-import AvatarList from '../lists/avatar-list'
-import withSnackbar from '../snackbar/with-snackbar'
-import DeleteConfirmation from '../navigation/delete-confirmation'
+import Modal from '/imports/ui/navigation/modal'
+import AvatarList from '/imports/ui/lists/avatar-list'
+import withSnackbar from '/imports/ui/snackbar/with-snackbar'
+import DeleteConfirmation from '/imports/ui/navigation/delete-confirmation'
 import { batchRemoveContacts } from '/imports/api/contacts/methods'
 
 const DeleteContacts = withSnackbar(React.createClass({

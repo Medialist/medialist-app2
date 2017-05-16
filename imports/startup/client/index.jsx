@@ -6,11 +6,11 @@ import { browserHistory } from 'react-router'
 import { syncHistoryWithStore } from 'react-router-redux'
 import thunkMiddleware from 'redux-thunk'
 import { Meteor } from 'meteor/meteor'
-import reducers from '../../ui/redux/reducers'
-import Routes from '../../ui/routes'
-import Head from '../../ui/head'
+import reducers from '/imports/ui/redux/reducers'
+import Routes from '/imports/ui/routes'
+import Head from '/imports/ui/head'
 
-require('../../ui/forms/validation')
+require('/imports/ui/forms/validation')
 
 const store = createStore(
   reducers,

@@ -1,8 +1,8 @@
 import React from 'react'
-import Loading from '../lists/loading'
-import SearchBox from '../lists/search-box'
-import CampaignsTable from './campaigns-table'
-import CountTag from '../tags/tag'
+import Loading from '/imports/ui/lists/loading'
+import SearchBox from '/imports/ui/lists/search-box'
+import CampaignsTable from '/imports/ui/campaigns/campaigns-table'
+import CountTag from '/imports/ui/tags/tag'
 
 const CampaignSearch = ({
   onTermChange,

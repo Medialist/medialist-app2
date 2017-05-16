@@ -8,7 +8,7 @@ import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import Embeds from '/imports/api/embeds/embeds'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
-import Posts from './posts'
+import Posts from '/imports/api/posts/posts'
 
 function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, message, status}) {
   const createdBy = findOneUserRef(userId)

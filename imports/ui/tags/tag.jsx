@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
-import { SquareAvatar } from '../images/avatar'
+import { SquareAvatar } from '/imports/ui/images/avatar'
 
 const Tag = (props) => {
   const {onClick, onRemove, style, children} = props

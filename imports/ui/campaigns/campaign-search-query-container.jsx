@@ -2,9 +2,9 @@ import React from 'react'
 import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
 import querystring from 'querystring'
-import campaignsSearchContainer from './campaign-search-container'
-import NearBottomContainer from '../navigation/near-bottom-container'
-import SubscriptionLimitContainer from '../navigation/subscription-limit-container'
+import campaignsSearchContainer from '/imports/ui/campaigns/campaign-search-container'
+import NearBottomContainer from '/imports/ui/navigation/near-bottom-container'
+import SubscriptionLimitContainer from '/imports/ui/navigation/subscription-limit-container'
 
 const campaignsSearchQueryContainer = (Component) => {
   const SearchComponent = campaignsSearchContainer(Component)

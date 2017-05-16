@@ -1,5 +1,5 @@
-import './campaigns'
-import './contacts'
+import '/imports/methods/shared/campaigns'
+import '/imports/methods/shared/contacts'
 import '/imports/api/contacts/methods'
 import '/imports/api/tags/methods'
 import '/imports/api/posts/methods'

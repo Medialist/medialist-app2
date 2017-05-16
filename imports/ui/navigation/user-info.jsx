@@ -2,10 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
 import Arrow from 'rebass/dist/Arrow'
-import { Dropdown, DropdownMenu } from '../lists/dropdown'
-import { CircleAvatar } from '../images/avatar'
-import { SettingsIcon, ExitIcon, HamburgerIcon } from '../images/icons'
-import { dropdownMenuStyle } from '../common-styles'
+import { Dropdown, DropdownMenu } from '/imports/ui/lists/dropdown'
+import { CircleAvatar } from '/imports/ui/images/avatar'
+import { SettingsIcon, ExitIcon, HamburgerIcon } from '/imports/ui/images/icons'
+import { dropdownMenuStyle } from '/imports/ui/common-styles'
 
 const dropdownStyle = Object.assign({}, dropdownMenuStyle, { width: 223, top: 'calc(100% - 2px)', right: '-5px' })
 

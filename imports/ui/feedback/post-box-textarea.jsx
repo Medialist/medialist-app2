@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import findUrl from '/imports/lib/find-url'
-import LinkPreview from './link-preview'
+import LinkPreview from '/imports/ui/feedback/link-preview'
 import { Meteor } from 'meteor/meteor'
 import debounce from 'lodash.debounce'
 

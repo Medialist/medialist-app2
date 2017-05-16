@@ -1,5 +1,5 @@
 import assert from 'assert'
-import Uploadcare from './uploadcare'
+import Uploadcare from '/imports/lib/uploadcare'
 
 describe('Uploadcare', function () {
   it('should not store non-uploadcare URL', function () {

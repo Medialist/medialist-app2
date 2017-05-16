@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { TypeSchema } from '/imports/lib/schema'
-import Tags from './tags'
-import Contacts from '../contacts/contacts'
-import Campaigns from '../campaigns/campaigns'
+import Tags from '/imports/api/tags/tags'
+import Contacts from '/imports/api/contacts/contacts'
+import Campaigns from '/imports/api/campaigns/campaigns'
 import { checkAllSlugsExist, cleanSlug } from '/imports/lib/slug'
 
 const createTagsWhereNecessary = (names) => {

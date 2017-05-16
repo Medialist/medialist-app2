@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
-import { CheckboxEmpty, CheckboxChecked } from '../images/icons'
+import { CheckboxEmpty, CheckboxChecked } from '/imports/ui/images/icons'
 
 const Checkbox = ({ className, checked, data, onChange, ...props }) => {
   return (

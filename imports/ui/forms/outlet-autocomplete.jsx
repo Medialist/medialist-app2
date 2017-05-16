@@ -1,6 +1,6 @@
 import { createContainer } from 'meteor/react-meteor-data'
 import { searchOutlets } from '/imports/api/contacts/methods'
-import ValidatedAutocomplete from './validated-autocomplete'
+import ValidatedAutocomplete from '/imports/ui/forms/validated-autocomplete'
 
 const OutletAutocomplete = createContainer((props) => {
   const {field, value: term} = props

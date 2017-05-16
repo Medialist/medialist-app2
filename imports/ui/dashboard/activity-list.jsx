@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Loading from '../lists/loading'
-import * as PostMap from '../posts/post'
+import Loading from '/imports/ui/lists/loading'
+import * as PostMap from '/imports/ui/posts/post'
 
 const ActivityList = React.createClass({
   propTypes: {

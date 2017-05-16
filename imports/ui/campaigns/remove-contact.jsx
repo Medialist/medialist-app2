@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Modal from '../navigation/modal'
+import Modal from '/imports/ui/navigation/modal'
 import { removeContactsFromCampaign } from '/imports/api/contacts/methods'
-import AvatarList from '../lists/avatar-list'
-import withSnackbar from '../snackbar/with-snackbar'
+import AvatarList from '/imports/ui/lists/avatar-list'
+import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 
 const RemoveContact = withSnackbar(React.createClass({
   propTypes: {

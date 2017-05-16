@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import SignInLayout from './sign-in-layout'
+import SignInLayout from '/imports/ui/sign-in/sign-in-layout'
 
 const SignInErrorPage = ({ onRetry }) => {
   const content = (

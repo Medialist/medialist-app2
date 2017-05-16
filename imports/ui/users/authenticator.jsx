@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { browserHistory } from 'react-router'
-import SignInPage from '../sign-in/sign-in-page'
-import OnboardingPage from './onboarding-page'
-import Loading from '../lists/loading'
+import SignInPage from '/imports/ui/sign-in/sign-in-page'
+import OnboardingPage from '/imports/ui/users/onboarding-page'
+import Loading from '/imports/ui/lists/loading'
 
 const Authenticator = ({ userId, user, children, location }) => {
   if (userId && !user) {

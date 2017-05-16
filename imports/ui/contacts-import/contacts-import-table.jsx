@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Dropdown from 'rebass/dist/Dropdown'
-import DropdownMenu from '../lists/dropdown-menu'
-import { SelectedIcon, ChevronDown } from '../images/icons'
-import { allColumns } from './csv-to-contacts.js'
+import DropdownMenu from '/imports/ui/lists/dropdown-menu'
+import { SelectedIcon, ChevronDown } from '/imports/ui/images/icons'
+import { allColumns } from '/imports/ui/contacts-import/csv-to-contacts.js'
 import { BLUE } from '/imports/ui/colours'
 
 const ImportTable = React.createClass({

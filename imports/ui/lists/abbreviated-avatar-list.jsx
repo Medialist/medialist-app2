@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import { CircleAvatar, SquareAvatar } from '../images/avatar'
-import Tooltip from '../navigation/tooltip'
+import { CircleAvatar, SquareAvatar } from '/imports/ui/images/avatar'
+import Tooltip from '/imports/ui/navigation/tooltip'
 
 const defaultSize = 30
 

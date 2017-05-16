@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
 import assert from 'assert'
-import Contacts from './contacts'
-import Campaigns from '../campaigns/campaigns'
-import Posts from '../posts/posts'
-import MasterLists from '../master-lists/master-lists'
+import Contacts from '/imports/api/contacts/contacts'
+import Campaigns from '/imports/api/campaigns/campaigns'
+import Posts from '/imports/api/posts/posts'
+import MasterLists from '/imports/api/master-lists/master-lists'
 import {
   addContactsToCampaign,
   removeContactsFromCampaign,

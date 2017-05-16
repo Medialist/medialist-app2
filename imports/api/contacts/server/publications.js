@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor'
 import { check } from 'meteor/check'
 import { Counter } from 'meteor/natestrauser:publish-performant-counts'
 import Campaigns from '/imports/api/campaigns/campaigns'
-import Contacts from './contacts'
+import Contacts from '/imports/api/contacts/server/contacts'
 import { publishAllForLoggedInUser } from '/imports/lib/publish-all'
-import * as Queries from '../queries'
+import * as Queries from '/imports/api/contacts/queries'
 
 publishAllForLoggedInUser(Queries)
 

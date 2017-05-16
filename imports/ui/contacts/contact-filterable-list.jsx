@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import SearchBox from '../lists/search-box'
-import CampaignContacts from '../campaigns/campaign-contacts'
+import SearchBox from '/imports/ui/lists/search-box'
+import CampaignContacts from '/imports/ui/campaigns/campaign-contacts'
 
 export default React.createClass({
   propTypes: {

@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
-import { MenuCampaignIcon, ChevronRight } from '../images/icons'
-import CampaignPreview from '../campaigns/campaign-preview'
+import { MenuCampaignIcon, ChevronRight } from '/imports/ui/images/icons'
+import CampaignPreview from '/imports/ui/campaigns/campaign-preview'
 
 const RecentCampaignsList = React.createClass({
   propTypes: {

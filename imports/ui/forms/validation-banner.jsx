@@ -1,5 +1,5 @@
 import React from 'react'
-import { Close } from '../images/icons'
+import { Close } from '/imports/ui/images/icons'
 
 export default ({error, onDismiss}) => {
   if (!error) return null

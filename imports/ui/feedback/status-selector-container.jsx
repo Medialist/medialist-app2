@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import StatusSelector from './status-selector'
+import StatusSelector from '/imports/ui/feedback/status-selector'
 import { createFeedbackPost } from '/imports/api/posts/methods'
 
 const StatusSelectorContainer = React.createClass({

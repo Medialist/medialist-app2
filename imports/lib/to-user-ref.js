@@ -1,4 +1,4 @@
-import getAvatar from './get-avatar'
+import getAvatar from '/imports/lib/get-avatar'
 
 export default function toUserRef (user) {
   if (!user) {

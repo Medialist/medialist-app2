@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import StatusDot from './status-dot'
+import StatusDot from '/imports/ui/feedback/status-dot'
 
 const Status = ({name, className, ...props}) => {
   const attributes = {

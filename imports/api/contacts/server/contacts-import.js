@@ -5,7 +5,7 @@ import { check, Match } from 'meteor/check'
 import slugify from '/imports/lib/slug'
 import { findOneUserRef } from '/imports/api/users/users'
 import ContactsTask from '/imports/api/twitter-users/server/contacts-task'
-import Contacts, { ContactSchema } from '../contacts'
+import Contacts, { ContactSchema } from '/imports/api/contacts/contacts'
 
 // TODO: reafactor to return _ids of created and updated users, so we can do batch actions on them. Or use the tag?
 

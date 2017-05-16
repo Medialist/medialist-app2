@@ -1,2 +1,2 @@
-import EditableAvatar from './editable-avatar'
+import EditableAvatar from '/imports/ui/images/editable-avatar/editable-avatar'
 export default EditableAvatar

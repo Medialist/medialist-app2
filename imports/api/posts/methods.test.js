@@ -3,8 +3,8 @@ import { resetDatabase } from 'meteor/xolvio:cleaner'
 import assert from 'assert'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
-import Posts from './posts'
-import { createFeedbackPost, createCoveragePost, createNeedToKnowPost } from './methods'
+import Posts from '/imports/api/posts/posts'
+import { createFeedbackPost, createCoveragePost, createNeedToKnowPost } from '/imports/api/posts/methods'
 
 function insertTestData () {
   Meteor.users.insert({

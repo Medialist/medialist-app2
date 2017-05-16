@@ -1,11 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import values from 'lodash.values'
-import { SquareAvatar } from '../images/avatar'
-import EditableAvatar from '../images/editable-avatar'
-import { update } from '../../api/campaigns/methods'
-import withSnackbar from '../snackbar/with-snackbar'
-import StatusStats from '../contacts/status-stats'
+import { SquareAvatar } from '/imports/ui/images/avatar'
+import EditableAvatar from '/imports/ui/images/editable-avatar'
+import { update } from '/imports/api/campaigns/methods'
+import withSnackbar from '/imports/ui/snackbar/with-snackbar'
+import StatusStats from '/imports/ui/contacts/status-stats'
 
 const CamapignSummary = withSnackbar(React.createClass({
   propTypes: {

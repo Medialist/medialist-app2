@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import BackButton from '../navigation/back-button'
+import BackButton from '/imports/ui/navigation/back-button'
 
 const Topbar = React.createClass({
   propTypes: {

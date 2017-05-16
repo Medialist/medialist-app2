@@ -1,10 +1,10 @@
 import React from 'react'
 import { Meteor } from 'meteor/meteor'
 import { browserHistory } from 'react-router'
-import SignInForm from './sign-in-form'
-import EmailSentPage from './email-sent-page'
-import SendingEmailPage from './sending-email-page'
-import SignInErrorPage from './sign-in-error-page'
+import SignInForm from '/imports/ui/sign-in/sign-in-form'
+import EmailSentPage from '/imports/ui/sign-in/email-sent-page'
+import SendingEmailPage from '/imports/ui/sign-in/sending-email-page'
+import SignInErrorPage from '/imports/ui/sign-in/sign-in-error-page'
 
 const SignInPage = React.createClass({
   getInitialState () {

@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
-import { MenuContactIcon, ChevronRight } from '../images/icons'
-import ContactPreview from '../contacts/contact-preview'
+import { MenuContactIcon, ChevronRight } from '/imports/ui/images/icons'
+import ContactPreview from '/imports/ui/contacts/contact-preview'
 
 const ContactPreviewsList = (props) => {
   const { contacts } = props

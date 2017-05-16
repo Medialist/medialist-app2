@@ -3,5 +3,15 @@
     "test": {
       "presets": ["es2015", "react"]
     }
-  }
+  },
+  "plugins": [
+    [
+      "module-resolver", {
+        "root": ["."],
+        "alias": {
+          "/imports": "../../../imports"
+        }
+      }
+    ]
+  ]
 }

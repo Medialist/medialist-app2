@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
-import { Close } from '../images/icons'
+import { Close } from '/imports/ui/images/icons'
 
 // ten seconds
 const MESSAGE_VISIBILITY_DURATION = 10000

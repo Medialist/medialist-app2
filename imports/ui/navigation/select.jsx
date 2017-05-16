@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Check, ChevronDown } from '../images/icons'
-import { Dropdown, DropdownMenu } from '../navigation/dropdown'
+import { Check, ChevronDown } from '/imports/ui/images/icons'
+import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
 
 export const Select = React.createClass({
   propTypes: {

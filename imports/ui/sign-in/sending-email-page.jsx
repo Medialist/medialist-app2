@@ -1,6 +1,6 @@
 import React from 'react'
-import SignInLayout from './sign-in-layout'
-import Loading from '../lists/loading'
+import SignInLayout from '/imports/ui/sign-in/sign-in-layout'
+import Loading from '/imports/ui/lists/loading'
 
 const SendingEmailPage = () => {
   const content = (

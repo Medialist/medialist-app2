@@ -1,4 +1,4 @@
-import Contacts from '../contacts'
+import Contacts from '/imports/api/contacts/contacts'
 import TwitterClient from '/imports/api/twitter-users/server/twitter-client'
 
 Contacts._ensureIndex({'slug': 1})

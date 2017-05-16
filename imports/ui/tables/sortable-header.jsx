@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { SortableIcon, SortedAscIcon, SortedDescIcon } from '../images/icons'
+import { SortableIcon, SortedAscIcon, SortedDescIcon } from '/imports/ui/images/icons'
 import classnames from 'classnames/dedupe'
 
 const SortableHeader = React.createClass({

@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Select, Option } from '../navigation/select'
+import { Select, Option } from '/imports/ui/navigation/select'
 import { StatusValues } from '/imports/api/contacts/status'
-import StatusLabel from './status-label'
+import StatusLabel from '/imports/ui/feedback/status-label'
 import dasherise from 'dasherize'
 
 const StatusSelector = React.createClass({

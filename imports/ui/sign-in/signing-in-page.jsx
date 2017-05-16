@@ -1,11 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import SignInLayout from './sign-in-layout'
+import SignInLayout from '/imports/ui/sign-in/sign-in-layout'
 import { Meteor } from 'meteor/meteor'
 import { browserHistory } from 'react-router'
-import InvalidTokenPage from '../sign-in/invalid-token-page'
-import Loading from '../lists/loading'
-import SignInErrorPage from './sign-in-error-page'
+import InvalidTokenPage from '/imports/ui/sign-in/invalid-token-page'
+import Loading from '/imports/ui/lists/loading'
+import SignInErrorPage from '/imports/ui/sign-in/sign-in-error-page'
 
 const SigningInPage = React.createClass({
   getInitialState () {

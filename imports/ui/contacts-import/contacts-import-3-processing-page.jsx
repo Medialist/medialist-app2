@@ -1,15 +1,15 @@
 import React from 'react'
 import { Link, withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
-import CsvToContacts from './csv-to-contacts'
-import Topbar from '../navigation/topbar'
-import Tag from '../tags/tag'
+import CsvToContacts from '/imports/ui/contacts-import/csv-to-contacts'
+import Topbar from '/imports/ui/navigation/topbar'
+import Tag from '/imports/ui/tags/tag'
 import {
   FeedCampaignIcon,
   FavouritesIcon,
   SectorIcon,
   TagIcon
-} from '../images/icons'
+} from '/imports/ui/images/icons'
 
 export default withRouter(React.createClass({
   getInitialState () {

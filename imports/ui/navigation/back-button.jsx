@@ -1,6 +1,6 @@
 import React from 'react'
 import { browserHistory } from 'react-router'
-import { ChevronLeft } from '../images/icons'
+import { ChevronLeft } from '/imports/ui/images/icons'
 
 function goBack (e) {
   e.preventDefault()

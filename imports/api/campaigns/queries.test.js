@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
 import assert from 'assert'
-import Contacts from '../contacts/contacts'
-import { searchCampaigns } from './queries'
-import Campaigns from './campaigns'
+import Contacts from '/imports/api/contacts/contacts'
+import { searchCampaigns } from '/imports/api/campaigns/queries'
+import Campaigns from '/imports/api/campaigns/campaigns'
 
 describe('searchCampaigns', function () {
   beforeEach(function () {

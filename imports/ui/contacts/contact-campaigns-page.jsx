@@ -1,14 +1,14 @@
 import React from 'react'
 import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
-import ContactTopbar from './contact-topbar'
-import CampaignSearch from '../campaigns/campaign-search'
-import StatusStats from '../contacts/status-stats'
-import campaignSearchQueryContainer from '../campaigns/campaign-search-query-container'
-import { CircleAvatar } from '../images/avatar'
-import EditableAvatar from '../images/editable-avatar'
+import ContactTopbar from '/imports/ui/contacts/contact-topbar'
+import CampaignSearch from '/imports/ui/campaigns/campaign-search'
+import StatusStats from '/imports/ui/contacts/status-stats'
+import campaignSearchQueryContainer from '/imports/ui/campaigns/campaign-search-query-container'
+import { CircleAvatar } from '/imports/ui/images/avatar'
+import EditableAvatar from '/imports/ui/images/editable-avatar'
 import Contacts from '/imports/api/contacts/contacts'
-import AddContactsToCampaigns from './add-contacts-to-campaign'
+import AddContactsToCampaigns from '/imports/ui/contacts/add-contacts-to-campaign'
 
 const ContactCampaignsPage = React.createClass({
   getInitialState () {

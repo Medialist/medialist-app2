@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { CircleAvatar } from '../images/avatar'
-import StatusSelectorContainer from '../feedback/status-selector-container'
-import StatusDot from '../feedback/status-dot'
+import { CircleAvatar } from '/imports/ui/images/avatar'
+import StatusSelectorContainer from '/imports/ui/feedback/status-selector-container'
+import StatusDot from '/imports/ui/feedback/status-dot'
 
 const CampaignContact = ({ contact, campaign, style, highlighted, ...props }) => {
   return (

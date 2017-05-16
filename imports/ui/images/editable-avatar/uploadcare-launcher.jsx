@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Meteor } from 'meteor/meteor'
 import uploadcare from 'uploadcare-widget'
-import Progress from './progress'
+import Progress from '/imports/ui/images/editable-avatar/progress'
 
 const UploadcareLauncher = React.createClass({
   propTypes: {

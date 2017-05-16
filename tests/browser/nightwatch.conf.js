@@ -16,7 +16,7 @@ const defaults = configure({
   SELENIUM_PORT: 4444,
   SELENIUM_HOST: '127.0.0.1',
   BROWSER: 'chrome',
-  PARALLEL: true,
+  PARALLEL: false,
   REPORTS_DIR: '.reports'
 })
 
@@ -63,7 +63,7 @@ const config = {
   }
 }
 
-if (defaults.PARALLEL === true) {
+if (defaults.PARALLEL) {
   config.test_workers = true
 }
 

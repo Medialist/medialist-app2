@@ -1,6 +1,6 @@
 import React from 'react'
-import { TimeFromNow } from '../time/time'
-import { SquareAvatar } from '../images/avatar'
+import { TimeFromNow } from '/imports/ui/time/time'
+import { SquareAvatar } from '/imports/ui/images/avatar'
 
 export default ({ name, avatar, client, clientName, contacts, updatedAt }) => (
   <div className='flex items-center'>

@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
-import CampaignContact from './campaign-contact'
+import CampaignContact from '/imports/ui/campaigns/campaign-contact'
 
 const CampaignContactList = React.createClass({
   propTypes: {

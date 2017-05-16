@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { findOneUserRef } from '/imports/api/users/users'
-import Embeds from '../embeds'
-import scraper from './scraper'
+import Embeds from '/imports/api/embeds/embeds'
+import scraper from '/imports/api/embeds/server/scraper'
 
 export const createEmbed = new ValidatedMethod({
   name: 'createEmbed',

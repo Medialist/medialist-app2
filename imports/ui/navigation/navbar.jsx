@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Link, IndexLink } from 'react-router'
-import UserInfo from './user-info'
-import { Logo, MenuActivityIcon, MenuCampaignIcon, MenuContactIcon } from '../images/icons'
+import UserInfo from '/imports/ui/navigation/user-info'
+import { Logo, MenuActivityIcon, MenuCampaignIcon, MenuContactIcon } from '/imports/ui/images/icons'
 
 const linkStyle = { padding: '19px 25px 20px', display: 'inline-block' }
 

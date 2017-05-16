@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { check, Match } from 'meteor/check'
-import Posts from '../posts'
+import Posts from '/imports/api/posts/posts'
 
 Meteor.publish('posts', function (opts) {
   if (!this.userId) {

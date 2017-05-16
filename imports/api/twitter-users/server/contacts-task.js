@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { check, Match } from 'meteor/check'
-import TwitterClient from './twitter-client'
+import TwitterClient from '/imports/api/twitter-users/server/twitter-client'
 import Contacts from '/imports/api/contacts/server/contacts'
 
 const ContactsTask = {}

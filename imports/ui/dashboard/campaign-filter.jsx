@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import CampaignsFilterableList from '../campaigns/campaigns-filterable-list'
-import { Dropdown, DropdownMenu } from '../navigation/dropdown'
-import { ChevronDown } from '../images/icons'
-import StatusDot from '../feedback/status-dot'
+import CampaignsFilterableList from '/imports/ui/campaigns/campaigns-filterable-list'
+import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
+import { ChevronDown } from '/imports/ui/images/icons'
+import StatusDot from '/imports/ui/feedback/status-dot'
 
 const CampaignFilter = React.createClass({
   propTypes: {

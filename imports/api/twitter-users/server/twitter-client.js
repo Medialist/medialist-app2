@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { check, Match } from 'meteor/check'
 import NpmTwitter from 'twitter'
 import twitterScreenName from 'twitter-screen-name'
-import TwitterUsers from './twitter-users'
+import TwitterUsers from '/imports/api/twitter-users/server/twitter-users'
 
 class TwitterStream {
   constructor (stream) {

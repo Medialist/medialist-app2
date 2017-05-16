@@ -1,4 +1,4 @@
-var React = require('react')
+import React from 'react'
 
 /*
  Create a hidden file input, and simulate a click on it when parent element is

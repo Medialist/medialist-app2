@@ -8,7 +8,7 @@ import Posts from '/imports/api/posts/posts'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import {
   update
-} from './methods'
+} from '/imports/api/users/methods'
 import faker from 'faker'
 import toUserRef from '/imports/lib/to-user-ref'
 

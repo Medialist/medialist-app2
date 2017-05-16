@@ -1,6 +1,6 @@
 import React from 'react'
-import { Twitter, Facebook, Linkedin, Youtube, Instagram, Medium, Pinterest, WebsiteIcon } from '../images/icons'
-import Tooltip from '../navigation/tooltip'
+import { Twitter, Facebook, Linkedin, Youtube, Instagram, Medium, Pinterest, WebsiteIcon } from '/imports/ui/images/icons'
+import Tooltip from '/imports/ui/navigation/tooltip'
 
 export const SocialMap = {
   Website: {

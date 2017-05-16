@@ -2,13 +2,13 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
 import dasherise from 'dasherize'
-import { CircleAvatar } from '../images/avatar'
-import Time from '../time/time'
-import YouOrName from '../users/you-or-name'
-import Status from '../feedback/status'
-import LinkPreview from '../feedback/link-preview'
-import CampaignPreview from '../campaigns/campaign-preview'
-import CampaignLink from '../campaigns/campaign-link'
+import { CircleAvatar } from '/imports/ui/images/avatar'
+import Time from '/imports/ui/time/time'
+import YouOrName from '/imports/ui/users/you-or-name'
+import Status from '/imports/ui/feedback/status'
+import LinkPreview from '/imports/ui/feedback/link-preview'
+import CampaignPreview from '/imports/ui/campaigns/campaign-preview'
+import CampaignLink from '/imports/ui/campaigns/campaign-link'
 import {
   ChevronRight,
   ChevronOpenDown,
@@ -18,10 +18,10 @@ import {
   FeedFeedbackIcon,
   FeedNeedToKnowIcon,
   StatusUpdateIcon
-} from '../images/icons'
-import { Dropdown, DropdownMenu } from '../navigation/dropdown'
-import { Option } from '../navigation/select'
-import findUrl from '../../lib/find-url'
+} from '/imports/ui/images/icons'
+import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
+import { Option } from '/imports/ui/navigation/select'
+import findUrl from '/imports/lib/find-url'
 import DeletePostModal from './delete-post-modal'
 
 const hideTextIfOnlyUrl = (item) => {

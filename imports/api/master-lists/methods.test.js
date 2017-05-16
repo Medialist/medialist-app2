@@ -13,9 +13,9 @@ import {
   setMasterLists,
   batchAddToMasterLists
   } from './methods'
-import MasterLists from './master-lists'
-import Contacts from '../contacts/contacts'
-import Campaigns from '../campaigns/campaigns'
+import MasterLists from '/imports/api/master-lists/master-lists'
+import Contacts from '/imports/api/contacts/contacts'
+import Campaigns from '/imports/api/campaigns/campaigns'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
 
 describe('batchAddToMasterLists', function () {

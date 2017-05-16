@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { LogoFull } from '../images/icons'
-import version from '../version.json'
+import { LogoFull } from '/imports/ui/images/icons'
+import version from '/imports/ui/version.json'
 
 const SignInLayout = ({ content }) => {
   return (

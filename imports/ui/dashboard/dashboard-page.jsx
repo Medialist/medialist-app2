@@ -2,9 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
-import RecentCampaignsList from './recent-campaigns-list'
-import RecentContactsList from './recent-contacts-list'
-import ActivityFeed from './activity-feed'
+import RecentCampaignsList from '/imports/ui/dashboard/recent-campaigns-list'
+import RecentContactsList from '/imports/ui/dashboard/recent-contacts-list'
+import ActivityFeed from '/imports/ui/dashboard/activity-feed'
 
 const DashboardPage = React.createClass({
   propTypes: {

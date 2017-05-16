@@ -1,6 +1,6 @@
 import React from 'react'
-import Time from '../time/time'
-import Loading from '../lists/loading'
+import Time from '/imports/ui/time/time'
+import Loading from '/imports/ui/lists/loading'
 
 const LinkPreview = ({url, image, headline, datePublished, outlet, loading}) => {
   if (loading) {

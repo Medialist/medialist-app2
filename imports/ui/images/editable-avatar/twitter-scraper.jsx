@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor'
 import debounce from 'lodash.debounce'
 import twitterScreenName from 'twitter-screen-name'
 import uploadcare from 'uploadcare-widget'
-import Progress from './progress'
+import Progress from '/imports/ui/images/editable-avatar/progress'
 
 const TwitterScraper = React.createClass({
   propTypes: {

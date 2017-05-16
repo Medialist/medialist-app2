@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import ContactSelector from '../feedback/contact-selector'
-import { PostBoxButtons } from '../feedback/post-box'
-import PostBoxTextArea from '../feedback/post-box-textarea'
-import { FeedbackTab, CoverageTab, PostBoxTabs } from '../feedback/post-box-nav'
+import ContactSelector from '/imports/ui/feedback/contact-selector'
+import { PostBoxButtons } from '/imports/ui/feedback/post-box'
+import PostBoxTextArea from '/imports/ui/feedback/post-box-textarea'
+import { FeedbackTab, CoverageTab, PostBoxTabs } from '/imports/ui/feedback/post-box-nav'
 import immutable from 'object-path-immutable'
 
 const CampaignPostBox = React.createClass({

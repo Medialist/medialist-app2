@@ -1,12 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Time from '../time/time'
-import { CircleAvatar } from '../images/avatar'
+import Time from '/imports/ui/time/time'
+import { CircleAvatar } from '/imports/ui/images/avatar'
 import {
   FeedCampaignIcon,
   FeedCoverageIcon,
   FeedNeedToKnowIcon
-} from '../images/icons'
+} from '/imports/ui/images/icons'
 
 export const Notification = React.createClass({
   propTypes: {

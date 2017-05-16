@@ -1,5 +1,5 @@
 import React from 'react'
-import { Notifications, NotificationsSummary } from './notification'
+import { Notifications, NotificationsSummary } from '/imports/ui/users/notification'
 
 const onMarkAllReadClick = () => console.log('TODO: Mark all read')
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Dropdown, DropdownMenu } from '../navigation/dropdown'
-import { Option } from '../navigation/select'
+import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
+import { Option } from '/imports/ui/navigation/select'
 import {
   AllTypesIcon,
   FeedFeedbackIcon,
@@ -9,7 +9,7 @@ import {
   FeedNeedToKnowIcon,
   StatusUpdateIcon,
   ChevronDown
-} from '../images/icons'
+} from '/imports/ui/images/icons'
 
 const iconMap = {
   'All activity': AllTypesIcon,

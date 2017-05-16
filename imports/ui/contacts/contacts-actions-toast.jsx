@@ -1,14 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Toast from '../navigation/toast'
-import Tooltip from '../navigation/tooltip'
+import Toast from '/imports/ui/navigation/toast'
+import Tooltip from '/imports/ui/navigation/tooltip'
 import {
   FeedCampaignIcon,
   FavouritesIcon,
   SectorIcon,
   TagIcon,
   DeleteIcon
-} from '../images/icons'
+} from '/imports/ui/images/icons'
 
 const ContactsActionsToast = React.createClass({
   propTypes: {

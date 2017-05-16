@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor'
 import scrape from 'html-metadata'
-import { defaultUrlFinder, defaultTitleFinder, defaultImageFinder, defaultPublishedDateFinder, defaultOutletFinder } from './default'
-import { jsonLdUrlFinder, jsonLdTitleFinder, jsonLdImageFinder, jsonLdPublishedDateFinder, jsonLdOutletFinder } from './json-ld'
-import { openGraphUrlFinder, openGraphTitleFinder, openGraphImageFinder, openGraphPublishedDateFinder, openGraphOutletFinder } from './open-graph'
+import { defaultUrlFinder, defaultTitleFinder, defaultImageFinder, defaultPublishedDateFinder, defaultOutletFinder } from '/imports/api/embeds/server/scraper/default'
+import { jsonLdUrlFinder, jsonLdTitleFinder, jsonLdImageFinder, jsonLdPublishedDateFinder, jsonLdOutletFinder } from '/imports/api/embeds/server/scraper/json-ld'
+import { openGraphUrlFinder, openGraphTitleFinder, openGraphImageFinder, openGraphPublishedDateFinder, openGraphOutletFinder } from '/imports/api/embeds/server/scraper/open-graph'
 
 const findOne = (metadata, finders) => {
   const flatten = arr => arr.reduce((acc, val) => acc.concat(Array.isArray(val) ? flatten(val) : val), [])

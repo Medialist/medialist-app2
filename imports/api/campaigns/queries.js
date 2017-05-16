@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor'
 import { check, Match } from 'meteor/check'
 import escapeRegExp from 'lodash.escaperegexp'
-import Campaigns from './campaigns'
+import Campaigns from '/imports/api/campaigns/campaigns'
 
 /**
  * Find campaigns that match a search term and other criteria.

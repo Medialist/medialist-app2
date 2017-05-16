@@ -1,8 +1,8 @@
 import React from 'react'
 import { withRouter } from 'react-router'
-import FileInput from './file-input'
-import Topbar from '../navigation/topbar'
-import CsvToContacts from './csv-to-contacts'
+import FileInput from '/imports/ui/contacts-import/file-input'
+import Topbar from '/imports/ui/navigation/topbar'
+import CsvToContacts from '/imports/ui/contacts-import/csv-to-contacts'
 
 export default withRouter(React.createClass({
   getInitialState () {

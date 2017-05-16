@@ -1,6 +1,6 @@
 import { createContainer } from 'meteor/react-meteor-data'
 import MasterLists from '/imports/api/master-lists/master-lists'
-import AddToMasterListModal from './add-to-master-list-modal'
+import AddToMasterListModal from '/imports/ui/master-lists/add-to-master-list-modal'
 
 export default createContainer(({open, type, ...props}) => {
   // master lists are subscribed to at the layout level

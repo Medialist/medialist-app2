@@ -1,4 +1,4 @@
-import './accounts'
-import './contacts-task'
-import './mail-url'
-import './migrations'
+import '/imports/startup/server/accounts'
+import '/imports/startup/server/contacts-task'
+import '/imports/startup/server/mail-url'
+import '/imports/startup/server/migrations'

@@ -1,5 +1,5 @@
 import React from 'react'
-import { CircleAvatar } from '../images/avatar'
+import { CircleAvatar } from '/imports/ui/images/avatar'
 
 const ContactPreview = ({contact, ...props}) => (
   <div className='flex items-start' {...props}>

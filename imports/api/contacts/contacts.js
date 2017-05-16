@@ -6,7 +6,7 @@ import nothing from '/imports/lib/nothing'
 import { MasterListRefSchema } from '/imports/api/master-lists/master-lists'
 import { TagRefSchema } from '/imports/api/tags/tags'
 import { LabelValueSchema, AuditSchema } from '/imports/lib/schema'
-import StatusMap from './status'
+import StatusMap from '/imports/api/contacts/status'
 
 const Contacts = new Mongo.Collection('contacts')
 

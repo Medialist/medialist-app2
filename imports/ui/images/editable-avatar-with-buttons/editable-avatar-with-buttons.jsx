@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Menu from './menu'
+import Menu from '/imports/ui/images/editable-avatar-with-buttons/menu'
 
 const EditableAvatarWithButtons = React.createClass({
   propTypes: {

@@ -10,9 +10,9 @@ import MasterLists, {
   MasterListRemoveItemSchema,
   MasterListDelSchema,
   MasterListsSetMasterLists
-} from './master-lists'
-import Contacts from '../contacts/contacts'
-import Campaigns from '../campaigns/campaigns'
+} from '/imports/api/master-lists/master-lists'
+import Contacts from '/imports/api/contacts/contacts'
+import Campaigns from '/imports/api/campaigns/campaigns'
 import findUniqueSlug from '/imports/lib/slug'
 import { TypeSchema } from '/imports/lib/schema'
 import { findOneUserRef } from '/imports/api/users/users'

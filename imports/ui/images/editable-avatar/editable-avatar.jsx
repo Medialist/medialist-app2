@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import { Dropdown, DropdownMenu } from '../../navigation/dropdown'
-import Menu from './menu'
+import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
+import Menu from '/imports/ui/images/editable-avatar/menu'
 
 const EditableAvatar = React.createClass({
   propTypes: {

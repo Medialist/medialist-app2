@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Helmet from 'react-helmet'
-import { Close } from '../images/icons'
+import { Close } from '/imports/ui/images/icons'
 
 /*
 Modal as "Higher Order Component"...

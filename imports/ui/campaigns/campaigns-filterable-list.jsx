@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import SearchBox from '../lists/search-box'
-import Campaign from '../campaigns/campaign-list-item'
+import SearchBox from '/imports/ui/lists/search-box'
+import Campaign from '/imports/ui/campaigns/campaign-list-item'
 
 const itemMatchesTerm = (item, term) => {
   if (!item) return

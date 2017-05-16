@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import SignInLayout from '../sign-in/sign-in-layout'
+import SignInLayout from '/imports/ui/sign-in/sign-in-layout'
 import { Meteor } from 'meteor/meteor'
 import { browserHistory } from 'react-router'
-import { CircleAvatar } from '../images/avatar'
-import EditableAvatarWithButtons from '../images/editable-avatar-with-buttons'
+import { CircleAvatar } from '/imports/ui/images/avatar'
+import EditableAvatarWithButtons from '/imports/ui/images/editable-avatar-with-buttons'
 import { Form, Input, Button } from '@achingbrain/react-validation'
 import { update } from '/imports/api/users/methods'
 

@@ -4,11 +4,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
 import { createContainer } from 'meteor/react-meteor-data'
-import { SettingsIcon, ChevronRight } from '../../images/icons'
-import SettingsProfile from './profile'
-import CampaignsMasterLists from './campaigns-master-lists'
-import ContactsMasterLists from './contacts-master-lists'
-import withSnackbar from '../../snackbar/with-snackbar'
+import { SettingsIcon, ChevronRight } from '/imports/ui/images/icons'
+import SettingsProfile from '/imports/ui/users/settings/profile'
+import CampaignsMasterLists from '/imports/ui/users/settings/campaigns-master-lists'
+import ContactsMasterLists from '/imports/ui/users/settings/contacts-master-lists'
+import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 
 const menuItems = [
   {label: 'Profile', slug: 'profile'},

@@ -1,12 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import CampaignSelector from './campaign-selector'
+import CampaignSelector from '/imports/ui/feedback/campaign-selector'
 import StatusMap from '/imports/api/contacts/status'
-import StatusLabel from './status-label'
-import StatusSelector from './status-selector'
-import PostBoxtTextArea from './post-box-textarea'
+import StatusLabel from '/imports/ui/feedback/status-label'
+import StatusSelector from '/imports/ui/feedback/status-selector'
+import PostBoxtTextArea from '/imports/ui/feedback/post-box-textarea'
 import immutable from 'object-path-immutable'
-import { FeedbackTab, CoverageTab, NeedToKnowTab, PostBoxTabs } from '../feedback/post-box-nav'
+import { FeedbackTab, CoverageTab, NeedToKnowTab, PostBoxTabs } from '/imports/ui/feedback/post-box-nav'
 
 const Divider = ({show}) => (
   <div style={{width: 1, height: 14}} className={`inline-block align-middle ${show ? 'bg-gray80' : ''}`} />

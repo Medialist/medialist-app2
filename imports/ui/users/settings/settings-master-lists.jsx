@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { SectorIcon, FeedContactIcon } from '../../images/icons'
+import { SectorIcon, FeedContactIcon } from '/imports/ui/images/icons'
 
 const SettingsPanelMasterLists = (props) => {
   const { type, copy, children } = props

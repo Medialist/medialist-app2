@@ -2,7 +2,7 @@ import React from 'react'
 import { createContainer } from 'meteor/react-meteor-data'
 import { Meteor } from 'meteor/meteor'
 import Tags from '/imports/api/tags/tags'
-import Loading from '../lists/loading'
+import Loading from '/imports/ui/lists/loading'
 
 const TagListItem = (props) => (
   <div

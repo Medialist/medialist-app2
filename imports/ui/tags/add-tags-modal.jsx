@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Modal from '../navigation/modal'
+import Modal from '/imports/ui/navigation/modal'
 import { cleanSlug } from '/imports/lib/slug'
-import Tag from './tag'
-import SearchBox from '../lists/search-box'
-import TagSuggester from './tag-suggester'
+import Tag from '/imports/ui/tags/tag'
+import SearchBox from '/imports/ui/lists/search-box'
+import TagSuggester from '/imports/ui/tags/tag-suggester'
 
 const TagSelector = React.createClass({
   propTypes: {

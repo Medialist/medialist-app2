@@ -1,6 +1,6 @@
 import React from 'react'
 import classnames from 'classnames'
-import { SearchGrayIcon } from '../images/icons'
+import { SearchGrayIcon } from '/imports/ui/images/icons'
 
 const SearchSiteBox = (props) => {
   const { className } = props

@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Meteor } from 'meteor/meteor'
 import { Form, Input, Button } from '@achingbrain/react-validation'
-import SignInLayout from './sign-in-layout'
+import SignInLayout from '/imports/ui/sign-in/sign-in-layout'
 
 const SignInForm = React.createClass({
   getInitialState () {

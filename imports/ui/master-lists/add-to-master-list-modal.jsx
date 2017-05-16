@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
-import Modal from '../navigation/modal'
-import { Check } from '../images/icons'
+import Modal from '/imports/ui/navigation/modal'
+import { Check } from '/imports/ui/images/icons'
 
 const AddToMasterListModal = Modal(React.createClass({
   propTypes: {

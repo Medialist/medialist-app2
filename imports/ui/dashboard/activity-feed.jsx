@@ -2,13 +2,13 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
-import ActivityList from './activity-list'
-import CampaignFilter from './campaign-filter'
-import ActivityFilter, { filterNames } from './activity-filter'
+import ActivityList from '/imports/ui/dashboard/activity-list'
+import CampaignFilter from '/imports/ui/dashboard/campaign-filter'
+import ActivityFilter, { filterNames } from '/imports/ui/dashboard/activity-filter'
 import Posts from '/imports/api/posts/posts'
 import Campaigns from '/imports/api/campaigns/campaigns'
-import NearBottomContainer from '../navigation/near-bottom-container'
-import SubscriptionLimitContainer from '../navigation/subscription-limit-container'
+import NearBottomContainer from '/imports/ui/navigation/near-bottom-container'
+import SubscriptionLimitContainer from '/imports/ui/navigation/subscription-limit-container'
 
 const ActivityFeed = React.createClass({
   propTypes: {

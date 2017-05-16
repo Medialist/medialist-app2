@@ -1,9 +1,9 @@
 import { resetDatabase } from 'meteor/xolvio:cleaner'
 import assert from 'assert'
-import Embeds from '../embeds'
+import Embeds from '/imports/api/embeds/embeds'
 import {
   createEmbed
-} from './methods'
+} from '/imports/api/embeds/server/methods'
 
 describe('createEmbed', function () {
   beforeEach(function () {

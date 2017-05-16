@@ -5,9 +5,9 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import escapeRegExp from 'lodash.escaperegexp'
 import slugify, { checkAllSlugsExist } from '/imports/lib/slug'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
-import Campaigns from '../campaigns/campaigns'
+import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
-import Contacts, { ContactSchema, ContactCreateSchema } from './contacts'
+import Contacts, { ContactSchema, ContactCreateSchema } from '/imports/api/contacts/contacts'
 import MasterLists from '/imports/api/master-lists/master-lists'
 
 /*
