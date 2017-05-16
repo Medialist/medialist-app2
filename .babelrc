@@ -1,17 +1,16 @@
 {
   "env": {
     "test": {
-      "presets": ["es2015", "react"]
+      "presets": ["es2015", "react"],
+      "plugins": [
+        [
+          "module-resolver", {
+            "alias": {
+              "/imports": "../../../imports"
+            }
+          }
+        ]
+      ]
     }
-  },
-  "plugins": [
-    [
-      "module-resolver", {
-        "root": ["."],
-        "alias": {
-          "/imports": "../../../imports"
-        }
-      }
-    ]
-  ]
+  }
 }

@@ -12,6 +12,7 @@ import createSearchContainer from '/imports/ui/lists/searchable-list'
 import immutable from 'object-path-immutable'
 import Loading from '/imports/ui/lists/loading'
 import { STATUS_GREEN } from '/imports/ui/colours'
+import { SIGNIN_EMAIL_DOMAIN_HINT } from '/imports/ui/forms/validation'
 
 class EditTeam extends React.Component {
   constructor (props, context) {
@@ -150,6 +151,7 @@ class EditTeam extends React.Component {
               data-id='invite-by-email-input'
               validations={['signInEmailList']}
               style={{outline: 'none', padding: '10px', paddingLeft: '35px'}}
+              help={<p className='grey20 f-sm mt1'>You can only invite colleages with a {SIGNIN_EMAIL_DOMAIN_HINT} address at present</p>}
               />
           </div>
         </div>
