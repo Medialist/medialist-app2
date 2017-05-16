@@ -10,9 +10,13 @@ const StatusSelectorContainer = React.createClass({
     children: PropTypes.func.isRequired
   },
 
-  onStatusChange (status) {
+  onStatusChange (event) {
     const { contactSlug, campaign } = this.props
-    createFeedbackPost.call({contactSlug, campaignSlug: campaign.slug, status})
+    createFeedbackPost.call({
+      contactSlug,
+      campaignSlug: campaign.slug,
+      status: event.target.value
+    })
   },
 
   render () {

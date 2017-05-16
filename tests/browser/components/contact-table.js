@@ -49,6 +49,19 @@ module.exports = {
 
       return this
     },
+    updateStatus: function (contact, status) {
+      const buttonSelector = `[data-item='${contact._id}'] [data-id=contact-status-selector-button]`
+      const statusSelector = `[data-item='${contact._id}'] [data-id=contact-status-${status}]`
+
+      this
+        .waitForElementVisible(buttonSelector)
+        .click(buttonSelector)
+        .waitForElementVisible(statusSelector)
+        .click(statusSelector)
+        .waitForElementNotVisible(statusSelector)
+
+      return this
+    },
     isInResults: function (contact) {
       this.assert.elementPresent(`[data-id=contact-link][data-contact='${contact._id}']`)
     },
