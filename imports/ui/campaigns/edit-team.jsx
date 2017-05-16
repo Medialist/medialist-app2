@@ -372,7 +372,8 @@ const TeamMember = ({ teamMember, campaign, style, highlighted, ...props }) => {
         <div className='flex items-center'>
           <div className={`flex-none f-md semibold ${highlighted ? 'completed' : ''}`}>{teamMember.profile.name || 'Invited'}</div>
         </div>
-        <div className='f-sm normal gray20 truncate'>{teamMember.emails[0].address}</div>
+        {teamMember.emails && teamMember.emails.length && <div className='f-sm normal gray20 truncate'>{teamMember.emails[0].address}</div>}
+        {(!teamMember.emails || !teamMember.emails.length) && <div className='f-sm normal gray60 truncate'>No email address</div>}
       </div>
     </div>
   )

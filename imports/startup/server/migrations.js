@@ -65,8 +65,12 @@ Migrations.add({
           'team._id': user._id
         }).fetch().length
 
-        Meteor.users.update(user._id, {
-          onCampaigns: campaigns
+        Meteor.users.update({
+          _id: user._id
+        }, {
+          $set: {
+            onCampaigns: campaigns
+          }
         })
       })
   }

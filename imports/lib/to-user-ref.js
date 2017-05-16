@@ -5,9 +5,15 @@ export default function toUserRef (user) {
     return null
   }
 
-  return {
+  const ref = {
     _id: user._id,
     name: user.profile.name,
     avatar: getAvatar(user)
   }
+
+  if (!ref.avatar) {
+    delete ref.avatar
+  }
+
+  return ref
 }

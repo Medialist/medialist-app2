@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import nothing from '/imports/lib/nothing'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
+import { UserRefSchema } from '/imports/lib/schema'
 
 const Embeds = new Mongo.Collection('embeds')
 
@@ -47,8 +48,12 @@ Embeds.findOneEmbed = (url) => (
   })
 )
 
-Embeds.findOneEmbedRef = (url) => (
-  Embeds.findOne({
+Embeds.findOneEmbedRef = (url) => {
+  if (!url) {
+    return null
+  }
+
+  return Embeds.findOne({
     $or: [{
       url: url
     }, {
@@ -69,20 +74,60 @@ Embeds.findOneEmbedRef = (url) => (
       datePublished: 1
     }
   })
-)
+}
 
 export const EmbedRefSchema = new SimpleSchema({
-  _id: { type: String },
-  url: { type: String, regEx: SimpleSchema.RegEx.Url },
-  headline: { type: String, optional: true },
-  outlet: { type: String, optional: true },
-  'image.url': { type: String, regEx: SimpleSchema.RegEx.Url },
-  'image.width': { type: Number },
-  'image.height': { type: Number },
-  datePublished: { type: String, optional: true },
-  urls: { type: [String], regEx: SimpleSchema.RegEx.Url },
-  'scrapedBy.name': { type: String, optional: true },
-  'scrapedBy.version': { type: String, optional: true },
-  createdBy: { type: String, optional: true },
-  createdAt: { type: Date, optional: true }
+  _id: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id,
+    optional: true
+  },
+  url: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Url
+  },
+  headline: {
+    type: String,
+    optional: true
+  },
+  outlet: {
+    type: String,
+    optional: true
+  },
+  'image.url': {
+    type: String,
+    regEx: SimpleSchema.RegEx.Url,
+    optional: true
+  },
+  'image.width': {
+    type: Number,
+    optional: true
+  },
+  'image.height': {
+    type: Number,
+    optional: true
+  },
+  datePublished: {
+    type: Date,
+    optional: true
+  },
+  urls: {
+    type: [String],
+    regEx: SimpleSchema.RegEx.Url
+  },
+  'scrapedBy.name': {
+    type: String,
+    optional: true
+  },
+  'scrapedBy.version': {
+    type: String,
+    optional: true
+  },
+  createdBy: {
+    type: UserRefSchema
+  },
+  createdAt: {
+    type: Date,
+    optional: true
+  }
 })

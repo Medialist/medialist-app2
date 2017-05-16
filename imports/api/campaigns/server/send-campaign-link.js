@@ -67,6 +67,7 @@ const sendCampaignLink = (emails = [], sender, campaign) => {
     const domain = email.split('@').pop()
 
     const validDomain = Meteor.settings.public.authentication.emailDomains
+      .concat(Meteor.settings.public.authentication.extraEmailDomains)
       .some(validDomain => domain === validDomain)
 
     if (!validDomain) {

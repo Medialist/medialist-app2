@@ -22,7 +22,8 @@
       "publicKey": "${UPLOADCARE_PUBLIC_KEY}"
     },
     "authentication": {
-      "emailDomains": ["test.medialist.io"]
+      "emailDomains": ["test.medialist.io"],
+      "extraEmailDomains": []
     }
   }
 }

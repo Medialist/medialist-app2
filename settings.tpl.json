@@ -22,7 +22,8 @@
       "publicKey": "${UPLOADCARE_PUBLIC_KEY}"
     },
     "authentication": {
-      "emailDomains": ["localhost"]
+      "emailDomains": ["localhost"],
+      "extraEmailDomains": []
     }
   }
 }

@@ -19,6 +19,10 @@ export const openGraphImageFinder = (metadata) => {
   const image = withOpenGraph(metadata).image
 
   if (image) {
+    if (!image.url.startsWith('http')) {
+      return undefined
+    }
+
     return {
       url: image.url,
       width: image.width ? Number(image.width) : undefined,

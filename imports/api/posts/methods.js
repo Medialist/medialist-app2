@@ -15,6 +15,7 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
   const createdAt = new Date()
   const url = findUrl(message)
   const embed = Embeds.findOneEmbedRef(url)
+
   const post = {
     // Feedback without a message is rendered as a different post type.
     type: message ? type : 'StatusUpdate',

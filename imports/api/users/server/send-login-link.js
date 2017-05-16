@@ -15,7 +15,9 @@ const findOrCreateUserId = (email) => {
 
 const sendEmailLogInLink = (email) => {
   const domain = email.split('@').pop()
-  const validDomain = Meteor.settings.public.authentication.emailDomains.some(validDomain => domain === validDomain)
+  const validDomain = Meteor.settings.public.authentication.emailDomains
+    .concat(Meteor.settings.public.authentication.extraEmailDomains)
+    .some(validDomain => domain === validDomain)
 
   if (!validDomain) {
     console.warn(`User tried to log in with invalid email domain '${domain}'`)

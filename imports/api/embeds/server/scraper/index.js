@@ -29,6 +29,13 @@ const scrapeAndExtract = (url, callback) => {
     timeout: Meteor.settings.embeds ? Meteor.settings.embeds.timeout : 10000,
     headers: {
       'User-Agent': Meteor.settings.embeds ? Meteor.settings.embeds.userAgent : undefined
+    },
+    followRedirect: (response) => {
+      if (response && response.headers && response.headers.location) {
+        url = response.headers.location
+      }
+
+      return true
     }
   }, (error, metadata) => {
     if (error) {
