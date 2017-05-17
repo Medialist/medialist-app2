@@ -30,7 +30,7 @@ export const Select = React.createClass({
     return (
       <Dropdown>
         <div className={className} style={style} onClick={this.openDropdown} disabled={disabled} data-id={this.props['data-id']}>
-          {buttonText}<ChevronDown className={`${open ? 'blue' : 'gray40'}`} />
+          {buttonText}<ChevronDown className='gray40' />
         </div>
         <DropdownMenu width={223} open={open} onDismiss={this.closeDropdown}>
           <nav className='py3' onClick={this.closeDropdown}>
