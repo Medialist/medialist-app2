@@ -4,7 +4,7 @@ import { CircleAvatar } from '/imports/ui/images/avatar'
 import StatusSelectorContainer from '/imports/ui/feedback/status-selector-container'
 import StatusDot from '/imports/ui/feedback/status-dot'
 
-const CampaignContact = ({ contact, campaign, style, highlighted, ...props }) => {
+const CampaignContact = ({ contact, campaign, style, highlighted, statusSelectorDropdown, ...props }) => {
   return (
     <div style={{lineHeight: 1.3, ...style}} {...props}>
       <CircleAvatar className='inline-block' size={38} avatar={contact.avatar} name={contact.name} />
@@ -14,10 +14,13 @@ const CampaignContact = ({ contact, campaign, style, highlighted, ...props }) =>
           <div className='flex-none'>
             {campaign && (
               <StatusSelectorContainer
+                buttonClassName='btn btn-no-border bg-transparent'
                 contactSlug={contact.slug}
                 campaign={campaign}
                 style={{marginLeft: 7}}
                 children={(status) => <StatusDot size={10} name={status} />}
+                compact
+                dropdown={statusSelectorDropdown}
               />
             )}
           </div>
@@ -31,7 +34,8 @@ const CampaignContact = ({ contact, campaign, style, highlighted, ...props }) =>
 
 CampaignContact.propTypes = {
   contact: PropTypes.object.isRequired,
-  campaign: PropTypes.object
+  campaign: PropTypes.object,
+  statusSelectorDropdown: PropTypes.object
 }
 
 export default CampaignContact

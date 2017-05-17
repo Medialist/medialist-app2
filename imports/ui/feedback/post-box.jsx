@@ -141,9 +141,7 @@ const FeedbackInput = React.createClass({
               style={{padding: '6px 15px 7px'}}
               status={this.state.status}
               onChange={this.onFieldChange}
-            >
-              <StatusLabel name={this.state.status} />
-            </StatusSelector>
+              disabled={!this.state.campaign} />
           </div>
         </PostBoxButtons>
       </div>

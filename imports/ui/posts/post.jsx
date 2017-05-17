@@ -19,8 +19,7 @@ import {
   FeedNeedToKnowIcon,
   StatusUpdateIcon
 } from '/imports/ui/images/icons'
-import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
-import { Option } from '/imports/ui/navigation/select'
+import { Dropdown, DropdownMenu, DropdownMenuItem } from '/imports/ui/navigation/dropdown'
 import findUrl from '/imports/lib/find-url'
 import DeletePostModal from './delete-post-modal'
 
@@ -182,13 +181,17 @@ class Post extends React.Component {
                 <DropdownMenu width={180} left={-150} top={-2} arrowPosition='top' arrowAlign='right' arrowMarginRight='11px' open={this.state.menuOpen} onDismiss={() => this.closeMenu()}>
                   <nav className='p1'>
                     {/*
-                      <Option onClick={event => this.editPost(event)} data-id='edit-post-button'>
-                        <span className='ml2 gray20 regular'>Edit Coverage</span>
-                      </Option>
+                      <DropdownMenuItem
+                        onClick={event => this.editPost(event)}
+                        data-id='edit-post-button'>
+                          <span className='ml2 gray20 regular'>Edit Coverage</span>
+                      </DropdownMenuItem>
                     */}
-                    <Option onClick={event => this.deletePost(event)} data-id='delete-post-button'>
+                    <DropdownMenuItem
+                      onClick={event => this.deletePost(event)}
+                      data-id='delete-post-button'>
                       <span className='ml2 gray20 regular'>Delete</span>
-                    </Option>
+                    </DropdownMenuItem>
                   </nav>
                 </DropdownMenu>
               </Dropdown>

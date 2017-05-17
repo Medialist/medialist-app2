@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { Check } from '/imports/ui/images/icons'
 
 /*
  * Dropdown & DropdownMenu
@@ -157,3 +158,12 @@ DropdownMenu.propTypes = {
   onDismiss: PropTypes.func,
   children: PropTypes.node
 }
+
+export const DropdownMenuItem = ({selected, onClick, children, ...props}) => (
+  <div className='flex px3 py2 pointer hover-bg-gray90 hover-color-trigger hover-box-shadow-x-gray80' onClick={onClick} data-id={props['data-id']}>
+    <div className='flex-auto'>
+      {children}
+    </div>
+    { selected && <Check className='flex-none blue' style={{transform: 'scale(1.5)'}} /> }
+  </div>
+)

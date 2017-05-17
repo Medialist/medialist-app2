@@ -47,7 +47,15 @@ const ContactsList = ({contacts, campaign}) => (
     <div className='px4 pb3'>
       {contacts.map((contact) => (
         <Link to={`/campaign/${campaign.slug}/contact/${contact.slug}`} className='block pt3' key={contact._id}>
-          <CampaignContact key={contact.slug} contact={contact} campaign={campaign} />
+          <CampaignContact
+            key={contact.slug}
+            contact={contact}
+            campaign={campaign}
+            statusSelectorDropdown={{
+              left: -150,
+              arrowAlign: 'right',
+              arrowMarginRight: '30px'
+            }} />
         </Link>
       ))}
     </div>

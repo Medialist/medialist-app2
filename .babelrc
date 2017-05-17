@@ -9,6 +9,8 @@
               "/imports": "../../../imports"
             }
           }
+        ], [
+          "transform-object-rest-spread"
         ]
       ]
     }
