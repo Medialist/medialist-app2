@@ -13,7 +13,7 @@ const ContactButton = (props) => {
     <div style={{marginTop: '-1px'}} className='align-left'>
       <CircleAvatar size={20} avatar={avatar} name={name} />
       <div className='inline-block ml2 align-middle f-sm normal gray10'>{name}</div>
-      <ChevronDown className='ml1 gray40' style={{verticalAlign: 'bottom'}} />
+      <ChevronDown className='ml1 gray40' />
     </div>
   )
 }

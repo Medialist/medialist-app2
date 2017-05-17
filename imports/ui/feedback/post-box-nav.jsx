@@ -10,7 +10,7 @@ const Tab = ({selected, onClick, children, ...props}) => {
   )
 }
 
-const style = {paddingLeft: 7, verticalAlign: '-1px'}
+const style = {paddingLeft: 7, verticalAlign: '-2px'}
 
 export const FeedbackTab = ({selected, onClick}) => (
   <Tab selected={selected} onClick={onClick} data-id='feedback-tab'>
