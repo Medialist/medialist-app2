@@ -5,7 +5,7 @@ import { CheckboxEmpty, CheckboxChecked } from '/imports/ui/images/icons'
 
 const Checkbox = ({ className, checked, data, onChange, ...props }) => {
   return (
-    <label className={classnames(className, 'inline-block')} style={{width: 14, height: 14}} data-id={`${props['data-id']}-label`}>
+    <label className={classnames(className, 'inline-block', 'pointer')} style={{width: 14, height: 14}} data-id={`${props['data-id']}-label`}>
       {checked ? <CheckboxChecked className='align-top' /> : <CheckboxEmpty className='align-top' />}
       <input
         style={{display: 'none'}}
