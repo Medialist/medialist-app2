@@ -4,7 +4,7 @@ import { Link } from 'react-router'
 import { Meteor } from 'meteor/meteor'
 import { CircleAvatar, SquareAvatar, avatarStyle } from '/imports/ui/images/avatar'
 import { LinkedTag } from '/imports/ui/tags/tag'
-import { EmailIcon, FavouritesIconGold, FavouritesIcon, PhoneIcon, BioIcon, MobileIcon, AddressIcon } from '/imports/ui/images/icons'
+import { EmailIcon, FavouritesIcon, PhoneIcon, BioIcon, MobileIcon, AddressIcon } from '/imports/ui/images/icons'
 import { setMasterLists } from '/imports/api/master-lists/methods'
 import InfoHeader from '/imports/ui/lists/info-header'
 import AddToMasterList from '/imports/ui/master-lists/add-to-master-list'
@@ -13,6 +13,7 @@ import Tooltip from '/imports/ui/navigation/tooltip'
 import { SocialIcon } from '/imports/ui/social/social'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import ContactListLink from '/imports/ui/master-lists/contact-list-link'
+import { GOLD, GREY60 } from '/imports/ui/colours'
 
 const ContactInfo = withSnackbar(React.createClass({
   propTypes: {
@@ -100,7 +101,6 @@ const ContactInfo = withSnackbar(React.createClass({
     const { user: { myContacts }, contact, campaigns, onAddToCampaignClick } = this.props
     const { _id, name, avatar, outlets, masterLists, tags } = contact
     const isFavourite = myContacts.some((c) => c._id === _id)
-    const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
     const tooltip = isFavourite ? 'Remove from My Contacts' : 'Add to My Contacts'
     const { socials } = contact
 
@@ -114,7 +114,7 @@ const ContactInfo = withSnackbar(React.createClass({
             <div className='semibold f-xl gray10'>
               {name}
               <Tooltip title={tooltip}>
-                <Icon className='mx2 pointer svg-icon-lg align-bottom gray40' onClick={this.onToggleFavourite} />
+                <FavouritesIcon className='mx1 pointer' onClick={this.onToggleFavourite} style={{width: '18px', height: '18px', fill: isFavourite ? GOLD : GREY60}} />
               </Tooltip>
             </div>
             <div style={{paddingTop: 4}}>

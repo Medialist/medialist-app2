@@ -1,1 +1,7 @@
-<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8 12.39l-4.326 2.275.826-4.818L1 6.436l4.837-.703L8 1.35l2.163 4.383L15 6.436l-3.5 3.411.826 4.818z" fill-rule="evenodd"/></svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" width="16" height="16" viewBox="0, 0, 16, 16">
+  <g id="Layer_1">
+    <path d="M7.984,13.266 L3.038,16 L3.982,10.21 L-0.019,6.112 L5.511,5.267 L7.984,0 L10.456,5.267 L15.986,6.112 L11.985,10.21 L12.929,16 z"/>
+  </g>
+</svg>

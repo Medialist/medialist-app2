@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor'
 import { LinkedTag } from '/imports/ui/tags/tag'
 import EditableAvatar from '/imports/ui/images/editable-avatar'
 import { SquareAvatar, CircleAvatar } from '/imports/ui/images/avatar'
-import { BioIcon, FavouritesIcon, FavouritesIconGold, WebsiteIcon } from '/imports/ui/images/icons'
+import { BioIcon, FavouritesIcon, WebsiteIcon } from '/imports/ui/images/icons'
 import InfoHeader from '/imports/ui/lists/info-header'
 import AddToMasterList from '/imports/ui/master-lists/add-to-master-list'
 import AddTagsModal from '/imports/ui/tags/add-tags-modal'
@@ -13,6 +13,7 @@ import { update } from '/imports/api/campaigns/methods'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import CampaignListLink from '/imports/ui/master-lists/campaign-list-link'
 import { setMasterLists } from '/imports/api/master-lists/methods'
+import { GOLD, GREY60 } from '/imports/ui/colours'
 
 const CampaignInfo = withSnackbar(React.createClass({
   propTypes: {
@@ -132,7 +133,6 @@ const CampaignInfo = withSnackbar(React.createClass({
     const { onEditClick, onEditTeamClick, user, campaign } = this.props
     const { name, client, avatar, purpose, links, team, tags, masterLists } = this.props.campaign
     const isFavourite = user.myCampaigns.some((m) => m._id === campaign._id)
-    const Icon = isFavourite ? FavouritesIconGold : FavouritesIcon
     const tooltip = isFavourite ? 'Remove from My Campaigns' : 'Add to My Campaigns'
     return (
       <div data-id='campaign-details'>
@@ -141,10 +141,10 @@ const CampaignInfo = withSnackbar(React.createClass({
             <SquareAvatar size={70} avatar={avatar} name={name} />
           </EditableAvatar>
           <div className='ml3 flex-auto'>
-            <div className='semibold block f-xl mb1' style={{ marginTop: '-3px' }}>
+            <div className='semibold f-xl mb1'>
               <span data-id='campaign-name'>{name}</span>
               <Tooltip title={tooltip}>
-                <Icon className='mx1 pointer svg-icon-lg' onClick={onToggleFavourite} />
+                <FavouritesIcon className='mx1 pointer' onClick={onToggleFavourite} style={{width: '18px', height: '18px', fill: isFavourite ? GOLD : GREY60}} />
               </Tooltip>
             </div>
             <div className='f-sm gray10 mb2' data-id='campaign-client'>{client && client.name}</div>
