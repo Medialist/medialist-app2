@@ -5,6 +5,26 @@ import { ReactMeteorData } from 'meteor/react-meteor-data'
 import escapeRegExp from 'lodash.escaperegexp'
 import immutable from 'object-path-immutable'
 
+const replaceTerm = (object, query) => {
+  if (object === '$term') {
+    return query
+  }
+
+  if (!object || typeof object !== 'object') {
+    return object
+  }
+
+  if (Array.isArray(object)) {
+    return object.map(o => replaceTerm(o, query))
+  }
+
+  Object.keys(object).forEach(key => {
+    object[key] = replaceTerm(object[key], query)
+  })
+
+  return object
+}
+
 /**
 * SearchContainer
 * Find contacts by a search term and other criteria.
@@ -69,10 +89,8 @@ export default (Component, opts = {}) => {
       let query = {}
 
       if (this.state.term) {
-        query = JSON.parse(
-          JSON.stringify(this.props.query)
-            .replace(/\$term/g, escapeRegExp(this.state.term))
-        )
+        query = JSON.parse(JSON.stringify(this.props.query))
+        query = replaceTerm(query, escapeRegExp(this.state.term))
       }
 
       const items = collection.find(query, this.props.fields).fetch()
