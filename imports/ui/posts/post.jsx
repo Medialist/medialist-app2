@@ -271,25 +271,39 @@ const PostSummary = ({children, status}) => (
   </span>
 )
 
-const FeedbackPostSummary = ({label, campaigns, contacts, status, contact, campaign}) => (
-  <PostSummary status={status}>
-    <span className='gray10'>
-      {label}
-    </span>
-    { !campaign && campaigns && campaigns.length && (
+const FeedbackPostSummary = ({label, campaigns, contacts, status, contact, campaign}) => {
+  let campaignLink = null
+
+  if (!campaign && campaigns && campaigns.length) {
+    campaignLink = (
       <span>
         <ChevronRight className='f-xxxs gray60' />
         <CampaignLink campaign={campaigns[0]} />
       </span>
-    )}
-    { !contact && contacts && contacts.length && (
+    )
+  }
+
+  let contactLink = null
+
+  if (!contact && contacts && contacts.length) {
+    contactLink = (
       <span>
         <ChevronRight className='f-xxxs gray60' />
         <ContactLink contact={contacts[0]} />
       </span>
-    )}
-  </PostSummary>
-)
+    )
+  }
+
+  return (
+    <PostSummary status={status}>
+      <span className='gray10'>
+        {label}
+      </span>
+      {campaignLink}
+      {contactLink}
+    </PostSummary>
+  )
+}
 
 export const FeedbackPost = ({item, currentUser, contact, campaign}) => (
   <Post
