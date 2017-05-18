@@ -3,8 +3,8 @@
 module.exports = (dataId) => ({
   selector: `[data-id='${dataId}']`,
   elements: {
-    confirmButton: '[data-id=confirm-delete-button]',
-    cancelButton: '[data-id=cancel-delete-button]'
+    confirmButton: '[data-id=confirm-button]',
+    cancelButton: '[data-id=cancel-button]'
   },
   commands: [{
     confirm: function (tag) {

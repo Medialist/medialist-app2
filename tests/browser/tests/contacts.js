@@ -128,7 +128,7 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
         .selectList(contactList)
         .save()
 
-      t.page.main().waitForSnackbarMessage('contacts-batch-add-to-contact-list-success')
+      t.page.main().waitForSnackbarMessage('batch-add-contacts-to-contact-list-success')
 
       contactsPage
         .navigateToContactList(contactList)

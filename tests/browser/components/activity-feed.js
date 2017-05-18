@@ -89,7 +89,7 @@ module.exports = (prefix) => ({
     _deletePostWith: function (type, contact, campaign) {
       let postSelector = createPostSelector(type, contact, campaign)
 
-      const confirmDeletePostSelector = `${postSelector} [data-id=confirm-delete-button]`
+      const confirmDeletePostSelector = `${postSelector} [data-id=confirm-button]`
 
       this
         ._openDeleteModal(type, contact, campaign)
@@ -105,7 +105,7 @@ module.exports = (prefix) => ({
     _cancelDeletePostWith: function (type, contact, campaign) {
       let postSelector = createPostSelector(type, contact, campaign)
 
-      const cancelDeletePostSelector = `${postSelector} [data-id=cancel-delete-button]`
+      const cancelDeletePostSelector = `${postSelector} [data-id=cancel-button]`
       const deletePostModalSelector = `${postSelector} [data-id=delete-post-modal]`
 
       this

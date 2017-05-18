@@ -276,13 +276,13 @@ const FeedbackPostSummary = ({label, campaigns, contacts, status, contact, campa
     <span className='gray10'>
       {label}
     </span>
-    { !campaign && campaigns && campaigns[0] && (
+    { !campaign && campaigns && campaigns.length && (
       <span>
         <ChevronRight className='f-xxxs gray60' />
         <CampaignLink campaign={campaigns[0]} />
       </span>
     )}
-    { !contact && contacts && (
+    { !contact && contacts && contacts.length && (
       <span>
         <ChevronRight className='f-xxxs gray60' />
         <ContactLink contact={contacts[0]} />

@@ -1,6 +1,10 @@
 'use strict'
 
 const contactTable = require('../components/contact-table')
+const addtoListsModal = require('../components/add-to-lists-modal')
+const tagSelectorModal = require('../components/tag-selector-modal')
+const deleteModal = require('../components/delete-modal')
+const campaignSelectorModal = require('../components/campaign-selector-modal')
 
 module.exports = {
   url: 'http://localhost:3000/campaigns',
@@ -18,28 +22,60 @@ module.exports = {
     toast: {
       selector: '[data-id=contact-actions-toast]',
       elements: {
-        removeAction: '[data-id=contact-actions-remove]'
-      }
+        addContactsToCampaign: '[data-id=contact-actions-add-to-campaign]',
+        addToContactList: '[data-id=contact-actions-add-to-contact-list]',
+        addToMyContacts: '[data-id=contact-actions-add-to-my-contacts]',
+        addTagsToContacts: '[data-id=contact-actions-add-tags]',
+        removeContacts: '[data-id=contact-actions-remove]'
+      },
+      commands: [{
+        openAddContactsToCampaignModal: function () {
+          this
+            .waitForElementVisible('@addContactsToCampaign')
+            .click('@addContactsToCampaign')
+
+          return this
+        },
+        openAddToContactListsModal: function () {
+          this
+            .waitForElementVisible('@addToContactList')
+            .click('@addToContactList')
+
+          return this
+        },
+        favouriteContacts: function () {
+          this
+            .waitForElementVisible('@addToMyContacts')
+            .click('@addToMyContacts')
+
+          return this
+        },
+        openAddTagsToContactsModal: function () {
+          this
+            .waitForElementVisible('@addTagsToContacts')
+            .click('@addTagsToContacts')
+
+          return this
+        },
+        openRemoveContactsModal: function () {
+          this
+            .waitForElementVisible('@removeContacts')
+            .click('@removeContacts')
+
+          return this
+        }
+      }]
     },
-    contactTable: contactTable
+    contactTable: contactTable,
+    campaignSelectorModal: campaignSelectorModal,
+    contactListsModal: addtoListsModal('add-to-list-modal'),
+    tagSelectorModal: tagSelectorModal('tag-selector-modal'),
+    removeContactsModal: deleteModal('remove-contacts-modal')
   },
   commands: [{
     navigate: function (campaign) {
       this.api.url(`http://localhost:3000/campaign/${campaign.slug}/contacts`)
       this.waitForElementVisible(this.section.contactTable.selector)
-
-      return this
-    },
-    removeContacts: function () {
-      this.waitForElementVisible(this.section.toast.selector)
-
-      this.section.toast
-        .waitForElementVisible('@removeAction')
-        .click('@removeAction')
-
-      this.section.removeContactsConfirmation
-        .waitForElementVisible('@confirm')
-        .click('@confirm')
 
       return this
     }

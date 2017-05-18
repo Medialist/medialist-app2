@@ -84,44 +84,42 @@ const ContactsPage = withSnackbar(React.createClass({
   },
 
   onFavouriteAll () {
-    const { snackbar } = this.props
-    const { selections } = this.state
-    const contactSlugs = selections.map((s) => s.slug)
-    batchFavouriteContacts.call({contactSlugs}, (err, res) => {
-      if (err) {
-        console.log(err)
-        return snackbar.error('batch-favourite-contacts-failure')
+    const contactSlugs = this.state.selections.map((s) => s.slug)
+
+    batchFavouriteContacts.call({contactSlugs}, (error) => {
+      if (error) {
+        console.error(error)
+        return this.props.snackbar.error('batch-favourite-contacts-failure')
       }
-      snackbar.show(`Favourited ${contactSlugs.length} ${contactSlugs.length === 1 ? 'contact' : 'contacts'}`, 'batch-favourite-contacts-success')
+      this.props.snackbar.show(`Favourited ${contactSlugs.length} ${contactSlugs.length === 1 ? 'contact' : 'contacts'}`, 'batch-favourite-contacts-success')
     })
   },
 
   onTagAll (tags) {
-    const { snackbar } = this.props
-    const { selections } = this.state
-    const slugs = selections.map((s) => s.slug)
+    const slugs = this.state.selections.map((s) => s.slug)
     const names = tags.map((t) => t.name)
-    batchAddTags.call({type: 'Contacts', slugs, names}, (err, res) => {
-      if (err) {
-        console.log(err)
-        return snackbar.error('batch-tag-contacts-failure')
+
+    batchAddTags.call({type: 'Contacts', slugs, names}, (error) => {
+      if (error) {
+        console.error(error)
+        return this.props.snackbar.error('batch-tag-contacts-failure')
       }
-      snackbar.show(`Added ${names.length} ${names.length === 1 ? 'tag' : 'tags'} to ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'}`, 'batch-tag-contacts-success')
+
+      this.props.snackbar.show(`Added ${names.length} ${names.length === 1 ? 'tag' : 'tags'} to ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'}`, 'batch-tag-contacts-success')
     })
   },
 
   onAddAllToMasterLists (masterLists) {
-    const { snackbar } = this.props
-    const { selections } = this.state
-    const slugs = selections.map((s) => s.slug)
+    const slugs = this.state.selections.map((s) => s.slug)
     const masterListIds = masterLists.map((m) => m._id)
-    console.log({slugs, masterListIds})
-    batchAddToMasterLists.call({type: 'Contacts', slugs, masterListIds}, (err, res) => {
-      if (err) {
-        console.log(err)
-        return snackbar.error('contacts-batch-add-to-contact-list-failure')
+
+    batchAddToMasterLists.call({type: 'Contacts', slugs, masterListIds}, (error) => {
+      if (error) {
+        console.error(error)
+        return this.props.snackbar.error('contacts-batch-add-to-contact-list-failure')
       }
-      snackbar.show(`Added ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'} to ${masterLists.length} ${masterLists.length === 1 ? 'Contact List' : 'Contact Lists'}`, 'contacts-batch-add-to-contact-list-success')
+
+      this.props.snackbar.show(`Added ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'} to ${masterLists.length} ${masterLists.length === 1 ? 'Contact List' : 'Contact Lists'}`, 'batch-add-contacts-to-contact-list-success')
     })
   },
 
@@ -181,10 +179,35 @@ const ContactsPage = withSnackbar(React.createClass({
   },
 
   render () {
-    const { contactsCount, selectedMasterListSlug, loading, searching, contacts, term, sort, campaigns, selectedTags } = this.props
-    const { onSortChange, onSelectionsChange, onMasterListChange, onTermChange, onCampaignRemove, onTagRemove } = this
-    const { selections } = this.state
-    if (!loading && contactsCount === 0) return <ContactListEmpty />
+    const {
+      contactsCount,
+      selectedMasterListSlug,
+      loading,
+      searching,
+      contacts,
+      term,
+      sort,
+      campaigns,
+      selectedTags
+    } = this.props
+
+    const {
+      onSortChange,
+      onSelectionsChange,
+      onMasterListChange,
+      onTermChange,
+      onCampaignRemove,
+      onTagRemove
+    } = this
+
+    const {
+      selections
+    } = this.state
+
+    if (!loading && contactsCount === 0) {
+      return <ContactListEmpty />
+    }
+
     return (
       <div style={{paddingBottom: 100}}>
         <div style={{height: 58}} className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
@@ -275,7 +298,7 @@ const ContactsPage = withSnackbar(React.createClass({
           type='Contacts'
           open={this.state.addTagsModal}
           onDismiss={() => this.hideModals()}
-          onUpdateTags={this.onTagAll}
+          onUpdateTags={(tags) => this.onTagAll(tags)}
           title='Tag these Contacts'>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddTagsModal>
@@ -283,7 +306,7 @@ const ContactsPage = withSnackbar(React.createClass({
           type='Contacts'
           open={this.state.addToMasterListsModal}
           onDismiss={() => this.hideModals()}
-          onSave={this.onAddAllToMasterLists}
+          onSave={(masterLists) => this.onAddAllToMasterLists(masterLists)}
           title='Add to a Contact List'>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddToMasterList>

@@ -78,7 +78,7 @@ const CampaignsActionsToast = React.createClass({
               </Tooltip>
             </div>
             <div className='flex-none'>
-              <button className='btn bg-transparent grey40' onClick={() => onDeselectAllClick(campaigns)}>Deselect all</button>
+              <button className='btn btn-no-border bg-transparent grey40' onClick={() => onDeselectAllClick(campaigns)}>Deselect all</button>
             </div>
           </div>
         )}

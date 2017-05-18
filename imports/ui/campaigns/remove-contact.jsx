@@ -33,7 +33,7 @@ const RemoveContact = withSnackbar(React.createClass({
 
   render () {
     return (
-      <div data-id='remove-contact-from-campaign' className='relative'>
+      <div className='relative'>
         <div className='center px4 pt4 pb6'>
           <h3 className='normal f-xl m4'>Are you sure you want to <strong>remove {this.props.contacts.length > 1 ? 'these contacts' : 'this contact'}</strong> from this campaign?</h3>
           <AvatarList items={this.props.contacts} maxAvatars={10} className='my4 px4' />
@@ -41,8 +41,8 @@ const RemoveContact = withSnackbar(React.createClass({
 
         <div className='flex items-center p4 bg-white border-top border-gray80'>
           <div className='flex-auto right-align'>
-            <button className='btn bg-transparent gray40 mr2' onClick={this.props.onDismiss} data-id='cancel-remove-contact-from-campaign-button'>No, Keep Contact{this.props.contacts.length > 1 ? 's' : ''}</button>
-            <button className='btn bg-not-interested white' onClick={this.onDelete} data-id='confirm-remove-contact-from-campaign-button'>Yes, Remove Contact{this.props.contacts.length > 1 ? 's' : ''}</button>
+            <button className='btn bg-transparent gray40 mr2' onClick={this.props.onDismiss} data-id='cancel-button'>No, Keep Contact{this.props.contacts.length > 1 ? 's' : ''}</button>
+            <button className='btn bg-not-interested white' onClick={this.onDelete} data-id='confirm-button'>Yes, Remove Contact{this.props.contacts.length > 1 ? 's' : ''}</button>
           </div>
         </div>
       </div>
@@ -51,5 +51,6 @@ const RemoveContact = withSnackbar(React.createClass({
 }))
 
 export default Modal(RemoveContact, {
-  width: 500
+  width: 500,
+  'data-id': 'remove-contacts-modal'
 })

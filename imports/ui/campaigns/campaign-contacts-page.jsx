@@ -14,133 +14,150 @@ import { CreateContactModal } from '../contacts/edit-contact'
 import AddContactModal from '/imports/ui/campaigns/add-contact'
 import { StatusIndex } from '/imports/api/contacts/status'
 import RemoveContactModal from '/imports/ui/campaigns/remove-contact'
+import AddContactsToCampaign from '/imports/ui/contacts/add-contacts-to-campaign'
+import AddTagsModal from '/imports/ui/tags/add-tags-modal'
+import AddToMasterList from '/imports/ui/master-lists/add-to-master-list'
+import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
+import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
+import { batchAddTags } from '/imports/api/tags/methods'
+import { batchFavouriteContacts } from '/imports/api/contacts/methods'
 
-const CampaignContactsPage = React.createClass({
-  propTypes: {
-    campaign: PropTypes.object,
-    contacts: PropTypes.array.isRequired,
-    contactsAllCount: PropTypes.number.isRequired
-  },
+class CampaignContactsPage extends React.Component {
 
-  getInitialState () {
-    return {
-      createContactModalOpen: false,
-      addContactModalOpen: false,
-      removeContactModalOpen: false,
-      sort: { updatedAt: -1 },
+  constructor (props, context) {
+    super(props, context)
+
+    this.state = {
       selections: [],
+      isDropdownOpen: false,
+      addContactModal: false,
+      createContactModal: false,
+      addContactsToCampaignModal: false,
+      addTagsModal: false,
+      addToMasterListsModal: false,
+      removeContactsModal: false,
+      sort: { updatedAt: -1 },
       term: '',
       statusFilter: ''
     }
-  },
+  }
 
   onAddContactClick () {
-    const { contactsAllCount } = this.props
-
-    if (contactsAllCount) {
-      const addContactModalOpen = !this.state.addContactModalOpen
-      this.setState({
-        addContactModalOpen
-      })
+    if (this.props.contactsAllCount) {
+      this.showModal('addContactModal')
     } else {
-      const createContactModalOpen = !this.state.createContactModalOpen
-      this.setState({
-        createContactModalOpen
-      })
+      this.showModal('createContactModal')
     }
-  },
+  }
 
-  onCreateContactModalDismiss () {
-    this.setState({ createContactModalOpen: false })
-  },
+  onFavouriteAll () {
+    const contactSlugs = this.state.selections.map((s) => s.slug)
 
-  onAddContactModalDismiss () {
-    this.setState({ addContactModalOpen: false })
-  },
-
-  onRemoveContactModalDismiss (contactsWereRemoved) {
-    this.setState({
-      removeContactModalOpen: false
+    batchFavouriteContacts.call({contactSlugs}, (error) => {
+      if (error) {
+        console.log(error)
+        return this.context.snackbar.error('batch-favourite-contacts-failure')
+      }
+      this.context.snackbar.show(`Favourited ${contactSlugs.length} ${contactSlugs.length === 1 ? 'contact' : 'contacts'}`, 'batch-favourite-contacts-success')
     })
+  }
 
-    if (contactsWereRemoved) {
-      this.setState({
-        selections: []
-      })
-    }
-  },
+  onTagAll (tags) {
+    const slugs = this.state.selections.map((s) => s.slug)
+    const names = tags.map((t) => t.name)
+
+    batchAddTags.call({type: 'Contacts', slugs, names}, (error) => {
+      if (error) {
+        console.error(error)
+        return this.context.snackbar.error('batch-tag-contacts-failure')
+      }
+
+      this.context.snackbar.show(`Added ${names.length} ${names.length === 1 ? 'tag' : 'tags'} to ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'}`, 'batch-tag-contacts-success')
+    })
+  }
+
+  onAddAllToMasterLists (masterLists) {
+    const slugs = this.state.selections.map((s) => s.slug)
+    const masterListIds = masterLists.map((m) => m._id)
+
+    batchAddToMasterLists.call({type: 'Contacts', slugs, masterListIds}, (error) => {
+      if (error) {
+        console.error(error)
+        return this.context.snackbar.error('contacts-batch-add-to-contact-list-failure')
+      }
+
+      this.context.snackbar.show(`Added ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'} to ${masterLists.length} ${masterLists.length === 1 ? 'Contact List' : 'Contact Lists'}`, 'batch-add-contacts-to-contact-list-success')
+    })
+  }
 
   onShowCreateContact (data) {
     this.setState({
-      addContactModalOpen: false,
-      removeContactModalOpen: false,
-      createContactModalOpen: true,
       contactPrefillData: data
     })
-  },
 
-  onShowRemoveContact (contacts) {
-    this.setState({
-      addContactModalOpen: false,
-      removeContactModalOpen: true,
-      createContactModalOpen: false,
-      selections: contacts
-    })
-  },
-
-  onSectorChange (selectedSector) {
-    this.setState({ selectedSector })
-  },
+    this.showModal('createContactModal')
+  }
 
   onSortChange (sort) {
     this.setState({ sort })
-  },
-
-  onSelectionsChange (selections) {
-    this.setState({ selections })
-  },
+  }
 
   onTermChange (term) {
     this.setState({ term })
-  },
+  }
 
-  onDeselectAllClick () {
-    this.setState({ selections: [] })
-  },
+  onSelectionsChange (selections) {
+    this.setState({ selections })
+  }
+
+  clearSelection () {
+    this.setState({
+      selections: []
+    })
+  }
+
+  showModal (modal) {
+    this.hideModals()
+
+    this.setState((s) => ({
+      [modal]: true
+    }))
+  }
+
+  hideModals () {
+    this.setState({
+      addContactModal: false,
+      createContactModal: false,
+      addContactsToCampaignModal: false,
+      addTagsModal: false,
+      addToMasterListsModal: false,
+      removeContactsModal: false
+    })
+  }
 
   render () {
     const { campaign, contacts } = this.props
-    if (!campaign) return null
+
+    if (!campaign) {
+      return null
+    }
 
     const {
-      onSortChange,
-      onSelectionsChange,
-      onAddContactClick,
-      onCreateContactModalDismiss,
-      onAddContactModalDismiss,
-      onShowCreateContact,
-      onRemoveContactModalDismiss
-    } = this
-
-    const {
-      addContactModalOpen,
-      createContactModalOpen,
       contactPrefillData,
       sort,
       term,
       selections,
-      statusFilter,
-      removeContactModalOpen
+      statusFilter
     } = this.state
 
     return (
       <div>
-        <CampaignTopbar campaign={campaign} onAddContactClick={onAddContactClick} />
+        <CampaignTopbar campaign={campaign} onAddContactClick={() => this.onAddContactClick()} />
         <CampaignSummary campaign={campaign} statusFilter={statusFilter} onStatusClick={(statusFilter) => this.setState({statusFilter})} />
         <div className='bg-white shadow-2 m4' data-id='contacts-table'>
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
-              <SearchBox onTermChange={this.onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' />
+              <SearchBox onTermChange={(term) => this.onTermChange(term)} placeholder='Search contacts...' data-id='search-contacts-input' />
             </div>
             <div className='flex-none pl4 f-xs'>
               <ContactsTotal total={contacts.length} />
@@ -152,40 +169,73 @@ const CampaignContactsPage = React.createClass({
             campaign={campaign}
             selections={selections}
             statusFilter={statusFilter}
-            onSortChange={onSortChange}
-            onSelectionsChange={onSelectionsChange}
+            onSortChange={(sort) => this.onSortChange(sort)}
+            onSelectionsChange={(selections) => this.onSelectionsChange(selections)}
             searching={Boolean(term)}
           />
         </div>
         <ContactsActionsToast
           campaign={campaign}
           contacts={selections}
-          onCampaignClick={() => console.log('TODO: add contacts to campaign')}
-          onSectorClick={() => console.log('TODO: add/edit sectors')}
-          onFavouriteClick={() => console.log('TODO: toggle favourite')}
-          onTagClick={() => console.log('TODO: add/edit tags')}
-          onDeleteClick={this.onShowRemoveContact}
-          onDeselectAllClick={this.onDeselectAllClick} />
+          onCampaignClick={() => this.showModal('addContactsToCampaignModal')}
+          onSectorClick={() => this.showModal('addToMasterListsModal')}
+          onFavouriteClick={() => this.onFavouriteAll()}
+          onTagClick={() => this.showModal('addTagsModal')}
+          onDeleteClick={() => this.showModal('removeContactsModal')}
+          onDeselectAllClick={() => this.clearSelection()} />
         <CreateContactModal
-          open={createContactModalOpen}
-          onDismiss={onCreateContactModalDismiss}
+          open={this.state.createContactModal}
+          onDismiss={() => this.hideModals()}
           campaign={campaign}
           prefill={contactPrefillData} />
         <AddContactModal
-          open={addContactModalOpen}
-          onDismiss={onAddContactModalDismiss}
-          onCreate={onShowCreateContact}
+          open={this.state.addContactModal}
+          onDismiss={() => this.hideModals()}
+          onCreate={(data) => this.onShowCreateContact(data)}
           campaign={campaign}
           campaignContacts={contacts} />
+        <AddContactsToCampaign
+          title='Add these Contacts to a Campaign'
+          contacts={this.state.selections}
+          onDismiss={() => this.hideModals()}
+          open={this.state.addContactsToCampaignModal}>
+          <AbbreviatedAvatarList items={selections} maxTooltip={12} />
+        </AddContactsToCampaign>
+        <AddTagsModal
+          type='Contacts'
+          open={this.state.addTagsModal}
+          onDismiss={() => this.hideModals()}
+          onUpdateTags={(tags) => this.onTagAll(tags)}
+          title='Tag these Contacts'>
+          <AbbreviatedAvatarList items={selections} maxTooltip={12} />
+        </AddTagsModal>
+        <AddToMasterList
+          type='Contacts'
+          open={this.state.addToMasterListsModal}
+          onDismiss={() => this.hideModals()}
+          onSave={(masterLists) => this.onAddAllToMasterLists(masterLists)}
+          title='Add to a Contact List'>
+          <AbbreviatedAvatarList items={selections} maxTooltip={12} />
+        </AddToMasterList>
         <RemoveContactModal
-          open={removeContactModalOpen}
-          onDismiss={onRemoveContactModalDismiss}
+          open={this.state.removeContactsModal}
+          onDismiss={() => this.hideModals()}
           campaign={campaign}
           contacts={this.state.selections} />
       </div>
     )
   }
-})
+}
+
+CampaignContactsPage.propTypes = {
+  campaign: PropTypes.object,
+  contacts: PropTypes.array.isRequired,
+  contactsAllCount: PropTypes.number.isRequired
+}
+
+CampaignContactsPage.contextTypes = {
+  snackbar: PropTypes.object
+}
 
 const ContactsTotal = ({ total }) => (
   <div>{total} contact{total === 1 ? '' : 's'} total</div>
@@ -202,6 +252,7 @@ const ContactsTableContainer = createContainer((props) => {
   const { campaign, term, sort, statusFilter } = props
   const contactIds = campaign.contacts ? Object.keys(campaign.contacts) : []
   let query = { slug: { $in: contactIds } }
+
   if (term) {
     const filterRegExp = new RegExp(escapeRegExp(term), 'gi')
     query = {
@@ -215,13 +266,19 @@ const ContactsTableContainer = createContainer((props) => {
       ]
     }
   }
-  let contacts = Contacts.find(query, { sort }).fetch()
+
+  let contacts = Contacts.find(query, {
+    sort
+  }).fetch()
+
   if (statusFilter) {
     contacts = contacts.filter((c) => campaign.contacts[c.slug] === statusFilter)
   }
+
   if (sort.status) {
     contacts.sort(contactStatusSort(campaign, sort.status))
   }
+
   return { ...props, contacts }
 }, ContactsTable)
 
