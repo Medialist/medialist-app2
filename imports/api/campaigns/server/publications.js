@@ -34,6 +34,14 @@ Meteor.publish('campaign', function (slug) {
   ]
 })
 
+Meteor.publish('campaigns', function (query = {}, options = {}) {
+  if (!this.userId) {
+    return this.ready()
+  }
+
+  return Campaigns.find(query, options)
+})
+
 Meteor.publish('campaign-favourites', function () {
   if (!this.userId) return []
   return Campaigns.find({}, { limit: 7, sort: [['createdAt', 'desc']] })

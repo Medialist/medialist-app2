@@ -350,10 +350,15 @@ const ContactsPageContainer = withRouter(React.createClass({
   setQuery (opts) {
     const { location, router } = this.props
     const newQuery = {}
-    if (opts.sort) newQuery.sort = JSON.stringify(opts.sort)
+
+    if (opts.sort) {
+      newQuery.sort = JSON.stringify(opts.sort)
+    }
+
     if (opts.hasOwnProperty('term')) {
       newQuery.q = opts.term
     }
+
     if (opts.selectedMasterListSlug) {
       if (opts.selectedMasterListSlug === 'my') {
         newQuery.my = Meteor.userId()
@@ -361,27 +366,35 @@ const ContactsPageContainer = withRouter(React.createClass({
         newQuery.list = opts.selectedMasterListSlug
       }
     }
-    if (opts.tagSlugs) newQuery.tag = opts.tagSlugs
-    if (opts.campaignSlugs) newQuery.campaign = opts.campaignSlugs
+
+    if (opts.tagSlugs) {
+      newQuery.tag = opts.tagSlugs
+    }
+
+    if (opts.campaignSlugs) {
+      newQuery.campaign = opts.campaignSlugs
+    }
+
     const query = Object.assign({}, location.query, newQuery)
-    if (query.q === '') delete query.q
-    if (query.list === 'all' || newQuery.my) delete query.list
-    if (newQuery.list) delete query.my
+    if (query.q === '') {
+      delete query.q
+    }
+
+    if (query.list === 'all' || newQuery.my) {
+      delete query.list
+    }
+
+    if (newQuery.list) {
+      delete query.my
+    }
+
     const qs = querystring.stringify(query)
-    if (!qs) return router.replace('/contacts')
+
+    if (!qs) {
+      return router.replace('/contacts')
+    }
+
     router.replace(`/contacts?${qs}`)
-  },
-
-  parseQuery ({query}) {
-    const sort = query.sort ? JSON.parse(query.sort) : { updatedAt: -1 }
-    const term = query.q || ''
-    const tagSlugs = query.tag ? [query.tag] : []
-    const { campaign, list, my } = query
-    if (!campaign) return { sort, term, selectedMasterListSlug: list, userId: my, campaignSlugs: [], campaigns: [], tagSlugs }
-
-    const campaignSlugs = Array.isArray(campaign) ? campaign : [campaign]
-    const campaigns = Campaigns.find({slug: {$in: campaignSlugs}}).fetch()
-    return { sort, term, list, selectedMasterListSlug: list, userId: my, campaignSlugs, campaigns, tagSlugs }
   },
 
   render () {
@@ -395,7 +408,7 @@ const ContactsPageContainer = withRouter(React.createClass({
                 limit={limit}
                 {...this.props}
                 {...this.data}
-                {...this.parseQuery(location)}
+                {...this.props.parseQuery(location)}
                 setQuery={this.setQuery} />
             )}
           </SubscriptionLimitContainer>
@@ -405,4 +418,49 @@ const ContactsPageContainer = withRouter(React.createClass({
   }
 }))
 
-export default ContactsPageContainer
+export default createContainer((props) => {
+  const sub = Meteor.subscribe('campaigns')
+
+  const parseQuery = ({query}) => {
+    const sort = query.sort ? JSON.parse(query.sort) : {
+      updatedAt: -1
+    }
+    const term = query.q || ''
+    const tagSlugs = query.tag ? [query.tag] : []
+    const { campaign, list, my } = query
+
+    if (!campaign) {
+      return {
+        sort,
+        term,
+        selectedMasterListSlug: list,
+        userId: my,
+        campaignSlugs: [],
+        campaigns: [],
+        tagSlugs,
+        loading: sub.ready()
+      }
+    }
+
+    const campaignSlugs = Array.isArray(campaign) ? campaign : [campaign]
+    const campaigns = Campaigns.find({
+      slug: {
+        $in: campaignSlugs
+      }
+    }).fetch()
+
+    return {
+      sort,
+      term,
+      list,
+      selectedMasterListSlug: list,
+      userId: my,
+      campaignSlugs,
+      campaigns,
+      tagSlugs,
+      loading: sub.ready()
+    }
+  }
+
+  return { ...props, parseQuery, loading: sub.ready() }
+}, ContactsPageContainer)
