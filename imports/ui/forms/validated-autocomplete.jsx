@@ -25,56 +25,152 @@ export default React.createClass({
   getInitialState () {
     return {
       open: false,
-      activeInd: 0
+      activeInd: 0,
+      lastValue: null
     }
   },
   componentWillReceiveProps (props) {
-    const { suggestions, value } = props
-    this.setState({open: suggestions.length > 0 && suggestions[0] !== value})
+    // no text entered or we have no suggestions
+    if (!this.props.value || !props.suggestions.length) {
+      this.setState({
+        activeInd: 0,
+        lastValue: null
+      })
+
+      return
+    }
+
+    const lastIndex = this.state.activeInd
+    const lastValue = this.state.lastValue
+
+    let newIndex = lastIndex
+    let newValue = lastValue
+
+    // if we had previously selected a value, make sure it is still selected
+    if (lastValue !== props.suggestions[newIndex]) {
+      const lastValueIndex = props.suggestions.indexOf(lastValue)
+
+      if (lastValueIndex !== -1) {
+        newIndex = lastValueIndex
+      }
+    }
+
+    // if the last thing selected was at the end of the list and the list
+    // has got shorter, select the thing at the end of the list
+    if (newIndex > (props.suggestions.length - 1)) {
+      newIndex = props.suggestions.length - 1
+      newValue = props.suggestions[newIndex]
+    }
+
+    this.setState({
+      activeInd: newIndex,
+      lastValue: newValue
+    })
   },
   onBlur () {
     this.setState({ open: false, activeInd: 0 }, this.props.onBlur)
   },
-  onChange (evt) {
-    this.props.onChange(evt)
-    this.setState({open: true})
+  onChange (event) {
+    this.props.onChange(event)
+    this.setState({
+      open: true
+    })
   },
   onSelect (value) {
     const {name, onSelect} = this.props
     onSelect({name, value})
   },
-  onKeyDown (evt) {
-    const { key } = evt
-    if (!this.props.suggestions.length) return
+  onKeyDown (event) {
+    const { key } = event
+
+    if (!this.props.suggestions.length) {
+      return
+    }
+
     const { suggestions } = this.props
     const { open, activeInd } = this.state
+
     switch (key) {
       case 'ArrowDown':
-        if (!open) return this.setState({open: true})
-        if (activeInd == null) return this.setState({ activeInd: 0 })
-        if (activeInd < suggestions.length - 1) this.setState({ activeInd: activeInd + 1 })
+        if (!open) {
+          return this.setState({open: true})
+        }
+
+        if (activeInd == null) {
+          return this.setState({
+            activeInd: 0,
+            lastValue: suggestions[0]
+          })
+        }
+
+        if (activeInd < suggestions.length - 1) {
+          this.setState({
+            activeInd: activeInd + 1,
+            lastValue: suggestions[activeInd + 1]
+          })
+        }
+
+        if (open) {
+          event.preventDefault()
+        }
+
         break
 
       case 'ArrowUp':
-        if (activeInd > 0) this.setState({ activeInd: activeInd - 1 })
+        if (activeInd > 0) {
+          this.setState({
+            activeInd: activeInd - 1,
+            lastValue: suggestions[activeInd - 1]
+          })
+        }
+
+        if (open) {
+          event.preventDefault()
+        }
+
+        break
+
+      case 'Escape':
+        this.setState({
+          open: false
+        })
+
         break
 
       case 'Tab':
       case 'Enter':
-        if (open) evt.preventDefault()
+        if (open) {
+          event.preventDefault()
+        }
+
         this.onSelect(suggestions[activeInd])
-        this.setState({ open: false, activeInd: 0 })
+        this.setState({
+          open: false,
+          activeInd: 0,
+          lastValue: null
+        })
     }
   },
   onDismiss () {
-    this.setState({ open: false, activeInd: 0 })
+    this.setState({
+      open: false,
+      activeInd: 0,
+      lastValue: null
+    })
   },
   onClick (suggestion) {
     this.onSelect(suggestion)
-    this.setState({ open: false, activeInd: 0 })
+    this.setState({
+      open: false,
+      activeInd: 0,
+      lastValue: null
+    })
   },
   onActivate (ind) {
-    this.setState({ activeInd: ind })
+    this.setState({
+      activeInd: ind,
+      lastValue: this.props.suggestions[ind]
+    })
   },
   render () {
     const {
@@ -90,6 +186,7 @@ export default React.createClass({
     } = this.props
     const { onChange, onDismiss, onClick, onKeyDown, onActivate } = this
     const { open, activeInd } = this.state
+
     return (
       <Dropdown>
         <Input
