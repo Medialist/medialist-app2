@@ -46,6 +46,7 @@ module.exports = {
       this
         .waitForElementVisible(selector)
         .click(selector)
+        .waitForElementNotPresent(selector)
 
       return this
     },

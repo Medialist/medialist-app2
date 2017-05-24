@@ -68,12 +68,17 @@ export default React.createClass({
     })
   },
   onBlur () {
-    this.setState({ open: false, activeInd: 0 }, this.props.onBlur)
+    this.setState({
+      open: false,
+      activeInd: 0,
+      lastValue: null
+    }, this.props.onBlur)
   },
   onChange (event) {
     this.props.onChange(event)
+
     this.setState({
-      open: true
+      open: !!this.props.suggestions.length
     })
   },
   onSelect (value) {
