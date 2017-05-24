@@ -160,6 +160,7 @@ const ContactsTable = React.createClass({
                     <td className='left-align' style={{overflow: 'visible'}}>
                       <StatusSelectorContainer
                         buttonClassName='btn btn-no-border bg-transparent'
+                        buttonStyle={{marginLeft: 0}}
                         contactSlug={contact.slug}
                         campaign={campaign}
                         children={(status) => <StatusLabel name={status} />}

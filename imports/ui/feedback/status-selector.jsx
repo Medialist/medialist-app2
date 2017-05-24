@@ -65,10 +65,15 @@ class StatusSelector extends React.Component {
       dropdown.arrowMarginRight = this.props.dropdown.arrowMarginRight || (this.props.compact ? '15px' : '60px')
     }
 
+    const buttonStyle = Object.assign({
+      padding: 0,
+      marginLeft: '10px'
+    }, this.props.buttonStyle)
+
     return (
       <Dropdown>
         <button
-          style={{padding: '0 10px'}}
+          style={buttonStyle}
           className={this.props.buttonClassName || 'btn bg-transparent border-gray80'}
           onClick={(event) => this.openDropdown(event)}
           disabled={this.props.disabled}
@@ -104,6 +109,7 @@ StatusSelector.propTypes = {
   status: PropTypes.string.isRequired,
   disabled: PropTypes.bool,
   buttonClassName: PropTypes.string,
+  buttonStyle: PropTypes.object,
   compact: PropTypes.bool,
   dropdown: PropTypes.shape({
     left: PropTypes.number,
@@ -115,7 +121,8 @@ StatusSelector.propTypes = {
 }
 
 StatusSelector.defaultProps = {
-  dropdown: {}
+  dropdown: {},
+  buttonStyle: {}
 }
 
 export default StatusSelector

@@ -39,17 +39,15 @@ const ActivityFeed = React.createClass({
     return (
       <div data-id={this.props['data-id']}>
         <div className='flex justify-start items-center pb3'>
-          <ActivityFilter selected={filterType} onChange={onFilterChange} />
-          {!campaign &&
-            <div>
-              <span className='gray80'>|</span>
-              <CampaignFilterContainer
-                disabled={filterType === filterNames[3]}
-                contact={contact}
-                onCampaignFilter={onCampaignFilterChange}
-              />
-            </div>
-          }
+          <ActivityFilter
+            selected={filterType}
+            onChange={onFilterChange} />
+          {!campaign && <span className='gray80 flex-none'>|</span>}
+          {!campaign && <CampaignFilterContainer
+            disabled={filterType === filterNames[3]}
+            contact={contact}
+            onCampaignFilter={onCampaignFilterChange}
+          />}
           <hr className='flex-auto pl2' style={{height: 1}} />
         </div>
         <NearBottomContainer>
@@ -69,8 +67,15 @@ const ActivityFeed = React.createClass({
 const CampaignFilterContainer = createContainer((props) => {
   const sub = Meteor.subscribe('campaign-refs')
   const query = {}
-  if (props.contact) query.slug = {$in: props.contact.campaigns}
+
+  if (props.contact) {
+    query.slug = {
+      $in: props.contact.campaigns
+    }
+  }
+
   const campaigns = Campaigns.find(query).fetch()
+
   return {
     loading: !sub.ready(),
     campaigns,

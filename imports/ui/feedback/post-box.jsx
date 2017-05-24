@@ -135,10 +135,9 @@ const FeedbackInput = React.createClass({
             onChange={this.onFieldChange}
             campaigns={this.props.campaigns}
             campaign={this.state.campaign} />
-          <div className='ml3 inline-block'>
+          <div className='ml1 inline-block'>
             <StatusSelector
-              className='btn bg-transparent border-gray80'
-              style={{padding: '6px 15px 7px'}}
+              buttonStyle={{padding: '6px 15px 7px'}}
               status={this.state.status}
               onChange={this.onFieldChange}
               disabled={!this.state.campaign} />
@@ -206,10 +205,9 @@ const CoverageInput = React.createClass({
             onChange={this.onFieldChange}
             campaigns={this.props.campaigns}
             campaign={this.state.campaign} />
-          <div className='ml3 inline-block'>
+          <div className='ml1 inline-block'>
             <StatusSelector
-              className='btn bg-transparent border-gray80'
-              style={{padding: '6px 15px 7px'}}
+              buttonStyle={{padding: '6px 15px 7px'}}
               status={this.state.status}
               onChange={this.onFieldChange}
             >

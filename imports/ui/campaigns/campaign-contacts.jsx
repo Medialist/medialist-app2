@@ -18,10 +18,10 @@ const CampaignContacts = ({campaign, contacts, onSelectContact}) => {
             key={slug}
             data-type='campaign-contact-search-result'
             data-id={`campaign-contact-${contact._id}`} >
-            <div className='flex-none'>
+            <div className='flex-auto'>
               <CampaignContact contact={contact} />
             </div>
-            <div className='flex-none' style={{paddingLeft: 120}}>
+            <div className='flex-none' style={{width: 170}}>
               <StatusLabel name={status} />
             </div>
           </div>)

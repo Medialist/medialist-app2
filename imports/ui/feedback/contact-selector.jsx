@@ -97,10 +97,9 @@ const ContactSelector = React.createClass({
           </Dropdown>
         </div>
         {showStatus && selectedContact ? (
-          <div className='ml3 inline-block'>
+          <div className='ml1 inline-block'>
             <StatusSelector
-              className='btn bg-transparent border-gray80'
-              style={{padding: '6px 15px 7px'}}
+              buttonStyle={{padding: '6px 15px 7px'}}
               status={selectedStatus}
               onChange={onStatusChange}
               disabled={!selectedContact}
