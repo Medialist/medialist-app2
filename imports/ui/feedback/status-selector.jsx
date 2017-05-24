@@ -5,6 +5,7 @@ import { Dropdown, DropdownMenu, DropdownMenuItem } from '/imports/ui/navigation
 import { StatusValues } from '/imports/api/contacts/status'
 import StatusLabel from '/imports/ui/feedback/status-label'
 import { ChevronDown } from '/imports/ui/images/icons'
+import { GREY40 } from '/imports/ui/colours'
 
 class StatusSelector extends React.Component {
   constructor (props, context) {
@@ -67,13 +68,13 @@ class StatusSelector extends React.Component {
     return (
       <Dropdown>
         <button
-          style={{padding: '6px 15px 6px'}}
+          style={{padding: '0 10px'}}
           className={this.props.buttonClassName || 'btn bg-transparent border-gray80'}
           onClick={(event) => this.openDropdown(event)}
           disabled={this.props.disabled}
           data-id='contact-status-selector-button'>
           <StatusLabel name={this.props.status} compact={this.props.compact} />
-          <ChevronDown className='gray40' />
+          <ChevronDown className='gray40' style={{fill: GREY40, marginLeft: '5px'}} />
         </button>
         <DropdownMenu
           left={dropdown.left}

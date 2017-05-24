@@ -22,6 +22,7 @@ import {
 import { Dropdown, DropdownMenu, DropdownMenuItem } from '/imports/ui/navigation/dropdown'
 import findUrl from '/imports/lib/find-url'
 import DeletePostModal from './delete-post-modal'
+import { GREY60 } from '/imports/ui/colours'
 
 const hideTextIfOnlyUrl = (item) => {
   const url = findUrl(item.message)
@@ -177,7 +178,7 @@ class Post extends React.Component {
             </span>
             {this.props.editable && (
               <Dropdown className='f-sm semibold gray60 flex-none' data-id='post-menu'>
-                <ChevronOpenDown onClick={(event) => this.openMenu(event)} data-id='open-post-menu-button' className='ml1' />
+                <ChevronOpenDown onClick={(event) => this.openMenu(event)} data-id='open-post-menu-button' className='ml1' style={{fill: GREY60}} />
                 <DropdownMenu width={180} left={-150} top={-2} arrowPosition='top' arrowAlign='right' arrowMarginRight='11px' open={this.state.menuOpen} onDismiss={() => this.closeMenu()}>
                   <nav className='p1'>
                     {/*

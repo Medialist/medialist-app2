@@ -1,5 +1,7 @@
-<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <g id="16x16">
-    <path d="M9.15755455,8.70198425 L12.7945413,4.71999729 C13.1577329,4.32235377 13.0265765,4 12.5024785,4 L4.49739743,4 C3.97290402,4 3.84267144,4.32293226 4.20533467,4.71999729 L7.84232142,8.70198425 C8.20551302,9.09962777 8.79489132,9.09904928 9.15755455,8.70198425 Z" id="arrow-right" transform="translate(8.500000, 6.500000) rotate(-90.000000) translate(-8.500000, -6.500000) "></path>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" width="5" height="9" viewBox="0, 0, 5, 9">
+  <g>
+    <path d="M4.702,3.842 L0.72,0.205 C0.322,-0.158 0,-0.027 0,0.498 L0,8.503 C0,9.027 0.323,9.157 0.72,8.795 L4.702,5.158 C5.1,4.794 5.099,4.205 4.702,3.842 z" />
   </g>
 </svg>

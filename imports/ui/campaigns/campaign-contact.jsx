@@ -6,10 +6,10 @@ import StatusDot from '/imports/ui/feedback/status-dot'
 
 const CampaignContact = ({ contact, campaign, style, highlighted, statusSelectorDropdown, ...props }) => {
   return (
-    <div style={{lineHeight: 1.3, ...style}} {...props}>
-      <CircleAvatar className='inline-block' size={38} avatar={contact.avatar} name={contact.name} />
-      <div className='inline-block align-top pl3' style={{width: 220, height: 55}}>
-        <div className='flex items-center'>
+    <div className='flex' style={{lineHeight: 1.3, ...style}} {...props}>
+      <CircleAvatar className='inline-block flex-none' size={38} avatar={contact.avatar} name={contact.name} />
+      <div className='inline-block align-top pl3 flex-auto'>
+        <div className='flex'>
           <div className={`flex-none f-md semibold ${highlighted ? 'blue' : ''}`}>{contact.name}</div>
           <div className='flex-none'>
             {campaign && (

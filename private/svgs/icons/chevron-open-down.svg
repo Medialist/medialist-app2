@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" width="16" height="16" viewBox="0, 0, 16, 16">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" width="13" height="9" viewBox="0, 0, 13, 9">
   <g id="Layer_1">
-    <path d="M12.252,3.753 L14.373,5.874 L8,12.247 L1.627,5.874 L3.748,3.753 L8,8.005 L12.252,3.753 z" fill="#BFC8D8"/>
+    <path d="M10.837,0 L13,2.247 L6.5,9 L0,2.247 L2.163,0 L6.5,4.505 L10.837,0 z" />
   </g>
 </svg>
