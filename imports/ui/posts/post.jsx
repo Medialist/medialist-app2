@@ -367,9 +367,7 @@ export const NeedToKnowPost = ({item, currentUser, contact}) => (
   />
 )
 
-export const StatusUpdate = ({item, currentUser, campaign}) => {
-  const contact = item.contacts[0]
-  const name = contact ? contact.name.split(' ')[0] : 'a contact'
+export const StatusUpdate = ({item, currentUser, contact, campaign}) => {
   return (
     <Post
       {...item}
@@ -377,7 +375,9 @@ export const StatusUpdate = ({item, currentUser, campaign}) => {
       icon={<StatusUpdateIcon className='gray60' />}
       summary={
         <PostSummary {...item}>
-          updated {name} for <CampaignLink campaign={item.campaigns[0]} />
+          updated <ContactName contacts={item.contacts} onContactPage={Boolean(contact)} />
+          {!campaign ? ' for ' : ''}
+          <CampaignName campaigns={item.campaigns} onCampaignPage={Boolean(campaign)} />
         </PostSummary>
       }
     />
