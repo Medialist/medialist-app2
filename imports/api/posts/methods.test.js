@@ -116,6 +116,29 @@ describe('createFeedbackPost', function () {
     assert.deepEqual(contact.updatedBy, userRef)
     assert.deepEqual(contact.campaigns, [campaignSlug])
   })
+
+  it('should not create a feedback post when there is no message and the contact already has the passed status', function () {
+    const campaignSlug = 'slug1'
+    const contactSlug = 'slug0'
+    const status = 'Hot Lead'
+    const user = Meteor.users.findOne()
+
+    const campaign = Campaigns.update({slug: campaignSlug}, {
+      $set: {
+        contacts: {
+          [contactSlug]: status
+        }
+      }
+    })
+
+    assert.equal(Posts.find({}).count(), 0)
+
+    createFeedbackPost.run.call({userId: user._id}, {
+      contactSlug, campaignSlug, status
+    })
+
+    assert.equal(Posts.find({}).count(), 0)
+  })
 })
 
 describe('createCoveragePost', function () {

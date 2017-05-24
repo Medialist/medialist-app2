@@ -11,11 +11,18 @@ import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
 
 function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, message, status}) {
+  const campaign = Campaigns.findOne({
+    slug: campaignSlug
+  })
+
+  if (campaign.contacts[contactSlug] === status && !message) {
+    return
+  }
+
   const createdBy = findOneUserRef(userId)
   const createdAt = new Date()
   const url = findUrl(message)
   const embed = Embeds.findOneEmbedRef(url)
-
   const post = {
     // Feedback without a message is rendered as a different post type.
     type: message ? type : 'StatusUpdate',
@@ -27,31 +34,30 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
     createdBy,
     createdAt
   }
+
   Posts.insert(post)
 
-  Campaigns.update(
-    { slug: campaignSlug },
-    {
-      $set: {
-        [`contacts.${contactSlug}`]: status,
-        updatedAt: createdAt,
-        updatedBy: createdBy
-      }
+  Campaigns.update({
+    slug: campaignSlug
+  }, {
+    $set: {
+      [`contacts.${contactSlug}`]: status,
+      updatedAt: createdAt,
+      updatedBy: createdBy
     }
-  )
+  })
 
-  Contacts.update(
-    { slug: contactSlug },
-    {
-      $set: {
-        updatedAt: createdAt,
-        updatedBy: createdBy
-      },
-      $addToSet: {
-        campaigns: campaignSlug
-      }
+  Contacts.update({
+    slug: contactSlug
+  }, {
+    $set: {
+      updatedAt: createdAt,
+      updatedBy: createdBy
+    },
+    $addToSet: {
+      campaigns: campaignSlug
     }
-  )
+  })
 
   addToMyFavourites({
     userId,
@@ -61,24 +67,32 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
   })
 }
 
-const FeedbackOrCoverageSchema = new SimpleSchema([
-  {
-    contactSlug: { type: String },
-    campaignSlug: { type: String },
-    message: { type: String, optional: true }
+const FeedbackOrCoverageSchema = new SimpleSchema([{
+  contactSlug: {
+    type: String
   },
+  campaignSlug: {
+    type: String
+  },
+  message: {
+    type: String,
+    optional: true
+  }
+},
   StatusSchema
 ])
 
 export const createFeedbackPost = new ValidatedMethod({
   name: 'createFeedbackPost',
-
   validate: FeedbackOrCoverageSchema.validator(),
-
   run ({ contactSlug, campaignSlug, message, status }) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
     checkAllSlugsExist([contactSlug], Contacts)
     checkAllSlugsExist([campaignSlug], Campaigns)
+
     postFeedbackOrCoverage({
       type: 'FeedbackPost',
       userId: this.userId,
@@ -92,13 +106,15 @@ export const createFeedbackPost = new ValidatedMethod({
 
 export const createCoveragePost = new ValidatedMethod({
   name: 'createCoveragePost',
-
   validate: FeedbackOrCoverageSchema.validator(),
-
   run ({ contactSlug, campaignSlug, message, status }) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
     checkAllSlugsExist([contactSlug], Contacts)
     checkAllSlugsExist([campaignSlug], Campaigns)
+
     postFeedbackOrCoverage({
       type: 'CoveragePost',
       userId: this.userId,
@@ -112,14 +128,19 @@ export const createCoveragePost = new ValidatedMethod({
 
 export const createNeedToKnowPost = new ValidatedMethod({
   name: 'createNeedToKnowPost',
-
   validate: new SimpleSchema({
-    contactSlug: { type: String },
-    message: { type: String }
+    contactSlug: {
+      type: String
+    },
+    message: {
+      type: String
+    }
   }).validator(),
-
   run ({ contactSlug, message }) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
     checkAllSlugsExist([contactSlug], Contacts)
 
     const createdBy = findOneUserRef(this.userId)
@@ -135,17 +156,17 @@ export const createNeedToKnowPost = new ValidatedMethod({
       createdBy,
       createdAt
     }
+
     Posts.insert(post)
 
-    Contacts.update(
-      { slug: contactSlug },
-      {
-        $set: {
-          updatedAt: createdAt,
-          updatedBy: createdBy
-        }
+    Contacts.update({
+      slug: contactSlug
+    }, {
+      $set: {
+        updatedAt: createdAt,
+        updatedBy: createdBy
       }
-    )
+    })
 
     addToMyFavourites({
       userId: this.userId,
@@ -157,14 +178,12 @@ export const createNeedToKnowPost = new ValidatedMethod({
 
 export const remove = new ValidatedMethod({
   name: 'deletePost',
-
   validate: new SimpleSchema({
     _ids: {
       type: [String],
       regEx: SimpleSchema.RegEx.Id
     }
   }).validator(),
-
   run ({ _ids }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
