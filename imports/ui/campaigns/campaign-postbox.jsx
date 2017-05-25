@@ -18,8 +18,28 @@ const CampaignPostBox = React.createClass({
     return { focused: false, selected: 'Feedback' }
   },
 
+  onFeedback (details, callback) {
+    this.props.onFeedback(details, (error) => {
+      if (!error) {
+        this.setState({focused: false})
+      }
+
+      callback(error)
+    })
+  },
+
+  onCoverage (details, callback) {
+    this.props.onCoverage(details, (error) => {
+      if (!error) {
+        this.setState({focused: false})
+      }
+
+      callback(error)
+    })
+  },
+
   render () {
-    const { contacts, onFeedback, onCoverage, campaign } = this.props
+    const { contacts, campaign } = this.props
     const { selected, focused } = this.state
     const childProps = { focused, contacts, campaign }
 
@@ -31,8 +51,8 @@ const CampaignPostBox = React.createClass({
         </PostBoxTabs>
         <div style={{padding: '0 1px'}}>
           <div className='bg-white shadow-2 p3 pb0'>
-            { selected === 'Feedback' && <FeedbackInput {...childProps} onSubmit={onFeedback} /> }
-            { selected === 'Coverage' && <CoverageInput {...childProps} onSubmit={onCoverage} /> }
+            { selected === 'Feedback' && <FeedbackInput {...childProps} onSubmit={(details, callback) => this.onFeedback(details, callback)} /> }
+            { selected === 'Coverage' && <CoverageInput {...childProps} onSubmit={(details, callback) => this.onCoverage(details, callback)} /> }
           </div>
         </div>
       </div>

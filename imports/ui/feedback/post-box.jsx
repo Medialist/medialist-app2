@@ -34,12 +34,45 @@ const PostBox = React.createClass({
   },
 
   getInitialState () {
-    return { focused: false, selected: 'Feedback' }
+    return {
+      focused: false,
+      selected: 'Feedback'
+    }
+  },
+
+  onFeedback (details, callback) {
+    this.props.onFeedback(details, (error) => {
+      if (!error) {
+        this.setState({focused: false})
+      }
+
+      callback(error)
+    })
+  },
+
+  onCoverage (details, callback) {
+    this.props.onCoverage(details, (error) => {
+      if (!error) {
+        this.setState({focused: false})
+      }
+
+      callback(error)
+    })
+  },
+
+  onNeedToKnow (details, callback) {
+    this.props.onNeedToKnow(details, (error) => {
+      if (!error) {
+        this.setState({focused: false})
+      }
+
+      callback(error)
+    })
   },
 
   render () {
     const { selected, focused } = this.state
-    const { contact, campaigns, onFeedback, onCoverage, onNeedToKnow, loading } = this.props
+    const { contact, campaigns, loading } = this.props
     const campaign = this.props.campaign || campaigns[0]
     if (loading) return null
     const childProps = { focused, contact }
@@ -54,9 +87,9 @@ const PostBox = React.createClass({
         </PostBoxTabs>
         <div style={{padding: '0 1px'}}>
           <div className='bg-white shadow-2 p3 pb0'>
-            { selected === 'Feedback' && <FeedbackInput {...childProps} campaigns={campaigns} campaign={campaign} onSubmit={onFeedback} /> }
-            { selected === 'Coverage' && <CoverageInput {...childProps} campaigns={campaigns} campaign={campaign} onSubmit={onCoverage} /> }
-            { selected === 'Need to Know' && <NeedToKnowInput {...childProps} onSubmit={onNeedToKnow} /> }
+            { selected === 'Feedback' && <FeedbackInput {...childProps} campaigns={campaigns} campaign={campaign} onSubmit={(details, callback) => this.onFeedback(details, callback)} /> }
+            { selected === 'Coverage' && <CoverageInput {...childProps} campaigns={campaigns} campaign={campaign} onSubmit={(details, callback) => this.onCoverage(details, callback)} /> }
+            { selected === 'Need to Know' && <NeedToKnowInput {...childProps} onSubmit={(details, callback) => this.onNeedToKnow(details, callback)} /> }
           </div>
         </div>
       </div>
