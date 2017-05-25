@@ -53,7 +53,10 @@ export const batchFavouriteCampaigns = new ValidatedMethod({
   }).validator(),
 
   run ({ campaignSlugs }) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
     checkAllSlugsExist(campaignSlugs, Campaigns)
     addToMyFavourites({userId: this.userId, campaignSlugs})
   }
@@ -63,7 +66,9 @@ export const update = new ValidatedMethod({
   name: 'Campaigns/update',
   validate: MedialistUpdateSchema.validator(),
   run (data) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
 
     const { _id } = data
     delete data._id
@@ -85,14 +90,27 @@ export const update = new ValidatedMethod({
     data.updatedAt = now
     data.updatedBy = findOneUserRef(user._id)
 
-    const result = Campaigns.update({ _id }, { $set: data })
+    const result = Campaigns.update({
+      _id
+    }, {
+      $set: data
+    })
 
     if (Meteor.isServer) {
       Uploadcare.store(data.avatar)
     }
 
     // Add this user to the updated campaign's team if required
-    Campaigns.update({ _id, 'team._id': { $ne: this.userId } }, { $push: { team: data.updatedBy } })
+    Campaigns.update({
+      _id,
+      'team._id': {
+        $ne: this.userId
+      }
+    }, {
+      $push: {
+        team: data.updatedBy
+      }
+    })
 
     const updatedMedialist = Campaigns.findOne({ _id })
 
@@ -138,7 +156,10 @@ export const create = new ValidatedMethod({
   name: 'Campaigns/create',
   validate: MedialistCreateSchema.validator(),
   run ({ name, clientName, avatar, purpose, links }) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
     const slug = createUniqueSlug(name, Campaigns)
     const client = findOrCreateClientRef(clientName)
     const createdBy = findOneUserRef(this.userId)

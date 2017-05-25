@@ -86,7 +86,8 @@ const CampaignInfo = withSnackbar(React.createClass({
   onAvatarChange (event) {
     update.call({
       _id: this.props.campaign._id,
-      avatar: event.url
+      avatar: event.url,
+      clientName: this.props.campaign.client ? this.props.campaign.client.name : null
     }, (error) => {
       if (error) {
         console.error('Failed to update campaign avatar', error)
