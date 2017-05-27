@@ -51,15 +51,15 @@ export default withRouter(React.createClass({
 
 const UploadFile = ({ onFileChange }) => (
   <div className='rounded border-gray60 bg-white py2 mx-auto width-100' style={{ borderStyle: 'dashed', borderWidth: '2px' }}>
-    <h3 className='py4 m0 normal'>Drag and drop your file here</h3>
-    <div className='semibold gray10'>OR</div>
-    <div className='pt4 pb6'>
-      <FileInput name='contacts-upload' accept='text/csv' onChange={onFileChange}>
+    <FileInput name='contacts-upload' accept='text/csv' onChange={onFileChange}>
+      <h3 className='py4 m0 normal'>Drag and drop your file here</h3>
+      <div className='semibold gray10'>OR</div>
+      <div className='pt4 pb6'>
         <div className='btn bg-blue white mx4'>
           Select a file from your computer...
         </div>
-      </FileInput>
-    </div>
+      </div>
+    </FileInput>
   </div>
 )
 

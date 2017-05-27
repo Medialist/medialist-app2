@@ -10,11 +10,23 @@ const FileInput = React.createClass({
   onClick () {
     this.fileInput.click()
   },
-
+  onDrop (evt) {
+    evt.preventDefault()
+    evt.stopPropagation()
+    const files = evt.nativeEvent.dataTransfer && evt.nativeEvent.dataTransfer.files
+    if (!files) return false
+    this.props.onChange({target: {files}})
+  },
+  onDragOver (evt) {
+    // Voodoo to make onDrop work...
+    evt.preventDefault()
+    evt.stopPropagation()
+    return false
+  },
   render () {
     const { className, disabled, accept, onChange } = this.props
     return (
-      <div className={className} style={{position: 'relative', overflow: 'hidden'}} onClick={this.onClick}>
+      <div className={className} style={{position: 'relative', overflow: 'hidden'}} onClick={this.onClick} onDrop={this.onDrop} onDragOver={this.onDragOver}>
         <input
           ref={(r) => { this.fileInput = r }}
           type='file'
@@ -24,7 +36,6 @@ const FileInput = React.createClass({
           style={{visibility: 'none', position: 'absolute', top: '-9999px'}}
           data-id='file-input'
           />
-
         { this.props.children }
       </div>
     )
