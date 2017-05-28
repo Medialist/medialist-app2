@@ -67,7 +67,8 @@ class StatusSelector extends React.Component {
 
     const buttonStyle = Object.assign({
       padding: 0,
-      marginLeft: '10px'
+      marginLeft: '10px',
+      verticalAlign: 1
     }, this.props.buttonStyle)
 
     return (

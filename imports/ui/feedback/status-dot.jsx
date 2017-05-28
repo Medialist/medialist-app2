@@ -9,7 +9,7 @@ const StatusDot = ({ name, size = 12, className, style = {} }) => {
   className = classNames(`inline-block circle bg-${ref}`, className)
 
   return (
-    <span title={name} className={className} style={{ width: size, height: size, ...style }} />
+    <span title={name} className={className} style={{ width: size, height: size, verticalAlign: -2, ...style }} />
   )
 }
 
