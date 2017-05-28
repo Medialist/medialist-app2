@@ -77,7 +77,7 @@ const SettingsPage = withSnackbar(React.createClass({
             <nav className='mt2 bg-white border-top border-left border-right border-gray80'>
               <SideMenuItem selected={selectedMenuItem} item={menuItems[0]} data-id='profile-settings-button' />
             </nav>
-            <label className='inline-block gray40 mt5 mb4'><SettingsIcon /> Organisation Settings </label>
+            <label className='inline-block gray40 mt5'><SettingsIcon /> Organisation Settings </label>
             <nav className='mt2 bg-white border-top border-left border-right border-gray80'>
               <SideMenuItem selected={selectedMenuItem} item={menuItems[1]} data-id='campaign-lists-button' />
               <SideMenuItem selected={selectedMenuItem} item={menuItems[2]} data-id='contact-lists-button' />

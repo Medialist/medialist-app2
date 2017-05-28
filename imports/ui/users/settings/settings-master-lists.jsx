@@ -1,18 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { SectorIcon, FeedContactIcon } from '/imports/ui/images/icons'
+import { ListIcon } from '/imports/ui/images/icons'
 
 const SettingsPanelMasterLists = (props) => {
   const { type, copy, children } = props
-  const Icon = type === 'Contacts' ? FeedContactIcon : SectorIcon
   return (
     <section className='pt4' data-id={props['data-id']}>
       <div className='center my4'>
-        <Icon className='svg-icon-lg blue' style={{width: '24px', height: '24px'}} />
+        <ListIcon className='svg-icon-lg blue' style={{width: '24px', height: '24px'}} />
       </div>
-      <div className='center my4 bold f-xl'>{type.substring(0, type.length - 1)} Lists</div>
+      <div className='center my4 bold grey10 f-xxl'>{type.substring(0, type.length - 1)} Lists</div>
       <div className='center my4'>
-        <p className='mx-auto max-width-2 center mt4 mb6'>{copy}</p>
+        <p className='mx-auto max-width-2 grey20 center mt4 mb6 f-lg'>{copy}</p>
       </div>
       <hr className='flex-auto my4' style={{height: 1, marginRight: '-0.6rem', marginLeft: '-0.6rem'}} />
       {children}
