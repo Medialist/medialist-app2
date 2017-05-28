@@ -278,7 +278,7 @@ const FeedbackPostSummary = ({label, campaigns, contacts, status, contact, campa
   if (!campaign && campaigns && campaigns.length) {
     campaignLink = (
       <span>
-        <ChevronRight className='gray60 mx1' />
+        <ChevronRight className='gray60 mx1' style={{verticalAlign: 1}} />
         <CampaignLink campaign={campaigns[0]} />
       </span>
     )
@@ -289,7 +289,7 @@ const FeedbackPostSummary = ({label, campaigns, contacts, status, contact, campa
   if (!contact && contacts && contacts.length) {
     contactLink = (
       <span>
-        <ChevronRight className='gray60 mx1' />
+        <ChevronRight className='gray60 mx1' style={{verticalAlign: 1}} />
         <ContactLink contact={contacts[0]} />
       </span>
     )
