@@ -15,7 +15,7 @@ import { batchFavouriteCampaigns } from '/imports/api/campaigns/methods'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import AddTagsModal from '/imports/ui/tags/add-tags-modal'
 import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
-import AddToMasterList from '/imports/ui/master-lists/add-to-master-list'
+import AddToMasterListModal from '/imports/ui/master-lists/add-to-master-list-modal'
 import campaignsSearchQueryContainer from '/imports/ui/campaigns/campaign-search-query-container'
 import CampaignLink from '/imports/ui/campaigns/campaign-link'
 import CampaignListLink from '/imports/ui/master-lists/campaign-list-link'
@@ -223,7 +223,7 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
           title='Tag these Campaigns'>
           <AbbreviatedAvatarList items={this.state.selections} shape='square' />
         </AddTagsModal>
-        <AddToMasterList
+        <AddToMasterListModal
           type='Campaigns'
           items={this.state.selections}
           open={this.state.addToCampaignListsModal}
@@ -233,7 +233,7 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
           <AbbreviatedAvatarList
             items={this.state.selections}
             maxTooltip={12} shape='square' />
-        </AddToMasterList>
+        </AddToMasterListModal>
         <DeleteCampaignsModal
           open={this.state.deleteCampaignsModal}
           campaigns={this.state.selections}

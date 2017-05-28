@@ -16,7 +16,7 @@ import { StatusIndex } from '/imports/api/contacts/status'
 import RemoveContactModal from '/imports/ui/campaigns/remove-contact'
 import AddContactsToCampaign from '/imports/ui/contacts/add-contacts-to-campaign'
 import AddTagsModal from '/imports/ui/tags/add-tags-modal'
-import AddToMasterList from '/imports/ui/master-lists/add-to-master-list'
+import AddToMasterListModal from '/imports/ui/master-lists/add-to-master-list-modal'
 import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import { batchAddTags } from '/imports/api/tags/methods'
@@ -209,7 +209,7 @@ class CampaignContactsPage extends React.Component {
           title='Tag these Contacts'>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddTagsModal>
-        <AddToMasterList
+        <AddToMasterListModal
           type='Contacts'
           items={this.state.selections}
           open={this.state.addToMasterListsModal}
@@ -217,7 +217,7 @@ class CampaignContactsPage extends React.Component {
           onSave={(masterLists) => this.onAddAllToMasterLists(masterLists)}
           title='Add to a Contact List'>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
-        </AddToMasterList>
+        </AddToMasterListModal>
         <RemoveContactModal
           open={this.state.removeContactsModal}
           onDismiss={() => this.hideModals()}

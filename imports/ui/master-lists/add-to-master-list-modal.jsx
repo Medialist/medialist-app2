@@ -3,46 +3,45 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router'
 import Modal from '/imports/ui/navigation/modal'
 import { Check } from '/imports/ui/images/icons'
+import { createContainer } from 'meteor/react-meteor-data'
+import MasterLists from '/imports/api/master-lists/master-lists'
 
-const AddToMasterListModal = Modal(React.createClass({
-  propTypes: {
-    open: PropTypes.bool.isRequired,
-    onDismiss: PropTypes.func.isRequired,
-    onSave: PropTypes.func.isRequired,
-    selectedMasterLists: PropTypes.array,
-    allMasterLists: PropTypes.array.isRequired,
-    type: PropTypes.oneOf(['Campaigns', 'Contacts']),
-    title: PropTypes.string.isRequired,
-    children: PropTypes.node,
-    selections: PropTypes.array.isRequired
-  },
-  getInitialState () {
-    return { selectedMasterLists: this.props.selectedMasterLists || [] }
-  },
+class AddToMasterList extends React.Component {
+  constructor (props, context) {
+    super(props, context)
+
+    this.state = {
+      selectedMasterLists: this.props.selectedMasterLists || []
+    }
+  }
+
   onSelect (masterList) {
     this.setState((s) => ({
       selectedMasterLists: s.selectedMasterLists.concat([masterList])
     }))
-  },
+  }
+
   onDeselect (masterList) {
     this.setState((s) => ({
       selectedMasterLists: s.selectedMasterLists.filter((m) => m._id !== masterList._id)
     }))
-  },
+  }
+
   onSave () {
     this.props.onSave(this.state.selectedMasterLists)
     this.props.onDismiss()
-  },
+  }
+
   render () {
     if (!this.props.open) {
       return null
     }
 
-    const { onSelect, onDeselect, onSave } = this
-    const { type, title, onDismiss, allMasterLists, children } = this.props
+    const { type, title, allMasterLists, children } = this.props
     const { selectedMasterLists } = this.state
 
     const confirmText = `Add ${type.substring(0, this.props.items.length === 1 ? type.length - 1 : undefined)}`
+    const scrollableHeight = Math.max(window.innerHeight - 360, 80)
 
     return (
       <div data-id='add-to-list-modal'>
@@ -50,8 +49,7 @@ const AddToMasterListModal = Modal(React.createClass({
           <span className='f-xl'>{title}</span>
         </div>
         {children}
-        <div
-          style={{minHeight: 240}}
+        <div style={{height: scrollableHeight, overflowY: 'scroll'}}
           className='bg-gray90 shadow-inset-2 border-top border-gray80 mt6 p2 flex flex-wrap'>
           {!allMasterLists || allMasterLists.length === 0 && <EmptyMasterLists type={type} />}
           {allMasterLists && allMasterLists.map((item, ind) => (
@@ -59,24 +57,45 @@ const AddToMasterListModal = Modal(React.createClass({
               item={item}
               type={type}
               selected={selectedMasterLists.some((m) => item._id === m._id)}
-              onSelect={onSelect}
-              onDeselect={onDeselect}
+              onSelect={(masterList) => this.onSelect(masterList)}
+              onDeselect={(masterList) => this.onDeselect(masterList)}
               key={`${type}-${ind}`} />
           ))}
         </div>
         <div className='p4 bg-white'>
           <div className='clearfix'>
-            <button className='btn bg-completed white right' onClick={onSave} data-id='add-to-list-modal-save-button'>{confirmText}</button>
-            <button className='btn bg-transparent gray40 right mr2' onClick={onDismiss} data-id='add-to-list-modal-cancel-button'>Cancel</button>
+            <button className='btn bg-completed white right' onClick={() => this.onSave()} data-id='add-to-list-modal-save-button'>{confirmText}</button>
+            <button className='btn bg-transparent gray40 right mr2' onClick={(event) => this.props.onDismiss(event)} data-id='add-to-list-modal-cancel-button'>Cancel</button>
             <Link to={`/settings/${type.toLowerCase()}-master-lists`} className='btn bg-transparent blue' data-id='add-to-list-modal-manage-lists-button'>Manage {this.props.type.substring(0, this.props.type.length - 1)} Lists</Link>
           </div>
         </div>
       </div>
     )
   }
-}))
+}
 
-export default AddToMasterListModal
+AddToMasterList.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onDismiss: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  selectedMasterLists: PropTypes.array,
+  allMasterLists: PropTypes.array.isRequired,
+  type: PropTypes.oneOf(['Campaigns', 'Contacts']),
+  title: PropTypes.string.isRequired,
+  children: PropTypes.node,
+  selections: PropTypes.array.isRequired
+}
+
+const AddToMasterListContainer = createContainer(({open, type, ...props}) => {
+  // master lists are subscribed to at the layout level
+  const allMasterLists = open ? MasterLists.find({type}).fetch() : []
+  return { open, type, allMasterLists, ...props }
+}, AddToMasterList)
+
+const AddToMasterListModal = Modal(AddToMasterListContainer, {
+  width: 680,
+  'data-id': 'delete-post-modal'
+})
 
 const MasterListBtn = ({item, type, selected, onSelect, onDeselect}) => {
   const { name, items } = item
@@ -113,3 +132,5 @@ const EmptyMasterLists = ({type}) => {
     </div>
   )
 }
+
+export default AddToMasterListModal

@@ -7,7 +7,7 @@ import { LinkedTag } from '/imports/ui/tags/tag'
 import { EmailIcon, FavouritesIcon, PhoneIcon, BioIcon, MobileIcon, AddressIcon } from '/imports/ui/images/icons'
 import { setMasterLists } from '/imports/api/master-lists/methods'
 import InfoHeader from '/imports/ui/lists/info-header'
-import AddToMasterList from '/imports/ui/master-lists/add-to-master-list'
+import AddToMasterListModal from '/imports/ui/master-lists/add-to-master-list-modal'
 import AddTagsModal from '/imports/ui/tags/add-tags-modal'
 import Tooltip from '/imports/ui/navigation/tooltip'
 import { SocialIcon } from '/imports/ui/social/social'
@@ -172,7 +172,7 @@ const ContactInfo = withSnackbar(React.createClass({
             {tags.map((t) => (<LinkedTag to={`/contacts?tag=${t.slug}`} name={t.name} count={t.count} key={t.slug} />))}
           </div>
         </section>
-        <AddToMasterList
+        <AddToMasterListModal
           items={[this.props.contact]}
           open={addToMasterListOpen}
           onDismiss={dismissAddToMasterList}

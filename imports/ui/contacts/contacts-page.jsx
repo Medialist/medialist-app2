@@ -23,7 +23,7 @@ import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import AddTagsModal from '/imports/ui/tags/add-tags-modal'
 import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
-import AddToMasterList from '/imports/ui/master-lists/add-to-master-list'
+import AddToMasterListModal from '/imports/ui/master-lists/add-to-master-list-modal'
 import NearBottomContainer from '/imports/ui/navigation/near-bottom-container'
 import SubscriptionLimitContainer from '/imports/ui/navigation/subscription-limit-container'
 import Loading from '/imports/ui/lists/loading'
@@ -302,7 +302,7 @@ const ContactsPage = withSnackbar(React.createClass({
           title='Tag these Contacts'>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddTagsModal>
-        <AddToMasterList
+        <AddToMasterListModal
           type='Contacts'
           items={this.state.selections}
           open={this.state.addToMasterListsModal}
@@ -310,7 +310,7 @@ const ContactsPage = withSnackbar(React.createClass({
           onSave={(masterLists) => this.onAddAllToMasterLists(masterLists)}
           title='Add to a Contact List'>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
-        </AddToMasterList>
+        </AddToMasterListModal>
         <DeleteContactsModal
           open={this.state.deleteContactsModal}
           contacts={this.state.selections}
