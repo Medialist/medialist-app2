@@ -5,48 +5,52 @@ import debounce from 'lodash.debounce'
 import { ChevronDown } from '/imports/ui/images/icons'
 import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
 
-const MasterListsSelector = React.createClass({
-  propTypes: {
-    type: PropTypes.string.isRequired,
-    items: PropTypes.array.isRequired,
-    selectedSlug: PropTypes.string,
-    onChange: PropTypes.func.isRequired
-  },
-  getInitialState () {
-    return {
+class MasterListsSelector extends React.Component {
+  constructor (props, context) {
+    super(props, context)
+
+    this.state = {
       hideItemsAfterIndex: null,
       showMoreOpen: false
     }
-  },
+  }
+
   componentWillReceiveProps () {
     this.resetState()
-  },
+  }
+
   resetState () {
     this.setState({
       hideItemsAfterIndex: null,
       showMoreOpen: false
     })
-  },
+  }
+
   onItemClick (evt) {
     const slug = evt.currentTarget.dataset.slug
     this.props.onChange(slug)
-  },
+  }
+
   onMenuClick (evt) {
     const slug = evt.currentTarget.dataset.slug
     this.setState({showMoreOpen: false})
     this.props.onChange(slug)
-  },
+  }
+
   componentDidMount () {
     this.onResize = debounce(this.resetState, 100)
     window.addEventListener('resize', this.onResize)
     this.calculateSize()
-  },
+  }
+
   componentWillUnmount () {
     window.removeEventListener('resize', this.onResize)
-  },
+  }
+
   componentDidUpdate () {
     this.calculateSize()
-  },
+  }
+
   calculateSize () {
     if (this.state.hideItemsAfterIndex !== null) {
       return
@@ -67,20 +71,24 @@ const MasterListsSelector = React.createClass({
     }
 
     this.setState({ hideItemsAfterIndex })
-  },
+  }
+
   render () {
     const { type, items, selectedSlug } = this.props
     const { hideItemsAfterIndex, showMoreOpen } = this.state
     const visibleItems = hideItemsAfterIndex ? items.slice(0, hideItemsAfterIndex) : items
     const moreItems = hideItemsAfterIndex ? items.slice(hideItemsAfterIndex) : []
     const selectedIndex = moreItems.findIndex((i) => i.slug === selectedSlug)
+    const settingsUrl = `/settings/${type.toLowerCase()}-master-lists`
+    const scrollableHeight = Math.max(global.window && global.window.innerHeight - 310, 80)
+
     if (selectedIndex > -1) {
       // Swap the selected item out of the hidden list for the item at the end of the visible list
       const [selectedItem] = moreItems.splice(selectedIndex, 1)
       const [itemToSwap] = visibleItems.splice(-1, 1, selectedItem)
       moreItems.unshift(itemToSwap)
     }
-    const settingsUrl = `/settings/${type.toLowerCase()}-master-lists`
+
     return (
       <nav className='block px4' ref={(el) => { this.containerEl = el }}>
         <div className={`nowrap ${hideItemsAfterIndex === null ? 'opacity-0' : ''}`}>
@@ -98,7 +106,7 @@ const MasterListsSelector = React.createClass({
                 slug={item.slug}
                 count={item.count}
                 selected={item.slug === selectedSlug}
-                onClick={this.onItemClick} >
+                onClick={(event) => this.onItemClick(event)} >
                 {item.name}
               </Item>
             </div>
@@ -108,13 +116,14 @@ const MasterListsSelector = React.createClass({
               <Item selected={showMoreOpen} onClick={() => this.setState({showMoreOpen: true})}>
                 <span className='pl2'>More <ChevronDown /></span>
               </Item>
-              <DropdownMenu width={334} left={-200} top={-20} open={showMoreOpen} onDismiss={() => this.setState({showMoreOpen: false})}>
+              <DropdownMenu width={334} left={-200} top={-20} arrowAlign='right' arrowMarginRight='75px' open={showMoreOpen} onDismiss={() => this.setState({showMoreOpen: false})}>
                 <nav>
-                  <div className='py2' />
-                  {moreItems.map((item) =>
-                    <MenuItem key={item.slug} onClick={this.onMenuClick} {...item} />
-                  )}
-                  <div className='py2 mt3 bg-gray90 center'>
+                  <div className='py2' style={{height: scrollableHeight, overflowY: 'scroll'}}>
+                    {moreItems.map((item) =>
+                      <MenuItem key={item.slug} onClick={(event) => this.onMenuClick(event)} {...item} />
+                    )}
+                  </div>
+                  <div className='py2 bg-gray90 center'>
                     <Link
                       to={settingsUrl}
                       className='underline f-xs gray40'>Manage {this.props.type.substring(0, this.props.type.length - 1)} Lists</Link>
@@ -127,7 +136,14 @@ const MasterListsSelector = React.createClass({
       </nav>
     )
   }
-})
+}
+
+MasterListsSelector.propTypes = {
+  type: PropTypes.string.isRequired,
+  items: PropTypes.array.isRequired,
+  selectedSlug: PropTypes.string,
+  onChange: PropTypes.func.isRequired
+}
 
 MasterListsSelector.defaultProps = {
   selectedSlug: 'all'

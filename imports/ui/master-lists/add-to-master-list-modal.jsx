@@ -41,7 +41,7 @@ class AddToMasterList extends React.Component {
     const { selectedMasterLists } = this.state
 
     const confirmText = `Add ${type.substring(0, this.props.items.length === 1 ? type.length - 1 : undefined)}`
-    const scrollableHeight = Math.max(window.innerHeight - 360, 80)
+    const scrollableHeight = Math.max(global.window && global.window.innerHeight - 360, 80)
 
     return (
       <div data-id='add-to-list-modal'>
