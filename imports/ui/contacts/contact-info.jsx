@@ -173,6 +173,7 @@ const ContactInfo = withSnackbar(React.createClass({
           </div>
         </section>
         <AddToMasterList
+          items={[this.props.contact]}
           open={addToMasterListOpen}
           onDismiss={dismissAddToMasterList}
           onSave={onAddContactToMasterLists}

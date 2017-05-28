@@ -13,7 +13,8 @@ const AddToMasterListModal = Modal(React.createClass({
     allMasterLists: PropTypes.array.isRequired,
     type: PropTypes.oneOf(['Campaigns', 'Contacts']),
     title: PropTypes.string.isRequired,
-    children: PropTypes.node
+    children: PropTypes.node,
+    selections: PropTypes.array.isRequired
   },
   getInitialState () {
     return { selectedMasterLists: this.props.selectedMasterLists || [] }
@@ -33,10 +34,16 @@ const AddToMasterListModal = Modal(React.createClass({
     this.props.onDismiss()
   },
   render () {
-    if (!this.props.open) return null
+    if (!this.props.open) {
+      return null
+    }
+
     const { onSelect, onDeselect, onSave } = this
     const { type, title, onDismiss, allMasterLists, children } = this.props
     const { selectedMasterLists } = this.state
+
+    const confirmText = `Add ${type.substring(0, this.props.items.length === 1 ? type.length - 1 : undefined)}`
+
     return (
       <div data-id='add-to-list-modal'>
         <div className='pt6 center'>
@@ -59,7 +66,7 @@ const AddToMasterListModal = Modal(React.createClass({
         </div>
         <div className='p4 bg-white'>
           <div className='clearfix'>
-            <button className='btn bg-completed white right' onClick={onSave} data-id='add-to-list-modal-save-button'>Save Changes</button>
+            <button className='btn bg-completed white right' onClick={onSave} data-id='add-to-list-modal-save-button'>{confirmText}</button>
             <button className='btn bg-transparent gray40 right mr2' onClick={onDismiss} data-id='add-to-list-modal-cancel-button'>Cancel</button>
             <Link to={`/settings/${type.toLowerCase()}-master-lists`} className='btn bg-transparent blue' data-id='add-to-list-modal-manage-lists-button'>Manage {this.props.type.substring(0, this.props.type.length - 1)} Lists</Link>
           </div>

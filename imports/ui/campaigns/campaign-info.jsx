@@ -193,6 +193,7 @@ const CampaignInfo = withSnackbar(React.createClass({
           </div>
         </section>
         <AddToMasterList
+          items={[this.props.campaign]}
           open={this.state.addToMasterListOpen}
           onDismiss={dismissAddToMasterList}
           onSave={(masterLists) => this.onAddCampaignToMasterLists(masterLists)}
