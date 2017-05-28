@@ -52,7 +52,7 @@ const NeedToKnowItem = ({ item }) => {
           <CircleAvatar size={38} avatar={createdBy.avatar} name={createdBy.name} />
         </div>
         <div className='flex-auto'>
-          <div className='gray10 truncate'>{message}</div>
+          <div className='gray10' style={{overflowX: 'hidden'}}>{message}</div>
           <TimeFromNow className='gray10 f-sm' style={{opacity: 0.25}} date={createdAt} />
         </div>
       </div>
