@@ -1,6 +1,7 @@
 import React from 'react'
 import { withRouter } from 'react-router'
 import FileInput from '/imports/ui/contacts-import/file-input'
+import FileDrop from '/imports/ui/contacts-import/file-drop'
 import Topbar from '/imports/ui/navigation/topbar'
 import CsvToContacts from '/imports/ui/contacts-import/csv-to-contacts'
 
@@ -9,9 +10,8 @@ export default withRouter(React.createClass({
     return { file: null }
   },
 
-  onFileChange (evt) {
-    const file = evt.target.files[0]
-    this.setState({file})
+  onFilesChange (files) {
+    this.setState({file: files[0]})
   },
 
   onImport () {
@@ -27,7 +27,7 @@ export default withRouter(React.createClass({
   },
 
   render () {
-    const { onFileChange, onImport } = this
+    const { onFilesChange, onImport } = this
     const { file } = this.state
     return (
       <div data-id='contacts-import'>
@@ -36,9 +36,9 @@ export default withRouter(React.createClass({
           <h1 className='f-xxl gray10 m0 pb2 semibold'>Import your contacts</h1>
           <p className='f-lg gray20 m0 pb5'>Select a CSV file or Excel spreadsheet</p>
           { file ? (
-            <FileInfo onFileChange={onFileChange} onImport={onImport} file={file} />
+            <FileInfo onFilesChange={onFilesChange} onImport={onImport} file={file} />
           ) : (
-            <UploadFile onFileChange={onFileChange} />
+            <UploadFile onFilesChange={onFilesChange} />
           )}
           <p className='normal p2' style={{lineHeight: '1.8rem'}}>
             Importing a CSV file or Excel spreadsheet allows you to add and update contacts stored in Medialist. If a contact email address or Twitter handle in your spreadsheet matches an existing contact, the contact will be updated with the mapped values from your spreadsheet. Otherwise, a new contact will be created.
@@ -49,27 +49,24 @@ export default withRouter(React.createClass({
   }
 }))
 
-const UploadFile = ({ onFileChange }) => (
-  <FileInput
-    style={{ borderStyle: 'dashed', borderWidth: '2px' }}
-    className='rounded border-gray60 bg-white py2 mx-auto width-100'
-    dropClassName='border-blue'
-    name='contacts-upload'
-    accept='text/csv'
-    onChange={onFileChange}
-  >
+const UploadFile = ({ onFilesChange }) => (
+  <FileDropZone onFiles={onFilesChange}>
     <h3 className='py4 m0 normal'>Drag and drop your file here</h3>
     <div className='semibold gray10'>OR</div>
     <div className='pt4 pb6'>
-      <div className='btn bg-blue white mx4'>
-        Select a file from your computer...
-      </div>
+      <FileInput
+        accept='text/csv'
+        onFiles={onFilesChange} >
+        <div className='btn bg-blue white mx4'>
+          Select a file from your computer...
+        </div>
+      </FileInput>
     </div>
-  </FileInput>
+  </FileDropZone>
 )
 
-const FileInfo = ({ file, onImport, onFileChange }) => (
-  <div className='rounded border-gray60 bg-white mx-auto width-100' style={{ borderStyle: 'dashed', borderWidth: '2px' }}>
+const FileInfo = ({ file, onImport, onFilesChange }) => (
+  <FileDropZone onFiles={onFilesChange}>
     <div className='py6'>
       <div className='inline-block mr3 align-middle rounded bg-gray10 white caps semibold f-lg' style={{width: 53, padding: '15px 0'}}>
       CSV
@@ -77,7 +74,7 @@ const FileInfo = ({ file, onImport, onFileChange }) => (
       <div className='inline-block align-middle left-align'>
         <div className='italic gray20 f-lg semibold'>{file.name}</div>
         <div className='gray20 f-lg'>{(file.size * 0.001).toFixed(1)} KB</div>
-        <FileInput accept='text/csv' onChange={onFileChange}>
+        <FileInput accept='text/csv' onFiles={onFilesChange}>
           <div className='pointer blue f-sm underline'>Change</div>
         </FileInput>
       </div>
@@ -87,5 +84,15 @@ const FileInfo = ({ file, onImport, onFileChange }) => (
         Upload File
       </button>
     </div>
-  </div>
+  </FileDropZone>
+)
+
+const FileDropZone = ({onFiles, children}) => (
+  <FileDrop
+    style={{ borderStyle: 'dashed', borderWidth: '2px' }}
+    className='rounded border-gray60 bg-white py2 mx-auto width-100'
+    dropClassName='border-blue'
+    onFiles={onFiles} >
+    {children}
+  </FileDrop>
 )
