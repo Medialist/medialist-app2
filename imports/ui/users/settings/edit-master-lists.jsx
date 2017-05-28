@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
-import { MenuCampaignIcon, DeleteIcon, FeedEditIcon } from '/imports/ui/images/icons'
+import { MenuCampaignIcon, MenuContactIcon, DeleteIcon, FeedEditIcon } from '/imports/ui/images/icons'
 import Tooltip from '/imports/ui/navigation/tooltip'
 import DeleteListsModal from '/imports/ui/users/settings/delete-lists-modal'
 
@@ -119,7 +119,7 @@ const EditMasterLists = React.createClass({
               <span className='pointer' onClick={showCreateMasterListInput} data-id={`add-new-list-button`}>Add new {typeAsSingular} List</span>
             </div>
           </div>
-          {creating && <CreateMasterListInput onCreate={onCreate} />}
+          {creating && <CreateMasterListInput onCreate={onCreate} type={type} />}
           {masterlists.map((masterlist) => {
             return (
               <MasterListsItem
@@ -173,6 +173,7 @@ const EditDeleteBtns = ({type, name, _id, isEditing, onDeleteMasterList}) => {
 
 const EmptyMasterLists = ({type, creating, onCreate, showCreateMasterListInput}) => {
   const typeAsSingular = type.substring(0, type.length - 1)
+  const Icon = type === 'Campaigns' ? MenuCampaignIcon : MenuContactIcon
   return (
     <div style={{height: 200}}>
       {creating ? (
@@ -187,7 +188,7 @@ const EmptyMasterLists = ({type, creating, onCreate, showCreateMasterListInput})
         </div>
       ) : (
         <div className='flex flex-column justify-start items-center'>
-          <MenuCampaignIcon className='blue svg-icon-lg mt4 mb3' />
+          <Icon className='blue svg-icon-lg mt4 mb3' />
           <div className='mt3 mb1 center'>You have not created any {typeAsSingular} Lists yet</div>
           <div className='mb3 center blue underlined pointer' onClick={showCreateMasterListInput}>Create a {typeAsSingular} List</div>
         </div>
@@ -197,10 +198,11 @@ const EmptyMasterLists = ({type, creating, onCreate, showCreateMasterListInput})
 }
 
 const MasterListsItem = (props) => {
-  const {masterlist, isEditing, onDeleteMasterList, onUpdate, onChange, editing, state} = props
+  const {masterlist, isEditing, onDeleteMasterList, onUpdate, onChange, editing, state, type} = props
   const { _id, items } = masterlist
   const triggerUpdate = (_id, key) => { key === 'Enter' || key === 'Tab' ? onUpdate(_id) : null }
   const disabled = _id !== editing
+  const Icon = type === 'Campaigns' ? MenuCampaignIcon : MenuContactIcon
 
   return (
     <div className='flex justify-start items-center p2 my1 border border-gray80 bg-gray90 gray60' data-item={_id}>
@@ -216,7 +218,7 @@ const MasterListsItem = (props) => {
       <div className='flex-none ml4 right-align gray40 hover-color-trigger'>
         <Link to={`/${masterlist.type.toLowerCase()}?list=${masterlist.slug}`} className='hover-blue'>
           {items.length}
-          <MenuCampaignIcon className='ml1 flex-none gray60 hover-blue' />
+          <Icon className='ml1 gray60 hover-blue' />
         </Link>
       </div>
       {!disabled ? <SaveBtn
@@ -261,7 +263,8 @@ const CreateMasterListInput = React.createClass({
   render () {
     const { onChange, onBlur, onKeyDown } = this
     const { value } = this.state
-    const { onCreate } = this.props
+    const { onCreate, type } = this.props
+    const Icon = type === 'Campaigns' ? MenuCampaignIcon : MenuContactIcon
     return (
       <div className='flex justify-start items-center p2 my1 border border-gray80 bg-gray90 gray60'>
         <input
@@ -272,8 +275,9 @@ const CreateMasterListInput = React.createClass({
           onBlur={onBlur}
           onKeyDown={onKeyDown}
           data-id='add-new-list-input' />
-        <div className='flex-none ml4 right-align' style={{width: 20}}>0</div>
-        <MenuCampaignIcon className='flex-none ml2' />
+        <div className='flex-none ml4 right-align'>
+          0<Icon className='ml1 gray60' />
+        </div>
         <div className='flex-auto right-align'>
           <button className='btn bg-completed white' disabled={value.length === 0} onClick={() => onCreate(value)} data-id='save-new-list-button'>Add List</button>
         </div>
