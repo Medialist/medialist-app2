@@ -7,7 +7,6 @@ import React, { PropTypes } from 'react'
 const FileInput = React.createClass({
   propTypes: {
     className: PropTypes.string,
-    style: PropTypes.object,
     disabled: PropTypes.bool,
     accept: PropTypes.string,
     onFiles: PropTypes.func.isRequired
@@ -16,15 +15,14 @@ const FileInput = React.createClass({
     this.fileInput.click()
   },
   onChange (evt) {
-    console.log('onchange', evt)
     const {files} = evt.target
     if (!files) return
     this.props.onFiles(files)
   },
   render () {
-    const { className, style, disabled, accept } = this.props
+    const { className, disabled, accept } = this.props
     return (
-      <div className={className} style={style} onClick={this.onClick}>
+      <div className={className} style={{position: 'relative', overflow: 'hidden'}} onClick={this.onClick}>
         <input
           ref={(r) => { this.fileInput = r }}
           type='file'
