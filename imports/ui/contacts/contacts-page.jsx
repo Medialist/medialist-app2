@@ -68,8 +68,7 @@ const ContactsPage = withSnackbar(React.createClass({
   },
 
   onMasterListChange (selectedMasterListSlug) {
-    const term = ''
-    this.props.setQuery({ selectedMasterListSlug, term })
+    this.props.setQuery({ selectedMasterListSlug })
   },
 
   onSortChange (sort) {
