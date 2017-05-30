@@ -1,4 +1,5 @@
 {
+  "plugins": ["transform-class-properties"],
   "env": {
     "test": {
       "presets": ["es2015", "react"],
@@ -9,9 +10,9 @@
               "/imports": "../../../imports"
             }
           }
-        ], [
-          "transform-object-rest-spread"
-        ]
+        ],
+        ["transform-class-properties"],
+        ["transform-object-rest-spread"]
       ]
     }
   }

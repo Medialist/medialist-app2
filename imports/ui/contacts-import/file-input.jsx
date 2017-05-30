@@ -5,21 +5,24 @@ import PropTypes from 'prop-types'
  Create a hidden file input, and simulate a click on it when parent element is
  clicked. Pass in a button or any children you want to see on the page.
 */
-const FileInput = React.createClass({
-  propTypes: {
+class FileInput extends React.Component {
+  static propTypes = {
     className: PropTypes.string,
     disabled: PropTypes.bool,
     accept: PropTypes.string,
     onFiles: PropTypes.func.isRequired
-  },
-  onClick () {
+  }
+
+  onClick = () => {
     this.fileInput.click()
-  },
-  onChange (evt) {
+  }
+
+  onChange = (evt) => {
     const {files} = evt.target
     if (!files) return
     this.props.onFiles(files)
-  },
+  }
+
   render () {
     const { className, disabled, accept } = this.props
     return (
@@ -37,7 +40,6 @@ const FileInput = React.createClass({
       </div>
     )
   }
-})
+}
 
 export default FileInput
-

@@ -7,12 +7,10 @@ import Topbar from '/imports/ui/navigation/topbar'
 import CsvToContacts from '/imports/ui/contacts-import/csv-to-contacts'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 
-export default withSnackbar(withRouter(React.createClass({
-  getInitialState () {
-    return { file: null }
-  },
+class ContactImportUploadPage extends React.Component {
+  state = { file: null }
 
-  onFilesChange (files) {
+  onFilesChange = (files) => {
     const file = files[0]
     const ext = path.extname(file.name)
     if (ext && ext !== '.csv') {
@@ -25,9 +23,9 @@ export default withSnackbar(withRouter(React.createClass({
         this.setState({data})
       })
     }
-  },
+  }
 
-  onImport () {
+  onImportClick = () => {
     const { file, data } = this.state
     if (data) {
       this.goToPreview(data)
@@ -37,7 +35,7 @@ export default withSnackbar(withRouter(React.createClass({
         this.goToPreview(data)
       })
     }
-  },
+  }
 
   parseCsv (file, cb) {
     CsvToContacts.importCsvFile(file, (err, data) => {
@@ -51,17 +49,17 @@ export default withSnackbar(withRouter(React.createClass({
         cb(null, data)
       }
     })
-  },
+  }
 
   goToPreview (data) {
     this.props.router.push({
       pathname: '/contacts/import/preview',
       state: data
     })
-  },
+  }
 
   render () {
-    const { onFilesChange, onImport } = this
+    const { onFilesChange, onImportClick } = this
     const { file } = this.state
     return (
       <div data-id='contacts-import'>
@@ -70,7 +68,7 @@ export default withSnackbar(withRouter(React.createClass({
           <h1 className='f-xxl gray10 m0 pb2 semibold'>Import your contacts</h1>
           <p className='f-lg gray20 m0 pb5'>Select a CSV file or Excel spreadsheet</p>
           { file ? (
-            <FileInfo onFilesChange={onFilesChange} onImport={onImport} file={file} />
+            <FileInfo onFilesChange={onFilesChange} onImport={onImportClick} file={file} />
           ) : (
             <UploadFile onFilesChange={onFilesChange} />
           )}
@@ -81,7 +79,9 @@ export default withSnackbar(withRouter(React.createClass({
       </div>
     )
   }
-})))
+}
+
+export default withSnackbar(withRouter(ContactImportUploadPage))
 
 const UploadFile = ({ onFilesChange }) => (
   <FileDropZone onFiles={onFilesChange}>
