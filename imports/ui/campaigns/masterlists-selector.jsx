@@ -13,6 +13,7 @@ class MasterListsSelector extends React.Component {
       hideItemsAfterIndex: null,
       showMoreOpen: false
     }
+    this.resetState = this.resetState.bind(this)
   }
 
   componentWillReceiveProps () {

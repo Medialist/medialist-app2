@@ -68,7 +68,8 @@ const ContactsPage = withSnackbar(React.createClass({
   },
 
   onMasterListChange (selectedMasterListSlug) {
-    this.props.setQuery({ selectedMasterListSlug })
+    const term = ''
+    this.props.setQuery({ selectedMasterListSlug, term })
   },
 
   onSortChange (sort) {
@@ -261,7 +262,7 @@ const ContactsPage = withSnackbar(React.createClass({
               </SearchBox>
             </div>
             <div className='flex-none pl4 f-xs'>
-              <ContactsTotal searching={searching} results={contacts} total={contactsCount} />
+              <ContactsTotal searching={searching} results={contacts} total={selectedMasterListSlug ? contacts.length : contactsCount} />
             </div>
           </div>
           <ContactsTable
