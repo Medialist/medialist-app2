@@ -1,28 +1,57 @@
 import React from 'react'
 import { withRouter } from 'react-router'
+import path from 'path'
 import FileInput from '/imports/ui/contacts-import/file-input'
 import FileDrop from '/imports/ui/contacts-import/file-drop'
 import Topbar from '/imports/ui/navigation/topbar'
 import CsvToContacts from '/imports/ui/contacts-import/csv-to-contacts'
+import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 
-export default withRouter(React.createClass({
+export default withSnackbar(withRouter(React.createClass({
   getInitialState () {
     return { file: null }
   },
 
   onFilesChange (files) {
-    this.setState({file: files[0]})
+    const file = files[0]
+    const ext = path.extname(file.name)
+    if (ext && ext !== '.csv') {
+      const msg = `Please convert ${file.name} to a .csv file and try again.`
+      this.props.snackbar.error(msg, 'contacts-import-file-not-csv')
+    } else {
+      this.setState({file})
+      this.parseCsv(file, (er, data) => this.setState({data}))
+    }
   },
 
   onImport () {
-    const { router } = this.props
-    const { file } = this.state
-    CsvToContacts.importCsvFile(file, (err, data) => {
-      if (err) return console.error(err)
-      router.push({
-        pathname: '/contacts/import/preview',
-        state: data
+    const { file, data } = this.state
+    if (data) {
+      this.goToPreview(data)
+    } else {
+      this.parseCsv(file, (err, data) => {
+        if (err) return console.log(err)
+        this.goToPreview(data)
       })
+    }
+  },
+
+  parseCsv (file, cb) {
+    CsvToContacts.importCsvFile(file, (err, data) => {
+      if (err) {
+        const msg = `Couldn't import ${file.name}, ${err.message || err}`
+        this.props.snackbar.error(msg, 'contacts-import-csv-parse-error')
+        return cb(err)
+      } else {
+        cb(null, data)
+      }
+    })
+  },
+
+  goToPreview (data) {
+    this.props.router.push({
+      pathname: '/contacts/import/preview',
+      state: data
     })
   },
 
@@ -47,7 +76,7 @@ export default withRouter(React.createClass({
       </div>
     )
   }
-}))
+})))
 
 const UploadFile = ({ onFilesChange }) => (
   <FileDropZone onFiles={onFilesChange}>
