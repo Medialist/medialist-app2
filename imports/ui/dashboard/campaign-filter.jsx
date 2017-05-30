@@ -53,9 +53,9 @@ const CampaignFilter = React.createClass({
       <Dropdown>
         <div className={`flex-none p3 pointer gray20 ${disabled ? 'opacity-50' : ''}`} onClick={toggleDropdown}>
           {campaign ? (
-            <span className={`f-sm semibold select-none ${open ? 'blue' : ''}`} style={{lineHeight: 0.8}}>
-              {status && <StatusDot name={status} size={9} />}
-              <div className='ml1 truncate inline-block' style={{maxWidth: 200}}>{campaign.name}</div>
+            <span className={`f-sm semibold select-none ${open ? 'blue' : ''}`}>
+              {status && <StatusDot name={status} size={9} style={{verticalAlign: 0}} />}
+              <div className='ml1 truncate inline-block' style={{maxWidth: 200, verticalAlign: -3}}>{campaign.name}</div>
               <ChevronDown className={`ml1 inline-block ${open ? 'blue' : 'gray40'}`} />
             </span>
           ) : (
