@@ -20,7 +20,10 @@ export default withSnackbar(withRouter(React.createClass({
       this.props.snackbar.error(msg, 'contacts-import-file-not-csv')
     } else {
       this.setState({file})
-      this.parseCsv(file, (er, data) => this.setState({data}))
+      this.parseCsv(file, (err, data) => {
+        if (err) return
+        this.setState({data})
+      })
     }
   },
 
@@ -30,7 +33,7 @@ export default withSnackbar(withRouter(React.createClass({
       this.goToPreview(data)
     } else {
       this.parseCsv(file, (err, data) => {
-        if (err) return console.log(err)
+        if (err) return
         this.goToPreview(data)
       })
     }
@@ -39,8 +42,10 @@ export default withSnackbar(withRouter(React.createClass({
   parseCsv (file, cb) {
     CsvToContacts.importCsvFile(file, (err, data) => {
       if (err) {
-        const msg = `Couldn't import ${file.name}, ${err.message || err}`
+        console.error(`Error parsing ${file.name} as csv`, err, file)
+        const msg = `Please ensure ${file.name} only contains comma seperated values`
         this.props.snackbar.error(msg, 'contacts-import-csv-parse-error')
+        this.setState({file: null, data: null})
         return cb(err)
       } else {
         cb(null, data)
@@ -70,7 +75,7 @@ export default withSnackbar(withRouter(React.createClass({
             <UploadFile onFilesChange={onFilesChange} />
           )}
           <p className='normal p2' style={{lineHeight: '1.8rem'}}>
-            Importing a CSV file or Excel spreadsheet allows you to add and update contacts stored in Medialist. If a contact email address or Twitter handle in your spreadsheet matches an existing contact, the contact will be updated with the mapped values from your spreadsheet. Otherwise, a new contact will be created.
+            Importing a CSV file allows you to add and update contacts stored in Medialist. If a contact email address or Twitter handle in your spreadsheet matches an existing contact, the contact will be updated with the mapped values from your spreadsheet. Otherwise, a new contact will be created.
           </p>
         </section>
       </div>
