@@ -385,6 +385,9 @@ export const StatusUpdate = ({item, currentUser, contact, campaign}) => {
 }
 
 export const AddContactsToCampaign = ({item, currentUser, contact, campaign}) => {
+  const onContactPage = Boolean(contact)
+  const contacts = onContactPage ? item.contacts.filter((c) => contact.slug === c.slug) : item.contacts
+
   return (
     <Post
       {...item}
@@ -392,7 +395,7 @@ export const AddContactsToCampaign = ({item, currentUser, contact, campaign}) =>
       icon={<FeedContactIcon className='gray60' />}
       summary={
         <span data-id='post-summary'>
-          added <ContactName contacts={item.contacts} onContactPage={Boolean(contact)} />
+          added <ContactName contacts={contacts} onContactPage={onContactPage} />
           <CampaignName campaigns={item.campaigns} onCampaignPage={Boolean(campaign)} />
         </span>
       }
