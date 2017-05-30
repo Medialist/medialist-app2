@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
+import { CSSTransitionGroup } from 'react-transition-group'
 import { Close } from '/imports/ui/images/icons'
 
 // ten seconds
@@ -130,7 +130,7 @@ const Snackbar = React.createClass({
           bottom: 0,
           right: 20
         }}>
-          <ReactCSSTransitionGroup
+          <CSSTransitionGroup
             transitionName='snackbar'
             transitionAppear
             transitionAppearTimeout={350}
@@ -143,7 +143,7 @@ const Snackbar = React.createClass({
                 </SnackbarItem>
               </div>
             ))}
-          </ReactCSSTransitionGroup>
+          </CSSTransitionGroup>
         </div>
       </div>
     )
