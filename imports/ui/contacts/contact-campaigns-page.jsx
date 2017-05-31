@@ -51,7 +51,7 @@ const ContactCampaignsPage = React.createClass({
     const { addToCampaignOpen } = this.state
     return (
       <div>
-        <ContactTopbar contact={contact} onAddToCampaignClick={this.toggleAddToCampaign} />
+        <ContactTopbar contact={contact} onAddToCampaignClick={this.toggleAddToCampaign} location={this.props.location} />
         <div className='flex items-center pt4 pb2 pr2 pl6'>
           <div className='flex-auto'>
             <div className='flex items-center'>

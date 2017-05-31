@@ -63,12 +63,12 @@ const ContactPage = withSnackbar(React.createClass({
   },
 
   render () {
-    const { contact, campaigns, campaign, user, masterlists, needToKnows, loading } = this.props
+    const { contact, campaigns, campaign, user, masterlists, needToKnows, loading, location } = this.props
     const { editContactModalOpen, addToCampaignOpen } = this.state
     if (!contact) return null
     return (
       <div>
-        <ContactTopbar contact={contact} onAddToCampaignClick={this.toggleAddToCampaign} />
+        <ContactTopbar contact={contact} onAddToCampaignClick={this.toggleAddToCampaign} location={location} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
             <ContactInfo
