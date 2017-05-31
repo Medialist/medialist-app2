@@ -100,6 +100,7 @@ module.exports = {
             this.click(`@addPhoneButton`)
             this.waitForElementVisible(input)
           })
+          this.clearValue(`@otherPhoneInput`)
         }
 
         this.clearValue(input)

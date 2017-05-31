@@ -60,6 +60,41 @@ const test = {
     t.end()
   },
 
+  'Should display context sensitive posts when adding a contacts to a campaign': function (t) {
+    t.createDomain(['campaign', 'contact', 'contact'], (campaign, contact1, contact2, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact1, contact2], campaign, () => done())
+      })
+
+      t.perform((done) => {
+        const contact1Page = t.page.contact()
+          .navigate(contact1)
+
+        contact1Page.section.activityFeed
+          .assertHasAddContactToCampaignPostWith(contact1, campaign, {
+            summary: 'added',
+            campaignName: campaign.name,
+            contactName: contact1.name.split(' ')[0]
+          })
+
+        const contact2Page = t.page.contact()
+          .navigate(contact2)
+
+        contact2Page.section.activityFeed
+          .assertHasAddContactToCampaignPostWith(contact2, campaign, {
+            summary: 'added',
+            campaignName: campaign.name,
+            contactName: contact2.name.split(' ')[0]
+          })
+
+        done()
+      })
+      done()
+    })
+    t.page.main().logout()
+    t.end()
+  },
+
   'Should display context sensitive feedback posts created on contact page': function (t) {
     t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
       t.perform((done) => {
