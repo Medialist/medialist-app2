@@ -9,10 +9,16 @@ module.exports = {
     status: '[data-id=contacts-import-complete-status]'
   },
   commands: [{
-    uploadCsvFile: function (path) {
+    selectFile: function (path) {
       this
         .waitForElementPresent('@fileInput')
         .setValue('@fileInput', path)
+
+      return this
+    },
+    uploadCsvFile: function (path) {
+      this
+        .selectFile(path)
         .waitForElementVisible('@uploadContactsButton')
         .click('@uploadContactsButton')
 

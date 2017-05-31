@@ -123,8 +123,7 @@ export const ContactSchema = new SimpleSchema([
     },
     // References to other collections
     campaigns: {
-      type: [String],
-      regEx: SimpleSchema.RegEx.Id
+      type: [String]
     },
     masterLists: {
       type: [MasterListRefSchema]

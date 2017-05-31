@@ -16,8 +16,23 @@ const test = {
       .register()
   },
 
-  'Should import contacts': function (t) {
+  'Should only import csv files': function (t) {
     const file = tmp.fileSync()
+
+    t.page.contactImport()
+      .navigate()
+      .selectFile(file.name)
+
+    t.page.main().waitForSnackbarMessage('contacts-import-file-not-csv')
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should import contacts': function (t) {
+    const file = tmp.fileSync({
+      postfix: '.csv'
+    })
     const contents = `Name, Email, Telephone
 ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()}`
     fs.writeFileSync(file.name, contents)
