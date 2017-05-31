@@ -14,7 +14,7 @@ module.exports = {
 
       this
         .waitForElementVisible('@nameField')
-        .clearValue('@nameField')
+        .clear('@nameField')
         .setValue('@nameField', name)
         .waitForElementVisible('@completeButton')
         .click('@completeButton')

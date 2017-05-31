@@ -64,7 +64,7 @@ module.exports = {
         add: function (contact) {
           this
             .waitForElementVisible('@searchInput')
-            .clearValue('@searchInput')
+            .clear('@searchInput')
             .setValue('@searchInput', contact.name)
             .waitForElementVisible('@searchResults')
             .waitForElementPresent('@addButton')
@@ -122,7 +122,7 @@ module.exports = {
     addToTeam: function (user) {
       this.section.editTeamMembersForm
         .waitForElementVisible('@searchInput')
-        .clearValue('@searchInput')
+        .clear('@searchInput')
         .setValue('@searchInput', user.profile.name)
         .waitForElementVisible('@searchResults')
         .waitForElementPresent('@addButton')
@@ -135,7 +135,7 @@ module.exports = {
     addToTeamByEmail: function (email) {
       this.section.editTeamMembersForm
         .waitForElementVisible('@emailInput')
-        .clearValue('@emailInput')
+        .clear('@emailInput')
         .setValue('@emailInput', email)
 
       return this
@@ -143,7 +143,7 @@ module.exports = {
     removeFromTeam: function (user) {
       this.section.editTeamMembersForm
         .waitForElementVisible('@searchInput')
-        .clearValue('@searchInput')
+        .clear('@searchInput')
         .setValue('@searchInput', user.profile.name)
         .waitForElementVisible('@searchResults')
         .waitForElementPresent('@selectedButton')

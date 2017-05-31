@@ -10,7 +10,7 @@ module.exports = {
   commands: [{
     searchForCampaign: function (campaign) {
       this.waitForElementVisible('@searchInput')
-      this.clearValue('@searchInput')
+      this.clear('@searchInput')
       this.setValue('@searchInput', campaign.name)
 
       this.waitForElementVisible('@searchResults')
