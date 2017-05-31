@@ -60,7 +60,7 @@ const test = {
     t.end()
   },
 
-  'Should display context sensitive posts when adding a contacts to a campaign': function (t) {
+  'Should display context sensitive posts when adding multiple contacts to a campaign': function (t) {
     t.createDomain(['campaign', 'contact', 'contact'], (campaign, contact1, contact2, done) => {
       t.perform((done) => {
         t.addContactsToCampaign([contact1, contact2], campaign, () => done())
@@ -89,8 +89,10 @@ const test = {
 
         done()
       })
+
       done()
     })
+
     t.page.main().logout()
     t.end()
   },
