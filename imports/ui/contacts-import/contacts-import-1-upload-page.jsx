@@ -1,11 +1,11 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { withRouter } from 'react-router'
 import path from 'path'
 import FileInput from '/imports/ui/contacts-import/file-input'
 import FileDrop from '/imports/ui/contacts-import/file-drop'
 import Topbar from '/imports/ui/navigation/topbar'
 import CsvToContacts from '/imports/ui/contacts-import/csv-to-contacts'
-import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 
 class ContactImportUploadPage extends React.Component {
   state = { file: null }
@@ -15,7 +15,7 @@ class ContactImportUploadPage extends React.Component {
     const ext = path.extname(file.name)
     if (ext && ext !== '.csv') {
       const msg = `Please convert ${file.name} to a .csv file and try again.`
-      this.props.snackbar.error(msg, 'contacts-import-file-not-csv')
+      this.context.snackbar.error(msg, 'contacts-import-file-not-csv')
     } else {
       this.setState({file})
       this.parseCsv(file, (err, data) => {
@@ -42,7 +42,7 @@ class ContactImportUploadPage extends React.Component {
       if (err) {
         console.error(`Error parsing ${file.name} as csv`, err, file)
         const msg = `Please ensure ${file.name} only contains comma seperated values`
-        this.props.snackbar.error(msg, 'contacts-import-csv-parse-error')
+        this.context.snackbar.error(msg, 'contacts-import-csv-parse-error')
         this.setState({file: null, data: null})
         return cb(err)
       } else {
@@ -81,7 +81,14 @@ class ContactImportUploadPage extends React.Component {
   }
 }
 
-export default withSnackbar(withRouter(ContactImportUploadPage))
+ContactImportUploadPage.contextTypes = {
+  snackbar: PropTypes.shape({
+    show: PropTypes.func.isRequired,
+    error: PropTypes.func.isRequired
+  }).isRequired
+}
+
+export default withRouter(ContactImportUploadPage)
 
 const UploadFile = ({ onFilesChange }) => (
   <FileDropZone onFiles={onFilesChange}>
