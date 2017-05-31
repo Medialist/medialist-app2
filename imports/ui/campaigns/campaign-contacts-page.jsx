@@ -137,6 +137,7 @@ class CampaignContactsPage extends React.Component {
 
   render () {
     const { campaign, contacts } = this.props
+
     if (!campaign) {
       return null
     }
