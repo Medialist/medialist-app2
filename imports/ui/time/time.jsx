@@ -3,11 +3,17 @@ import moment from 'moment'
 
 // format a moment as "time from now", but shorter.
 // e.g [Just now, 2 h, 19 Jan, 20 Feb 2016]
-function timeFromNowShortFormat (then) {
+export function timeFromNowShortFormat (then) {
   const now = moment()
+  const secondsAgo = now.diff(then, 'seconds')
+  if (secondsAgo < 60) return 'Just now'
+
+  const minutesAgo = now.diff(then, 'minutes')
+  if (minutesAgo < 60) return `${minutesAgo}mins`
+
   const hoursAgo = now.diff(then, 'hours')
-  if (hoursAgo < 1) return 'Just now'
-  if (hoursAgo < 13) return hoursAgo + ' h'
+  if (now.isSame(then, 'day')) return `${hoursAgo}h`
+
   if (now.isSame(then, 'year')) return then.format('D MMM')
   return then.format('D MMM YYYY')
 }
