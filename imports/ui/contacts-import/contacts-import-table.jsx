@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Dropdown from 'rebass/dist/Dropdown'
-import DropdownMenu from '/imports/ui/lists/dropdown-menu'
+import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
 import { SelectedIcon, ChevronDown } from '/imports/ui/images/icons'
 import { allColumns } from '/imports/ui/contacts-import/csv-to-contacts.js'
 import { BLUE } from '/imports/ui/colours'
@@ -55,20 +54,16 @@ const ImportTable = React.createClass({
             <tr>
               {cols.map((col, columnIndex) => {
                 return (
-                  <th key={columnIndex} className='pointer bg-white' style={{width: 240, padding: '0px 80px 0 0', borderLeft: '0 none', borderRight: '0 none'}}>
+                  <th key={columnIndex} className='pointer bg-white' style={{width: 240, padding: '10px 80px 10px 10px', borderLeft: '0 none', borderRight: '0 none'}}>
                     <Dropdown>
-                      <div className='p2 m2 rounded border border-gray80 left-align' style={{width: 180}} onClick={() => onColumnSelect(columnIndex)}>
+                      <div className='p2 rounded border border-gray80 left-align' style={{width: 180}} onClick={() => onColumnSelect(columnIndex)}>
                         <ChevronDown className='right' />
-                        {col ? (
-                          <span className='gray10 semibold'>{col.label}</span>
-                        ) : (
-                          <span className='gray40'>Select a field</span>
-                        )}
+                        <ColumnHeaderLabel col={col} />
                       </div>
-                      <DropdownMenu open={open && open === columnIndex} onDismiss={onDismiss} style={{left: '5px'}}>
+                      <DropdownMenu width={180} top={-7} open={open === columnIndex} onDismiss={onDismiss}>
                         <ul className='list-reset mt0'>
                           {allColumns.map((newCol, i) => {
-                            return <li key={i} className='p2 left-align hover-bg-blue' onClick={(evt) => onColumnChange(newCol, columnIndex)}>{newCol.label}</li>
+                            return <li key={i} className='px3 py2 left-align semibold gray20 hover-bg-blue' onClick={(evt) => onColumnChange(newCol, columnIndex)}>{newCol.label}</li>
                           })}
                         </ul>
                       </DropdownMenu>
@@ -104,3 +99,13 @@ const ImportTable = React.createClass({
 })
 
 export default ImportTable
+
+const ColumnHeaderLabel = ({col}) => {
+  if (!col) {
+    return <span className='red semibold'>Select a field</span>
+  }
+  if (col.label === 'Ignore') {
+    return <span className='gray40 semibold'>Ignore</span>
+  }
+  return <span className='gray10 semibold'>{col.label}</span>
+}

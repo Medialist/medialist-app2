@@ -1,6 +1,8 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Link, withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
+import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import CsvToContacts from '/imports/ui/contacts-import/csv-to-contacts'
 import Topbar from '/imports/ui/navigation/topbar'
 import Tag from '/imports/ui/tags/tag'
@@ -11,17 +13,24 @@ import {
   TagIcon
 } from '/imports/ui/images/icons'
 
-export default withRouter(React.createClass({
-  getInitialState () {
-    const { state } = this.props.location
-    return Object.assign({
+class ContactsImportProcessingPage extends React.Component {
+  static propTypes = {
+    location: PropTypes.object,
+    snackbar: PropTypes.object
+  }
+
+  constructor (props) {
+    super(props)
+    this.state = Object.assign({
       rows: [],
       cols: [],
       contacts: [],
       results: null,
       tag: `Contact Import - ${(new Date()).toISOString()}`
-    }, state)
-  },
+    }, props.location.state)
+
+    console.log('ContactsImportProcessingPage', this.state)
+  }
 
   componentDidMount () {
     const { cols, rows } = this.state
@@ -31,26 +40,23 @@ export default withRouter(React.createClass({
     const contacts = CsvToContacts.createContacts({cols, rows: rows.slice(1)})
     this.setState({contacts})
     Meteor.call('importContacts', { contacts }, (err, results) => {
-      if (err) return console.error(err) // TODO: snackbar / alert user.
+      if (err) {
+        console.error(err)
+        const {snackbar, router} = this.props
+        snackbar.error('An error occured importing your contacts', 'contact-import-failed')
+        return router.goBack()
+      }
       this.setState({results})
     })
-  },
+  }
 
-  onCampaignClick () {
-    console.log('onCampaignClick')
-  },
+  onCampaignClick = () => console.log('onCampaignClick')
 
-  onSectorClick () {
-    console.log('onSectorClick')
-  },
+  onSectorClick = () => console.log('onSectorClick')
 
-  onFavouriteClick () {
-    console.log('onFavouriteClick')
-  },
+  onFavouriteClick = () => console.log('onFavouriteClick')
 
-  onTagClick () {
-    console.log('onTagClick')
-  },
+  onTagClick = () => console.log('onTagClick')
 
   render () {
     const { rows, tag, results, contacts } = this.state
@@ -77,7 +83,9 @@ export default withRouter(React.createClass({
       </div>
     )
   }
-}))
+}
+
+export default withSnackbar(withRouter(ContactsImportProcessingPage))
 
 const ProcessingPanel = ({rows, tag}) => (
   <section className='center p4'>

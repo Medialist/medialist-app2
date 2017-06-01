@@ -1,39 +1,31 @@
 import moment from 'moment'
 import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
-import { check, Match } from 'meteor/check'
+import { check } from 'meteor/check'
+import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import slugify from '/imports/lib/slug'
 import { findOneUserRef } from '/imports/api/users/users'
 import ContactsTask from '/imports/api/twitter-users/server/contacts-task'
-import Contacts, { ContactSchema } from '/imports/api/contacts/contacts'
+import Contacts, { ContactSchema, ContactCreateSchema } from '/imports/api/contacts/contacts'
 
 // TODO: reafactor to return _ids of created and updated users, so we can do batch actions on them. Or use the tag?
 
 export const importContacts = new ValidatedMethod({
   name: 'importContacts',
 
-  validate ({contacts}) {
-    check(contacts, [{
-      emails: Match.Optional([{label: String, value: String}]),
-      socials: Match.Optional([{label: String, value: String}]),
-      phones: Match.Optional([{label: String, value: String}]),
-      name: Match.Optional(String),
-      address: Match.Optional(String),
-      outlets: Match.Optional([{label: String, value: String}]),
-      sectors: Match.Optional(String),
-      languages: Match.Optional(String)
-    }])
-  },
+  validate: new SimpleSchema({
+    contacts: { type: [ContactCreateSchema] }
+  }).validator(),
 
   run ({ contacts }) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
-
     var userRef = findOneUserRef(this.userId)
 
     console.log(`Importing ${contacts.length} contacts`)
 
     var results = {created: 0, updated: 0}
 
+    // Look for existing contacts based on email address.
     contacts.forEach(contactData => {
       if (contactData.emails && contactData.emails.length) {
         var emails = contactData.emails.map(e => e.value)
@@ -57,14 +49,9 @@ export const importContacts = new ValidatedMethod({
 })
 
 function createContact (data, userRef) {
-  console.log(`Creating contact ${data.name}`)
-
-  data.name = data.name || 'Unknown'
-  data.emails = data.emails || []
+  data.slug = slugify(data.name, Contacts)
   data.socials = data.socials || []
   data.phones = data.phones || []
-
-  data.slug = slugify(data.name, Contacts)
   data.campaigns = []
   data.masterLists = []
   data.tags = []
@@ -80,47 +67,33 @@ function createContact (data, userRef) {
 }
 
 function mergeContact (data, contact, userRef) {
-  console.log(`Merging contact ${data.name}`)
-
-  ;['emails', 'socials', 'phones'].forEach(key => {
-    contact[key] = mergeLabelValueLists(contact[key], data[key])
-  })
-
-  ;[
-    'name',
-    'address',
-    'outlets',
-    'sectors',
-    'languages'
-  ].forEach(key => {
-    if (!contact[key] && data[key]) {
-      contact[key] = data[key]
-    }
-  })
-
+  contact.emails = addIfDistinct('value', contact.emails, data.emails)
+  contact.phones = addIfDistinct('value', contact.phones, data.phones)
+  contact.outlets = addIfDistinct('label', contact.outlets, data.outlets)
+  contact.socials = addIfDistinct('label', contact.socials, data.socials)
+  contact.addresses = addIfCurrentlyEmpty(contact.addresses, data.addresses)
   contact.createdAt = moment(contact.createdAt).toDate()
-
   contact.updatedAt = new Date()
   contact.updatedBy = userRef
 
   var id = contact._id
   delete contact._id
-
   check(contact, ContactSchema)
 
   Contacts.update({_id: id}, {$set: contact})
   ContactsTask.queueUpdate(id)
 }
 
-function mergeLabelValueLists (oldList, newList) {
-  oldList = oldList || []
-  newList = newList || []
+function addIfCurrentlyEmpty (oldList = [], newList = []) {
+  if (oldList.length > 0) return oldList
+  return oldList.contact(newList)
+}
 
-  var newItems = newList.reduce((list, newItem) => {
-    var newValue = newItem.value.toLowerCase()
-    var exists = oldList.some(oldItem => oldItem.value.toLowerCase() === newValue)
+function addIfDistinct (property, oldList = [], newList = []) {
+  const newItems = newList.reduce((list, newItem) => {
+    var newValue = newItem[property].toLowerCase()
+    var exists = oldList.some(oldItem => oldItem[property].toLowerCase() === newValue)
     return exists ? list : list.concat(newItem)
   }, [])
-
   return oldList.concat(newItems)
 }

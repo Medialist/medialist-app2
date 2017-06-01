@@ -92,8 +92,7 @@ export const ContactCreateSchema = new SimpleSchema({
   },
   // TODO: Refactor the socials schema to allow for twitterId or other properties
   socials: {
-    type: [Object],
-    optional: true
+    type: [Object]
   },
   'socials.$.label': {
     type: String
@@ -106,8 +105,22 @@ export const ContactCreateSchema = new SimpleSchema({
     type: String,
     optional: true
   },
-  // TODO: Refactor address format
-  address: {
+  addresses: {
+    type: [Object]
+  },
+  'addresses.$.street': {
+    type: String,
+    optional: true
+  },
+  'addresses.$.city': {
+    type: String,
+    optional: true
+  },
+  'addresses.$.postcode': {
+    type: String,
+    optional: true
+  },
+  'addresses.$.country': {
     type: String,
     optional: true
   }
@@ -135,15 +148,15 @@ export const ContactSchema = new SimpleSchema([
 ])
 
 // TODO: needs contact object for context
-Contacts.fieldNames = function (name) {
-  var key = name.split('.')[0]
-  return {
-    name: 'name',
-    outlets: 'outlet',
-    socials: 'social',
-    emails: 'email',
-    phones: 'phone number',
-    website: 'website',
-    address: 'address'
-  }[key]
-}
+// Contacts.fieldNames = function (name) {
+//   var key = name.split('.')[0]
+//   return {
+//     name: 'name',
+//     outlets: 'outlet',
+//     socials: 'social',
+//     emails: 'email',
+//     phones: 'phone number',
+//     website: 'website',
+//     address: 'address'
+//   }[key]
+// }

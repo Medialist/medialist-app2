@@ -55,82 +55,15 @@ function guessColumnHeader (value) {
   return detector ? detector.field : null
 }
 
+/*
+TODO:
+jobTitles => jobTitle
+outlets => outlet
+*/
 const schemaDetectors = [
   {
-    field: {key: 'email', label: 'Email'},
-    test: value => {
-      if (startsWith(value, 'email')) return true
-      if (startsWith(value, 'e-mail')) return true
-      return value.indexOf('@') > 0
-    }
-  },
-  {
-    field: {key: 'twitter', label: 'Twitter'},
-    test: value => {
-      if (startsWith(value, 'twitter')) return true
-      if (include(value, 'twitter.com')) return true
-      return startsWith(value, '@')
-    }
-  },
-  {
-    field: {key: 'facebook', label: 'Facebook'},
-    test: (value) => {
-      if (startsWith(value, 'facebook')) return true
-      if (include(value, 'facebook.com')) return true
-      return false
-    }
-  },
-  {
-    field: {key: 'mobile', label: 'Mobile'},
-    test: (value) => {
-      if (startsWith(value, 'mobile')) return true
-      if (startsWith(value, 'cell')) return true
-
-      if (/^[0-9 -+()]+$/.test(value)) {
-        // Is mobile if remove all non numerics and it starts with 07 || 447
-        var numbers = value.replace(/[^0-9]/g, '')
-        return startsWith(numbers, '07') || startsWith(numbers, '447')
-      }
-
-      return false
-    }
-  },
-  {
-    field: {key: 'landline', label: 'Telephone'},
-    test: (value) => {
-      if (startsWith(value, 'telephone')) return true
-      if (startsWith(value, 'phone')) return true
-      if (startsWith(value, '+44')) return true
-      return /^[0-9 -+()]+$/.test(value)
-    }
-  },
-  {
-    field: {key: 'memberType', label: 'Member Type'},
-    test: value => value === 'member type'
-  },
-  {
-    field: {key: 'notes', label: 'Notes'},
-    test: value => value === 'list notes' || value === 'notes' || value === 'gorkana short note'
-  },
-  {
-    field: {key: 'salutation', label: 'Salutation'},
-    test: value => value === 'salutation'
-  },
-  {
-    field: {key: 'outlets', label: 'Outlet(s)'},
-    test: value => value === 'primary outlet'
-  },
-  {
-    field: {key: 'sectors', label: 'Sector(s)'},
-    test: value => value === 'sectors'
-  },
-  {
-    field: {key: 'jobTitles', label: 'Job Title(s)'},
-    test: value => value === 'job title'
-  },
-  {
-    field: {key: 'languages', label: 'Language(s)'},
-    test: value => value === 'language'
+    field: {key: 'ignore', label: 'Ignore'},
+    test: value => value === 'ignore'
   },
   {
     field: {key: 'name', label: 'Name'},
@@ -145,38 +78,64 @@ const schemaDetectors = [
     test: value => value === 'surname' || value === 'last name'
   },
   {
-    field: {key: 'address', label: 'Address'},
-    test: value => value === 'address'
+    field: {key: 'jobTitle', label: 'Job Title'},
+    test: value => startsWithAny(['job', 'title', 'position', 'role'], value)
   },
   {
-    field: {key: 'address1', label: 'Address Line 1'},
-    test: value => value === 'address line 1' || value === 'address 1'
+    field: {key: 'outlet', label: 'Outlet'},
+    test: value => startsWithAny(['primary outlet', 'outlet', 'organisation', 'organization'], value)
   },
   {
-    field: {key: 'address2', label: 'Address Line 2'},
-    test: value => value === 'address line 2' || value === 'address 2'
+    field: {key: 'email', label: 'Email'},
+    test: value => {
+      if (startsWithAny(['email', 'e-mail'], value)) return true
+      if (value.indexOf('@') > 0) return true
+      return false
+    }
   },
   {
-    field: {key: 'address3', label: 'Address Line 3'},
-    test: value => value === 'address line 3' || value === 'address 3'
+    field: {key: 'phone', label: 'Phone'},
+    test: (value) => {
+      if (startsWithAny(['phone', 'telephone', 'landline', 'mobile', 'cell'], value)) return true
+      return /^[0-9 -+()]+$/.test(value)
+    }
+  },
+  {
+    field: {key: 'twitter', label: 'Twitter'},
+    test: value => {
+      if (startsWith(value, 'twitter')) return true
+      if (include(value, 'twitter.com')) return true
+      return startsWith(value, '@')
+    }
+  },
+  {
+    field: {key: 'linkedin', label: 'LinkedIn'},
+    test: (value) => {
+      if (include(value, 'linkedin')) return true
+      return false
+    }
+  },
+  {
+    field: {key: 'street', label: 'Street'},
+    test: value => startsWithAny(['street', 'address line 1', 'address1', 'address 1'], value)
   },
   {
     field: {key: 'city', label: 'City'},
-    test: value => value === 'city' || value === 'town'
-  },
-  {
-    field: {key: 'state', label: 'State'},
-    test: value => value === 'state'
+    test: value => startsWithAny(['city', 'town', 'address line 2', 'address2', 'address 2'], value)
   },
   {
     field: {key: 'postcode', label: 'Postcode'},
-    test: value => value === 'postcode' || startsWith(value, 'post code') || value === 'zipcode' || value === 'zip code'
+    test: value => startsWithAny(['postcode', 'post code', 'zipcode', 'zip code', 'address line 3', 'address3', 'address 3'], value)
   },
   {
     field: {key: 'country', label: 'Country'},
-    test: value => value === 'country'
+    test: value => startsWithAny(['country'], value)
   }
 ]
+
+function startsWithAny (arr, val) {
+  return arr.some((option) => startsWith(val, option))
+}
 
 export const allColumns = schemaDetectors.map((obj) => obj.field)
 
@@ -201,9 +160,9 @@ export function createContacts ({cols, rows}) {
       contact.socials = contact.socials || []
       contact.socials.push({label: 'Twitter', value: twitterScreenName(value) || value})
     },
-    facebook (contact, value) {
+    linkedin (contact, value) {
       contact.socials = contact.socials || []
-      contact.socials.push({label: 'Facebook', value: value})
+      contact.socials.push({label: 'LinkedIn', value: value})
     },
     mobile (contact, value) {
       contact.phones = contact.phones || []
@@ -238,45 +197,25 @@ export function createContacts ({cols, rows}) {
       contact.forename,
       contact.surname
     ].filter(v => !!v).join(' ')
-
     delete contact.forename
     delete contact.surname
 
-    contact.address = [
-      contact.address,
-      contact.address1,
-      contact.address2,
-      contact.address3,
-      contact.city,
-      contact.state,
-      contact.postcode,
-      contact.country
-    ].filter(v => !!v).join(', ')
-
-    delete contact.address1
-    delete contact.address2
-    delete contact.address3
+    const { street, city, postcode, country } = contact
+    contact.addresses = [{street, city, postcode, country}]
     delete contact.city
     delete contact.state
     delete contact.postcode
     delete contact.country
 
-    contact.jobTitles = (contact.jobTitles || '').split(/,\s*/)[0]
-    contact.outlets = (contact.outlets || '').split(/,\s*/)
+    const jobTitle = (contact.jobTitle || '').split(/,\s*/)[0]
+    delete contact.jobTitle
+
+    contact.outlets = (contact.outlet || '').split(/,\s*/)
       .filter((outlet) => !/freelance/i.test(outlet))
-      .map((outlet) => ({
+      .map((outlet, i) => ({
         label: outlet,
-        value: contact.jobTitles
+        value: jobTitle
       }))
-
-    delete contact.jobTitles
-
-    // We don't use these currently.
-    delete contact.memberType
-    delete contact.notes
-    delete contact.salutation
-    delete contact.sectors
-    delete contact.languages
 
     return contact
   })
