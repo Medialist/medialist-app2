@@ -237,14 +237,22 @@ const ContactLink = ({contact, ...props}) => (
   </Link>
 )
 
-const ContactName = ({contacts, onContactPage}) => {
+const ContactName = ({contacts, contact, onContactPage}) => {
   if (contacts.length === 1 && onContactPage) {
     return <span data-id='contact-name'>{firstName(contacts[0])}</span>
   }
 
-  if (contacts.length > 1) {
-    return <span data-id='contact-name'>{contacts.length} contacts</span>
+  if (contacts.length > 1 && contact) {
+    const otherContacts = contact ? contacts.filter((c) => c.slug !== contact.slug).length : contacts.length
+    return (
+      <span data-id='contact-name'>
+        <span data-id='contact-name' className='semibold gray10'>{firstName(contact)}</span>
+        {` and ${otherContacts} other contact${otherContacts > 1 ? 's' : ''}`}
+      </span>
+    )
   }
+
+  if (contacts.length > 1) return <span data-id='contact-name'>{contacts.length} contacts</span>
 
   return <ContactLink contact={contacts[0]} />
 }
@@ -375,7 +383,7 @@ export const StatusUpdate = ({item, currentUser, contact, campaign}) => {
       icon={<StatusUpdateIcon className='gray60' />}
       summary={
         <PostSummary {...item}>
-          updated <ContactName contacts={item.contacts} onContactPage={Boolean(contact)} />
+          updated <ContactName contacts={item.contacts} contact={contact} onContactPage={Boolean(contact)} />
           {!campaign ? ' for ' : ''}
           <CampaignName campaigns={item.campaigns} onCampaignPage={Boolean(campaign)} />
         </PostSummary>
@@ -385,9 +393,6 @@ export const StatusUpdate = ({item, currentUser, contact, campaign}) => {
 }
 
 export const AddContactsToCampaign = ({item, currentUser, contact, campaign}) => {
-  const onContactPage = Boolean(contact)
-  const contacts = onContactPage ? item.contacts.filter((c) => contact.slug === c.slug) : item.contacts
-
   return (
     <Post
       {...item}
@@ -395,7 +400,7 @@ export const AddContactsToCampaign = ({item, currentUser, contact, campaign}) =>
       icon={<FeedContactIcon className='gray60' />}
       summary={
         <span data-id='post-summary'>
-          added <ContactName contacts={contacts} onContactPage={onContactPage} />
+          added <ContactName contacts={item.contacts} contact={contact} onContactPage={Boolean(contact)} />
           <CampaignName campaigns={item.campaigns} onCampaignPage={Boolean(campaign)} />
         </span>
       }
