@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
 import { SelectedIcon, ChevronDown } from '/imports/ui/images/icons'
-import { allColumns } from '/imports/ui/contacts-import/csv-to-contacts.js'
+import { allColumns } from '/imports/api/contacts/csv-to-contacts'
 import { BLUE } from '/imports/ui/colours'
 
 const ImportTable = React.createClass({

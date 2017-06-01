@@ -1,7 +1,7 @@
 const fs = require('fs')
 import test from 'ava'
 import papaparse from 'papaparse'
-import { processCsvData } from '../../../imports/ui/contacts-import/csv-to-contacts'
+import { processCsvData } from '../../../imports/api/contacts/csv-to-contacts'
 
 test('should convert csv data into rows and cols', (t) => {
   const expectedCols = [

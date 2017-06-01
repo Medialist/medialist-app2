@@ -5,7 +5,7 @@ import path from 'path'
 import FileInput from '/imports/ui/contacts-import/file-input'
 import FileDrop from '/imports/ui/contacts-import/file-drop'
 import Topbar from '/imports/ui/navigation/topbar'
-import CsvToContacts from '/imports/ui/contacts-import/csv-to-contacts'
+import CsvToContacts from '/imports/api/contacts/csv-to-contacts'
 
 class ContactImportUploadPage extends React.Component {
   state = { file: null }

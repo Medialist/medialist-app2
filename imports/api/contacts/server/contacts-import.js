@@ -86,7 +86,7 @@ function mergeContact (data, contact, userRef) {
 
 function addIfCurrentlyEmpty (oldList = [], newList = []) {
   if (oldList.length > 0) return oldList
-  return oldList.contact(newList)
+  return oldList.concat(newList)
 }
 
 function addIfDistinct (property, oldList = [], newList = []) {

@@ -9,6 +9,7 @@ import Csv from 'papaparse'
 import startsWith from 'underscore.string/startsWith'
 import include from 'underscore.string/include'
 import twitterScreenName from 'twitter-screen-name'
+import {ContactCreateSchema} from './schema'
 
 /*
 Takes a file and a `cb(err, data)`
@@ -164,13 +165,9 @@ export function createContacts ({cols, rows}) {
       contact.socials = contact.socials || []
       contact.socials.push({label: 'LinkedIn', value: value})
     },
-    mobile (contact, value) {
+    phone (contact, value) {
       contact.phones = contact.phones || []
       contact.phones.push({label: 'Mobile', value: value})
-    },
-    landline (contact, value) {
-      contact.phones = contact.phones || []
-      contact.phones.push({label: 'Landline', value: value})
     }
   }
 
@@ -197,18 +194,11 @@ export function createContacts ({cols, rows}) {
       contact.forename,
       contact.surname
     ].filter(v => !!v).join(' ')
-    delete contact.forename
-    delete contact.surname
 
     const { street, city, postcode, country } = contact
     contact.addresses = [{street, city, postcode, country}]
-    delete contact.city
-    delete contact.state
-    delete contact.postcode
-    delete contact.country
 
     const jobTitle = (contact.jobTitle || '').split(/,\s*/)[0]
-    delete contact.jobTitle
 
     contact.outlets = (contact.outlet || '').split(/,\s*/)
       .filter((outlet) => !/freelance/i.test(outlet))
@@ -216,6 +206,8 @@ export function createContacts ({cols, rows}) {
         label: outlet,
         value: jobTitle
       }))
+
+    ContactCreateSchema.clean(contact)
 
     return contact
   })

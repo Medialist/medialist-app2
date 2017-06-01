@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Link, withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
-import CsvToContacts from '/imports/ui/contacts-import/csv-to-contacts'
+import CsvToContacts from '/imports/api/contacts/csv-to-contacts'
 import Topbar from '/imports/ui/navigation/topbar'
 import Tag from '/imports/ui/tags/tag'
 import {
@@ -28,8 +28,6 @@ class ContactsImportProcessingPage extends React.Component {
       results: null,
       tag: `Contact Import - ${(new Date()).toISOString()}`
     }, props.location.state)
-
-    console.log('ContactsImportProcessingPage', this.state)
   }
 
   componentDidMount () {
