@@ -9,7 +9,6 @@ import Csv from 'papaparse'
 import startsWith from 'underscore.string/startsWith'
 import include from 'underscore.string/include'
 import twitterScreenName from 'twitter-screen-name'
-import {ContactCreateSchema} from './schema'
 
 /*
 Takes a file and a `cb(err, data)`
@@ -172,42 +171,48 @@ export function createContacts ({cols, rows}) {
   }
 
   var contacts = rows.map(row => {
-    var contact = cols.reduce((contact, col, i) => {
-      if (!col) return contact // Empty cols are ignored
+    var item = cols.reduce((item, col, i) => {
+      if (!col) return item // Empty cols are ignored
 
       var key = col.key
       var value = (row[i] ? `${row[i]}` : '').trim()
-      if (!value) return contact
+      if (!value) return item
 
       if (KeyHandlers[key]) {
-        KeyHandlers[key](contact, value)
+        KeyHandlers[key](item, value)
       } else {
         // Pick the value from the row data or concat if already exists
-        contact[key] = contact[key] ? `${contact[key]}, ${value}` : value
+        item[key] = item[key] ? `${item[key]}, ${value}` : value
       }
 
-      return contact
+      return item
     }, {})
 
-    contact.name = [
+    const name = [
       contact.name,
       contact.forename,
       contact.surname
     ].filter(v => !!v).join(' ')
 
     const { street, city, postcode, country } = contact
-    contact.addresses = [{street, city, postcode, country}]
+    const addresses = [{street, city, postcode, country}]
 
     const jobTitle = (contact.jobTitle || '').split(/,\s*/)[0]
-
-    contact.outlets = (contact.outlet || '').split(/,\s*/)
+    const outlets = (contact.outlet || '').split(/,\s*/)
       .filter((outlet) => !/freelance/i.test(outlet))
       .map((outlet, i) => ({
         label: outlet,
         value: jobTitle
       }))
 
-    ContactCreateSchema.clean(contact)
+    const contact = {
+      name,
+      outlets,
+      emails: item.emails,
+      phones: item.phones,
+      socials: item.socials,
+      addresses
+    }
 
     return contact
   })

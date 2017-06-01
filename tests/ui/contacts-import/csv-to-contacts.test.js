@@ -7,7 +7,7 @@ test('should convert csv data into rows and cols', (t) => {
   const expectedCols = [
     {key: 'forename', label: 'First Name'},
     {key: 'surname', label: 'Last Name'},
-    {key: 'jobTitles', label: 'Job Title(s)'}
+    {key: 'jobTitle', label: 'Job Title'}
   ]
   const expectedRows = [
     ['First Name', 'Last Name', 'Job Title', 'Outlet', 'Phone', 'Email Address', 'Twitter handle', 'Feedback'],
