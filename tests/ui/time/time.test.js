@@ -1,7 +1,6 @@
 import test from 'ava'
 import React from 'react'
 import moment from 'moment'
-import timekeeper from 'timekeeper'
 
 import { timeFromNowShortFormat } from '../../../imports/ui/time/time'
 

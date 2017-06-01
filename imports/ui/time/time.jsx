@@ -15,7 +15,6 @@ export function timeFromNowShortFormat (then) {
   if (now.isSame(then, 'day')) return `${hoursAgo}h`
 
   if (now.isSame(then, 'year')) return then.format('D MMM')
-
   return then.format('D MMM YYYY')
 }
 

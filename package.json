@@ -100,7 +100,6 @@
     "selenium-server": "^3.3.0",
     "snazzy": "^5.0.0",
     "standard": "^8.4.0",
-    "timekeeper": "^1.0.0",
     "tmp": "0.0.31"
   },
   "standard": {
