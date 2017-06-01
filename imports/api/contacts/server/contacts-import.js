@@ -43,7 +43,7 @@ export const importContacts = new ValidatedMethod({
         results.created++
       }
     })
-
+    results.total = results.created + results.updated
     return results
   }
 })

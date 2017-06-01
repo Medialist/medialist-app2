@@ -5,7 +5,8 @@ import { Meteor } from 'meteor/meteor'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import CsvToContacts from '/imports/api/contacts/csv-to-contacts'
 import Topbar from '/imports/ui/navigation/topbar'
-import Tag from '/imports/ui/tags/tag'
+import { LinkedTag } from '/imports/ui/tags/tag'
+import ProgressBar from '/imports/ui/navigation/progress-bar'
 import {
   FeedCampaignIcon,
   FavouritesIcon,
@@ -26,21 +27,22 @@ class ContactsImportProcessingPage extends React.Component {
       cols: [],
       contacts: [],
       results: null,
+      progress: 0,
       tag: `Contact Import - ${(new Date()).toISOString()}`
     }, props.location.state)
   }
 
   componentDidMount () {
-    const { cols, rows } = this.state
+    const {snackbar, router} = this.props
+    const { cols, rows, tag } = this.state
     if (!rows || !rows.length) return
-    console.log({ cols, rows })
     // TODO: automagic header detection.
     const contacts = CsvToContacts.createContacts({cols, rows: rows.slice(1)})
     this.setState({contacts})
-    Meteor.call('importContacts', { contacts }, (err, results) => {
+
+    Meteor.call('importContacts', { contacts, tag }, (err, results) => {
       if (err) {
         console.error(err)
-        const {snackbar, router} = this.props
         snackbar.error('An error occured importing your contacts', 'contact-import-failed')
         return router.goBack()
       }
@@ -57,11 +59,12 @@ class ContactsImportProcessingPage extends React.Component {
   onTagClick = () => console.log('onTagClick')
 
   render () {
-    const { rows, tag, results, contacts } = this.state
+    const { rows, tag, results, contacts, progress } = this.state
     return (
       <div>
-        <Topbar>
-          { results && <Link className='btn bg-blue white mx4' to='/contacts'>Finish</Link> }
+        <Topbar
+          center={<ProgressBar percent={progress} style={{margin: '0 auto', maxWidth: 800}} />}>
+          { !results && <Link className='btn bg-red white mx4' to='/contacts'>Cancel</Link> }
         </Topbar>
         <div className='mx-auto center py2' style={{maxWidth: 554}}>
           <img src='/import.svg' width={101} height={67} />
@@ -75,7 +78,7 @@ class ContactsImportProcessingPage extends React.Component {
               onFavouriteClick={this.onFavouriteClick}
               onTagClick={this.onTagClick} />
           ) : (
-            <ProcessingPanel rows={rows} tag={tag} />
+            <ProcessingPanel results={results} rows={rows} tag={tag} />
           )}
         </div>
       </div>
@@ -85,23 +88,25 @@ class ContactsImportProcessingPage extends React.Component {
 
 export default withSnackbar(withRouter(ContactsImportProcessingPage))
 
-const ProcessingPanel = ({rows, tag}) => (
+const ProcessingPanel = ({rows, tag, results}) => (
   <section className='center p4'>
-    <h1 className='blue f-xxl m0 py2 semibold'>Contacts currently being processed</h1>
-    <p className='f-lg'>Importing <span className='semibold'>{rows && rows.length || 0}</span> contacts.
-    Created and updated contacts will be available for browsing shortly, tagged with:</p>
+    <h1 className='blue f-xxxl m0 py2 semibold'>Importing <span className='bold'>{rows && rows.length || 0}</span> contacts...</h1>
+    <p class='lh-copy'>This may take a few minutes. If you want to do something else in the meantime, you can <strong>open Medialist in a new tab</strong> while we continue importing your contacts in the background.</p>
+    { /*
+    <p>Your new contacts will be available for browsing shortly, tagged with:</p>
     <div className='py6'>
-      <Tag name={tag} count={rows && rows.length || 0} />
+      <LinkedTag name={tag} count={rows && rows.length || 0} to={`/contacts?tag=${tag}`} />
     </div>
+    */ }
   </section>
 )
 
 const CompletePanel = ({results, tag, contacts, onCampaignClick, onSectorClick, onFavouriteClick, onTagClick}) => (
   <section className='center p6' data-id='contacts-import-complete'>
-    <h1 className='blue semibold f-xxxl'>Contacts imported</h1>
-    <p data-id='contacts-import-complete-status'>Created {results.created} contacts and updated {results.updated} contacts. Contacts are tagged with:</p>
+    <h1 className='blue f-xxxl m0 py2 semibold'>Contacts imported</h1>
+    <p data-id='contacts-import-complete-status'>{results.created} new contacts added, {results.updated} updated</p>
     <div className='py6'>
-      <Tag name={tag} count={results.created + results.updated} />
+      <LinkedTag name={tag} count={results.total} to={`/contacts?tag=${tag}`} />
     </div>
     <div>
       <hr />

@@ -189,12 +189,12 @@ export function createContacts ({cols, rows}) {
     }, {})
 
     const name = [
-      contact.name,
-      contact.forename,
-      contact.surname
+      item.name,
+      item.forename,
+      item.surname
     ].filter(v => !!v).join(' ')
 
-    const { street, city, postcode, country } = contact
+    const { street, city, postcode, country } = item
     const addresses = [{street, city, postcode, country}]
 
     const jobTitle = (contact.jobTitle || '').split(/,\s*/)[0]

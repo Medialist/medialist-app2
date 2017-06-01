@@ -260,6 +260,7 @@ button {
 
 .uppercase { text-transform: uppercase }
 .letter-spacing-1 { letter-spacing: 1px }
+.lh-copy { line-height: 1.6 }
 
 .opacity-100{ opacity:1 !important }
 .opacity-70 { opacity:0.7 }
@@ -340,6 +341,7 @@ button {
 .bg-not-interested { background-color: var(--status-red) !important }
 .bg-hot-lead { background-color: var(--status-orange) !important }
 .bg-completed { background-color: var(--status-green) !important }
+.bg-green { background-color: var(--status-green) !important }
 .bg-yellow-lighter { background-color: var(--yellow-lighter) !important }
 
 .border-transparent { border-color: transparent !important }
