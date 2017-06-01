@@ -9,9 +9,9 @@ const now = new Date()
 
 test('should format \'Just now\' for under a minute', (t) => {
   t.plan(2)
-  const then = moment(now).subtract(59, 's')
+  const then = moment(now).subtract(30, 's')
   t.is(timeFromNowShortFormat(then), 'Just now')
-  t.not(timeFromNowShortFormat(then.subtract(10, 's')), 'Just now')
+  t.not(timeFromNowShortFormat(then.subtract(60, 's')), 'Just now')
 })
 
 test('should reply with minutes for duration under an hour', (t) => {
