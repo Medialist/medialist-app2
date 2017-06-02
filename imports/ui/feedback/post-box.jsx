@@ -110,13 +110,14 @@ export const PostBoxButtons = ({focused, disabled, onPost, children}) => (
   </div>
 )
 
-const FeedbackInput = React.createClass({
+export const FeedbackInput = React.createClass({
   propTypes: {
     contact: PropTypes.object,
     campaigns: PropTypes.array,
     campaign: PropTypes.object,
     focused: PropTypes.bool.isRequired,
-    onSubmit: PropTypes.func.isRequired
+    onSubmit: PropTypes.func.isRequired,
+    message: PropTypes.string
   },
   getInitialState () {
     const { contact, campaign } = this.props
@@ -125,7 +126,7 @@ const FeedbackInput = React.createClass({
     return {
       status,
       campaign,
-      message: '',
+      message: this.props.message || '',
       posting: false
     }
   },

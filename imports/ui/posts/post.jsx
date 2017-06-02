@@ -22,6 +22,7 @@ import {
 import { Dropdown, DropdownMenu, DropdownMenuItem } from '/imports/ui/navigation/dropdown'
 import findUrl from '/imports/lib/find-url'
 import DeletePostModal from './delete-post-modal'
+import EditPostModal from './edit-post-modal'
 import { GREY60 } from '/imports/ui/colours'
 
 const hideTextIfOnlyUrl = (item) => {
@@ -124,7 +125,8 @@ class Post extends React.Component {
 
     this.state = {
       menuOpen: false,
-      deleteOpen: false
+      deleteOpen: false,
+      editOpen: false
     }
   }
 
@@ -140,12 +142,17 @@ class Post extends React.Component {
   closeMenu () {
     this.setState({
       menuOpen: false,
-      deleteOpen: false
+      deleteOpen: false,
+      editOpen: false
     })
   }
 
-  editPost (event) {
+  editPost = (event) => {
     event.preventDefault()
+    this.setState({
+      menuOpen: false,
+      editOpen: true
+    })
   }
 
   deletePost (event) {
@@ -154,6 +161,14 @@ class Post extends React.Component {
     this.setState({
       menuOpen: false,
       deleteOpen: true
+    })
+  }
+
+  updatePost = (event) => {
+    event.preventDefault()
+
+    this.setState({
+      editOpen: false
     })
   }
 
@@ -181,13 +196,13 @@ class Post extends React.Component {
                 <ChevronOpenDown onClick={(event) => this.openMenu(event)} data-id='open-post-menu-button' className='ml1' style={{fill: GREY60}} />
                 <DropdownMenu width={180} left={-150} top={-2} arrowPosition='top' arrowAlign='right' arrowMarginRight='11px' open={this.state.menuOpen} onDismiss={() => this.closeMenu()}>
                   <nav className='p1'>
-                    {/*
+                    {
                       <DropdownMenuItem
-                        onClick={event => this.editPost(event)}
+                        onClick={this.editPost}
                         data-id='edit-post-button'>
-                          <span className='ml2 gray20 regular'>Edit Coverage</span>
+                        <span className='ml2 gray20 regular'>Edit {this.props.type.replace(/Post/g, '')}</span>
                       </DropdownMenuItem>
-                    */}
+                    }
                     <DropdownMenuItem
                       onClick={event => this.deletePost(event)}
                       data-id='delete-post-button'>
@@ -204,6 +219,12 @@ class Post extends React.Component {
           open={this.state.deleteOpen}
           post={{_id: this.props._id, type: this.props.type}}
           onDelete={(event) => this.closeMenu(event)}
+          onDismiss={(event) => this.closeMenu(event)}
+        />
+        <EditPostModal
+          open={this.state.editOpen}
+          post={{...this.props}}
+          onUpdate={this.updatePost}
           onDismiss={(event) => this.closeMenu(event)}
         />
       </article>
