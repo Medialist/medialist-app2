@@ -35,6 +35,7 @@ const Routes = ({ store, history }) => {
           <Route path=':campaignSlug'>
             <IndexRoute component={CampaignActivityPage} />
             <Route path='contact/:contactSlug' component={ContactPage} />
+            <Route path='contact/:contactSlug/campaigns' component={ContactCampaignsPage} />
             <Route path='contacts' component={CampaignContactsPage} />
           </Route>
         </Route>
