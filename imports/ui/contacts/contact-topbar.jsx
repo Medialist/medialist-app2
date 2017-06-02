@@ -7,13 +7,13 @@ class ContactTopbar extends React.Component {
   static propTypes = {
     onAddToCampaignClick: PropTypes.func,
     contact: PropTypes.object,
-    location: PropTypes.object.isRequired
+    pathname: PropTypes.string
   }
 
   render () {
-    const { contact, onAddToCampaignClick, location } = this.props
+    const { contact, onAddToCampaignClick, pathname = '' } = this.props
     if (!contact) return null
-    const [page, slug] = location.pathname.split('/').slice(1)
+    const [page, slug] = pathname.split('/').slice(1)
     const baseUrl = page === 'campaign' ? `/campaign/${slug}` : ''
 
     return (

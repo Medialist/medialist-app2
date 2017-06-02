@@ -5,6 +5,7 @@ import CampaignsTable from '/imports/ui/campaigns/campaigns-table'
 import CountTag from '/imports/ui/tags/tag'
 
 const CampaignSearch = ({
+  user,
   onTermChange,
   selectedTags,
   onTagRemove,
@@ -39,6 +40,7 @@ const CampaignSearch = ({
         </div>
       </div>
       <CampaignsTable
+        user={user}
         term={term}
         sort={sort}
         campaigns={campaigns}
