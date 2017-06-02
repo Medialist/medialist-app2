@@ -7,48 +7,63 @@ import slugify from '/imports/lib/slug'
 import { findOneUserRef } from '/imports/api/users/users'
 import ContactsTask from '/imports/api/twitter-users/server/contacts-task'
 import Contacts, { ContactSchema, ContactCreateSchema } from '/imports/api/contacts/contacts'
-
-// TODO: reafactor to return _ids of created and updated users, so we can do batch actions on them. Or use the tag?
+import ContactsImport from '../contacts-import'
 
 export const importContacts = new ValidatedMethod({
   name: 'importContacts',
 
   validate: new SimpleSchema({
-    contacts: { type: [ContactCreateSchema] }
+    data: { type: [ContactCreateSchema] }
   }).validator(),
 
-  run ({ contacts }) {
+  run ({ data }) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
-    var userRef = findOneUserRef(this.userId)
+    console.log(`Importing ${data.length} contacts`)
 
-    console.log(`Importing ${contacts.length} contacts`)
-
-    var results = {created: 0, updated: 0}
-
-    // Look for existing contacts based on email address.
-    contacts.forEach(contactData => {
-      if (contactData.emails && contactData.emails.length) {
-        var emails = contactData.emails.map(e => e.value)
-        var contact = Contacts.findOne({'emails.value': {$in: emails}})
-
-        if (contact) {
-          mergeContact(contactData, contact, userRef)
-          results.updated++
-        } else {
-          createContact(contactData, userRef)
-          results.created++
-        }
-      } else {
-        createContact(contactData, userRef)
-        results.created++
+    const createdBy = findOneUserRef(this.userId)
+    const createdAt = new Date()
+    const doc = {
+      createdAt,
+      createdBy,
+      data,
+      results: {
+        created: [],
+        updated: [],
+        failed: []
       }
+    }
+    const _id = ContactsImport.insert(doc)
+    // Do after sending the clint the import _id
+    Meteor.defer(function () {
+      processImport({_id, ...doc})
     })
-    results.total = results.created + results.updated
-    return results
+    return _id
   }
 })
 
-function createContact (data, userRef) {
+function processImport (doc) {
+  // // Look for existing contacts based on email address.
+  // const emails = flatten(
+  //   doc.data.map((item) => item.emails.map((e) => e.value))
+  //
+  // const existingContacts = Contacts.find({'emails.value': {$in: emails}})
+  const {data, createdBy} = doc
+  data.forEach((contactData, i) => {
+    if (contactData.emails && contactData.emails.length) {
+      var emails = contactData.emails.map(e => e.value)
+      var contact = Contacts.findOne({'emails.value': {$in: emails}})
+      if (contact) {
+        mergeContact(contactData, contact, createdBy, doc._id)
+      } else {
+        createContact(contactData, createdBy, doc._id)
+      }
+    } else {
+      createContact(contactData, createdBy, doc._id)
+    }
+  })
+}
+
+function createContact (data, userRef, importId) {
   data.slug = slugify(data.name, Contacts)
   data.socials = data.socials || []
   data.phones = data.phones || []
@@ -63,10 +78,11 @@ function createContact (data, userRef) {
   check(data, ContactSchema)
 
   var id = Contacts.insert(data)
+  ContactsImport.update({_id: importId}, {$push: {'results.created': id}})
   ContactsTask.queueUpdate(id)
 }
 
-function mergeContact (data, contact, userRef) {
+function mergeContact (data, contact, userRef, importId) {
   contact.emails = addIfDistinct('value', contact.emails, data.emails)
   contact.phones = addIfDistinct('value', contact.phones, data.phones)
   contact.outlets = addIfDistinct('label', contact.outlets, data.outlets)
@@ -81,6 +97,7 @@ function mergeContact (data, contact, userRef) {
   check(contact, ContactSchema)
 
   Contacts.update({_id: id}, {$set: contact})
+  ContactsImport.update({_id: importId}, {$push: {'results.updated': id}})
   ContactsTask.queueUpdate(id)
 }
 

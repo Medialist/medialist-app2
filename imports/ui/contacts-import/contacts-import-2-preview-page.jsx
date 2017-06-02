@@ -1,9 +1,12 @@
+import { Meteor } from 'meteor/meteor'
 import React from 'react'
 import { withRouter } from 'react-router'
+import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import Topbar from '/imports/ui/navigation/topbar'
 import ImportTable from '/imports/ui/contacts-import/contacts-import-table'
+import CsvToContacts from '/imports/api/contacts/csv-to-contacts'
 
-export default withRouter(React.createClass({
+export default withSnackbar(withRouter(React.createClass({
   getInitialState () {
     const { state } = this.props.location
     return Object.assign({
@@ -21,10 +24,21 @@ export default withRouter(React.createClass({
   onSave () {
     const { cols, rows } = this.state
     const { router } = this.props
-    router.push({
-      pathname: '/contacts/import/processing',
-      state: {cols, rows}
+    const contacts = CsvToContacts.createContacts({cols, rows: rows.slice(1)})
+    Meteor.call('importContacts', { data: contacts }, (err, importId) => {
+      if (err) return this.onError(err)
+      router.push({
+        pathname: '/contacts/import/processing',
+        state: {importId, contacts}
+      })
     })
+  },
+
+  onError (err) {
+    const {snackbar, router} = this.props
+    console.error(err)
+    snackbar.error('An error occured importing your contacts', 'contact-import-failed')
+    router.goBack()
   },
 
   render () {
@@ -41,7 +55,7 @@ export default withRouter(React.createClass({
       </div>
     )
   }
-}))
+})))
 
 const PREVIEW_ROW_COUNT = 26
 
