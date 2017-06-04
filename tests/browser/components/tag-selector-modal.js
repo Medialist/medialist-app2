@@ -12,7 +12,7 @@ module.exports = (dataId) => ({
     addTag: function (tag) {
       this
         .waitForElementVisible('@searchInput')
-        .clearValue('@searchInput')
+        .clear('@searchInput')
         .setValue('@searchInput', tag)
         .waitForElementVisible('@createNewTag')
         .click('@createNewTag')

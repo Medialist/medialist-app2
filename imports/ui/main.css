@@ -274,7 +274,7 @@ button {
 .shadow-inset { box-shadow: inset 0 0 4px -1px var(--gray80) }
 .shadow-inset-2 { box-shadow: inset 0 -1px 0 0 var(--gray80) }
 
-.shadow-inset-blue { box-shadow: inset 0 -3px 0 0 var(--blue) }
+.shadow-inset-blue { box-shadow: inset 0 -4px 0 -1px var(--blue) }
 
 .width-100 { width:100% }
 .max-width-lg { max-width: 1150px; }

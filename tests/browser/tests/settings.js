@@ -22,7 +22,7 @@ const test = {
 
     settingsPage.section.profile.waitForElementVisible('@nameField')
     settingsPage.section.profile.assert.attributeEquals('@emailField', 'disabled', 'true')
-    settingsPage.section.profile.clearValue('@nameField')
+    settingsPage.section.profile.clear('@nameField')
     settingsPage.section.profile.setValue('@nameField', newName)
     settingsPage.section.profile.waitForElementVisible('@updateProfileButton')
     settingsPage.section.profile.click('@updateProfileButton')

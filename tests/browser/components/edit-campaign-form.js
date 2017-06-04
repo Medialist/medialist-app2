@@ -26,13 +26,13 @@ module.exports = {
       return this
     },
     populate: function (campaign) {
-      this.clearValue(`@campaignNameInput`)
+      this.clear(`@campaignNameInput`)
       this.setValue(`@campaignNameInput`, campaign.name)
 
-      this.clearValue(`@clientInput`)
+      this.clear(`@clientInput`)
       this.setValue(`@clientInput`, campaign.clientName)
 
-      this.clearValue(`@keyMessageInput`)
+      this.clear(`@keyMessageInput`)
       this.setValue(`@keyMessageInput`, campaign.purpose)
 
       campaign.links.forEach((link, index) => {
@@ -46,7 +46,7 @@ module.exports = {
           })
         }
 
-        this.clearValue(input)
+        this.clear(input)
         this.setValue(input, link.url)
       })
 

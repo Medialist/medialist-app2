@@ -121,7 +121,7 @@ export default createContainer((props) => {
   const user = Meteor.user()
   const contact = Contacts.findOne({ slug: contactSlug })
   const campaign = Campaigns.findOne({ slug: campaignSlug })
-  const campaigns = contact ? Campaigns.find({ slug: { $in: contact.campaigns } }).fetch() : []
+  const campaigns = contact ? Campaigns.find({ slug: { $in: contact.campaigns } }, {sort: { updatedAt: -1 }}).fetch() : []
   const masterlists = MasterLists.find({type: 'Contacts'}).fetch()
   const needToKnows = Posts.find(
     { type: 'NeedToKnowPost', 'contacts.slug': contactSlug },

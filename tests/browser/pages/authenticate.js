@@ -42,7 +42,7 @@ module.exports = {
         .waitForElementVisible('@sendEmailButton')
         .click('@sendEmailButton')
         .waitForElementVisible('@onboardingNameField')
-        .clearValue('@onboardingNameField')
+        .clear('@onboardingNameField')
         .setValue('@onboardingNameField', user.name)
         .waitForElementVisible('@onboardingCompleteButton')
         .click('@onboardingCompleteButton')

@@ -50,7 +50,7 @@ class AddToMasterList extends React.Component {
         </div>
         {children}
         <div style={{height: scrollableHeight, overflowY: 'scroll'}}
-          className='bg-gray90 shadow-inset-2 border-top border-gray80 mt6 p2 flex flex-wrap'>
+          className='bg-gray90 shadow-inset-2 border-top border-gray80 mt6 p2 flex-wrap'>
           {!allMasterLists || allMasterLists.length === 0 && <EmptyMasterLists type={type} />}
           {allMasterLists && allMasterLists.map((item, ind) => (
             <MasterListBtn
@@ -101,7 +101,7 @@ const MasterListBtn = ({item, type, selected, onSelect, onDeselect}) => {
   const { name, items } = item
   const selectedClasses = selected ? 'border-blue bg-blue white shadow-1' : 'border-gray80 bg-white gray20'
   return (
-    <div className='p2' style={{width: '25%'}}>
+    <div className='p2 inline-block' style={{width: '25%'}}>
       <div className={`width-100 relative border hover-border-blue ${selectedClasses}`} style={{borderRadius: 8}}>
         {selected && <Check className='absolute top-0 right-0 white' style={{marginRight: 6}} />}
         <div className='center overflow-hidden' style={{height: 80}}>
