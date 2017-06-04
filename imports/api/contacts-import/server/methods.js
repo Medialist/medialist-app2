@@ -45,11 +45,6 @@ export const importContacts = new ValidatedMethod({
 })
 
 function processImport (doc) {
-  // // Look for existing contacts based on email address.
-  // const emails = flatten(
-  //   doc.data.map((item) => item.emails.map((e) => e.value))
-  //
-  // const existingContacts = Contacts.find({'emails.value': {$in: emails}})
   const {data, createdBy} = doc
   data.forEach((contactData, i) => {
     if (contactData.emails && contactData.emails.length) {

@@ -19,14 +19,23 @@ class ContactsImportProcessingPage extends React.Component {
     snackbar: PropTypes.object
   }
 
+  onCancel = () => {
+    // TODO: inform the server.
+    this.props.router.goBack()
+  }
+
   render () {
     const { percent, contacts, contactsImport, finished } = this.props
     return (
       <div>
         <Topbar
-          center={<ProgressBar percent={percent} style={{margin: '0 auto', maxWidth: 800}} />}>
-          <div style={{width: 70}}>
-            { percent !== 100 && <Link className='btn bg-red white mx4' to='/contacts'>Cancel</Link>}
+          center={
+            <div style={{paddingLeft: 45}}>
+              <ProgressBar percent={percent} style={{margin: '0 auto', maxWidth: 800}} />
+            </div>
+          }>
+          <div style={{width: 115}}>
+            {!finished && <button className='btn bg-red white mx4' onClick={this.onCancel}>Cancel</button>}
           </div>
         </Topbar>
         <div className='mx-auto center py2' style={{maxWidth: 554}}>
@@ -59,7 +68,10 @@ export default createContainer(({location}) => {
 const ProcessingPanel = ({total}) => (
   <section className='center p4'>
     <h1 className='blue f-xxxl m0 py2 semibold'>Importing <span className='bold'>{total}</span> contacts...</h1>
-    <p className='lh-copy'>This may take a few minutes. If you want to do something else in the meantime, you can <strong>open Medialist in a new tab</strong> while we continue importing your contacts in the background.</p>
+    <p className='lh-copy'>
+      This may take a few minutes. If you want to do something else in the meantime, you can
+      <a herf='/' target='_blank'> open Medialist in a new tab</a> while we continue importing your contacts in the background.
+    </p>
   </section>
 )
 

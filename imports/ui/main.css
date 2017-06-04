@@ -336,6 +336,7 @@ button {
 .bg-orange { background-color: var(--orange) !important }
 .bg-orange-light { background-color: var(--orange-light) !important }
 .bg-tangerine { background-color: var(--tangerine) !important }
+.bg-red { background-color: var(--status-red) !important }
 .bg-to-contact { background-color: var(--gray40) !important }
 .bg-contacted { background-color: var(--status-blue) !important }
 .bg-not-interested { background-color: var(--status-red) !important }
