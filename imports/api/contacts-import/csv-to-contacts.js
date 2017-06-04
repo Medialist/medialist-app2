@@ -117,19 +117,31 @@ const schemaDetectors = [
   },
   {
     field: {key: 'street', label: 'Street'},
-    test: value => startsWithAny(['street', 'address line 1', 'address1', 'address 1'], value)
+    test: value => startsWithAny(['street'], value)
   },
   {
     field: {key: 'city', label: 'City'},
-    test: value => startsWithAny(['city', 'town', 'address line 2', 'address2', 'address 2'], value)
+    test: value => startsWithAny(['city', 'town'], value)
   },
   {
     field: {key: 'postcode', label: 'Postcode'},
-    test: value => startsWithAny(['postcode', 'post code', 'zipcode', 'zip code', 'address line 3', 'address3', 'address 3'], value)
+    test: value => startsWithAny(['postcode', 'post code', 'zipcode', 'zip code'], value)
   },
   {
     field: {key: 'country', label: 'Country'},
     test: value => startsWithAny(['country'], value)
+  },
+  {
+    field: {key: 'addressline1', label: 'Address line 1'},
+    test: value => startsWithAny(['address line 1', 'address1', 'address 1'], value)
+  },
+  {
+    field: {key: 'addressline2', label: 'Address line 2'},
+    test: value => startsWithAny(['address line 2', 'address2', 'address 2'], value)
+  },
+  {
+    field: {key: 'addressline3', label: 'Address line 3'},
+    test: value => startsWithAny(['address line 3', 'address3', 'address 3'], value)
   }
 ]
 
@@ -194,8 +206,21 @@ export function createContacts ({cols, rows}) {
       item.surname
     ].filter(v => !!v).join(' ')
 
-    const { street, city, postcode, country } = item
+    const {
+      street,
+      city,
+      postcode,
+      country,
+      addressline1,
+      addressline2,
+      addressline3
+    } = item
     const addresses = [{street, city, postcode, country}]
+    if (!street) {
+      addresses[0].street = [addressline1, addressline2, addressline3]
+        .filter(str => !!str)
+        .join(', ')
+    }
 
     const jobTitle = (item.jobTitle || '').split(/,\s*/)[0]
     const outlets = (item.outlet || '').split(/,\s*/)
@@ -208,7 +233,7 @@ export function createContacts ({cols, rows}) {
     const contact = {
       name,
       outlets,
-      emails: item.emails,
+      emails: item.emails || [],
       phones: item.phones || [],
       socials: item.socials || [],
       addresses

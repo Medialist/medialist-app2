@@ -33,8 +33,7 @@ export const ContactCreateSchema = new SimpleSchema({
   },
   emails: {
     type: [LabelValueSchema],
-    defaultValue: [],
-    min: 1
+    defaultValue: []
   },
   phones: {
     type: [LabelValueSchema],

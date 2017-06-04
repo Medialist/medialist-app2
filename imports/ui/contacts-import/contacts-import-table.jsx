@@ -53,17 +53,25 @@ const ImportTable = React.createClass({
           <thead>
             <tr>
               {cols.map((col, columnIndex) => {
+                const isOpen = open === columnIndex
                 return (
                   <th key={columnIndex} className='pointer bg-white' style={{width: 240, padding: '10px 80px 10px 10px', borderLeft: '0 none', borderRight: '0 none'}}>
                     <Dropdown>
-                      <div className='p2 rounded border border-gray80 left-align' style={{width: 180}} onClick={() => onColumnSelect(columnIndex)}>
-                        <ChevronDown className='right' />
+                      <div
+                        style={{width: 180}}
+                        className={`p2 rounded border border-gray80 left-align ${isOpen ? 'bg-gray90' : ''}`}
+                        onClick={() => onColumnSelect(columnIndex)}>
+                        { isOpen ? (
+                          <ChevronDown className='gray40 right' style={{transformOrigin: 'center 9px 0px', transform: 'rotateX(180deg)'}} />
+                        ) : (
+                          <ChevronDown className='gray60 right' />
+                        )}
                         <ColumnHeaderLabel col={col} />
                       </div>
-                      <DropdownMenu width={180} top={-7} open={open === columnIndex} onDismiss={onDismiss}>
+                      <DropdownMenu width={180} top={-7} open={isOpen} onDismiss={onDismiss}>
                         <ul className='list-reset mt0'>
                           {allColumns.map((newCol, i) => {
-                            return <li key={i} className='px3 py2 left-align semibold gray20 hover-bg-blue' onClick={(evt) => onColumnChange(newCol, columnIndex)}>{newCol.label}</li>
+                            return <li key={i} className='px3 py2 left-align normal gray20 hover-bg-blue' onClick={(evt) => onColumnChange(newCol, columnIndex)}>{newCol.label}</li>
                           })}
                         </ul>
                       </DropdownMenu>
