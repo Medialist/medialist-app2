@@ -25,7 +25,9 @@ class ContactsImportProcessingPage extends React.Component {
       <div>
         <Topbar
           center={<ProgressBar percent={percent} style={{margin: '0 auto', maxWidth: 800}} />}>
-          { percent !== 100 && <Link className='btn bg-red white mx4' to='/contacts'>Cancel</Link> }
+          <div style={{width: 70}}>
+            { percent !== 100 && <Link className='btn bg-red white mx4' to='/contacts'>Cancel</Link>}
+          </div>
         </Topbar>
         <div className='mx-auto center py2' style={{maxWidth: 554}}>
           <img src='/import.svg' width={101} height={67} />
@@ -51,13 +53,13 @@ export default createContainer(({location}) => {
     const total = created.length + updated.length + failed.length
     percent = Math.floor((total / contactsImport.data.length) * 100)
   }
-  return {loading, contacts, contactsImport, percent, finished: percent !== 100}
+  return {loading, contacts, contactsImport, percent, finished: percent === 100}
 }, withSnackbar(withRouter(ContactsImportProcessingPage)))
 
 const ProcessingPanel = ({total}) => (
   <section className='center p4'>
     <h1 className='blue f-xxxl m0 py2 semibold'>Importing <span className='bold'>{total}</span> contacts...</h1>
-    <p class='lh-copy'>This may take a few minutes. If you want to do something else in the meantime, you can <strong>open Medialist in a new tab</strong> while we continue importing your contacts in the background.</p>
+    <p className='lh-copy'>This may take a few minutes. If you want to do something else in the meantime, you can <strong>open Medialist in a new tab</strong> while we continue importing your contacts in the background.</p>
   </section>
 )
 
@@ -66,9 +68,11 @@ const CompletePanel = ({contactsImport}) => {
   return (
     <section className='center p6' data-id='contacts-import-complete'>
       <h1 className='blue f-xxxl m0 py2 semibold'>Contacts imported</h1>
-      <p data-id='contacts-import-complete-status'>{created.length} new contacts added, {updated.length} updated</p>
+      <p data-id='contacts-import-complete-status'>
+        <strong>{created.length}</strong> new contacts added, <strong>{updated.length}</strong> updated.
+      </p>
       <div className='py6'>
-        <Link class='btn mx4 bg-blue white' to={`/contacts?import=${contactsImport._id}`}>
+        <Link className='btn mx4 bg-blue white' to={`/contacts?import=${contactsImport._id}`}>
           View contacts
         </Link>
       </div>

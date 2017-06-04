@@ -8,7 +8,14 @@ const ProgressBar = ({style, percent = 0, height = 20, overflow = 2}) => {
       <div
         className='bg-green white semibold px2 f-lg'
         role='progressbar'
-        style={{width: `${percent}%`, minWidth: 40, height, borderRadius: height, boxShadow: `${STATUS_GREEN} 0 0 0 ${overflow}px`}}
+        style={{
+          height,
+          width: `${percent}%`,
+          minWidth: 40,
+          borderRadius: height,
+          boxShadow: `${STATUS_GREEN} 0 0 0 ${overflow}px`,
+          transition: 'width 500ms'
+        }}
         aria-valuenow={percent}
         aria-valuemin='0'
         aria-valuemax='100'>

@@ -8,6 +8,8 @@ const ContactsImport = new Mongo.Collection('contactsImport')
 
 ContactsImport.allow(nothing)
 
+export default ContactsImport
+
 export const ContactsImportSchema = new SimpleSchema([
   CreatedAtSchema,
   {

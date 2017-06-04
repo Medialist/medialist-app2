@@ -18,6 +18,7 @@ export const importContacts = new ValidatedMethod({
 
   run ({ data }) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
+    console.time('importContacts')
     console.log(`Importing ${data.length} contacts`)
 
     const createdBy = findOneUserRef(this.userId)
@@ -36,6 +37,7 @@ export const importContacts = new ValidatedMethod({
     // Do after sending the clint the import _id
     Meteor.defer(function () {
       processImport({_id, ...doc})
+      console.timeEnd('importContacts')
     })
     return _id
   }

@@ -197,8 +197,8 @@ export function createContacts ({cols, rows}) {
     const { street, city, postcode, country } = item
     const addresses = [{street, city, postcode, country}]
 
-    const jobTitle = (contact.jobTitle || '').split(/,\s*/)[0]
-    const outlets = (contact.outlet || '').split(/,\s*/)
+    const jobTitle = (item.jobTitle || '').split(/,\s*/)[0]
+    const outlets = (item.outlet || '').split(/,\s*/)
       .filter((outlet) => !/freelance/i.test(outlet))
       .map((outlet, i) => ({
         label: outlet,
@@ -209,8 +209,8 @@ export function createContacts ({cols, rows}) {
       name,
       outlets,
       emails: item.emails,
-      phones: item.phones,
-      socials: item.socials,
+      phones: item.phones || [],
+      socials: item.socials || [],
       addresses
     }
 
