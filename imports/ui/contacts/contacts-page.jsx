@@ -179,7 +179,6 @@ const ContactsPage = withSnackbar(React.createClass({
   },
 
   onImportRemove () {
-    console.log('onImportRemove')
     const { setQuery } = this.props
     setQuery({ importId: false })
   },
@@ -403,7 +402,7 @@ const ContactsPageContainer = withRouter(React.createClass({
     if (newQuery.list) {
       delete query.my
     }
-    console.log('setQuery', query)
+
     if (!query.importId) {
       delete query.importId
     }
