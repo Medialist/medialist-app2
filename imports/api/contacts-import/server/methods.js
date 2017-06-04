@@ -72,6 +72,7 @@ function createContact (data, userRef, importId) {
   data.campaigns = []
   data.masterLists = []
   data.tags = []
+  data.imports = [importId]
   data.createdAt = new Date()
   data.createdBy = userRef
   data.updatedAt = data.createdAt
@@ -90,6 +91,7 @@ function mergeContact (data, contact, userRef, importId) {
   contact.outlets = addIfDistinct('label', contact.outlets, data.outlets)
   contact.socials = addIfDistinct('label', contact.socials, data.socials)
   contact.addresses = addIfCurrentlyEmpty(contact.addresses, data.addresses)
+  contact.imports.push(importId)
   contact.createdAt = moment(contact.createdAt).toDate()
   contact.updatedAt = new Date()
   contact.updatedBy = userRef

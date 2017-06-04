@@ -178,6 +178,12 @@ const ContactsPage = withSnackbar(React.createClass({
     })
   },
 
+  onImportRemove () {
+    console.log('onImportRemove')
+    const { setQuery } = this.props
+    setQuery({ importId: false })
+  },
+
   render () {
     const {
       contactsCount,
@@ -188,7 +194,8 @@ const ContactsPage = withSnackbar(React.createClass({
       term,
       sort,
       campaigns,
-      selectedTags
+      selectedTags,
+      importId
     } = this.props
 
     const {
@@ -197,7 +204,8 @@ const ContactsPage = withSnackbar(React.createClass({
       onMasterListChange,
       onTermChange,
       onCampaignRemove,
-      onTagRemove
+      onTagRemove,
+      onImportRemove
     } = this
 
     const {
@@ -240,7 +248,7 @@ const ContactsPage = withSnackbar(React.createClass({
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
               <SearchBox onTermChange={onTermChange} placeholder='Search contacts...' data-id='search-contacts-input'>
-                <div style={{marginBottom: -4}} >
+                <div style={{margin: '1px 4px -4px 6px'}} >
                   {campaigns && campaigns.map((c) => (
                     <AvatarTag
                       key={c.slug}
@@ -257,6 +265,9 @@ const ContactsPage = withSnackbar(React.createClass({
                       onRemove={() => onTagRemove(t)}
                     />
                   ))}
+                  {importId && (
+                    <CountTag name='Imported Contacts' onRemove={onImportRemove} />
+                  )}
                 </div>
               </SearchBox>
             </div>
@@ -376,6 +387,10 @@ const ContactsPageContainer = withRouter(React.createClass({
       newQuery.campaign = opts.campaignSlugs
     }
 
+    if (opts.hasOwnProperty('importId')) {
+      newQuery.importId = opts.importId
+    }
+
     const query = Object.assign({}, location.query, newQuery)
     if (query.q === '') {
       delete query.q
@@ -387,6 +402,10 @@ const ContactsPageContainer = withRouter(React.createClass({
 
     if (newQuery.list) {
       delete query.my
+    }
+    console.log('setQuery', query)
+    if (!query.importId) {
+      delete query.importId
     }
 
     const qs = querystring.stringify(query)
@@ -428,7 +447,7 @@ export default createContainer((props) => {
     }
     const term = query.q || ''
     const tagSlugs = query.tag ? [query.tag] : []
-    const { campaign, list, my } = query
+    const { campaign, list, my, importId } = query
 
     if (!campaign) {
       return {
@@ -439,6 +458,7 @@ export default createContainer((props) => {
         campaignSlugs: [],
         campaigns: [],
         tagSlugs,
+        importId,
         loading: sub.ready()
       }
     }

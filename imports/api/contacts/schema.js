@@ -102,6 +102,11 @@ export const ContactSchema = new SimpleSchema([
     tags: {
       type: [TagRefSchema],
       defaultValue: []
+    },
+    imports: {
+      type: [String],
+      regEx: SimpleSchema.RegEx.Id,
+      defaultValue: []
     }
   }
 ])

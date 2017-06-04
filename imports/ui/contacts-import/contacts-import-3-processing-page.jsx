@@ -65,6 +65,9 @@ const ProcessingPanel = ({total}) => (
 
 const CompletePanel = ({contactsImport}) => {
   const {created, updated} = contactsImport.results
+  // Show search results in same order as csv
+  const sortString = encodeURIComponent(JSON.stringify({updatedAt: 1}))
+  const viewUrl = `/contacts?importId=${contactsImport._id}&sort=${sortString}`
   return (
     <section className='center p6' data-id='contacts-import-complete'>
       <h1 className='blue f-xxxl m0 py2 semibold'>Contacts imported</h1>
@@ -72,7 +75,7 @@ const CompletePanel = ({contactsImport}) => {
         <strong>{created.length}</strong> new contacts added, <strong>{updated.length}</strong> updated.
       </p>
       <div className='py6'>
-        <Link className='btn mx4 bg-blue white' to={`/contacts?import=${contactsImport._id}`}>
+        <Link className='btn mx4 bg-blue white' to={viewUrl}>
           View contacts
         </Link>
       </div>

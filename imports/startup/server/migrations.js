@@ -120,4 +120,12 @@ Migrations.add({
   }
 })
 
+Migrations.add({
+  version: 5,
+  name: 'Add imports property to contacts',
+  up: () => {
+    Contacts.update({}, {$set: {imports: []}}, {multi: true})
+  }
+})
+
 Meteor.startup(() => Migrations.migrateTo('latest'))
