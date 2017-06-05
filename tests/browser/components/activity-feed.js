@@ -52,11 +52,11 @@ module.exports = (prefix) => ({
         this.assert.containsText(`${selector} [data-id=post-summary]`, data.summary)
       }
 
-      if (data.campaignName) {
+      if (!campaign && data.campaignName) {
         this.assert.containsText(`${selector} [data-id=campaign-name]`, data.campaignName)
       }
 
-      if (data.contactName) {
+      if (!contact && data.contactName) {
         this.assert.containsText(`${selector} [data-id=contact-name]`, data.contactName)
       }
 

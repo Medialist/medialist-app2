@@ -57,7 +57,24 @@ const config = {
         acceptSslCerts: true,
         loggingPrefs: {
           browser: 'ALL'
+        },
+        chromeOptions: {
+          args: ['window-size=1440,1024']
         }
+      }
+    },
+    "chrome": {
+      end_session_on_fail: false,
+      "selenium_port"  : 9515,
+      "selenium_host"  : "localhost",
+      "default_path_prefix" : "",
+      "desiredCapabilities": {
+        "browserName": "chrome",
+        "chromeOptions" : {
+          "args" : ["--no-sandbox", "window-size=1440,1024"]
+        },
+        "acceptSslCerts": true,
+        javascriptEnabled: true
       }
     }
   }
