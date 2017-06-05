@@ -22,14 +22,14 @@ export const importContacts = new ValidatedMethod({
     const createdBy = findOneUserRef(this.userId)
     const createdAt = new Date()
     const doc = {
-      createdAt,
-      createdBy,
       data,
       results: {
         created: [],
         updated: [],
         failed: []
-      }
+      },
+      createdAt,
+      createdBy
     }
     const _id = ContactsImport.insert(doc)
     // Do after sending the clint the import _id

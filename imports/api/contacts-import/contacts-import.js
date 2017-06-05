@@ -13,15 +13,8 @@ export default ContactsImport
 export const ContactsImportSchema = new SimpleSchema([
   CreatedAtSchema,
   {
-    filename: {
-      type: String
-    },
     data: {
       type: [ContactCreateSchema]
-    },
-    progress: {
-      type: Number,
-      defaultValue: 0
     },
     'results.created': {
       type: [String],
