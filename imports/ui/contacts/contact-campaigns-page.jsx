@@ -51,7 +51,7 @@ const ContactCampaignsPage = React.createClass({
     const { addToCampaignOpen } = this.state
     return (
       <div>
-        <ContactTopbar contact={contact} onAddToCampaignClick={this.toggleAddToCampaign} />
+        <ContactTopbar contact={contact} onAddToCampaignClick={this.toggleAddToCampaign} pathname={this.props.location.pathname} />
         <div className='flex items-center pt4 pb2 pr2 pl6'>
           <div className='flex-auto'>
             <div className='flex items-center'>
@@ -87,5 +87,6 @@ const ContactCampaignsPage = React.createClass({
 export default createContainer(({params: { contactSlug }}) => {
   Meteor.subscribe('contact-page', contactSlug)
   const contact = Contacts.findOne({ slug: contactSlug })
-  return { contact, contactSlug }
+  const user = Meteor.user()
+  return { contact, contactSlug, user }
 }, campaignSearchQueryContainer(ContactCampaignsPage))

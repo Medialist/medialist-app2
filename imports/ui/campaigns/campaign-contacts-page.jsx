@@ -136,7 +136,7 @@ class CampaignContactsPage extends React.Component {
   }
 
   render () {
-    const { campaign, contacts } = this.props
+    const { campaign, contacts, user } = this.props
 
     if (!campaign) {
       return null
@@ -164,6 +164,7 @@ class CampaignContactsPage extends React.Component {
             </div>
           </div>
           <ContactsTableContainer
+            user={user}
             sort={sort}
             term={term}
             campaign={campaign}

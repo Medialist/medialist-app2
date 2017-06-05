@@ -26,6 +26,7 @@ const ContactLink = ({contact, campaign}) => {
 
 const ContactsTable = React.createClass({
   propTypes: {
+    user: PropTypes.object,
     // e.g. { updatedAt: -1 }
     sort: PropTypes.object,
     // Callback when sort changes, passed e.g. { updatedAt: 1 }
@@ -71,7 +72,7 @@ const ContactsTable = React.createClass({
   },
 
   render () {
-    const { sort, onSortChange, contacts, selections, campaign, loading } = this.props
+    const { sort, onSortChange, contacts, selections, campaign, loading, user } = this.props
 
     if (!loading && !contacts.length) {
       return <p className='pt2 pb5 mt0 f-xl semibold center' data-id='contacts-table-empty'>No contacts found</p>
@@ -169,7 +170,9 @@ const ContactsTable = React.createClass({
                   )}
                   <td className='left-align'>
                     <TimeFromNow className='semibold f-sm' date={updatedAt} />
-                    <span className='normal f-sm'> by <YouOrName user={updatedBy} /></span>
+                    {updatedBy && updatedBy.name && (
+                      <span className='normal f-sm'> by <YouOrName currentUser={user} user={updatedBy} /></span>
+                    )}
                   </td>
                 </SelectableRow>
               )

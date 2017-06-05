@@ -31,29 +31,33 @@ const Filter = ({name, selected, onClick}) => {
   )
 }
 
-const ActivityFilter = React.createClass({
-  propTypes: {
+class ActivityFilter extends React.Component {
+  static propTypes = {
     selected: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired
-  },
-  getInitialState () {
-    return { open: false }
-  },
-  toggleDropdown () {
+  }
+
+  state = { open: false }
+
+  toggleDropdown = () => {
     const open = !this.state.open
     this.setState({open})
-  },
-  closeDropdown () {
+  }
+
+  closeDropdown = () => {
     this.setState({open: false})
-  },
+  }
+
   onLinkClick (filterName) {
     this.setState({open: false, selected: filterName})
     this.props.onChange(filterName)
-  },
+  }
+
   render () {
     const { toggleDropdown } = this
     const { open } = this.state
     const { selected } = this.props
+
     return (
       <Dropdown>
         <div className='flex-none p3 pointer gray20' onClick={toggleDropdown}>
@@ -72,6 +76,6 @@ const ActivityFilter = React.createClass({
       </Dropdown>
     )
   }
-})
+}
 
 export default ActivityFilter
