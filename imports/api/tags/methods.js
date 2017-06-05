@@ -5,7 +5,7 @@ import { TypeSchema } from '/imports/lib/schema'
 import Tags from '/imports/api/tags/tags'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
-import findUniqueSlug, { checkAllSlugsExist, cleanSlug } from '/imports/lib/slug'
+import { checkAllSlugsExist, cleanSlug } from '/imports/lib/slug'
 
 const createTagsWhereNecessary = (names) => {
   const tags = names.map((n) => ({
@@ -246,21 +246,5 @@ export const setTags = new ValidatedMethod({
         count: t[countField]
       })), Collection, countField
     )
-  }
-})
-
-// take a name and coax it into a unique tag for this import batch
-export const createUniqueContactImportTag = new ValidatedMethod({
-  name: 'Tags/createUniqueContactImportTag',
-
-  validate: new SimpleSchema({
-    name: { type: String }
-  }).validator(),
-
-  run ({ name }) {
-    const slug = findUniqueSlug(name, Tags)
-    const tag = {name, slug, contactsCount: 0, campaignsCount: 0}
-    const _id = Tags.insert(tag)
-    return {_id, ...tag}
   }
 })

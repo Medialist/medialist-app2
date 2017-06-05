@@ -55,11 +55,6 @@ function guessColumnHeader (value) {
   return detector ? detector.field : null
 }
 
-/*
-TODO:
-jobTitles => jobTitle
-outlets => outlet
-*/
 const schemaDetectors = [
   {
     field: {key: 'ignore', label: 'Ignore'},
