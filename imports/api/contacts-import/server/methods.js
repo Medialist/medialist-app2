@@ -34,7 +34,7 @@ export const importContacts = new ValidatedMethod({
     const _id = ContactsImport.insert(doc)
     // Do after sending the clint the import _id
     Meteor.defer(function () {
-      const label = `Importing ${data.length} contacts`
+      const label = `ContactsImport ${_id} with ${data.length} items`
       console.log(label)
       console.time(label)
       processImport({_id, ...doc})
