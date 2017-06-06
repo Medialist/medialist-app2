@@ -13,7 +13,6 @@ import StatusSelectorContainer from '/imports/ui/feedback/status-selector-contai
 
 const CampaignsTable = React.createClass({
   propTypes: {
-    user: PropTypes.object,
     // e.g. { updatedAt: -1 }
     sort: PropTypes.object,
     // Callback when sort changes, passed e.g. { updatedAt: 1 }
@@ -59,7 +58,8 @@ const CampaignsTable = React.createClass({
   },
 
   render () {
-    const { sort, onSortChange, campaigns, selections, loading, contactSlug, user } = this.props
+    const { sort, onSortChange, campaigns, selections, loading, contactSlug } = this.props
+
     if (!loading && !campaigns.length) {
       return <p className='p4 mb2 f-xl semibold center' data-id='campaign-table-empty'>No campaigns found</p>
     }
@@ -137,9 +137,7 @@ const CampaignsTable = React.createClass({
                 )}
                 <td className='left-align'>
                   <span className='semibold'><TimeFromNow date={updatedAt} /></span>
-                  {updatedBy && updatedBy.name && (
-                    <span className='normal f-sm'> by <YouOrName currentUser={user} user={updatedBy} /></span>
-                  )}
+                  <span> by <YouOrName user={updatedBy} /></span>
                 </td>
               </SelectableRow>
             )
