@@ -68,7 +68,7 @@ const ContactPage = withSnackbar(React.createClass({
     if (!contact) return null
     return (
       <div>
-        <ContactTopbar contact={contact} onAddToCampaignClick={this.toggleAddToCampaign} pathname={this.props.location.pathname} />
+        <ContactTopbar contact={contact} onAddToCampaignClick={this.toggleAddToCampaign} />
         <div className='flex m4 pt4 pl4'>
           <div className='flex-none mr4 xs-hide sm-hide' style={{width: 323}}>
             <ContactInfo
@@ -90,7 +90,7 @@ const ContactPage = withSnackbar(React.createClass({
               onCoverage={this.onCoverage}
               onNeedToKnow={this.onNeedToKnow}
             />
-            <ActivityFeed data-id='contact-activity-feed' contact={contact} campaign={campaign} />
+            <ActivityFeed data-id='contact-activity-feed' contact={contact} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
             <ContactNeedToKnowList items={needToKnows} />
