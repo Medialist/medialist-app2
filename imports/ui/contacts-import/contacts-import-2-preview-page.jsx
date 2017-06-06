@@ -85,7 +85,7 @@ class ContactsImportPreviewPage extends React.Component {
               <div className='inline-block border-right border-gray80 semibold f-sm py1 px3'>
                 <span className='blue mr1'>{contacts.length}</span>Contacts found
               </div>
-              <div className='inline-block border-right border-gray80 py1 px3 semibold f-sm'>
+              <div className='inline-block py1 px3 semibold f-sm'>
                 <span className='blue mr1'>{okCols.length}</span>Columns matched
               </div>
             </div>

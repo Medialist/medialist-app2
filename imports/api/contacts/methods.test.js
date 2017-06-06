@@ -328,7 +328,7 @@ describe('createContact', function () {
       ],
       phones: [],
       socials: [],
-      address: ''
+      addresses: []
     }}))
   })
 
@@ -354,7 +354,7 @@ describe('createContact', function () {
       ],
       phones: [],
       socials: [],
-      address: ''
+      addresses: []
     }
 
     const userId = user._id
