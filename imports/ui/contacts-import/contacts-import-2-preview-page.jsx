@@ -91,7 +91,7 @@ class ContactsImportPreviewPage extends React.Component {
             </div>
             <div className='py2' style={{height: 15}}>
               {!hasEnoughInfo && (
-                <p className='red m0'>We need to match the <strong>name</strong> and <strong>outlet</strong> fields to columns before we can start importing contacts.</p>
+                <p className='red m0'>Please match the <strong>name</strong> and <strong>outlet</strong> fields to columns before we can start importing contacts.</p>
               )}
             </div>
           </div>

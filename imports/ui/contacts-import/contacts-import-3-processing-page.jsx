@@ -70,7 +70,7 @@ const ProcessingPanel = ({total}) => (
     <h1 className='blue f-xxxl m0 py2 semibold'>Importing <span className='bold'>{total}</span> contacts...</h1>
     <p className='lh-copy'>
       This may take a few minutes. If you want to do something else in the meantime, you can
-      <a herf='/' target='_blank'> open Medialist in a new tab</a> while we continue importing your contacts in the background.
+      <a href='/' target='_blank'> open Medialist in a new tab</a> while we continue importing your contacts in the background.
     </p>
   </section>
 )
