@@ -5,7 +5,6 @@ import { check } from 'meteor/check'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import slugify from '/imports/lib/slug'
 import { findOneUserRef } from '/imports/api/users/users'
-import ContactsTask from '/imports/api/twitter-users/server/contacts-task'
 import Contacts, { ContactSchema, ContactCreateSchema } from '/imports/api/contacts/contacts'
 import ContactsImport from '../contacts-import'
 
@@ -18,7 +17,7 @@ export const importContacts = new ValidatedMethod({
 
   run ({ data }) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
-
+    console.log(data)
     const createdBy = findOneUserRef(this.userId)
     const createdAt = new Date()
     const doc = {
@@ -78,7 +77,6 @@ function createContact (data, userRef, importId) {
 
   var id = Contacts.insert(data)
   ContactsImport.update({_id: importId}, {$push: {'results.created': id}})
-  ContactsTask.queueUpdate(id)
 }
 
 function mergeContact (data, contact, userRef, importId) {
@@ -98,7 +96,6 @@ function mergeContact (data, contact, userRef, importId) {
 
   Contacts.update({_id: id}, {$set: contact})
   ContactsImport.update({_id: importId}, {$push: {'results.updated': id}})
-  ContactsTask.queueUpdate(id)
 }
 
 function addIfCurrentlyEmpty (oldList = [], newList = []) {

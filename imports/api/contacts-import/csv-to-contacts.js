@@ -153,89 +153,118 @@ cols is
 [{key: 'name', label: 'Name'}, {key: 'email', label: 'Email'}]
 
 rows is
-[['Dave', 'dave@exmaple.org'], ['Bob', 'bob@example.org']]
+[
+  ['Dave', 'dave@exmaple.org'], ['Bob', 'bob@example.org']
+]
 
 So cols[0] is the type of data that is in rows[n][0]
 */
 export function createContacts ({cols, rows}) {
-  const KeyHandlers = {
-    email (contact, value) {
-      contact.emails = contact.emails || []
-      contact.emails.push({label: 'Email', value: value})
-    },
-    twitter (contact, value) {
-      contact.socials = contact.socials || []
-      contact.socials.push({label: 'Twitter', value: twitterScreenName(value) || value})
-    },
-    linkedin (contact, value) {
-      contact.socials = contact.socials || []
-      contact.socials.push({label: 'LinkedIn', value: value})
-    },
-    phone (contact, value) {
-      contact.phones = contact.phones || []
-      contact.phones.push({label: 'Mobile', value: value})
-    }
-  }
+  const items = objectify(cols, rows)
+  return items.map((item) => ({
+    name: findName(item),
+    outlets: findOutlets(item),
+    emails: findEmails(item),
+    phones: findPhones(item),
+    socials: findSocials(item),
+    addresses: findAddresses(item)
+  }))
+}
 
-  var contacts = rows.map(row => {
-    var item = cols.reduce((item, col, i) => {
+/**
+ * Convert cols and rows into an array of objects.
+ * All col and row values must be be strings.
+ * Will return array of objects mapping col value to row value.
+ *
+ * Values for repeated keys are joined with commas...
+ * We have to check values for commas anyway as the data maybe from an odd csv,
+ * where a single value could be a quoted comma seperated string, so we use the
+ * same mechanism here, rather than upgrading to an array as you might expect.
+ *
+ * @param {Array} cols The keys
+ * @param {Array} rows the array of arrays of values
+ * @return {Array} The rows as objects
+ * @example
+ *   objectify(
+ *     ['name', 'email', 'email'],
+ *     [
+ *       ['Derp', '1@yes.no', '2@butt.systems']
+ *     ]
+ *   )
+ *   // => [{ name: 'Derp', email: '1@yes.no, 2@butt.systems' }]
+ */
+function objectify (cols, rows) {
+  return rows.map((row) => {
+    return cols.reduce((item, col, i) => {
       if (!col) return item // Empty cols are ignored
-
       var key = col.key
       var value = (row[i] ? `${row[i]}` : '').trim()
       if (!value) return item
-
-      if (KeyHandlers[key]) {
-        KeyHandlers[key](item, value)
-      } else {
-        // Pick the value from the row data or concat if already exists
-        item[key] = item[key] ? `${item[key]}, ${value}` : value
-      }
-
+      item[key] = item[key] ? `${item[key]}, ${value}` : value
       return item
     }, {})
-
-    const name = [
-      item.name,
-      item.forename,
-      item.surname
-    ].filter(v => !!v).join(' ')
-
-    const {
-      street,
-      city,
-      postcode,
-      country,
-      addressline1,
-      addressline2,
-      addressline3
-    } = item
-    const addresses = [{street, city, postcode, country}]
-    if (!street) {
-      addresses[0].street = [addressline1, addressline2, addressline3]
-        .filter(str => !!str)
-        .join(', ')
-    }
-
-    const jobTitle = (item.jobTitle || '').split(/,\s*/)[0]
-    const outlets = (item.outlet || '').split(/,\s*/)
-      .filter((outlet) => !/freelance/i.test(outlet))
-      .map((outlet, i) => ({
-        label: outlet,
-        value: jobTitle
-      }))
-
-    const contact = {
-      name,
-      outlets,
-      emails: item.emails || [],
-      phones: item.phones || [],
-      socials: item.socials || [],
-      addresses
-    }
-
-    return contact
   })
+}
 
-  return contacts
+function findName (item) {
+  return [
+    item.name,
+    item.forename,
+    item.surname
+  ].filter(v => !!v).join(' ')
+}
+
+function findOutlets ({jobTitle = '', outlet = ''}) {
+  const title = jobTitle.split(/,\s*/)[0]
+  const outlets = outlet.split(/,\s*/)
+    .filter((outlet) => !/freelance/i.test(outlet))
+    .map((outlet, i) => ({label: outlet, value: title}))
+  return outlets
+}
+
+function findEmails ({email = ''}) {
+  return email
+    .split(/,\s*/)
+    .map((value) => ({label: 'Email', value}))
+}
+
+function findPhones ({phone = ''}) {
+  return phone
+    .split(/,\s*/)
+    .map((value) => ({label: 'Mobile', value}))
+}
+
+function findSocials ({twitter, linkedin}) {
+  const socials = []
+  if (twitter) {
+    // TODO: might be better to ignore bad twitter handles at this point
+    socials.push({label: 'Twitter', value: twitterScreenName(twitter) || twitter})
+  }
+  if (linkedin) {
+    socials.push({label: 'LinkedIn', value: linkedin})
+  }
+  return socials
+}
+
+// Assemble addresses array from the import data.
+function findAddresses (item) {
+  const keys = ['street', 'city', 'postcode', 'country', 'addressline1', 'addressline2', 'addressline3']
+
+  // if none of them are set, we don't have an address.
+  if (!keys.some((k) => !!item[k])) return []
+
+  const address = {
+    street: item.street || joinAddressLines(item),
+    city: item.city,
+    postcode: item.postcode,
+    country: item.country
+  }
+  return [address]
+}
+
+function joinAddressLines (item) {
+  const lines = [item.addressline1, item.addressline2, item.addressline3]
+    .filter(str => !!str)
+    .join(', ')
+  return lines || undefined
 }
