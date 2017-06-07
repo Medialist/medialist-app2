@@ -262,7 +262,7 @@ const CampaignName = ({campaigns, onCampaignPage}) => {
     return null
   }
 
-  return <span> to <CampaignLink campaign={campaigns[0]} /></span>
+  return <CampaignLink campaign={campaigns[0]} />
 }
 
 const firstName = ({name}) => name.split(' ')[0]
@@ -401,6 +401,7 @@ export const AddContactsToCampaign = ({item, currentUser, contact, campaign}) =>
       summary={
         <span data-id='post-summary'>
           added <ContactName contacts={item.contacts} contact={contact} onContactPage={Boolean(contact)} />
+          {!campaign ? ' to ' : ''}
           <CampaignName campaigns={item.campaigns} onCampaignPage={Boolean(campaign)} />
         </span>
       }
