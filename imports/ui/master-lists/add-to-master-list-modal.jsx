@@ -7,12 +7,19 @@ import { createContainer } from 'meteor/react-meteor-data'
 import MasterLists from '/imports/api/master-lists/master-lists'
 
 class AddToMasterList extends React.Component {
-  constructor (props, context) {
-    super(props, context)
+  static propTypes = {
+    open: PropTypes.bool.isRequired,
+    onDismiss: PropTypes.func.isRequired,
+    onSave: PropTypes.func.isRequired,
+    selectedMasterLists: PropTypes.array,
+    allMasterLists: PropTypes.array.isRequired,
+    type: PropTypes.oneOf(['Campaigns', 'Contacts']),
+    title: PropTypes.string.isRequired,
+    children: PropTypes.node
+  }
 
-    this.state = {
-      selectedMasterLists: this.props.selectedMasterLists || []
-    }
+  state = {
+    selectedMasterLists: this.props.selectedMasterLists || []
   }
 
   onSelect (masterList) {
@@ -72,18 +79,6 @@ class AddToMasterList extends React.Component {
       </div>
     )
   }
-}
-
-AddToMasterList.propTypes = {
-  open: PropTypes.bool.isRequired,
-  onDismiss: PropTypes.func.isRequired,
-  onSave: PropTypes.func.isRequired,
-  selectedMasterLists: PropTypes.array,
-  allMasterLists: PropTypes.array.isRequired,
-  type: PropTypes.oneOf(['Campaigns', 'Contacts']),
-  title: PropTypes.string.isRequired,
-  children: PropTypes.node,
-  selections: PropTypes.array.isRequired
 }
 
 const AddToMasterListContainer = createContainer(({open, type, ...props}) => {

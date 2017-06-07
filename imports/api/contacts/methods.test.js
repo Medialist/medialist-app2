@@ -7,7 +7,7 @@ import Posts from '/imports/api/posts/posts'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import {
   addContactsToCampaign,
-  removeContactsFromCampaign,
+  removeContactsFromCampaigns,
   batchFavouriteContacts,
   batchRemoveContacts,
   createContact
@@ -91,19 +91,20 @@ describe('addContactsToCampaign', function () {
   })
 })
 
-describe('removeContactsFromCampaign', function () {
+describe('removeContactsFromCampaigns', function () {
   beforeEach(function () {
     resetDatabase()
   })
 
   it('should require the user to be logged in', function () {
-    assert.throws(() => removeContactsFromCampaign.run.call({}, {}), /You must be logged in/)
+    assert.throws(() => removeContactsFromCampaigns.run.call({}, {}), /You must be logged in/)
   })
 
   it('should validate the parameters', function () {
-    assert.throws(() => removeContactsFromCampaign.validate({}), /Contact slugs is required/)
-    assert.throws(() => removeContactsFromCampaign.validate({ contactSlugs: 'foo' }), /must be an array/)
-    assert.doesNotThrow(() => removeContactsFromCampaign.validate({ contactSlugs: ['foo'], campaignSlug: 'cam' }))
+    assert.throws(() => removeContactsFromCampaigns.validate({}), /Contact slugs is required/)
+    assert.throws(() => removeContactsFromCampaigns.validate({ contactSlugs: 'foo' }), /must be an array/)
+    assert.throws(() => removeContactsFromCampaigns.validate({ contactSlugs: ['foo'], campaignSlugs: 'cam' }), /must be an array/)
+    assert.doesNotThrow(() => removeContactsFromCampaigns.validate({ contactSlugs: ['foo'], campaignSlugs: ['cam'] }))
   })
 
   // TODO: it should use a deleted flag
@@ -139,8 +140,8 @@ describe('removeContactsFromCampaign', function () {
 
     const userId = 'kKz46qgWmbGHrznJC'
     const contactSlugs = ['1', '2']
-    const campaignSlug = '0'
-    removeContactsFromCampaign.run.call({userId}, {contactSlugs, campaignSlug})
+    const campaignSlugs = ['0']
+    removeContactsFromCampaigns.run.call({userId}, {contactSlugs, campaignSlugs})
 
     const campaign = Campaigns.findOne()
 

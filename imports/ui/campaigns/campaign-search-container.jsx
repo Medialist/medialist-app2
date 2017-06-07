@@ -60,29 +60,39 @@ export default (Component, opts = {}) => {
         sort,
         limit
       }
+
       const searching = !!(term && term.length >= minSearchLength)
+
       if (searching) {
         opts.term = term
       }
+
       const subs = [
         Meteor.subscribe('campaignCount'),
         Meteor.subscribe('searchCampaigns', opts)
       ]
+
       if (userId && userId !== Meteor.userId()) {
         subs.push(Meteor.subscribe('users-by-id', {userIds: [userId]}))
       }
+
       let selectedTags = []
+
       if (tagSlugs && tagSlugs.length) {
         subs.push(Meteor.subscribe('tags-by-slug', {tagSlugs}))
         selectedTags = Tags.find({slug: { $in: tagSlugs }}).fetch()
       }
+
       const campaigns = searchCampaigns(opts).fetch()
+
       if (sort.status && contactSlug) {
         const byStatus = campaignStatusSort(contactSlug, sort.status)
         campaigns.sort(byStatus)
       }
+
       const campaignCount = Campaigns.allCampaignsCount()
       const loading = !subs.every((sub) => sub.ready())
+
       return { campaigns, campaignCount, selectedTags, loading, searching }
     },
 

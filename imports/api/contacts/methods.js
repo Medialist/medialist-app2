@@ -92,25 +92,34 @@ export const addContactsToCampaign = new ValidatedMethod({
 })
 
 /*
- * Remove mulitple Contacts from 1 Campaign
+ * Remove Contacts from Campaigns
  * - Pull all the contacts from the Campaign.contacts map
- * - Pull all campaign from all the Contact.campaings array
+ * - Pull all campaign from all the Contact.campaigns array
  * - Update updatedAt on Campaign but not Contacts.
  * - Create a Post about it.
  * - Add nothing to users favorites.
  */
-export const removeContactsFromCampaign = new ValidatedMethod({
+export const removeContactsFromCampaigns = new ValidatedMethod({
   name: 'removeContactsFromCampaign',
 
   validate: new SimpleSchema({
-    contactSlugs: { type: [String], min: 1 },
-    campaignSlug: { type: String }
+    contactSlugs: {
+      type: [String],
+      min: 1
+    },
+    campaignSlugs: {
+      type: [String],
+      min: 1
+    }
   }).validator(),
 
-  run ({ contactSlugs, campaignSlug }) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
+  run ({ contactSlugs, campaignSlugs }) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
     checkAllSlugsExist(contactSlugs, Contacts)
-    checkAllSlugsExist([campaignSlug], Campaigns)
+    checkAllSlugsExist(campaignSlugs, Campaigns)
 
     const updatedBy = findOneUserRef(this.userId)
     const updatedAt = new Date()
@@ -121,27 +130,38 @@ export const removeContactsFromCampaign = new ValidatedMethod({
       return $unset
     }, {})
 
-    Campaigns.update(
-      { slug: campaignSlug },
-      {
-        $unset,
-        $set: {
-          updatedAt,
-          updatedBy
-        }
+    Campaigns.update({
+      slug: {
+        $in: campaignSlugs
       }
-    )
+    }, {
+      $unset,
+      $set: {
+        updatedAt,
+        updatedBy
+      }
+    }, {
+      multi: true
+    })
 
-    Contacts.update(
-      { slug: { $in: contactSlugs } },
-      { $pull: { campaigns: campaignSlug } },
-      { multi: true }
-    )
+    campaignSlugs.forEach(campaignSlug => {
+      Contacts.update({
+        slug: {
+          $in: contactSlugs
+        }
+      }, {
+        $pull: {
+          campaigns: campaignSlug
+        }
+      }, {
+        multi: true
+      })
+    })
 
     Posts.create({
-      type: 'RemoveContactsFromCampaign',
+      type: 'RemoveContactsFromCampaigns',
       contactSlugs,
-      campaignSlugs: [campaignSlug],
+      campaignSlugs,
       createdAt: updatedAt,
       createdBy: updatedBy
     })

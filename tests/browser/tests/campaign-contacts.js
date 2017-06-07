@@ -278,6 +278,18 @@ const test = {
         done()
       })
 
+      t.perform((done) => {
+        t.db.findCampaign({
+          _id: campaign._id
+        })
+        .then((doc) => {
+          t.assert.equal(doc.contacts[contact1._id], undefined)
+          t.assert.equal(doc.contacts[contact2._id], undefined)
+
+          done()
+        })
+      })
+
       done()
     })
 
