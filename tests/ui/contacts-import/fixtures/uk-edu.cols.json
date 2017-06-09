@@ -1,0 +1,62 @@
+[
+  null,
+  {
+    "key": "outlet",
+    "label": "Outlet"
+  },
+  null,
+  {
+    "key": "phone",
+    "label": "Phone"
+  },
+  {
+    "key": "email",
+    "label": "Email"
+  },
+  {
+    "key": "twitter",
+    "label": "Twitter"
+  },
+  {
+    "key": "forename",
+    "label": "First Name"
+  },
+  {
+    "key": "surname",
+    "label": "Last Name"
+  },
+  {
+    "key": "jobTitle",
+    "label": "Job Title"
+  },
+  {
+    "key": "phone",
+    "label": "Phone"
+  },
+  null,
+  null,
+  {
+    "key": "addressline1",
+    "label": "Address line 1"
+  },
+  {
+    "key": "addressline2",
+    "label": "Address line 2"
+  },
+  {
+    "key": "addressline3",
+    "label": "Address line 3"
+  },
+  {
+    "key": "postcode",
+    "label": "Postcode"
+  },
+  {
+    "key": "city",
+    "label": "City"
+  },
+  {
+    "key": "country",
+    "label": "Country"
+  }
+]

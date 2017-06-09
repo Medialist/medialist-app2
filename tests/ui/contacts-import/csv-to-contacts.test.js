@@ -1,7 +1,7 @@
 const fs = require('fs')
 import test from 'ava'
 import papaparse from 'papaparse'
-import { processCsvData } from '../../../imports/api/contacts-import/csv-to-contacts'
+import { processCsvData, createContacts } from '../../../imports/api/contacts-import/csv-to-contacts'
 
 test('should convert csv data into rows and cols', (t) => {
   const expectedCols = [
@@ -23,4 +23,20 @@ test('should convert csv data into rows and cols', (t) => {
   t.is(rows.length, 22, 'Found 22 rows')
   expectedCols.forEach((item, i) => t.deepEqual(item, cols[i]))
   expectedRows.forEach((item, i) => t.deepEqual(item, rows[i]))
+})
+
+test('should convert rows and cols into contacts', (t) => {
+  const rows = require('./fixtures/uk-edu.rows.json')
+  const cols = require('./fixtures/uk-edu.cols.json')
+  const expect = require('./fixtures/uk-edu.contacts.json')
+  const actual = createContacts({cols, rows})
+  t.is(expect.length, actual.length, 'Created correct number of contacts')
+  actual.forEach((contact, i) => {
+    const expected = expect[i]
+    // Make errors easier to figure out.
+    Object.keys(contact).forEach((key) => {
+      t.deepEqual(expected[key], contact[key])
+    })
+    t.deepEqual(expected, contact)
+  })
 })

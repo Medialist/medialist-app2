@@ -214,7 +214,8 @@ function findName (item) {
   ].filter(v => !!v).join(' ')
 }
 
-function findOutlets ({jobTitle = '', outlet = ''}) {
+function findOutlets ({jobTitle = '', outlet}) {
+  if (!outlet) return []
   const title = jobTitle.split(/,\s*/)[0]
   const outlets = outlet.split(/,\s*/)
     .filter((outlet) => !/freelance/i.test(outlet))
@@ -222,13 +223,15 @@ function findOutlets ({jobTitle = '', outlet = ''}) {
   return outlets
 }
 
-function findEmails ({email = ''}) {
+function findEmails ({email}) {
+  if (!email) return []
   return email
     .split(/,\s*/)
     .map((value) => ({label: 'Email', value}))
 }
 
-function findPhones ({phone = ''}) {
+function findPhones ({phone}) {
+  if (!phone) return []
   return phone
     .split(/,\s*/)
     .map((value) => ({label: 'Mobile', value}))
@@ -254,10 +257,10 @@ function findAddresses (item) {
   if (!keys.some((k) => !!item[k])) return []
 
   const address = {
-    street: item.street || joinAddressLines(item),
-    city: item.city,
-    postcode: item.postcode,
-    country: item.country
+    street: item.street || joinAddressLines(item) || '',
+    city: item.city || '',
+    postcode: item.postcode || '',
+    country: item.country || ''
   }
   return [address]
 }
@@ -266,5 +269,5 @@ function joinAddressLines (item) {
   const lines = [item.addressline1, item.addressline2, item.addressline3]
     .filter(str => !!str)
     .join(', ')
-  return lines || undefined
+  return lines
 }
