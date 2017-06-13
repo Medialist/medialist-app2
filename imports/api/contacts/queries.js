@@ -13,6 +13,7 @@ export const searchContacts = ({
   masterListSlug,
   userId,
   campaignSlugs,
+  importId,
   sort,
   limit = 20,
   minSearchLength = 3
@@ -39,6 +40,9 @@ export const searchContacts = ({
     const user = Meteor.users.findOne({_id: userId})
     const myContacts = user ? user.myContacts : []
     query.slug = { $in: myContacts.map((c) => c.slug) }
+  }
+  if (importId) {
+    query['imports'] = importId
   }
   if (term && term.length >= minSearchLength) {
     const termRegExp = new RegExp(escapeRegExp(term), 'gi')

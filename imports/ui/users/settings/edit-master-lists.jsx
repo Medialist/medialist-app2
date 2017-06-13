@@ -116,7 +116,7 @@ const EditMasterLists = React.createClass({
           <div className='flex justify-start align-middle p2 mb2'>
             <div className='bold flex-none'>{typeAsSingular} Lists ({masterlists.length})</div>
             <div className='flex-auto blue underline right-align'>
-              <span className='pointer' onClick={showCreateMasterListInput} data-id={`add-new-list-button`}>Add new {typeAsSingular} List</span>
+              <span className='pointer' onClick={showCreateMasterListInput} data-id='add-new-list-button'>Add new {typeAsSingular} List</span>
             </div>
           </div>
           {creating && <CreateMasterListInput onCreate={onCreate} type={type} />}
@@ -190,7 +190,7 @@ const EmptyMasterLists = ({type, creating, onCreate, showCreateMasterListInput})
         <div className='flex flex-column justify-start items-center'>
           <Icon className='blue svg-icon-lg mt4 mb3' />
           <div className='mt3 mb1 center'>You have not created any {typeAsSingular} Lists yet</div>
-          <div className='mb3 center blue underlined pointer' onClick={showCreateMasterListInput}>Create a {typeAsSingular} List</div>
+          <div className='mb3 center blue underlined pointer' onClick={showCreateMasterListInput} data-id='add-new-list-button'>Create a {typeAsSingular} List</div>
         </div>
       )}
     </div>

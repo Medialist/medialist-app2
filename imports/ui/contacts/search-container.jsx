@@ -35,7 +35,8 @@ export default (Component, opts = {}) => {
       sort: PropTypes.oneOfType([ PropTypes.object, PropTypes.array ]),
       campaignSlugs: PropTypes.arrayOf(PropTypes.string),
       selectedMasterListSlug: PropTypes.string,
-      userId: PropTypes.string
+      userId: PropTypes.string,
+      importId: PropTypes.string
     },
 
     getDefaultProps () {
@@ -45,12 +46,13 @@ export default (Component, opts = {}) => {
     mixins: [ReactMeteorData],
 
     getMeteorData () {
-      const { term, tagSlugs, selectedMasterListSlug, userId, campaignSlugs, sort, limit } = this.props
+      const { term, tagSlugs, selectedMasterListSlug, userId, campaignSlugs, importId, sort, limit } = this.props
       const opts = {
         tagSlugs,
         campaignSlugs,
         masterListSlug: selectedMasterListSlug,
         userId,
+        importId,
         sort,
         limit
       }

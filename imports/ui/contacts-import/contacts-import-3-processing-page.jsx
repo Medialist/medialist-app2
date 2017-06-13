@@ -1,113 +1,96 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Link, withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
-import CsvToContacts from '/imports/ui/contacts-import/csv-to-contacts'
+import { createContainer } from 'meteor/react-meteor-data'
+import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import Topbar from '/imports/ui/navigation/topbar'
-import Tag from '/imports/ui/tags/tag'
-import {
-  FeedCampaignIcon,
-  FavouritesIcon,
-  SectorIcon,
-  TagIcon
-} from '/imports/ui/images/icons'
+import ProgressBar from '/imports/ui/navigation/progress-bar'
+import ContactsImport from '/imports/api/contacts-import/contacts-import'
 
-export default withRouter(React.createClass({
-  getInitialState () {
-    const { state } = this.props.location
-    return Object.assign({
-      rows: [],
-      cols: [],
-      contacts: [],
-      results: null,
-      tag: `Contact Import - ${(new Date()).toISOString()}`
-    }, state)
-  },
+class ContactsImportProcessingPage extends React.Component {
+  static propTypes = {
+    loading: PropTypes.bool,
+    percent: PropTypes.number,
+    contacts: PropTypes.array,
+    contactsImport: PropTypes.object,
+    finished: PropTypes.bool,
+    location: PropTypes.object,
+    snackbar: PropTypes.object
+  }
 
-  componentDidMount () {
-    const { cols, rows } = this.state
-    if (!rows || !rows.length) return
-    console.log({ cols, rows })
-    // TODO: automagic header detection.
-    const contacts = CsvToContacts.createContacts({cols, rows: rows.slice(1)})
-    this.setState({contacts})
-    Meteor.call('importContacts', { contacts }, (err, results) => {
-      if (err) return console.error(err) // TODO: snackbar / alert user.
-      this.setState({results})
-    })
-  },
-
-  onCampaignClick () {
-    console.log('onCampaignClick')
-  },
-
-  onSectorClick () {
-    console.log('onSectorClick')
-  },
-
-  onFavouriteClick () {
-    console.log('onFavouriteClick')
-  },
-
-  onTagClick () {
-    console.log('onTagClick')
-  },
+  onCancel = () => {
+    // TODO: inform the server.
+    this.props.router.goBack()
+  }
 
   render () {
-    const { rows, tag, results, contacts } = this.state
+    const { percent, contacts, contactsImport, finished } = this.props
     return (
       <div>
-        <Topbar>
-          { results && <Link className='btn bg-blue white mx4' to='/contacts'>Finish</Link> }
+        <Topbar
+          center={
+            <div style={{paddingLeft: 45}}>
+              <ProgressBar percent={percent} style={{margin: '0 auto', maxWidth: 800}} />
+            </div>
+          }>
+          <div style={{width: 115}}>
+            {!finished && <button className='btn bg-red white mx4' onClick={this.onCancel}>Cancel</button>}
+          </div>
         </Topbar>
         <div className='mx-auto center py2' style={{maxWidth: 554}}>
           <img src='/import.svg' width={101} height={67} />
-          { results ? (
-            <CompletePanel
-              results={results}
-              tag={tag}
-              contacts={contacts}
-              onCampaignClick={this.onCampaignClick}
-              onSectorClick={this.oncSectorClick}
-              onFavouriteClick={this.onFavouriteClick}
-              onTagClick={this.onTagClick} />
+          { finished ? (
+            <CompletePanel contactsImport={contactsImport} />
           ) : (
-            <ProcessingPanel rows={rows} tag={tag} />
+            <ProcessingPanel total={contacts.length} />
           )}
         </div>
       </div>
     )
   }
-}))
+}
 
-const ProcessingPanel = ({rows, tag}) => (
+export default createContainer(({location}) => {
+  const {importId, contacts} = location.state
+  const sub = Meteor.subscribe('contacts-import', {importId})
+  const loading = !sub.ready()
+  const contactsImport = ContactsImport.findOne({_id: importId})
+  let percent = 0
+  if (contactsImport) {
+    const {created, updated, failed} = contactsImport.results
+    const total = created.length + updated.length + failed.length
+    percent = Math.floor((total / contactsImport.data.length) * 100)
+  }
+  return {loading, contacts, contactsImport, percent, finished: percent === 100}
+}, withSnackbar(withRouter(ContactsImportProcessingPage)))
+
+const ProcessingPanel = ({total}) => (
   <section className='center p4'>
-    <h1 className='blue f-xxl m0 py2 semibold'>Contacts currently being processed</h1>
-    <p className='f-lg'>Importing <span className='semibold'>{rows && rows.length || 0}</span> contacts.
-    Created and updated contacts will be available for browsing shortly, tagged with:</p>
-    <div className='py6'>
-      <Tag name={tag} count={rows && rows.length || 0} />
-    </div>
+    <h1 className='blue f-xxxl m0 py2 semibold'>Importing <span className='bold'>{total}</span> contacts...</h1>
+    <p className='lh-copy'>
+      This may take a few minutes. If you want to do something else in the meantime, you can
+      <a href='/' target='_blank' className='semibold'> open Medialist in a new tab</a> while we continue importing your contacts in the background.
+    </p>
   </section>
 )
 
-const CompletePanel = ({results, tag, contacts, onCampaignClick, onSectorClick, onFavouriteClick, onTagClick}) => (
-  <section className='center p6' data-id='contacts-import-complete'>
-    <h1 className='blue semibold f-xxxl'>Contacts imported</h1>
-    <p data-id='contacts-import-complete-status'>Created {results.created} contacts and updated {results.updated} contacts. Contacts are tagged with:</p>
-    <div className='py6'>
-      <Tag name={tag} count={results.created + results.updated} />
-    </div>
-    <div>
-      <hr />
-      <p className='m0 pt3 pb2'>Assign your contacts to campaigns, sectors, and tags to stay organised</p>
-      <div className='py4'>
-        <div className='shadow-1 inline-block bg-white px2'>
-          <FeedCampaignIcon className='svg-icon-lg p3 pointer' onClick={() => onCampaignClick(contacts)} />
-          <SectorIcon className='svg-icon-lg p3 pointer' onClick={() => onSectorClick(contacts)} />
-          <FavouritesIcon className='svg-icon-lg p3 pointer' onClick={() => onFavouriteClick(contacts)} />
-          <TagIcon className='svg-icon-lg p3 pointer' onClick={() => onTagClick(contacts)} />
-        </div>
+const CompletePanel = ({contactsImport}) => {
+  const {created, updated} = contactsImport.results
+  // Show search results in same order as csv
+  const sortString = encodeURIComponent(JSON.stringify({updatedAt: 1}))
+  const viewUrl = `/contacts?importId=${contactsImport._id}&sort=${sortString}`
+  return (
+    <section className='center p6' data-id='contacts-import-complete'>
+      <h1 className='blue f-xxxl m0 py2 semibold'>Contacts imported</h1>
+      <p data-id='contacts-import-complete-status'>
+        <strong>{created.length}</strong> new contacts added, <strong>{updated.length}</strong> updated.
+      </p>
+      <div className='py6'>
+        <Link className='btn mx4 bg-blue white' to={viewUrl}>
+          View contacts
+        </Link>
       </div>
-    </div>
-  </section>
-)
+    </section>
+  )
+}

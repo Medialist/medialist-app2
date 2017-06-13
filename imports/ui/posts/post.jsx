@@ -245,7 +245,7 @@ const ContactName = ({contacts, contact, onContactPage}) => {
   if (contacts.length > 1 && contact) {
     const otherContacts = contact ? contacts.filter((c) => c.slug !== contact.slug).length : contacts.length
     return (
-      <span data-id='contact-name'>
+      <span>
         <span data-id='contact-name' className='semibold gray10'>{firstName(contact)}</span>
         {` and ${otherContacts} other contact${otherContacts > 1 ? 's' : ''}`}
       </span>
@@ -269,7 +269,7 @@ const firstName = ({name}) => name.split(' ')[0]
 
 const PostSummary = ({children, status}) => (
   <span className='nowrap flex'>
-    <span className='truncate align-middle' data-id='post-summary'>
+    <span className='truncate align-middle'>
       {children}
     </span>
     { status &&
@@ -305,7 +305,7 @@ const FeedbackPostSummary = ({label, campaigns, contacts, status, contact, campa
 
   return (
     <PostSummary status={status}>
-      <span className='gray10'>
+      <span className='gray10' data-id='post-summary'>
         {label}
       </span>
       {campaignLink}
@@ -383,7 +383,7 @@ export const StatusUpdate = ({item, currentUser, contact, campaign}) => {
       icon={<StatusUpdateIcon className='gray60' />}
       summary={
         <PostSummary {...item}>
-          updated <ContactName contacts={item.contacts} contact={contact} onContactPage={Boolean(contact)} />
+          <span data-id='post-summary'>updated</span> <ContactName contacts={item.contacts} contact={contact} onContactPage={Boolean(contact)} />
           {!campaign ? ' for ' : ''}
           <CampaignName campaigns={item.campaigns} onCampaignPage={Boolean(campaign)} />
         </PostSummary>

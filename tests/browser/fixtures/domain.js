@@ -47,7 +47,8 @@ function contact () {
       labelValue('Medium', faker.internet.userName()),
       labelValue('Pinterest', faker.internet.userName()),
       labelValue('Website', faker.internet.url())
-    ]
+    ],
+    addresses: []
   }
 }
 

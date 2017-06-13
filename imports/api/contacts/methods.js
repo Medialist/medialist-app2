@@ -305,6 +305,7 @@ export const createContact = new ValidatedMethod({
       campaigns: [],
       masterLists: [],
       tags: [],
+      imports: [],
       createdAt,
       createdBy,
       updatedAt: createdAt,
