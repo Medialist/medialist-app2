@@ -5,6 +5,7 @@ import Modal from '/imports/ui/navigation/modal'
 import { Check } from '/imports/ui/images/icons'
 import { createContainer } from 'meteor/react-meteor-data'
 import MasterLists from '/imports/api/master-lists/master-lists'
+import Scroll from '/imports/ui/navigation/scroll'
 
 class AddToMasterList extends React.Component {
   static propTypes = {
@@ -48,16 +49,14 @@ class AddToMasterList extends React.Component {
     const { selectedMasterLists } = this.state
 
     const confirmText = `Add ${type.substring(0, this.props.items.length === 1 ? type.length - 1 : undefined)}`
-    const scrollableHeight = Math.max(global.window && global.window.innerHeight - 360, 80)
 
     return (
       <div data-id='add-to-list-modal'>
-        <div className='pt6 center'>
+        <div className='py6 center border-bottom border-gray80'>
           <span className='f-xl'>{title}</span>
+          {children}
         </div>
-        {children}
-        <div style={{height: scrollableHeight, overflowY: 'scroll'}}
-          className='bg-gray90 shadow-inset-2 border-top border-gray80 mt6 p2 flex-wrap'>
+        <Scroll height={'calc(90vh - 250px)'} className='bg-gray90'>
           {!allMasterLists || allMasterLists.length === 0 && <EmptyMasterLists type={type} />}
           {allMasterLists && allMasterLists.map((item, ind) => (
             <MasterListBtn
@@ -68,13 +67,11 @@ class AddToMasterList extends React.Component {
               onDeselect={(masterList) => this.onDeselect(masterList)}
               key={`${type}-${ind}`} />
           ))}
-        </div>
-        <div className='p4 bg-white'>
-          <div className='clearfix'>
-            <button className='btn bg-completed white right' onClick={() => this.onSave()} data-id='add-to-list-modal-save-button'>{confirmText}</button>
-            <button className='btn bg-transparent gray40 right mr2' onClick={(event) => this.props.onDismiss(event)} data-id='add-to-list-modal-cancel-button'>Cancel</button>
-            <Link to={`/settings/${type.toLowerCase()}-master-lists`} className='btn bg-transparent blue' data-id='add-to-list-modal-manage-lists-button'>Manage {this.props.type.substring(0, this.props.type.length - 1)} Lists</Link>
-          </div>
+        </Scroll>
+        <div className='p4 bg-white border-top border-gray80'>
+          <button className='btn bg-completed white right' onClick={() => this.onSave()} data-id='add-to-list-modal-save-button'>{confirmText}</button>
+          <button className='btn bg-transparent gray40 right mr2' onClick={(event) => this.props.onDismiss(event)} data-id='add-to-list-modal-cancel-button'>Cancel</button>
+          <Link to={`/settings/${type.toLowerCase()}-master-lists`} className='btn bg-transparent blue' data-id='add-to-list-modal-manage-lists-button'>Manage {this.props.type.substring(0, this.props.type.length - 1)} Lists</Link>
         </div>
       </div>
     )

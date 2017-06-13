@@ -11,6 +11,7 @@ import { Form, Input, Button } from '@achingbrain/react-validation'
 import createSearchContainer from '/imports/ui/lists/searchable-list'
 import immutable from 'object-path-immutable'
 import Loading from '/imports/ui/lists/loading'
+import Scroll from '/imports/ui/navigation/scroll'
 import { STATUS_GREEN } from '/imports/ui/colours'
 import { SIGNIN_EMAIL_DOMAIN_HINT } from '/imports/ui/forms/validation'
 
@@ -104,24 +105,22 @@ class EditTeam extends React.Component {
   }
 
   render () {
-    const scrollableHeight = Math.max(window.innerHeight - 380, 80)
-
     return (
       <Form data-id='edit-campaign-team-modal' onReset={(event) => this.onReset(event)} onSubmit={(event) => this.onSubmit(event)} ref={(form) => { this.form = form }}>
-        <h1 className='f-xl regular center mt6'>Add Team Mates to this Campaign</h1>
+        <h1 className='f-xl regular center mt6'>Invite Teammates to this Campaign</h1>
         <AvatarList items={this.state.selectedItems} onRemove={(event) => this.onRemove(event)} className='my4 px4' />
         <div className='py3 pl4 flex border-top border-bottom border-gray80'>
           <SearchBlueIcon className='flex-none' />
           <input
-            className='flex-auto f-lg pa2 mx2'
-            placeholder='Find a team mate...'
+            className='flex-auto f-lg pa2 mx2 placeholder-gray60'
+            placeholder='Find a teammate...'
             name='term'
             onChange={(event) => this.onSearch(event)}
             onKeyPress={(event) => this.onKeyPress(event)}
             style={{outline: 'none'}}
             data-id='search-team-mates-input' />
         </div>
-        <div style={{height: scrollableHeight, overflowY: 'scroll'}}>
+        <Scroll height={'calc(95vh - 380px)'}>
           {this.props.loading && (
             <div className='center p4'>
               <Loading />
@@ -136,13 +135,13 @@ class EditTeam extends React.Component {
               teamMates={this.props.items}
               searching={this.props.searching} />
           )}
-        </div>
+        </Scroll>
         <div className='px4 border-top border-gray80'>
           <div className='mb3'>
             <EmailIcon style={{position: 'relative', top: '27px', left: '10px'}} />
             <Input
               containerClassName='gray40'
-              className='input f-lg p2 pl7 mb3 block width-100'
+              className='input f-lg p2 pl7 mb3 block width-100 placeholder-gray60'
               errorClassName='error'
               name='emails'
               value={this.state.emails}
@@ -165,7 +164,7 @@ class EditTeam extends React.Component {
             className='btn bg-completed white px3'
             type='submit'
             data-id='edit-campaign-team-submit-button'
-            disabled={false}>Save Changes</Button>
+            disabled={false}>Invite Teammates</Button>
         </div>
       </Form>
     )
@@ -370,7 +369,7 @@ const TeamMember = ({ teamMember, campaign, style, highlighted, ...props }) => {
       <CircleAvatar className='inline-block' size={38} avatar={teamMember.profile.avatar} name={teamMember.profile.name} />
       <div className='inline-block align-top pl3' style={{width: 220}}>
         <div className='flex items-center'>
-          <div className={`flex-none f-md semibold ${highlighted ? 'completed' : ''}`}>{teamMember.profile.name || 'Invited'}</div>
+          <div className={`flex-none f-md semibold ${highlighted ? 'completed' : 'gray10'}`}>{teamMember.profile.name || 'Invited'}</div>
         </div>
         {teamMember.emails && teamMember.emails.length && <div className='f-sm normal gray20 truncate'>{teamMember.emails[0].address}</div>}
         {(!teamMember.emails || !teamMember.emails.length) && <div className='f-sm normal gray60 truncate'>No email address</div>}
