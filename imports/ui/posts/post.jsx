@@ -171,8 +171,8 @@ class Post extends React.Component {
         </div>
         <div className='flex-auto' style={{paddingLeft: 13}}>
           <header className='pt2 pb3 f-md flex nowrap' data-id='post-header'>
-            <YouOrName className='semibold align-middle' currentUser={this.props.currentUser} user={this.props.createdBy} />
-            <div className='align-middle flex-auto truncate' style={{paddingLeft: 3}}>{this.props.summary}</div>
+            <YouOrName className='semibold gray10' currentUser={this.props.currentUser} user={this.props.createdBy} />
+            <div className='flex-auto truncate' style={{paddingLeft: 3}}>{this.props.summary}</div>
             <span className='f-sm semibold gray60 flex-none'>
               <Time date={this.props.createdAt} />
             </span>
@@ -286,7 +286,7 @@ const FeedbackPostSummary = ({label, campaigns, contacts, status, contact, campa
   if (!campaign && campaigns && campaigns.length) {
     campaignLink = (
       <span>
-        <ChevronRight className='gray60 mx1' style={{verticalAlign: 1}} />
+        <ChevronRight className='gray60 mx1' />
         <CampaignLink campaign={campaigns[0]} />
       </span>
     )
@@ -297,7 +297,7 @@ const FeedbackPostSummary = ({label, campaigns, contacts, status, contact, campa
   if (!contact && contacts && contacts.length) {
     contactLink = (
       <span>
-        <ChevronRight className='gray60 mx1' style={{verticalAlign: 1}} />
+        <ChevronRight className='gray60 mx1' />
         <ContactLink contact={contacts[0]} />
       </span>
     )
