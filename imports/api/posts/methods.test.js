@@ -4,7 +4,7 @@ import assert from 'assert'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
-import { createFeedbackPost, createCoveragePost, createNeedToKnowPost } from '/imports/api/posts/methods'
+import { createFeedbackPost, createCoveragePost, createNeedToKnowPost, updateFeedbackPost } from '/imports/api/posts/methods'
 
 function insertTestData () {
   Meteor.users.insert({
@@ -276,5 +276,16 @@ describe('createNeedToKnowPost', function () {
 
     const contact = Contacts.findOne({slug: contactSlug})
     assert.deepEqual(contact.updatedBy, userRef)
+  })
+})
+
+describe('updateFeedbackPost', function () {
+  beforeEach(function () {
+    resetDatabase()
+    insertTestData()
+  })
+
+  it('should require the user to be logged in', function () {
+    assert.throws(() => updateFeedbackPost.run.call({}, {}), /You must be logged in/)
   })
 })

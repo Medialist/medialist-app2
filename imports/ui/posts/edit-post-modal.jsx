@@ -2,8 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Modal from '/imports/ui/navigation/modal'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
-import PostBoxTextArea from '/imports/ui/feedback/post-box-textarea'
-import { PostBoxButtons } from '/imports/ui/feedback/post-box'
+import { FeedbackInput } from '/imports/ui/feedback/post-box'
 
 class EditPost extends React.Component {
   static propTypes = {
@@ -22,33 +21,20 @@ class EditPost extends React.Component {
     this.setState({ value })
   }
 
-  onUpdate = (update) => {
-    console.log('create edit methods', update)
-  }
-
   render () {
-    const { value } = this.state
     const { post } = this.props
-    const { icon, type } = post
-    console.log(post)
+    const { icon, type, contacts, campaigns } = post
+    const contact = contacts[0]
+    const contactStatus = {[contact.slug]: post.status}
+    const campaign = Object.assign({}, campaigns[0], {contacts: contactStatus})
+
     return (
       <div>
         <div className='p3 border-gray80 border-bottom'>
           {icon}<span className='mx1'>Edit</span>{type.replace(/Post/g, '')}
         </div>
         <div className='p3'>
-          <PostBoxTextArea
-            placeholder={`edit ${type}`}
-            value={value}
-            focused
-            disabled={false}
-            onChange={this.onChange}
-          />
-        </div>
-        <div className='p3'>
-          <PostBoxButtons
-            focused={false}
-          />
+          <FeedbackInput {...post} onSubmit={this.props.onUpdate} focused contact={contacts[0]} campaign={campaign} />
         </div>
       </div>
     )
@@ -56,4 +42,4 @@ class EditPost extends React.Component {
 }
 
 const EditPostWithSnackBar = withSnackbar(EditPost)
-export default Modal(EditPostWithSnackBar, { width: 675 })
+export default Modal(EditPostWithSnackBar, { width: 675, overflowY: 'visible' })

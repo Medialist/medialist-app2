@@ -164,12 +164,12 @@ class Post extends React.Component {
     })
   }
 
-  updatePost = (event) => {
-    event.preventDefault()
-
+  updatePost = (update) => {
     this.setState({
       editOpen: false
     })
+
+    console.log(update)
   }
 
   render () {
@@ -195,7 +195,7 @@ class Post extends React.Component {
               <Dropdown className='f-sm semibold gray60 flex-none' data-id='post-menu'>
                 <ChevronOpenDown onClick={(event) => this.openMenu(event)} data-id='open-post-menu-button' className='ml1' style={{fill: GREY60}} />
                 <DropdownMenu width={180} left={-150} top={-2} arrowPosition='top' arrowAlign='right' arrowMarginRight='11px' open={this.state.menuOpen} onDismiss={() => this.closeMenu()}>
-                  <nav className='p1'>
+                  <nav className='pt1'>
                     {
                       <DropdownMenuItem
                         onClick={this.editPost}
