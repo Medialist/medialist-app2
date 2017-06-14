@@ -89,10 +89,6 @@ const UpdateFeedbackOrCoverageSchema = new SimpleSchema([{
   message: {
     type: String,
     optional: true
-  },
-  status: {
-    type: String,
-    optional: true
   }
 },
   StatusSchema
@@ -128,18 +124,27 @@ export const updateFeedbackPost = new ValidatedMethod({
       throw new Meteor.Error('You must be logged in')
     }
 
-    const post = Posts.findOne({ _id }).count()
+    const post = Posts.findOne({ _id })
 
     if (!post) {
       throw new Meteor.Error('Can\'t find post')
     }
 
-    const update = {}
+    Posts.update({ _id }, {$set: { message, status }})
 
-    if (message) update.message = message
-    if (status) update.status = status
-
-    return Posts.update({ _id }, update)
+    if (status !== post.status) {
+      post.campaigns.forEach((campaign) => {
+        Campaigns.update({
+          slug: campaign.slug
+        }, {
+          $set: {
+            [`contacts.${post.contacts[0].slug}`]: status,
+            updatedAt: new Date(),
+            updatedBy: post.createdBy
+          }
+        })
+      })
+    }
   }
 })
 

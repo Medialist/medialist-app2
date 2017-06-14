@@ -24,6 +24,7 @@ import findUrl from '/imports/lib/find-url'
 import DeletePostModal from './delete-post-modal'
 import EditPostModal from './edit-post-modal'
 import { GREY60 } from '/imports/ui/colours'
+import { updateFeedbackPost } from '/imports/api/posts/methods'
 
 const hideTextIfOnlyUrl = (item) => {
   const url = findUrl(item.message)
@@ -164,12 +165,12 @@ class Post extends React.Component {
     })
   }
 
-  updatePost = (update) => {
+  updatePost = (postId, update) => {
     this.setState({
       editOpen: false
     })
-
-    console.log(update)
+    const { message, status } = update
+    updateFeedbackPost.call({ _id: postId, message, status })
   }
 
   render () {
@@ -177,6 +178,7 @@ class Post extends React.Component {
       'data-contact': this.props.contacts.map(contact => contact._id).join(' '),
       'data-campaign': this.props.campaigns.map(campaigns => campaigns._id).join(' ')
     }
+    const canEditPost = this.props.createdBy._id === this.props.currentUser._id
 
     return (
       <article className={`flex rounded px4 pt3 pb2 mb2 shadow-2 ${this.props.bgClass}`} data-id={dasherise(this.props.type)} {...data}>
@@ -196,7 +198,7 @@ class Post extends React.Component {
                 <ChevronOpenDown onClick={(event) => this.openMenu(event)} data-id='open-post-menu-button' className='ml1' style={{fill: GREY60}} />
                 <DropdownMenu width={180} left={-150} top={-2} arrowPosition='top' arrowAlign='right' arrowMarginRight='11px' open={this.state.menuOpen} onDismiss={() => this.closeMenu()}>
                   <nav className='pt1'>
-                    {
+                    {canEditPost &&
                       <DropdownMenuItem
                         onClick={this.editPost}
                         data-id='edit-post-button'>

@@ -97,14 +97,14 @@ const PostBox = React.createClass({
   }
 })
 
-export const PostBoxButtons = ({focused, disabled, onPost, children}) => (
+export const PostBoxButtons = ({focused, disabled, onPost, isEdit, children}) => (
   <div style={{display: focused ? null : 'none'}}>
     <button
       onClick={onPost}
       className={`btn opacity-100 bg-gray80 right active-bg-blue ${disabled ? 'white' : 'active'}`}
       disabled={disabled}
       data-id='create-post-button'>
-      Post
+      {isEdit ? 'Update' : 'Post'}
     </button>
     {children}
   </div>
@@ -117,7 +117,8 @@ export const FeedbackInput = React.createClass({
     campaign: PropTypes.object,
     focused: PropTypes.bool.isRequired,
     onSubmit: PropTypes.func.isRequired,
-    message: PropTypes.string
+    message: PropTypes.string,
+    isEdit: PropTypes.bool
   },
   getInitialState () {
     const { contact, campaign } = this.props
@@ -163,7 +164,8 @@ export const FeedbackInput = React.createClass({
         <PostBoxButtons
           focused={this.props.focused}
           disabled={!this.state.message || this.state.posting || !this.state.status || !this.state.campaign}
-          onPost={this.onSubmit} >
+          onPost={this.onSubmit}
+          isEdit={this.props.isEdit}>
           <CampaignSelector
             contact={this.props.contact}
             onChange={this.onFieldChange}
