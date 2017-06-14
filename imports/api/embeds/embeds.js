@@ -24,6 +24,20 @@ Embeds.toRef = ({_id, url, urls, headline, image, datePublished, outlet}) => ({
   datePublished
 })
 
+Embeds.findOneById = (_id) => (
+  Embeds.findOne({ _id }, {
+    fields: {
+      _id: 1,
+      url: 1,
+      outlet: 1,
+      headline: 1,
+      image: 1,
+      datePublished: 1,
+      urls: 1
+    }
+  })
+)
+
 Embeds.findOneEmbed = (url) => (
   Embeds.findOne({
     $or: [{
@@ -76,7 +90,7 @@ Embeds.findOneEmbedRef = (url) => {
   })
 }
 
-export const EmbedRefSchema = new SimpleSchema({
+export const BaseEmbedRefSchema = new SimpleSchema({
   _id: {
     type: String,
     regEx: SimpleSchema.RegEx.Id,
@@ -114,20 +128,26 @@ export const EmbedRefSchema = new SimpleSchema({
   urls: {
     type: [String],
     regEx: SimpleSchema.RegEx.Url
-  },
-  'scrapedBy.name': {
-    type: String,
-    optional: true
-  },
-  'scrapedBy.version': {
-    type: String,
-    optional: true
-  },
-  createdBy: {
-    type: UserRefSchema
-  },
-  createdAt: {
-    type: Date,
-    optional: true
   }
 })
+
+export const EmbedRefSchema = new SimpleSchema([
+  BaseEmbedRefSchema,
+  {
+    'scrapedBy.name': {
+      type: String,
+      optional: true
+    },
+    'scrapedBy.version': {
+      type: String,
+      optional: true
+    },
+    createdBy: {
+      type: UserRefSchema
+    },
+    createdAt: {
+      type: Date,
+      optional: true
+    }
+  }
+])

@@ -1,11 +1,31 @@
 import { Meteor } from 'meteor/meteor'
+import { Random } from 'meteor/random'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
 import assert from 'assert'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
-import { createFeedbackPost, createCoveragePost, createNeedToKnowPost, updateFeedbackPost } from '/imports/api/posts/methods'
+import Embeds from '/imports/api/embeds/embeds'
+import { createFeedbackPost, createCoveragePost, createNeedToKnowPost, updateFeedbackPost, updateCoveragePost } from '/imports/api/posts/methods'
 import moment from 'moment'
+import faker from 'faker'
+
+function fakeEmbed (opts) {
+  opts = opts || {}
+  return Object.assign({
+    datePublished: faker.date.past(),
+    headline: faker.commerce.productName(),
+    image: {
+      height: faker.random.number(),
+      url: faker.internet.url(),
+      width: faker.random.number(),
+    },
+    outlet: faker.commerce.department(),
+    url: faker.internet.url(),
+    urls: [faker.internet.url()],
+    _id: Random.id()
+  }, opts)
+}
 
 function insertTestData () {
   Meteor.users.insert({
@@ -299,15 +319,54 @@ describe('updateFeedbackPost', function () {
 
   it('should let users update a post and cascade updates to campaign contacts status', function () {
     const post = Posts.findOne()
-    const { _id } = post
+    const postId = post._id
+    const update = {message: 'test update2', status: 'Contacted'}
 
-    updateFeedbackPost.run.call({userId: 'alf'}, {_id, message: 'test update2', status: 'Contacted'})
+    updateFeedbackPost.run.call({userId: 'alf'}, {postId, update})
 
-    const updatedPost = Posts.findOne({ _id })
+    const updatedPost = Posts.findOne({ _id: postId })
     const campaign = Campaigns.findOne({slug: 'slug1'})
 
     assert.equal(updatedPost.status, 'Contacted')
     assert.equal(updatedPost.message, 'test update2')
     assert.equal(campaign.contacts.slug0, 'Contacted')
+  })
+})
+
+describe('updateCoveragePost', function () {
+  beforeEach(function () {
+    resetDatabase()
+    insertTestData()
+    const campaignSlug = 'slug1'
+    const contactSlug = 'slug0'
+    const message = 'Tip top'
+    const status = 'Hot Lead'
+    createCoveragePost.run.call({userId: 'alf'}, {
+      contactSlug, campaignSlug, message, status
+    })
+    const embedId = Embeds.insert(fakeEmbed({headline: 'test'}))
+    const embed = Embeds.findOneById(embedId)
+    const post = Posts.findOne()
+    Posts.update({ _id: post._id }, {$push: {embeds: embed}})
+  })
+
+  it('should require the user to be logged in', function () {
+    assert.throws(() => updateFeedbackPost.run.call({}, {}), /You must be logged in/)
+  })
+
+  it('should let users update a coverage post with an embed', function () {
+    const post = Posts.findOne()
+    const update = {status: 'Contacted', }
+    const newEmbedId = Embeds.insert(fakeEmbed({headline: 'new embed'}))
+    const newEmbed = Embeds.findOneById(newEmbedId)
+
+    updateCoveragePost.run.call({userId: 'alf'}, {postId: post._id, update: {embed: newEmbed}})
+
+    const updatedPost = Posts.findOne({ _id: post._id })
+
+    assert.equal(updatedPost.embeds.length, 2)
+    assert.equal(updatedPost.embeds[0].headline, 'new embed')
+    assert.equal(updatedPost.status, 'Hot Lead')
+    assert.equal(updatedPost.message, 'Tip top')
   })
 })

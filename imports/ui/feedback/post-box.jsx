@@ -185,20 +185,21 @@ export const FeedbackInput = React.createClass({
 })
 
 // Defaults the status to completed. User can change it.
-const CoverageInput = React.createClass({
+export const CoverageInput = React.createClass({
   propTypes: {
     contact: PropTypes.object.isRequired,
     campaign: PropTypes.object,
     focused: PropTypes.bool,
     campaigns: PropTypes.array.isRequired,
-    onSubmit: PropTypes.func.isRequired
+    onSubmit: PropTypes.func.isRequired,
+    isEdit: PropTypes.bool
   },
   getInitialState () {
     const { campaign } = this.props
     return {
       status: StatusMap.completed,
       campaign,
-      message: '',
+      message: this.props.message || '',
       posting: false
     }
   },
@@ -235,7 +236,8 @@ const CoverageInput = React.createClass({
         <PostBoxButtons
           focused={this.props.focused}
           disabled={!this.state.message || this.state.posting || !this.state.campaign}
-          onPost={this.onSubmit} >
+          onPost={this.onSubmit}
+          isEdit={this.props.isEdit} >
           <CampaignSelector
             contact={this.props.contact}
             onChange={this.onFieldChange}

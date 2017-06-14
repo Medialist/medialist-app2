@@ -5,7 +5,7 @@ import { StatusSchema } from '/imports/lib/schema'
 import { checkAllSlugsExist } from '/imports/lib/slug'
 import findUrl from '/imports/lib/find-url'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
-import Embeds from '/imports/api/embeds/embeds'
+import Embeds, { BaseEmbedRefSchema } from '/imports/api/embeds/embeds'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
@@ -82,17 +82,22 @@ const FeedbackOrCoverageSchema = new SimpleSchema([{
   StatusSchema
 ])
 
-const UpdateFeedbackOrCoverageSchema = new SimpleSchema([{
-  _id: {
+const UpdateFeedbackOrCoverageSchema = new SimpleSchema({
+  postId: {
     type: String
   },
-  message: {
+  'update.message': {
     type: String,
     optional: true
+  },
+  'update.status': {
+    type: String
+  },
+  'update.embed': {
+    type: BaseEmbedRefSchema,
+    optional: true
   }
-},
-  StatusSchema
-])
+})
 
 export const createFeedbackPost = new ValidatedMethod({
   name: 'createFeedbackPost',
@@ -119,7 +124,7 @@ export const createFeedbackPost = new ValidatedMethod({
 export const updateFeedbackPost = new ValidatedMethod({
   name: 'updateFeedbackPost',
   validate: UpdateFeedbackOrCoverageSchema.validator(),
-  run ({ _id, message, status }) {
+  run ({ postId: _id, update }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -130,7 +135,9 @@ export const updateFeedbackPost = new ValidatedMethod({
       throw new Meteor.Error('Can\'t find post')
     }
 
-    Posts.update({ _id }, {$set: { message, status }})
+    const { message, status } = update
+
+    Posts.update({ _id }, {$set: {message, status, updatedAt: new Date()}}, {upsert: true})
 
     if (status !== post.status) {
       post.campaigns.forEach((campaign) => {
@@ -167,6 +174,46 @@ export const createCoveragePost = new ValidatedMethod({
       message,
       status
     })
+  }
+})
+
+export const updateCoveragePost = new ValidatedMethod({
+  name: 'updateCoveragePost',
+  validate: UpdateFeedbackOrCoverageSchema.validator(),
+  run ({ postId: _id, update }) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    const post = Posts.findOne({ _id })
+
+    if (!post) {
+      throw new Meteor.Error('Can\'t find post')
+    }
+
+    if (update.embed && Meteor.isServer) {
+      const embed = Embeds.findOneById(update.embed._id)
+      const embeds = [embed].concat(post.embeds)
+      Posts.update({ _id }, {$set: { embeds }})
+    }
+
+    const { message = post.message, status = post.status } = update
+
+    Posts.update({ _id }, {$set: {message, status, updatedAt: new Date()}}, {upsert: true})
+
+    if (update.status !== post.status) {
+      post.campaigns.forEach((campaign) => {
+        Campaigns.update({
+          slug: campaign.slug
+        }, {
+          $set: {
+            [`contacts.${post.contacts[0].slug}`]: status,
+            updatedAt: new Date(),
+            updatedBy: post.createdBy
+          }
+        })
+      })
+    }
   }
 })
 

@@ -169,8 +169,8 @@ class Post extends React.Component {
     this.setState({
       editOpen: false
     })
-    const { message, status } = update
-    updateFeedbackPost.call({ _id: postId, message, status })
+    const { message, status, embed } = update
+    updateFeedbackPost.call({ postId, update: { message, status, embed } })
   }
 
   render () {
@@ -191,7 +191,7 @@ class Post extends React.Component {
             <YouOrName className='semibold align-middle' currentUser={this.props.currentUser} user={this.props.createdBy} />
             <div className='align-middle flex-auto truncate' style={{paddingLeft: 3}}>{this.props.summary}</div>
             <span className='f-sm semibold gray60 flex-none'>
-              <Time date={this.props.createdAt} />
+              <Time date={this.props.updatedAt || this.props.createdAt} />
             </span>
             {this.props.editable && (
               <Dropdown className='f-sm semibold gray60 flex-none' data-id='post-menu'>
