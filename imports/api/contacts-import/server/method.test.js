@@ -9,7 +9,7 @@ import { user, contact } from '../../../../tests/browser/fixtures/domain'
 
 let userId = null
 
-describe.only('importContacts', function () {
+describe('importContacts', function () {
   beforeEach(function () {
     resetDatabase()
     userId = Meteor.users.insert({...user(), myContacts: []})
@@ -52,7 +52,7 @@ describe.only('importContacts', function () {
         if (!results || !results.updated) return
         if (results.updated.length !== contactsToImport.length) return
         done()
-        
+
       }
     })
   })

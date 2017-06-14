@@ -16,8 +16,10 @@ export const importContacts = new ValidatedMethod({
   }).validator(),
 
   run ({ data }) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
-    console.log(data)
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
     const createdBy = findOneUserRef(this.userId)
     const createdAt = new Date()
     const doc = {
