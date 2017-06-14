@@ -35,32 +35,53 @@ export const findUserRefs = (userIds) => {
  * Add contacts or campaigns (or both) to the users my<Type> Arrays.
  */
 export const addToMyFavourites = ({userId, contactSlugs = [], campaignSlugs = [], updatedAt = new Date()}) => {
-  const user = Meteor.users.findOne(
-    { _id: userId },
-    { fields: { myContacts: 1, myCampaigns: 1 } }
-  )
+  const user = Meteor.users.findOne({
+    _id: userId
+  }, {
+    fields: {
+      myContacts: 1,
+      myCampaigns: 1
+    }
+  })
   const myContacts = findMyContactRefs({user, contactSlugs, updatedAt})
   const myCampaigns = findMyCampaignRefs({user, campaignSlugs, updatedAt})
   const $set = {}
-  if (myContacts.length) $set.myContacts = myContacts
-  if (myCampaigns.length) $set.myCampaigns = myCampaigns
 
-  return Meteor.users.update(
-    { _id: userId },
-    { $set }
-  )
+  if (myContacts.length) {
+    $set.myContacts = myContacts
+  }
+
+  if (myCampaigns.length) {
+    $set.myCampaigns = myCampaigns
+  }
+
+  return Meteor.users.update({
+    _id: userId
+  }, {
+    $set
+  })
 }
 
 // Used to update the users myContacts array.
 // Returns a new `myContacts` array by creating new ContactRef-like objects
 // for the `contactSlugs` and merging them with the users existing ones.
 function findMyContactRefs ({user, contactSlugs, updatedAt}) {
-  if (contactSlugs.length === 0) return []
+  if (contactSlugs.length === 0) {
+    return []
+  }
 
-  const newRefs = Contacts.find(
-    { slug: { $in: contactSlugs } },
-    { fields: { avatar: 1, slug: 1, name: 1, outlets: 1 } }
-  ).map((contact) => ({
+  const newRefs = Contacts.find({
+    slug: {
+      $in: contactSlugs
+    }
+  }, {
+    fields: {
+      avatar: 1,
+      slug: 1,
+      name: 1,
+      outlets: 1
+    }
+  }).map((contact) => ({
     _id: contact._id,
     name: contact.name,
     slug: contact.slug,

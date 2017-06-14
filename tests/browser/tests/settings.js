@@ -6,8 +6,6 @@ const test = {
   '@tags': ['settings'],
 
   beforeEach: (t) => {
-    t.resizeWindow(1440, 1024)
-
     t.user = t.page.authenticate()
       .register()
   },

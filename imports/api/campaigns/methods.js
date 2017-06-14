@@ -279,8 +279,8 @@ export const remove = new ValidatedMethod({
 
       // Remove campaigns from contacts
       Contacts.update({}, {
-        $pull: {
-          'campaigns': slug
+        $unset: {
+          [`campaigns.${slug}`]: true
         }
       }, {
         multi: true

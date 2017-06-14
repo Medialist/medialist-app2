@@ -15,12 +15,12 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
     slug: campaignSlug
   })
 
-  if (campaign.contacts[contactSlug] === status && !message) {
+  if (campaign.contacts[contactSlug] && campaign.contacts[contactSlug] === status && !message) {
     return
   }
 
   const createdBy = findOneUserRef(userId)
-  const createdAt = new Date()
+  const now = new Date()
   const url = findUrl(message)
   const embed = Embeds.findOneEmbedRef(url)
   const post = {
@@ -32,7 +32,7 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
     status,
     message,
     createdBy,
-    createdAt
+    createdAt: now
   }
 
   Posts.insert(post)
@@ -42,7 +42,7 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
   }, {
     $set: {
       [`contacts.${contactSlug}`]: status,
-      updatedAt: createdAt,
+      updatedAt: now,
       updatedBy: createdBy
     }
   })
@@ -51,11 +51,9 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
     slug: contactSlug
   }, {
     $set: {
-      updatedAt: createdAt,
-      updatedBy: createdBy
-    },
-    $addToSet: {
-      campaigns: campaignSlug
+      updatedAt: now,
+      updatedBy: createdBy,
+      [`campaigns.${campaignSlug}.updatedAt`]: now
     }
   })
 
@@ -63,7 +61,7 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
     userId,
     contactSlugs: [contactSlug],
     campaignSlugs: [campaignSlug],
-    updatedAt: createdAt
+    updatedAt: now
   })
 }
 

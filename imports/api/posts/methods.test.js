@@ -23,7 +23,7 @@ function insertTestData () {
     slug: `slug${index}`,
     name: `name${index}`,
     avatar: `avatar${index}`,
-    campaigns: []
+    campaigns: {}
   }))
   contacts.forEach((c) => Contacts.insert(c))
 
@@ -114,7 +114,12 @@ describe('createFeedbackPost', function () {
 
     const contact = Contacts.findOne({slug: contactSlug})
     assert.deepEqual(contact.updatedBy, userRef)
-    assert.deepEqual(contact.campaigns, [campaignSlug])
+    assert.deepEqual(contact.campaigns, {
+      [campaignSlug]: {
+        updatedAt: contact.campaigns[campaignSlug].updatedAt
+      }
+    })
+    assert.ok(contact.campaigns[campaignSlug].updatedAt)
   })
 
   it('should not create a feedback post when there is no message and the contact already has the passed status', function () {
@@ -216,7 +221,12 @@ describe('createCoveragePost', function () {
 
     const contact = Contacts.findOne({slug: contactSlug})
     assert.deepEqual(contact.updatedBy, userRef)
-    assert.deepEqual(contact.campaigns, [campaignSlug])
+    assert.deepEqual(contact.campaigns, {
+      [campaignSlug]: {
+        updatedAt: contact.campaigns[campaignSlug].updatedAt
+      }
+    })
+    assert.ok(contact.campaigns[campaignSlug].updatedAt)
   })
 })
 

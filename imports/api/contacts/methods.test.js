@@ -27,7 +27,7 @@ describe('addContactsToCampaign', function () {
     const contacts = Array(3).fill(0).map((_, index) => ({
       _id: `id${index}`,
       slug: `slug${index}`,
-      campaigns: []
+      campaigns: {}
     }))
     contacts.forEach((c) => Contacts.insert(c))
 
@@ -55,26 +55,56 @@ describe('addContactsToCampaign', function () {
     const campaignSlug = 'slug1'
     addContactsToCampaign.run.call({userId: 'alf'}, {contactSlugs, campaignSlug})
 
-    Campaigns.find({slug: campaignSlug}).forEach((c) => {
+    Campaigns.find({
+      slug: campaignSlug
+    }).forEach((c) => {
       assert.deepEqual(c.contacts, {
         'slug0': 'To Contact',
         'slug1': 'To Contact'
       }, 'Campaigns contain contacts')
     })
 
-    Contacts.find({slug: {$in: contactSlugs}}).forEach((c) => {
-      assert.deepEqual(c.campaigns, [campaignSlug], 'Contacts are in campaigns')
+    Contacts.find({
+      slug: {
+        $in: contactSlugs
+      }
+    }).forEach((c) => {
+      assert.deepEqual(c.campaigns, {
+        [campaignSlug]: {
+          updatedAt: c.campaigns[campaignSlug].updatedAt
+        }
+      }, 'Contacts are in campaigns')
     })
   })
 
   it('should merge contacts with existing ones', function () {
-    Campaigns.update({_id: 'id2'}, {$set: {contacts: {'slug0': 'Hot!'}}})
-    Contacts.update({_id: 'id0'}, {$set: {campaigns: ['slug2']}})
+    Campaigns.update({
+      _id: 'id2'
+    }, {
+      $set: {
+        contacts: {
+          'slug0': 'Hot!'
+        }
+      }
+    })
+    Contacts.update({
+      _id: 'id0'
+    }, {
+      $set: {
+        campaigns: {
+          'slug2': {
+            updatedAt: new Date()
+          }
+        }
+      }
+    })
     const contactSlugs = ['slug0', 'slug1']
     const campaignSlug = 'slug2'
     addContactsToCampaign.run.call({userId: 'alf'}, {contactSlugs, campaignSlug})
 
-    assert.deepEqual(Campaigns.findOne({_id: 'id2'}).contacts, {
+    const campaign = Campaigns.findOne({_id: 'id2'})
+
+    assert.deepEqual(campaign.contacts, {
       'slug0': 'Hot!',
       'slug1': 'To Contact'
     }, 'Campaigns contain merged contacts')
@@ -82,9 +112,9 @@ describe('addContactsToCampaign', function () {
     assert.deepEqual(Campaigns.findOne({_id: 'id0'}).contacts, {}, 'Other campaigns are unharmed')
 
     Contacts.find({_id: {$in: contactSlugs}}).forEach((c) => {
-      assert.equal(c.campaigns.length, 1, 'Contacts are in campaigns')
-      assert.ok(c.campaigns.includes('slug1'))
-      assert.ok(c.campaigns.includes('slug2'))
+      assert.equal(Object.keys(c.campaigns).length, 1, 'Contacts are in campaigns')
+      assert.ok(c.campaigns['slug1'])
+      assert.ok(c.campaigns['slug2'])
     })
 
     assert.deepEqual(Contacts.findOne({_id: 'id2'}).campaigns, [], 'Other contacts are unharmed')
@@ -134,7 +164,10 @@ describe('removeContactsFromCampaigns', function () {
     const campaigns = Array(1).fill(0).map((_, index) => ({
       _id: `${index}`,
       slug: `${index}`,
-      contacts: { '2': { slug: '2' }, '0': { slug: '0' } }
+      contacts: {
+        '2': '2',
+        '0': '0'
+      }
     }))
     campaigns.forEach((c) => Campaigns.insert(c))
 
@@ -146,7 +179,9 @@ describe('removeContactsFromCampaigns', function () {
     const campaign = Campaigns.findOne()
 
     assert.equal(Object.keys(campaign.contacts).length, 1)
-    assert.deepEqual(campaign.contacts['0'], { slug: '0' })
+    assert.deepEqual(campaign.contacts, {
+      '0': '0'
+    })
   })
 })
 
@@ -292,7 +327,9 @@ describe('batchRemoveContacts', function () {
 
     const campaign = Campaigns.findOne({name: 'A campaign'})
     assert.equal(Object.keys(campaign.contacts).length, 1)
-    assert.deepEqual(campaign.contacts, {'1': 'to-contact'})
+    assert.deepEqual(campaign.contacts, {
+      '1': 'to-contact'
+    })
 
     assert.equal(Posts.findOne({name: 'A post with contact 0'}), null)
     assert.ok(Posts.findOne({name: 'A post with contact 1'}))

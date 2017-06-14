@@ -1,5 +1,12 @@
 const faker = require('faker')
 
+function status (except) {
+  return faker.helpers.randomize(
+    ['completed', 'hot-lead', 'contacted', 'to-contact', 'not-interested']
+    .filter(status => status !== except)
+  )
+}
+
 function labelValue (label, value) {
   return {
     label,
@@ -84,5 +91,6 @@ module.exports = {
   user,
   labelValue,
   campaignList,
-  contactList
+  contactList,
+  status
 }

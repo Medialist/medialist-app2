@@ -91,8 +91,11 @@ export const ContactSchema = new SimpleSchema([
     },
     // References to other collections
     campaigns: {
-      type: [String],
-      defaultValue: []
+      type: Object,
+      defaultValue: {}
+    },
+    'campaigns.$.updatedAt': {
+      type: Date
     },
     masterLists: {
       type: [MasterListRefSchema],

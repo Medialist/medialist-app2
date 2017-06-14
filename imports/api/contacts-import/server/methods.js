@@ -33,7 +33,7 @@ export const importContacts = new ValidatedMethod({
       createdBy
     }
     const _id = ContactsImport.insert(doc)
-    // Do after sending the clint the import _id
+    // Do after sending the client the import _id
     Meteor.defer(function () {
       const label = `ContactsImport ${_id} with ${data.length} items`
       console.log(label)
@@ -66,7 +66,7 @@ function createContact (data, userRef, importId) {
   data.slug = slugify(data.name, Contacts)
   data.socials = data.socials || []
   data.phones = data.phones || []
-  data.campaigns = []
+  data.campaigns = {}
   data.masterLists = []
   data.tags = []
   data.imports = [importId]

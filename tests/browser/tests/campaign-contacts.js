@@ -6,8 +6,6 @@ const test = {
   '@tags': ['campaign-contacts'],
 
   beforeEach: function (t) {
-    t.resizeWindow(1440, 1024)
-
     t.page.authenticate()
       .register()
   },
@@ -264,8 +262,8 @@ const test = {
 
         t.perform((done) => {
           t.db.findContacts({
-            campaigns: {
-              $in: [campaign.slug]
+            [`campaigns.${campaign.slug}`]: {
+              $exists: true
             }
           })
           .then((docs) => {

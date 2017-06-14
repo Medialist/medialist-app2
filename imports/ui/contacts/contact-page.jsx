@@ -119,14 +119,30 @@ export default createContainer((props) => {
     })
   ]
   const user = Meteor.user()
-  const contact = Contacts.findOne({ slug: contactSlug })
-  const campaign = Campaigns.findOne({ slug: campaignSlug })
-  const campaigns = contact ? Campaigns.find({ slug: { $in: contact.campaigns } }, {sort: { updatedAt: -1 }}).fetch() : []
+  const contact = Contacts.findOne({
+    slug: contactSlug
+  })
+  const campaign = Campaigns.findOne({
+    slug: campaignSlug
+  })
+  const campaigns = contact ? Campaigns.find({
+    slug: {
+      $in: Object.keys(contact.campaigns)
+    }
+  }, {
+    sort: {
+      updatedAt: -1
+    }
+  }).fetch() : []
   const masterlists = MasterLists.find({type: 'Contacts'}).fetch()
-  const needToKnows = Posts.find(
-    { type: 'NeedToKnowPost', 'contacts.slug': contactSlug },
-    { sort: { createdAt: -1 } }
-  ).fetch()
+  const needToKnows = Posts.find({
+    type: 'NeedToKnowPost',
+    'contacts.slug': contactSlug
+  }, {
+    sort: {
+      createdAt: -1
+    }
+  }).fetch()
   const loading = subs.some((s) => !s.ready())
   return { ...props, contact, campaigns, campaign, user, masterlists, needToKnows, loading }
 }, withRouter(ContactPage))

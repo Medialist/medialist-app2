@@ -255,19 +255,28 @@ const contactStatusSort = ({contacts}, dir) => (a, b) => {
 const ContactsTableContainer = createContainer((props) => {
   const { campaign, term, sort, statusFilter } = props
   const contactIds = campaign.contacts ? Object.keys(campaign.contacts) : []
-  let query = { slug: { $in: contactIds } }
+  let query = {
+    slug: {
+      $in: contactIds
+    }
+  }
 
   if (term) {
     const filterRegExp = new RegExp(escapeRegExp(term), 'gi')
     query = {
-      $and: [
-        { slug: { $in: contactIds } },
-        { $or: [
-          { name: filterRegExp },
-          { 'outlets.value': filterRegExp },
-          { 'outlets.label': filterRegExp }
-        ]}
-      ]
+      $and: [{
+        slug: {
+          $in: contactIds
+        }
+      }, {
+        $or: [{
+          name: filterRegExp
+        }, {
+          'outlets.value': filterRegExp
+        }, {
+          'outlets.label': filterRegExp
+        }]
+      }]
     }
   }
 

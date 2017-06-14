@@ -214,7 +214,7 @@ const ResultList = React.createClass({
         {results.map((res) => {
           const alreadyInCampaign = contactSlugs.some((c) => res.contacts[c])
           const ResultListItem = alreadyInCampaign ? CanNotJoinCampaignResult : CanJoinCampaignResult
-          return <ResultListItem {...res} onAdd={onAdd} />
+          return <ResultListItem {...res} onAdd={onAdd} key={res._id} />
         })}
       </div>
     )

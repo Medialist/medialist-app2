@@ -70,7 +70,7 @@ const CampaignFilterContainer = createContainer((props) => {
 
   if (props.contact) {
     query.slug = {
-      $in: props.contact.campaigns
+      $in: Object.keys(props.contact.campaigns)
     }
   }
 

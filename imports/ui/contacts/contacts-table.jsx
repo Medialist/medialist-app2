@@ -134,7 +134,6 @@ const ContactsTable = React.createClass({
                 emails,
                 outlets,
                 phones,
-                updatedAt,
                 updatedBy
               } = contact
               return (
@@ -166,7 +165,7 @@ const ContactsTable = React.createClass({
                     </td>
                   )}
                   <td className='left-align'>
-                    <TimeFromNow className='semibold f-sm' date={updatedAt} />
+                    <TimeFromNow className='semibold f-sm' date={campaign ? contact.campaigns[campaign.slug].updatedAt : contact.updatedAt} />
                     <span className='normal f-sm'> by <YouOrName user={updatedBy} /></span>
                   </td>
                 </SelectableRow>
