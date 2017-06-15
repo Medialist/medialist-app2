@@ -59,6 +59,7 @@ module.exports = {
       elements: {
         feedbackInput: '[data-id=feedback-input]',
         coverageInput: '[data-id=coverage-input]',
+        needToKnowInput: '[data-id=need-to-know-input]',
         createPostButton: '[data-id=create-post-button]',
         contactStatusSelectorButton: '[data-id=contact-status-selector-button]'
       }
@@ -192,6 +193,16 @@ module.exports = {
         .click('@addContactsButton')
 
       this.waitForElementVisible(this.section.addContactsModal.selector)
+
+      return this
+    },
+    openEditPostModal: function () {
+      this
+        .waitForElementVisible('@openPostMenuButton')
+        .click('@openPostMenuButton')
+        .waitForElementVisible('@editPostButton')
+        .click('@editPostButton')
+        .waitForElementVisible(this.section.editPostModal.selector)
 
       return this
     },

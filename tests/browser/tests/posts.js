@@ -69,6 +69,29 @@ const test = {
     })
     t.page.main().logout()
     t.end()
+  },
+
+  'Should be able to update a need-to-know post': function (t) {
+    t.createDomain(['user', 'campaign', 'contact'], (user1, campaign, contact, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact], campaign, () => done())
+      })
+
+      t.perform((done) => {
+        t.page.contact()
+          .navigate(contact)
+          .addNeedToKnowPost(contact, 'Need to knows')
+          .editNeedToKnowPost(contact, 'Kneed 2 Nose')
+          .assert.containsText(`[data-id=need-to-know-post][data-contact=${contact._id}]`, 'Kneed 2 Nose')
+          .assert.containsText('[data-id=need-to-knows-list]', 'Kneed 2 Nose')
+
+        done()
+      })
+
+      done()
+    })
+    t.page.main().logout()
+    t.end()
   }
 }
 

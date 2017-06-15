@@ -10,7 +10,10 @@ const tagSelectorModal = require('../components/tag-selector-modal')
 module.exports = {
   url: 'http://localhost:3000/contacts',
   elements: {
-    contactInfo: '[data-id=contact-info]'
+    contactInfo: '[data-id=contact-info]',
+    openPostMenuButton: '[data-id=open-post-menu-button]',
+    editPostButton: '[data-id=edit-post-button]',
+    createPostButton: '[data-id=create-post-button]'
   },
   sections: {
     info: {
@@ -24,6 +27,16 @@ module.exports = {
     },
     campaignSelectorModal: campaignSelectorModal,
     editContactForm: editContactForm,
+    editPostModal: {
+      selector: '[data-id=edit-post-modal]',
+      elements: {
+        feedbackInput: '[data-id=feedback-input]',
+        coverageInput: '[data-id=coverage-input]',
+        needToKnowInput: '[data-id=need-to-know-input]',
+        createPostButton: '[data-id=create-post-button]',
+        contactStatusSelectorButton: '[data-id=contact-status-selector-button]'
+      }
+    },
     activityFeed: activityFeed('contact'),
     postBox: postBox,
     contactListsModal: addToListsModal('add-to-list-modal'),
@@ -41,6 +54,27 @@ module.exports = {
         .waitForElementVisible('@editContactInfoButton')
         .click('@editContactInfoButton')
         .waitForElementVisible(this.section.editContactForm.selector)
+
+      return this
+    },
+    addNeedToKnowPost: function (contact, text) {
+      this.section.postBox
+        .postNeedToKnow(contact, text)
+      return this
+    },
+    editNeedToKnowPost: function (contact, text) {
+      this
+        .waitForElementVisible('@openPostMenuButton')
+        .click('@openPostMenuButton')
+        .waitForElementVisible('@editPostButton')
+        .click('@editPostButton')
+        .waitForElementVisible(this.section.editPostModal.selector)
+
+      this.section.editPostModal
+        .clear('@needToKnowInput')
+        .setValue('@needToKnowInput', text)
+        .waitForElementVisible('@createPostButton')
+        .click('@createPostButton')
 
       return this
     }

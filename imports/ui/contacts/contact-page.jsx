@@ -92,7 +92,7 @@ const ContactPage = withSnackbar(React.createClass({
             />
             <ActivityFeed data-id='contact-activity-feed' contact={contact} />
           </div>
-          <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
+          <div data-id='need-to-knows-list' className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
             <ContactNeedToKnowList items={needToKnows} />
           </div>
         </div>
