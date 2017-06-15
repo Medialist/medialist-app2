@@ -10,28 +10,41 @@ const test = {
       .register()
   },
 
-  'Should be able to edit a post you\'ve created': function (t) {
-    t.createDomain(['user', 'user', 'campaign', 'contact'], (user1, user2, campaign, contact, done) => {
+  'Should only be able to edit a post you\'ve created': function (t) {
+    t.createDomain(['user', 'campaign', 'contact'], (user1, campaign, contact, done) => {
       t.perform((done) => {
         t.addContactsToCampaign([contact], campaign, () => done())
       })
 
       t.perform((done) => {
-        const campaignPage = t.page.campaign()
+        t.page.campaign()
           .navigate(campaign)
-
-        campaignPage
           .addFeedbackPost(contact, 'hot-lead', 'He\'s so hot right now')
-          .editFeedbackPost(contact, 'Contacted', 'Hansella!')
-          .assert.containsText(`[data-contact=${contact._id}]`, 'Hansella!')
+          .editFeedbackPost(contact, 'contacted', ' that Hansella!')
+          .assert.containsText(`[data-contact=${contact._id}]`, 'He\'s so hot right now that Hansella!')
+          .assert.containsText(`[data-contact=${contact._id}]`, 'CONTACTED')
 
+        t.page.main().logout()
+        done()
+      })
+
+      t.perform((done) => {
+        t.page.authenticate()
+          .register()
+
+        t.page.campaign()
+          .navigate(campaign)
+          .waitForElementVisible('@openPostMenuButton')
+          .click('@openPostMenuButton')
+          .assert.elementNotPresent('@editPostButton')
+          .click('body')
+
+        t.page.main().logout()
         done()
       })
 
       done()
     })
-
-    t.page.main().logout()
     t.end()
   }
 }

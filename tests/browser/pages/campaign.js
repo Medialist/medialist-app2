@@ -1,7 +1,5 @@
 'use strict'
 
-const faker = require('faker')
-
 const editCampaignForm = require('../components/edit-campaign-form')
 const activityFeed = require('../components/activity-feed')
 const postBox = require('../components/post-box')
@@ -59,7 +57,8 @@ module.exports = {
       selector: '[data-id=edit-post-modal]',
       elements: {
         feedbackInput: '[data-id=feedback-input]',
-        createPostButton: '[data-id=create-post-button]'
+        createPostButton: '[data-id=create-post-button]',
+        contactStatusSelectorButton: '[data-id=contact-status-selector-button]'
       }
     },
     addContactsModal: {
@@ -208,9 +207,14 @@ module.exports = {
         .waitForElementVisible(this.section.editPostModal.selector)
 
       this.section.editPostModal
-        .clear('@feedbackInput')
-        .setValue('@feedbackInput', text || faker.lorem.sentence())
+        .waitForElementVisible('@contactStatusSelectorButton')
+        .click('@contactStatusSelectorButton')
+        .waitForElementVisible(`[data-id=contact-status-${contactStatus}]`)
+        .click(`[data-id=contact-status-${contactStatus}]`)
+        .waitForElementVisible('@feedbackInput')
+        .setValue('@feedbackInput', text)
         .click('@createPostButton')
+        .waitForElementNotPresent(this.section.editPostModal.selector)
 
       return this
     }
