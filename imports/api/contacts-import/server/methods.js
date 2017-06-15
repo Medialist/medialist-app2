@@ -6,7 +6,7 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import slugify from '/imports/lib/slug'
 import { findOneUserRef } from '/imports/api/users/users'
 import Contacts, { ContactSchema, ContactCreateSchema } from '/imports/api/contacts/contacts'
-import ContactsImport from '../contacts-import'
+import ContactsImport from '/imports/api/contacts-import/contacts-import'
 
 export const importContacts = new ValidatedMethod({
   name: 'importContacts',

@@ -2,6 +2,7 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { MasterListRefSchema } from '/imports/api/master-lists/master-lists'
 import { TagRefSchema } from '/imports/api/tags/tags'
 import { LabelValueSchema, AuditSchema } from '/imports/lib/schema'
+import { check } from 'meteor/check'
 
 export const ContactRefSchema = new SimpleSchema({
   slug: {
@@ -81,10 +82,15 @@ export const ContactCreateSchema = new SimpleSchema({
   }
 })
 
+export const ContactCampaignSchema = new SimpleSchema({
+  updatedAt: {
+    type: Date
+  }
+})
+
 export const ContactSchema = new SimpleSchema([
   AuditSchema,
-  ContactCreateSchema,
-  {
+  ContactCreateSchema, {
     slug: {
       type: String,
       min: 1
@@ -92,10 +98,14 @@ export const ContactSchema = new SimpleSchema([
     // References to other collections
     campaigns: {
       type: Object,
-      defaultValue: {}
-    },
-    'campaigns.$.updatedAt': {
-      type: Date
+      defaultValue: {},
+      blackbox: true,
+      custom: function () {
+        // ugh https://github.com/aldeed/meteor-simple-schema/issues/244
+        Object.keys(this.value).forEach(key => {
+          check(this.value[key], ContactCampaignSchema)
+        })
+      }
     },
     masterLists: {
       type: [MasterListRefSchema],
