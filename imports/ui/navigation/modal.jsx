@@ -59,7 +59,7 @@ export default (Component, opts = {}) => {
           <Helmet htmlAttributes={{ style }} />
           <div className='fixed top-0 right-0 left-0 bottom-0 flex items-center justify-center z100' style={{background: 'rgba(35, 54, 75, 0.8)'}} onClick={(event) => this.onBackgroundClick(event)}>
             <div data-id={dataId} className='relative bg-white fit rounded' style={{width, maxWidth: '100%', maxHeight: '100vh', overflowY}}>
-              <div className='absolute right-0 pointer px4 py3 gray20 hover-fill-trigger' style={{zIndex: 3}} onClick={(event) => this.onDismiss(event)}>
+              <div className='absolute right-0 pointer px4 py3 gray20 hover-fill-trigger' data-id='close-modal' style={{zIndex: 3}} onClick={(event) => this.onDismiss(event)}>
                 <Close />
               </div>
               <Component {...componentProps} />

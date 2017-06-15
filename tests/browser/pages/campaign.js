@@ -9,7 +9,12 @@ const tagSelectorModal = require('../components/tag-selector-modal')
 module.exports = {
   url: 'http://localhost:3000/campaigns',
   elements: {
-    addContactsButton: '[data-id=add-contacts-to-campaign-button]'
+    addContactsButton: '[data-id=add-contacts-to-campaign-button]',
+    createPostButton: '[data-id=create-post-button]',
+    feedbackInput: '[data-id=feedback-input]',
+    selectContactButton: '[data-id=select-contact-button]',
+    openPostMenuButton: '[data-id=open-post-menu-button]',
+    editPostButton: '[data-id=edit-post-button]'
   },
   sections: {
     info: {
@@ -46,6 +51,14 @@ module.exports = {
         selectedButton: '[data-id=selected-button]',
         cancelButton: '[data-id=edit-campaign-team-cancel-button]',
         saveButton: '[data-id=edit-campaign-team-submit-button]'
+      }
+    },
+    editPostModal: {
+      selector: '[data-id=edit-post-modal]',
+      elements: {
+        feedbackInput: '[data-id=feedback-input]',
+        createPostButton: '[data-id=create-post-button]',
+        contactStatusSelectorButton: '[data-id=contact-status-selector-button]'
       }
     },
     addContactsModal: {
@@ -177,6 +190,31 @@ module.exports = {
         .click('@addContactsButton')
 
       this.waitForElementVisible(this.section.addContactsModal.selector)
+
+      return this
+    },
+    addFeedbackPost: function (contact, contactStatus, text) {
+      this.section.postBox
+        .postFeedback(contact, contactStatus, text)
+      return this
+    },
+    editFeedbackPost: function (contact, contactStatus, text) {
+      this
+        .waitForElementVisible('@openPostMenuButton')
+        .click('@openPostMenuButton')
+        .waitForElementVisible('@editPostButton')
+        .click('@editPostButton')
+        .waitForElementVisible(this.section.editPostModal.selector)
+
+      this.section.editPostModal
+        .waitForElementVisible('@contactStatusSelectorButton')
+        .click('@contactStatusSelectorButton')
+        .waitForElementVisible(`[data-id=contact-status-${contactStatus}]`)
+        .click(`[data-id=contact-status-${contactStatus}]`)
+        .waitForElementVisible('@feedbackInput')
+        .setValue('@feedbackInput', text)
+        .click('@createPostButton')
+        .waitForElementNotPresent(this.section.editPostModal.selector)
 
       return this
     }
