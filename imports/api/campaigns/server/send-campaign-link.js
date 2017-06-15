@@ -1,21 +1,7 @@
 import { Meteor } from 'meteor/meteor'
 import { Random } from 'meteor/random'
 import { Email } from 'meteor/email'
-import { Accounts } from 'meteor/accounts-base'
 import inviteToCampaignTemplate from '/imports/api/email/server/templates/invite-to-campaign'
-
-export const findOrCreateUser = (email) => {
-  let user = Accounts.findUserByEmail(email)
-
-  if (!user) {
-    Accounts.createUser({
-      email: email,
-      profile: {}
-    })
-  }
-
-  return user || Accounts.findUserByEmail(email)
-}
 
 export const createInvitationLink = (user, campaign) => {
   const tokenRecord = {
@@ -61,37 +47,26 @@ const sendEmail = (user, sender, campaign) => {
   })
 }
 
-const sendCampaignLink = (emails = [], sender, campaign) => {
-  // validate all emails
-  emails.forEach(email => {
-    const domain = email.split('@').pop()
-
-    const validDomain = Meteor.settings.public.authentication.emailDomains
-      .concat(Meteor.settings.public.authentication.extraEmailDomains)
-      .some(validDomain => domain === validDomain)
-
-    if (!validDomain) {
-      console.warn(`Tried to invite someone with an invalid email '${domain}'`)
-
-      throw new Meteor.Error('INVALID_EMAIL')
+const sendCampaignLink = (userIds = [], sender, campaign) => {
+  Meteor.users.find({
+    _id: {
+      $in: userIds
+    }
+  }, {
+    fields: {
+      emails: 1
     }
   })
-
-  // all are valid, process them
-  return emails.map(email => {
-    const user = findOrCreateUser(email)
-
+  .forEach(user => {
     try {
       sendEmail(user, sender, campaign)
     } catch (error) {
       // the tests cause an error to be thrown so only propagate it if we
       // are in the business of sending emails
-      if (Meteor.settings.authentication.sendLink) {
+      if (Meteor.settings.authentication && Meteor.settings.authentication.sendLink) {
         throw error
       }
     }
-
-    return user._id
   })
 }
 

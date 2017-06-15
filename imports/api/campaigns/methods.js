@@ -16,11 +16,13 @@ import toUserRef from '/imports/lib/to-user-ref'
 let sendCampaignLink = () => ([])
 let createInvitationLink = () => ([])
 let findOrCreateUser = () => {}
+let createUsers = () => {}
 
 if (Meteor.isServer) {
   sendCampaignLink = require('./server/send-campaign-link').default
   createInvitationLink = require('./server/send-campaign-link').createInvitationLink
-  findOrCreateUser = require('./server/send-campaign-link').findOrCreateUser
+  findOrCreateUser = require('../users/server/find-or-create-user').default
+  createUsers = require('./server/create-users').default
 }
 
 function findOrCreateClientRef (name) {
@@ -331,7 +333,7 @@ export const setTeamMates = new ValidatedMethod({
       _id: this.userId
     })
 
-    const newUserIds = sendCampaignLink(emails, user, campaign)
+    const newUserIds = createUsers(emails)
 
     // dedupe user id list
     userIds = Array.from(new Set(userIds.concat(newUserIds)))
@@ -401,6 +403,16 @@ export const setTeamMates = new ValidatedMethod({
         }
       }
     })
+
+    if (!this.isSimulation) {
+      Meteor.defer(() => {
+        const ids = newUserIds
+          .concat(addedUserIds)
+          .filter(id => id !== this.userId)
+
+        sendCampaignLink(ids, user, campaign)
+      })
+    }
 
     return result
   }

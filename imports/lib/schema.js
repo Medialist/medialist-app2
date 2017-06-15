@@ -27,12 +27,17 @@ export const UserRefSchema = new SimpleSchema({
   },
   'name': {
     type: String,
+    optional: true,
     min: 1
   },
   'avatar': {
     type: String,
     optional: true,
     regEx: SimpleSchema.RegEx.Url
+  },
+  'email': {
+    type: String,
+    optional: true
   }
 })
 

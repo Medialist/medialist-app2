@@ -10,7 +10,8 @@ export const findOneUserRef = (userId) => {
     fields: {
       _id: 1,
       'profile.name': 1,
-      'profile.avatar': 1
+      'profile.avatar': 1,
+      'emails': 1
     }
   })
 
@@ -26,7 +27,8 @@ export const findUserRefs = (userIds) => {
     fields: {
       _id: 1,
       'profile.name': 1,
-      'profile.avatar': 1
+      'profile.avatar': 1,
+      'emails': 1
     }
   }).map(toUserRef)
 }
