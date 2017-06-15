@@ -46,6 +46,29 @@ const test = {
       done()
     })
     t.end()
+  },
+
+  'Should be able to update a coverage post': function (t) {
+    t.createDomain(['user', 'campaign', 'contact'], (user1, campaign, contact, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact], campaign, () => done())
+      })
+
+      t.perform((done) => {
+        t.page.campaign()
+          .navigate(campaign)
+          .addCoveragePost(contact, 'completed', 'https://www.test.com')
+          .editCoveragePost(contact, 'completed', 'update! http://medialist.io')
+          .assert.containsText(`[data-id=coverage-post][data-contact=${contact._id}]`, 'update!')
+          .assert.containsText(`[data-id=coverage-post][data-contact=${contact._id}]`, 'http://medialist.io')
+
+        done()
+      })
+
+      done()
+    })
+    t.page.main().logout()
+    t.end()
   }
 }
 

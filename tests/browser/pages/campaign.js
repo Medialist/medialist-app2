@@ -5,6 +5,7 @@ const activityFeed = require('../components/activity-feed')
 const postBox = require('../components/post-box')
 const addToListsModal = require('../components/add-to-lists-modal')
 const tagSelectorModal = require('../components/tag-selector-modal')
+const findUrl = require('../../../imports/lib/find-url')
 
 module.exports = {
   url: 'http://localhost:3000/campaigns',
@@ -57,6 +58,7 @@ module.exports = {
       selector: '[data-id=edit-post-modal]',
       elements: {
         feedbackInput: '[data-id=feedback-input]',
+        coverageInput: '[data-id=coverage-input]',
         createPostButton: '[data-id=create-post-button]',
         contactStatusSelectorButton: '[data-id=contact-status-selector-button]'
       }
@@ -214,7 +216,37 @@ module.exports = {
         .waitForElementVisible('@feedbackInput')
         .setValue('@feedbackInput', text)
         .click('@createPostButton')
-        .waitForElementNotPresent(this.section.editPostModal.selector)
+
+      return this
+    },
+    addCoveragePost: function (contact, contactStatus, text, embed) {
+      this.section.postBox
+        .postCoverage(contact, contactStatus, text)
+      return this
+    },
+    editCoveragePost: function (contact, contactStatus, text) {
+      this
+        .waitForElementVisible('@openPostMenuButton')
+        .click('@openPostMenuButton')
+        .waitForElementVisible('@editPostButton')
+        .click('@editPostButton')
+        .waitForElementVisible(this.section.editPostModal.selector)
+
+      this.section.editPostModal
+        .waitForElementVisible('@coverageInput')
+        .clear('@coverageInput')
+        .setValue('@coverageInput', text)
+
+      const url = findUrl(text)
+
+      if (url) {
+        this.section.editPostModal
+          .waitForElementVisible(`[href='${url}'][data-id=link-preview]`)
+      }
+
+      this.section.editPostModal
+        .waitForElementVisible('@createPostButton')
+        .click('@createPostButton')
 
       return this
     }
