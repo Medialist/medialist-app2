@@ -217,7 +217,7 @@ const EditContact = withSnackbar(React.createClass({
             <div>
               <Input
                 autoComplete='off'
-                className='center input-inline mt4 f-xxxl semibold'
+                className='center gray10 input-inline mt4 f-xxxl semibold placeholder-gray60'
                 errorClassName='error'
                 data-id='contact-name-input'
                 placeholder='Contact Name'
@@ -237,7 +237,7 @@ const EditContact = withSnackbar(React.createClass({
                   <OutletAutocomplete
                     style={{width: 225}}
                     menuWidth={225}
-                    className='input'
+                    className='input placeholder-gray60'
                     data-id={`job-title-input-${index}`}
                     data-paired-with={`outlets.${index}.label`}
                     value={outlet.value}
@@ -252,7 +252,7 @@ const EditContact = withSnackbar(React.createClass({
                     <OutletAutocomplete
                       style={{width: 225}}
                       menuWidth={225}
-                      className='input'
+                      className='input placeholder-gray60'
                       data-id={`job-company-input-${index}`}
                       data-paired-with={`outlets.${index}.value`}
                       value={outlet.label}
@@ -274,7 +274,7 @@ const EditContact = withSnackbar(React.createClass({
                   <FormField key={index} icon={<EmailIcon />}>
                     <Input
                       style={{width: 350}}
-                      className='input'
+                      className='input placeholder-gray60'
                       data-id={`email-input-${index}`}
                       errorClassName='error'
                       type='text'
@@ -293,7 +293,7 @@ const EditContact = withSnackbar(React.createClass({
                 <FormField key={index} icon={<PhoneIcon />}>
                   <Input
                     style={{width: 350}}
-                    className='input'
+                    className='input placeholder-gray60'
                     data-id={`phone-input-${index}`}
                     errorClassName='error'
                     type='text'
@@ -311,7 +311,7 @@ const EditContact = withSnackbar(React.createClass({
                 <FormField key={index} icon={<SocialIcon label={label} value={value} />}>
                   <Input
                     style={{width: 472}}
-                    className='input'
+                    className='input placeholder-gray60'
                     data-id={`social-input-${index}`}
                     errorClassName='error'
                     type='text'

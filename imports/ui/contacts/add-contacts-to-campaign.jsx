@@ -2,13 +2,14 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
 import Modal from '/imports/ui/navigation/modal'
-import { SearchBlueIcon, AddIcon, SelectedIcon } from '/imports/ui/images/icons'
+import { AddIcon, SelectedIcon } from '/imports/ui/images/icons'
 import createSearchContainer from '/imports/ui/campaigns/campaign-search-container'
 import { SquareAvatar } from '/imports/ui/images/avatar'
 import { TimeFromNow } from '/imports/ui/time/time'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import { addContactsToCampaign } from '/imports/api/contacts/methods'
 import { BLUE } from '/imports/ui/colours'
+import SearchBox from '/imports/ui/lists/search-box'
 
 const AddContactsToCampaigns = createSearchContainer(React.createClass({
   propTypes: {
@@ -21,14 +22,21 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
     children: PropTypes.node
   },
 
-  onChange (e) {
-    this.props.onTermChange(e.target.value)
+  onTermChange (term) {
+    this.props.onTermChange(term)
   },
 
   onKeyPress (e) {
-    if (e.key !== 'Enter') return
+    if (e.key !== 'Enter') {
+      return
+    }
+
     const { campaigns, onAdd } = this.props
-    if (!campaigns[0]) return
+
+    if (!campaigns[0]) {
+      return
+    }
+
     onAdd(campaigns[0])
   },
 
@@ -42,16 +50,15 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
       contacts
     } = this.props
 
-    const { onChange, onKeyPress } = this
-
     return (
       <div data-id='add-contacts-to-campaign-form'>
         <div className='f-xl regular center mt6'>{title}</div>
         <div className='mb6'>{children}</div>
-        <div className='py3 pl4 flex border-top border-bottom border-gray80'>
-          <SearchBlueIcon className='flex-none' />
-          <input ref={(input) => input && input.focus()} className='flex-auto f-sm pa2 mx2' placeholder='Search campaigns' onChange={onChange} style={{outline: 'none'}} onKeyPress={onKeyPress} value={term} data-id='search-input' />
-        </div>
+        <SearchBox
+          onTermChange={this.onTermChange}
+          onKeyDown={this.onKeyPress}
+          placeholder='Search campaigns'
+          data-id='search-input' />
         <div style={{height: '413px', overflowY: 'auto'}}>
           <ResultList onAdd={onAdd} results={campaigns} searching={Boolean(term)} contacts={contacts} />
         </div>

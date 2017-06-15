@@ -35,7 +35,7 @@ const SignInForm = React.createClass({
         <div className='mb6 left-align'>
           <label className='block gray40 semibold f-sm pt4 mb2' htmlFor='email'>Email</label>
           <Input
-            className='input'
+            className='input placeholder-gray60'
             errorClassName='error'
             name='email'
             value={this.props.email}
