@@ -29,7 +29,7 @@ class EditPost extends React.Component {
     const campaign = Object.assign({}, campaigns[0], {contacts: contactStatus})
 
     return (
-      <div>
+      <div data-id='edit-post-modal'>
         <div className='p3 border-gray80 border-bottom'>
           {icon}<span className='mx1'>Edit</span>{type.replace(/Post/g, '')}
         </div>
