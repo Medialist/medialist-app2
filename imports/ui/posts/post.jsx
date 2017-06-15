@@ -24,7 +24,7 @@ import findUrl from '/imports/lib/find-url'
 import DeletePostModal from './delete-post-modal'
 import EditPostModal from './edit-post-modal'
 import { GREY60 } from '/imports/ui/colours'
-import { updateFeedbackPost } from '/imports/api/posts/methods'
+import { updateFeedbackOrCoveragePost } from '/imports/api/posts/methods'
 
 const hideTextIfOnlyUrl = (item) => {
   const url = findUrl(item.message)
@@ -170,7 +170,7 @@ class Post extends React.Component {
       editOpen: false
     })
     const { message, status, embed } = update
-    updateFeedbackPost.call({ postId, update: { message, status, embed } })
+    updateFeedbackOrCoveragePost.call({ postId, update: { message, status, embed } })
   }
 
   render () {

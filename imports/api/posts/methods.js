@@ -121,8 +121,8 @@ export const createFeedbackPost = new ValidatedMethod({
   }
 })
 
-export const updateFeedbackPost = new ValidatedMethod({
-  name: 'updateFeedbackPost',
+export const updateFeedbackOrCoveragePost = new ValidatedMethod({
+  name: 'updateFeedbackOrCoveragePost',
   validate: UpdateFeedbackOrCoverageSchema.validator(),
   run ({ postId: _id, update }) {
     if (!this.userId) {
@@ -135,9 +135,18 @@ export const updateFeedbackPost = new ValidatedMethod({
       throw new Meteor.Error('Can\'t find post')
     }
 
-    const { message, status } = update
+    if (update.embed && !Meteor.isSimulation) {
+      const embed = Embeds.findOneById(update.embed._id)
+      const embeds = [embed].concat(post.embeds)
+      Posts.update({ _id }, {$set: { embeds }})
+    }
 
-    Posts.update({ _id }, {$set: {message, status, updatedAt: new Date()}}, {upsert: true})
+    const { message, status } = update
+    const updates = { updatedAt: new Date() }
+    if (message) updates.message = message
+    if (status) updates.status = status
+
+    Posts.update({ _id }, {$set: updates}, {upsert: true})
 
     if (status !== post.status) {
       post.campaigns.forEach((campaign) => {
@@ -174,46 +183,6 @@ export const createCoveragePost = new ValidatedMethod({
       message,
       status
     })
-  }
-})
-
-export const updateCoveragePost = new ValidatedMethod({
-  name: 'updateCoveragePost',
-  validate: UpdateFeedbackOrCoverageSchema.validator(),
-  run ({ postId: _id, update }) {
-    if (!this.userId) {
-      throw new Meteor.Error('You must be logged in')
-    }
-
-    const post = Posts.findOne({ _id })
-
-    if (!post) {
-      throw new Meteor.Error('Can\'t find post')
-    }
-
-    if (update.embed && Meteor.isServer) {
-      const embed = Embeds.findOneById(update.embed._id)
-      const embeds = [embed].concat(post.embeds)
-      Posts.update({ _id }, {$set: { embeds }})
-    }
-
-    const { message = post.message, status = post.status } = update
-
-    Posts.update({ _id }, {$set: {message, status, updatedAt: new Date()}}, {upsert: true})
-
-    if (update.status !== post.status) {
-      post.campaigns.forEach((campaign) => {
-        Campaigns.update({
-          slug: campaign.slug
-        }, {
-          $set: {
-            [`contacts.${post.contacts[0].slug}`]: status,
-            updatedAt: new Date(),
-            updatedBy: post.createdBy
-          }
-        })
-      })
-    }
   }
 })
 
