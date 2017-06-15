@@ -82,7 +82,7 @@ const FeedbackOrCoverageSchema = new SimpleSchema([{
   StatusSchema
 ])
 
-const UpdateFeedbackOrCoverageSchema = new SimpleSchema({
+const UpdatePostSchema = new SimpleSchema({
   postId: {
     type: String
   },
@@ -91,7 +91,8 @@ const UpdateFeedbackOrCoverageSchema = new SimpleSchema({
     optional: true
   },
   'update.status': {
-    type: String
+    type: String,
+    optional: true
   },
   'update.embed': {
     type: BaseEmbedRefSchema,
@@ -121,9 +122,9 @@ export const createFeedbackPost = new ValidatedMethod({
   }
 })
 
-export const updateFeedbackOrCoveragePost = new ValidatedMethod({
-  name: 'updateFeedbackOrCoveragePost',
-  validate: UpdateFeedbackOrCoverageSchema.validator(),
+export const updatePost = new ValidatedMethod({
+  name: 'updatePost',
+  validate: UpdatePostSchema.validator(),
   run ({ postId: _id, update }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
@@ -142,6 +143,7 @@ export const updateFeedbackOrCoveragePost = new ValidatedMethod({
     }
 
     const { message, status } = update
+
     const updates = { updatedAt: new Date() }
     if (message) updates.message = message
     if (status) updates.status = status
@@ -155,6 +157,19 @@ export const updateFeedbackOrCoveragePost = new ValidatedMethod({
         }, {
           $set: {
             [`contacts.${post.contacts[0].slug}`]: status,
+            updatedAt: new Date(),
+            updatedBy: post.createdBy
+          }
+        })
+      })
+    }
+
+    if (post.type === 'NeedToKnowPost') {
+      post.contacts.forEach((contact) => {
+        Contacts.update({
+          slug: contact.slug
+        }, {
+          $set: {
             updatedAt: new Date(),
             updatedBy: post.createdBy
           }

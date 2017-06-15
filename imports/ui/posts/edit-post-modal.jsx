@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Modal from '/imports/ui/navigation/modal'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
-import { FeedbackInput, CoverageInput } from '/imports/ui/feedback/post-box'
+import { FeedbackInput, CoverageInput, NeedToKnowInput } from '/imports/ui/feedback/post-box'
 
 class EditPost extends React.Component {
   static propTypes = {
@@ -29,7 +29,8 @@ class EditPost extends React.Component {
     const campaign = Object.assign({}, campaigns[0], {contacts: contactStatus})
     const Component = {
       'FeedbackPost': FeedbackInput,
-      'CoveragePost': CoverageInput
+      'CoveragePost': CoverageInput,
+      'NeedToKnowPost': NeedToKnowInput
     }[type]
 
     return (

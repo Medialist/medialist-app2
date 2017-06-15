@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import CampaignSelector from '/imports/ui/feedback/campaign-selector'
 import StatusMap from '/imports/api/contacts/status'
@@ -110,8 +110,8 @@ export const PostBoxButtons = ({focused, disabled, onPost, isEdit, children}) =>
   </div>
 )
 
-export const FeedbackInput = React.createClass({
-  propTypes: {
+export class FeedbackInput extends Component {
+  static propTypes = {
     contact: PropTypes.object,
     campaigns: PropTypes.array,
     campaign: PropTypes.object,
@@ -119,23 +119,29 @@ export const FeedbackInput = React.createClass({
     onSubmit: PropTypes.func.isRequired,
     message: PropTypes.string,
     isEdit: PropTypes.bool
-  },
-  getInitialState () {
+  }
+
+  constructor (props) {
+    super(props)
+
     const { contact, campaign } = this.props
     const contactRef = campaign && campaign.contacts[contact.slug]
     const status = contactRef || StatusMap.toContact
-    return {
+
+    this.state = {
       status,
       campaign,
       message: this.props.message || '',
       posting: false
     }
-  },
-  onFieldChange (event) {
+  }
+
+  onFieldChange = (event) => {
     const { name, value } = event.target
     this.setState((s) => immutable.set(s, name, value))
-  },
-  onSubmit () {
+  }
+
+  onSubmit = () => {
     this.setState({
       posting: true
     })
@@ -150,12 +156,13 @@ export const FeedbackInput = React.createClass({
         console.error(err)
       }
     })
-  },
+  }
+
   render () {
     return (
       <div>
         <PostBoxtTextArea
-          placeholder={`What's happening with ${firstName(this.props.contact)}?`}
+          placeholder={`What is happening with ${firstName(this.props.contact)}?`}
           value={this.state.message}
           focused={this.props.focused}
           disabled={this.state.posting}
@@ -182,32 +189,33 @@ export const FeedbackInput = React.createClass({
       </div>
     )
   }
-})
+}
 
 // Defaults the status to completed. User can change it.
-export const CoverageInput = React.createClass({
-  propTypes: {
+
+export class CoverageInput extends Component {
+  static propTypes = {
     contact: PropTypes.object.isRequired,
     campaign: PropTypes.object,
     focused: PropTypes.bool,
     campaigns: PropTypes.array.isRequired,
     onSubmit: PropTypes.func.isRequired,
     isEdit: PropTypes.bool
-  },
-  getInitialState () {
-    const { campaign } = this.props
-    return {
-      status: StatusMap.completed,
-      campaign,
-      message: this.props.message || '',
-      posting: false
-    }
-  },
-  onFieldChange (event) {
+  }
+
+  state = {
+    status: StatusMap.completed,
+    campaign: this.props.campaign,
+    message: this.props.message || '',
+    posting: false
+  }
+
+  onFieldChange = (event) => {
     const { name, value } = event.target
     this.setState((s) => immutable.set(s, name, value))
-  },
-  onSubmit () {
+  }
+
+  onSubmit = () => {
     this.setState({
       posting: true
     })
@@ -222,7 +230,8 @@ export const CoverageInput = React.createClass({
         console.error(err)
       }
     })
-  },
+  }
+
   render () {
     return (
       <div>
@@ -256,25 +265,27 @@ export const CoverageInput = React.createClass({
       </div>
     )
   }
-})
+}
 
-const NeedToKnowInput = React.createClass({
-  propTypes: {
+export class NeedToKnowInput extends Component {
+  static propTypes = {
     contact: PropTypes.object,
     focused: PropTypes.bool.isRequired,
-    onSubmit: PropTypes.func.isRequired
-  },
-  getInitialState () {
-    return {
-      message: '',
-      posting: false
-    }
-  },
-  onFieldChange (event) {
+    onSubmit: PropTypes.func.isRequired,
+    isEdit: PropTypes.bool
+  }
+
+  state = {
+    message: this.props.message || '',
+    posting: false
+  }
+
+  onFieldChange = (event) => {
     const { name, value } = event.target
     this.setState((s) => immutable.set(s, name, value))
-  },
-  onSubmit () {
+  }
+
+  onSubmit = () => {
     this.setState({
       posting: true
     })
@@ -289,7 +300,8 @@ const NeedToKnowInput = React.createClass({
         console.error(err)
       }
     })
-  },
+  }
+
   render () {
     return (
       <div>
@@ -303,13 +315,14 @@ const NeedToKnowInput = React.createClass({
         <PostBoxButtons
           focused={this.props.focused}
           disabled={!this.state.message || this.state.posting}
-          onPost={this.onSubmit} >
+          onPost={this.onSubmit}
+          isEdit >
           <button style={{padding: '7px 15px'}} className='btn bg-transparent border-gray80 bold'>B</button>
           <button style={{padding: '7px 15px'}} className='btn bg-transparent border-gray80 italic ml3'>i</button>
         </PostBoxButtons>
       </div>
     )
   }
-})
+}
 
 export default PostBox

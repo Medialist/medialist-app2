@@ -6,7 +6,7 @@ import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
 import Embeds from '/imports/api/embeds/embeds'
-import { createFeedbackPost, createCoveragePost, createNeedToKnowPost, updateFeedbackOrCoveragePost } from '/imports/api/posts/methods'
+import { createFeedbackPost, createCoveragePost, createNeedToKnowPost, updatePost } from '/imports/api/posts/methods'
 import moment from 'moment'
 import faker from 'faker'
 
@@ -314,7 +314,7 @@ describe('updateFeedbackPost', function () {
   })
 
   it('should require the user to be logged in', function () {
-    assert.throws(() => updateFeedbackOrCoveragePost.run.call({}, {}), /You must be logged in/)
+    assert.throws(() => updatePost.run.call({}, {}), /You must be logged in/)
   })
 
   it('should let users update a post and cascade updates to campaign contacts status', function () {
@@ -322,7 +322,7 @@ describe('updateFeedbackPost', function () {
     const postId = post._id
     const update = {message: 'test update2', status: 'Contacted'}
 
-    updateFeedbackOrCoveragePost.run.call({userId: 'alf'}, {postId, update})
+    updatePost.run.call({userId: 'alf'}, {postId, update})
 
     const updatedPost = Posts.findOne({ _id: postId })
     const campaign = Campaigns.findOne({slug: 'slug1'})
@@ -356,7 +356,7 @@ describe('updateCoveragePost', function () {
     const newEmbedId = Embeds.insert(fakeEmbed({headline: 'new embed'}))
     const newEmbed = Embeds.findOneById(newEmbedId)
 
-    updateFeedbackOrCoveragePost.run.call({userId: 'alf'}, {postId: post._id, update: {embed: newEmbed}})
+    updatePost.run.call({userId: 'alf'}, {postId: post._id, update: {embed: newEmbed}})
 
     const updatedPost = Posts.findOne({ _id: post._id })
 
@@ -364,5 +364,27 @@ describe('updateCoveragePost', function () {
     assert.equal(updatedPost.embeds[0].headline, 'new embed')
     assert.equal(updatedPost.status, 'Hot Lead')
     assert.equal(updatedPost.message, 'Tip top')
+  })
+})
+
+describe('updateNeedToKnowPost', function () {
+  beforeEach(function () {
+    resetDatabase()
+    insertTestData()
+  })
+
+  it('should let users update a need to know post', function () {
+    const contactSlug = 'slug0'
+    const message = 'Do Not Call This Contact!'
+    createNeedToKnowPost.run.call({userId: 'alf'}, {
+      contactSlug, message
+    })
+    const post = Posts.findOne()
+
+    updatePost.run.call({userId: 'alf'}, {postId: post._id, update: {message: 'test update'}})
+
+    const updatedPost = Posts.findOne({_id: post._id})
+
+    assert.equal(updatedPost.message, 'test update')
   })
 })

@@ -44,7 +44,7 @@ const ContactNeedToKnowList = React.createClass({
 export default ContactNeedToKnowList
 
 const NeedToKnowItem = ({ item }) => {
-  const { message, createdAt, createdBy } = item
+  const { message, createdAt, updatedAt, createdBy } = item
   return (
     <li className='pt4'>
       <div className='flex'>
@@ -53,7 +53,7 @@ const NeedToKnowItem = ({ item }) => {
         </div>
         <div className='flex-auto'>
           <div className='gray10' style={{overflowX: 'hidden'}}>{message}</div>
-          <TimeFromNow className='gray10 f-sm' style={{opacity: 0.25}} date={createdAt} />
+          <TimeFromNow className='gray10 f-sm' style={{opacity: 0.25}} date={updatedAt || createdAt} />
         </div>
       </div>
     </li>

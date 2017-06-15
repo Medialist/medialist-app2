@@ -24,7 +24,7 @@ import findUrl from '/imports/lib/find-url'
 import DeletePostModal from './delete-post-modal'
 import EditPostModal from './edit-post-modal'
 import { GREY60 } from '/imports/ui/colours'
-import { updateFeedbackOrCoveragePost } from '/imports/api/posts/methods'
+import { updatePost } from '/imports/api/posts/methods'
 
 const hideTextIfOnlyUrl = (item) => {
   const url = findUrl(item.message)
@@ -165,18 +165,22 @@ class Post extends React.Component {
     })
   }
 
-  updatePost = (postId, update) => {
+  updatePost = (postId, { message, status, embed }) => {
     this.setState({
       editOpen: false
     })
-    const { message, status, embed } = update
-    updateFeedbackOrCoveragePost.call({ postId, update: { message, status, embed } })
+    updatePost.call({ postId, update: { message, status, embed } })
   }
 
   render () {
     const data = {
       'data-contact': this.props.contacts.map(contact => contact._id).join(' '),
       'data-campaign': this.props.campaigns.map(campaigns => campaigns._id).join(' ')
+    }
+    const postTypeLabels = {
+      'FeedbackPost': 'Feedback',
+      'CoveragePost': 'Coverage',
+      'NeedToKnowPost': 'Need-to-Knows'
     }
     const canEditPost = this.props.createdBy._id === this.props.currentUser._id
 
@@ -202,7 +206,7 @@ class Post extends React.Component {
                       <DropdownMenuItem
                         onClick={this.editPost}
                         data-id='edit-post-button'>
-                        <span className='ml2 gray20 regular'>Edit {this.props.type.replace(/Post/g, '')}</span>
+                        <span className='ml2 gray20 regular'>Edit {postTypeLabels[this.props.type]}</span>
                       </DropdownMenuItem>
                     }
                     <DropdownMenuItem
