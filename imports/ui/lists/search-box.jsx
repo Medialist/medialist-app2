@@ -56,7 +56,7 @@ const SearchBox = React.createClass({
           <input
             ref={(input) => { this.textInput = input }}
             type='search'
-            style={{outline: 'none', height: 30, lineHeight: 30}}
+            style={{outline: 'none', height: 30, lineHeight: 30, backgroundColor: 'transparent'}}
             className='flex-auto f-lg normal gray20 placeholder-gray60'
             onChange={this.onChange}
             onKeyDown={onKeyDown}

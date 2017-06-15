@@ -1,8 +1,14 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import Loading from '/imports/ui/lists/loading'
 import SearchBox from '/imports/ui/lists/search-box'
 import CampaignsTable from '/imports/ui/campaigns/campaigns-table'
 import CountTag from '/imports/ui/tags/tag'
+
+const CampaignsTotal = ({ searching, results, total }) => {
+  const num = searching ? results.length : total
+  return <div className='f-xs gray60' style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>{num} campaign{num === 1 ? '' : 's'}</div>
+}
 
 const CampaignSearch = ({
   onTermChange,
@@ -16,27 +22,24 @@ const CampaignSearch = ({
   contactSlug,
   onSortChange,
   onSelectionsChange,
-  loading
+  loading,
+  searching
 }) => (
   <div>
     <div className='bg-white shadow-2 m4 mt8' data-id='campaigns-table'>
-      <div className='p4 flex items-center'>
-        <div className='flex-auto'>
-          <SearchBox onTermChange={onTermChange} placeholder='Search campaigns...' data-id='search-campaigns-input'>
-            {selectedTags && selectedTags.map((t) => (
-              <CountTag
-                style={{marginBottom: 0}}
-                key={t.slug}
-                name={t.name}
-                count={t.contactsCount}
-                onRemove={() => onTagRemove(t)}
-              />
-            ))}
-          </SearchBox>
-        </div>
-        <div className='flex-none pl4 f-xs'>
-          <div>{total} campaign{total === 1 ? '' : 's'} total</div>
-        </div>
+      <div className='pt4 pl4 pr4 pb1 items-center'>
+        <SearchBox onTermChange={onTermChange} placeholder='Search campaigns...' data-id='search-campaigns-input' style={{zIndex: 1}}>
+          {selectedTags && selectedTags.map((t) => (
+            <CountTag
+              style={{marginBottom: 0}}
+              key={t.slug}
+              name={t.name}
+              count={t.contactsCount}
+              onRemove={() => onTagRemove(t)}
+            />
+          ))}
+        </SearchBox>
+        <CampaignsTotal searching={searching} results={campaigns} total={total} />
       </div>
       <CampaignsTable
         term={term}
@@ -51,5 +54,21 @@ const CampaignSearch = ({
     { loading && <div className='center p4'><Loading /></div> }
   </div>
 )
+
+CampaignSearch.propTypes = {
+  onTermChange: PropTypes.func.isRequired,
+  selectedTags: PropTypes.array,
+  onTagRemove: PropTypes.func.isRequired,
+  total: PropTypes.number.isRequired,
+  term: PropTypes.string,
+  sort: PropTypes.object,
+  campaigns: PropTypes.array.isRequired,
+  selections: PropTypes.array,
+  contactSlug: PropTypes.string,
+  onSortChange: PropTypes.func.isRequired,
+  onSelectionsChange: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  searching: PropTypes.bool.isRequired
+}
 
 export default CampaignSearch
