@@ -19,6 +19,15 @@ import { createContact, updateContact, batchRemoveContacts } from '/imports/api/
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
 
+const emptyAddress = { street: '', city: '', postcode: '', country: '' }
+
+function cleanAddresses (addresses) {
+  if (!addresses) return []
+  return addresses
+    .filter((address) => Object.keys(address).some((field) => !!address[field].length))
+    .map((address) => Object.assign({}, emptyAddress, address))
+}
+
 const EditContact = withSnackbar(React.createClass({
   propTypes: {
     contact: PropTypes.object,
@@ -61,7 +70,7 @@ const EditContact = withSnackbar(React.createClass({
       emails: atLeastOne(contact.emails, {label: 'Email', value: ''}),
       phones: atLeastOne(contact.phones, {label: 'Phone', value: ''}),
       socials,
-      addresses: contact.addresses || [{ street: '', city: '', postcode: '', country: '' }],
+      addresses: contact.addresses || [emptyAddress],
       fixHeaderPosition: false,
       errorHeader: null,
       deleteMenuOpen: false
@@ -99,6 +108,7 @@ const EditContact = withSnackbar(React.createClass({
     data.emails = data.emails.filter((o) => o.value)
     data.phones = data.phones.filter((o) => o.value)
     data.socials = data.socials.filter((o) => o.value)
+    data.addresses = cleanAddresses(data.addresses)
     this.props.onSubmit(data)
   },
 
