@@ -217,7 +217,9 @@ class ContactCampaignsPage extends React.Component {
           selections,
           onSortChange,
           onSelectionsChange,
-          loading
+          loading,
+          contactSlug: this.props.contact.slug,
+          searching: !!term
         }} />
         <ContactCampaignsActionsToast
           campaigns={this.state.selections}

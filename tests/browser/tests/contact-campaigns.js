@@ -221,6 +221,41 @@ const test = {
 
     t.page.main().logout()
     t.end()
+  },
+
+  'Should update the status of a contact': function (t) {
+    t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact], campaign, () => done())
+      })
+
+      t.perform((done) => {
+        const contactCampaignsPage = t.page.contactCampaigns()
+          .navigateToCampaignList(contact)
+
+        contactCampaignsPage.section.campaignTable
+          .searchFor(campaign.name)
+          .updateStatus(campaign, 'hot-lead')
+
+        t.perform((done) => {
+          t.db.findCampaign({
+            _id: campaign._id
+          })
+          .then((doc) => {
+            t.assert.equal(doc.contacts[contact.slug], 'Hot Lead')
+
+            done()
+          })
+        })
+
+        done()
+      })
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   }
 }
 

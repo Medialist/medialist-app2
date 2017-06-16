@@ -50,6 +50,19 @@ module.exports = {
 
       return this
     },
+    updateStatus: function (campaign, status) {
+      const buttonSelector = `[data-item='${campaign._id}'] [data-id=contact-status-selector-button]`
+      const statusSelector = `[data-item='${campaign._id}'] [data-id=contact-status-${status}]`
+
+      this
+        .waitForElementVisible(buttonSelector)
+        .click(buttonSelector)
+        .waitForElementVisible(statusSelector)
+        .click(statusSelector)
+        .waitForElementNotVisible(statusSelector)
+
+      return this
+    },
     assertInSearchResults: function (campaign) {
       const selector = `[data-item='${campaign._id}']`
 
