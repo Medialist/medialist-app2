@@ -20,9 +20,9 @@ const test = {
         t.page.campaign()
           .navigate(campaign)
           .addFeedbackPost(contact, 'hot-lead', 'He\'s so hot right now')
-          .editFeedbackPost(contact, 'contacted', ' that Hansella!')
-          .assert.containsText(`[data-contact=${contact._id}]`, 'He\'s so hot right now that Hansella!')
-          .assert.containsText(`[data-contact=${contact._id}]`, 'CONTACTED')
+          .editFeedbackPost(contact, 'contacted', ' Hansella!')
+          .assert.containsText(`[data-id=post-message]`, 'He\'s so hot right now Hansella!')
+          .assert.containsText(`[data-id=contact-status]`, 'CONTACTED')
 
         t.page.main().logout()
         done()

@@ -4,7 +4,7 @@ import assert from 'assert'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
-import { createFeedbackPost, createCoveragePost, createNeedToKnowPost, updateFeedbackPost } from '/imports/api/posts/methods'
+import { createFeedbackPost, createCoveragePost, createNeedToKnowPost, updatePost } from '/imports/api/posts/methods'
 import moment from 'moment'
 
 function insertTestData () {
@@ -304,14 +304,19 @@ describe('updateFeedbackPost', function () {
   })
 
   it('should require the user to be logged in', function () {
-    assert.throws(() => updateFeedbackPost.run.call({}, {}), /You must be logged in/)
+    assert.throws(() => updatePost.run.call({}, {}), /You must be logged in/)
+  })
+
+  it('should require the user updating to be the creator of the post', function () {
+    const post = Posts.findOne()
+    assert.throws(() => updatePost.run.call({userId: 'not-alf'}, { _id: post._id, message: 'this will throw' }), /You can only edit posts you created/)
   })
 
   it('should let users update a post and cascade updates to campaign contacts status', function () {
     const post = Posts.findOne()
     const { _id } = post
 
-    updateFeedbackPost.run.call({userId: 'alf'}, {_id, message: 'test update2', status: 'Contacted'})
+    updatePost.run.call({userId: 'alf'}, {_id, message: 'test update2', status: 'Contacted'})
 
     const updatedPost = Posts.findOne({ _id })
     const campaign = Campaigns.findOne({slug: 'slug1'})

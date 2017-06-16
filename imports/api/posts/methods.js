@@ -80,7 +80,7 @@ const FeedbackOrCoverageSchema = new SimpleSchema([{
   StatusSchema
 ])
 
-const UpdateFeedbackOrCoverageSchema = new SimpleSchema([{
+const UpdatePostSchema = new SimpleSchema([{
   _id: {
     type: String
   },
@@ -114,9 +114,9 @@ export const createFeedbackPost = new ValidatedMethod({
   }
 })
 
-export const updateFeedbackPost = new ValidatedMethod({
-  name: 'updateFeedbackPost',
-  validate: UpdateFeedbackOrCoverageSchema.validator(),
+export const updatePost = new ValidatedMethod({
+  name: 'updatePost',
+  validate: UpdatePostSchema.validator(),
   run ({ _id, message, status }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
@@ -126,6 +126,10 @@ export const updateFeedbackPost = new ValidatedMethod({
 
     if (!post) {
       throw new Meteor.Error('Can\'t find post')
+    }
+
+    if (this.userId !== post.createdBy._id) {
+      throw new Meteor.Error('You can only edit posts you created')
     }
 
     Posts.update({ _id }, {$set: { message, status }})
