@@ -1,20 +1,18 @@
 'use strict'
 
-const editCampaignForm = require('../components/edit-campaign-form')
 const campaignTable = require('../components/campaign-table')
 const addtoListsModal = require('../components/add-to-lists-modal')
 const tagSelectorModal = require('../components/tag-selector-modal')
 const deleteModal = require('../components/delete-modal')
 
 module.exports = {
-  url: 'http://localhost:3000/campaigns',
+  url: 'http://localhost:3000/contacts',
   elements: {
     newCampaignButton: '[data-id=create-campaign-button]',
     editCampaignButton: '[data-id=edit-campaign-button]',
     myCampaignsButton: '[data-slug=my]'
   },
   sections: {
-    editCampaignForm: editCampaignForm,
     campaignTable: campaignTable,
     toast: {
       selector: '[data-id=campaign-actions-toast]',
@@ -23,7 +21,7 @@ module.exports = {
         addToCampaignList: '[data-id=campaign-actions-add-to-campaign-list]',
         addToMyCampaigns: '[data-id=campaign-actions-add-to-my-campaigns]',
         addTagsToCampaign: '[data-id=campaign-actions-add-tags]',
-        deleteCampaigns: '[data-id=campaign-actions-delete]'
+        removeContactsFromCampaigns: '[data-id=campaign-actions-remove-contacts]'
       },
       commands: [{
         viewContacts: function () {
@@ -54,10 +52,10 @@ module.exports = {
 
           return this
         },
-        openDeleteCampaignsModal: function () {
+        openRemoveContactsFRomCampaignsModal: function () {
           this
-            .waitForElementVisible('@deleteCampaigns')
-            .click('@deleteCampaigns')
+            .waitForElementVisible('@removeContactsFromCampaigns')
+            .click('@removeContactsFromCampaigns')
 
           return this
         }
@@ -65,25 +63,17 @@ module.exports = {
     },
     campaignListsModal: addtoListsModal('add-to-list-modal'),
     tagSelectorModal: tagSelectorModal('tag-selector-modal'),
-    deleteCampaignsModal: deleteModal('delete-campaigns-modal')
+    removeContactsFromCampaignsModal: deleteModal('remove-contacts-from-campaigns-modal')
   },
   commands: [{
-    navigateToCampaignList: function (campaignList) {
-      this.api.url('http://localhost:3000/campaigns?list=' + campaignList.slug)
+    navigateToCampaignList: function (contact) {
+      this.api.url(`http://localhost:3000/contact/${contact.slug}/campaigns`)
       this.waitForElementVisible(this.section.campaignTable.selector)
 
       return this
     },
-    navigateToMyCampaigns: function () {
-      this.navigate()
-        .waitForElementVisible('@myCampaignsButton')
-        .click('@myCampaignsButton')
-        .waitForElementVisible(this.section.campaignTable.selector)
-
-      return this
-    },
-    navigateToTag: function (tag) {
-      this.api.url(`http://localhost:3000/campaigns?tag=${tag}`)
+    navigateToTag: function (contact, tag) {
+      this.api.url(`http://localhost:3000/contact/${contact.slug}/campaigns?tag=${tag}`)
       this.waitForElementVisible(this.section.campaignTable.selector)
 
       return this

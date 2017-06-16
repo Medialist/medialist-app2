@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import Embeds from '/imports/api/embeds/embeds'
 import Posts from '/imports/api/posts/posts'
 import Campaigns from '/imports/api/campaigns/campaigns'
+import Contacts from '/imports/api/contacts/contacts'
 
 Migrations.add({
   version: 1,
@@ -73,6 +74,57 @@ Migrations.add({
           }
         })
       })
+  }
+})
+
+// contact.address: 'foo,bar,baz' -> contact.addresses: [{street: 'foo', city: 'bar', 'postcode': 'baz'}]
+Migrations.add({
+  version: 4,
+  name: 'Update contact address format',
+  up: () => {
+    Contacts.find({})
+      .forEach(contact => {
+        const {_id, address} = contact
+        const addresses = []
+        if (address) {
+          const lines = address.split(',').map(l => l.trim())
+          let [street, city, postcode, country, extra] = lines
+          // Some extra data smooshing.
+          // Super rough, but greatly improves the hit rate on our current data.
+          if (street === 'United Kingdom') {
+            country = street
+            street = null
+          }
+          if (country === 'London') {
+            street = [street, city, postcode].join(', ')
+            city = 'London'
+            postcode = extra
+            country = 'United Kingdom'
+          }
+          if (postcode === 'London') {
+            street = [street, city].join(', ')
+            city = 'London'
+            postcode = country
+            country = 'United Kingdom'
+          }
+          addresses.push({street, city, postcode, country})
+        }
+        Contacts.update(
+          {_id},
+          {
+            $set: {addresses},
+            $unset: {address}
+          }
+        )
+      })
+  }
+})
+
+Migrations.add({
+  version: 5,
+  name: 'Add imports property to contacts',
+  up: () => {
+    Contacts.update({}, {$set: {imports: []}}, {multi: true})
   }
 })
 

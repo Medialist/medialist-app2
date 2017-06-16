@@ -13,11 +13,9 @@ import StatusSelectorContainer from '/imports/ui/feedback/status-selector-contai
 
 const ContactLink = ({contact, campaign}) => {
   const {slug, name, avatar} = contact
-  const contactUrl = `/contact/${slug}`
-  const campaignUrl = campaign ? `/campaign/${campaign.slug}` : ''
-  const to = campaignUrl + contactUrl
+
   return (
-    <Link to={to} className='nowrap' data-id='contact-link' data-contact={contact._id}>
+    <Link to={`/contact/${slug}`} className='nowrap' data-id='contact-link' data-contact={contact._id}>
       <CircleAvatar avatar={avatar} name={name} />
       <span className='ml3 semibold'>{name}</span>
     </Link>

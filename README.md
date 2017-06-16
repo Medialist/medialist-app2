@@ -94,6 +94,9 @@ npm run watch
 	],
 	"masterLists": [
 		{ "_id": "123", "slug": "tech", "name": "Tech" }
+	],
+	"imports": [
+		"contact-import-id"
 	]
 	"createdAt" : ISODate("2016-02-26T13:12:53.456Z"),
 	"createdBy" : {
@@ -188,6 +191,25 @@ npm run watch
     "contact _id"
   ]
   "order": 0
+}
+```
+
+**ContactsImport**
+
+```js
+{
+	"data": [/* ContactCreateSchema valid objects */]
+	"results": {
+		created: ["contact-id"],
+		updated: ["contact-id"],
+		failed: [/* ContactCreateSchema valid objects */]
+	}
+	"createdBy" : {
+		"_id" : "hNc2ArK9TcAWyEXqQ",
+		"name" : "Olly Gilbert",
+		"avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
+	},
+	"createdAt" : ISODate("2016-03-08T11:14:22.670Z"),
 }
 ```
 
@@ -297,7 +319,7 @@ Then run the tests as usual:
 npm run test:browser
 ```
 
-#### Options
+#### Options
 
 Test options are specified as environment variables.
 

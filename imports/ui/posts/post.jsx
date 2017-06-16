@@ -188,8 +188,8 @@ class Post extends React.Component {
         </div>
         <div className='flex-auto' style={{paddingLeft: 13}}>
           <header className='pt2 pb3 f-md flex nowrap' data-id='post-header'>
-            <YouOrName className='semibold align-middle' currentUser={this.props.currentUser} user={this.props.createdBy} />
-            <div className='align-middle flex-auto truncate' style={{paddingLeft: 3}}>{this.props.summary}</div>
+            <YouOrName className='semibold gray10' currentUser={this.props.currentUser} user={this.props.createdBy} />
+            <div className='flex-auto truncate' style={{paddingLeft: 3}}>{this.props.summary}</div>
             <span className='f-sm semibold gray60 flex-none'>
               <Time date={this.props.createdAt} />
             </span>
@@ -268,7 +268,7 @@ const ContactName = ({contacts, contact, onContactPage}) => {
   if (contacts.length > 1 && contact) {
     const otherContacts = contact ? contacts.filter((c) => c.slug !== contact.slug).length : contacts.length
     return (
-      <span data-id='contact-name'>
+      <span>
         <span data-id='contact-name' className='semibold gray10'>{firstName(contact)}</span>
         {` and ${otherContacts} other contact${otherContacts > 1 ? 's' : ''}`}
       </span>
@@ -285,14 +285,14 @@ const CampaignName = ({campaigns, onCampaignPage}) => {
     return null
   }
 
-  return <span> to <CampaignLink campaign={campaigns[0]} /></span>
+  return <CampaignLink campaign={campaigns[0]} />
 }
 
 const firstName = ({name}) => name.split(' ')[0]
 
 const PostSummary = ({children, status}) => (
   <span className='nowrap flex'>
-    <span className='truncate align-middle' data-id='post-summary'>
+    <span className='truncate align-middle'>
       {children}
     </span>
     { status &&
@@ -309,7 +309,7 @@ const FeedbackPostSummary = ({label, campaigns, contacts, status, contact, campa
   if (!campaign && campaigns && campaigns.length) {
     campaignLink = (
       <span>
-        <ChevronRight className='gray60 mx1' style={{verticalAlign: 1}} />
+        <ChevronRight className='gray60 mx1' />
         <CampaignLink campaign={campaigns[0]} />
       </span>
     )
@@ -320,7 +320,7 @@ const FeedbackPostSummary = ({label, campaigns, contacts, status, contact, campa
   if (!contact && contacts && contacts.length) {
     contactLink = (
       <span>
-        <ChevronRight className='gray60 mx1' style={{verticalAlign: 1}} />
+        <ChevronRight className='gray60 mx1' />
         <ContactLink contact={contacts[0]} />
       </span>
     )
@@ -328,7 +328,7 @@ const FeedbackPostSummary = ({label, campaigns, contacts, status, contact, campa
 
   return (
     <PostSummary status={status}>
-      <span className='gray10'>
+      <span className='gray10' data-id='post-summary'>
         {label}
       </span>
       {campaignLink}
@@ -406,7 +406,7 @@ export const StatusUpdate = ({item, currentUser, contact, campaign}) => {
       icon={<StatusUpdateIcon className='gray60' />}
       summary={
         <PostSummary {...item}>
-          updated <ContactName contacts={item.contacts} contact={contact} onContactPage={Boolean(contact)} />
+          <span data-id='post-summary'>updated</span> <ContactName contacts={item.contacts} contact={contact} onContactPage={Boolean(contact)} />
           {!campaign ? ' for ' : ''}
           <CampaignName campaigns={item.campaigns} onCampaignPage={Boolean(campaign)} />
         </PostSummary>
@@ -424,6 +424,7 @@ export const AddContactsToCampaign = ({item, currentUser, contact, campaign}) =>
       summary={
         <span data-id='post-summary'>
           added <ContactName contacts={item.contacts} contact={contact} onContactPage={Boolean(contact)} />
+          {!campaign ? ' to ' : ''}
           <CampaignName campaigns={item.campaigns} onCampaignPage={Boolean(campaign)} />
         </span>
       }

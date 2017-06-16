@@ -10,7 +10,7 @@ const CampaignContact = ({ contact, campaign, style, highlighted, statusSelector
       <CircleAvatar className='inline-block flex-none' size={38} avatar={contact.avatar} name={contact.name} />
       <div className='inline-block align-top pl3 flex-auto'>
         <div>
-          <div className={`inline-block f-md semibold ${highlighted ? 'blue' : ''}`}>{contact.name}</div>
+          <div className={`inline-block f-md semibold ${highlighted ? 'blue' : 'gray10'}`}>{contact.name}</div>
           {campaign && (
             <StatusSelectorContainer
               buttonClassName='btn btn-no-border bg-transparent'

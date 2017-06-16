@@ -367,6 +367,8 @@ export const setTeamMates = new ValidatedMethod({
       $inc: {
         onCampaigns: -1
       }
+    }, {
+      multi: true
     })
 
     // update campaign counts for added users
@@ -378,6 +380,8 @@ export const setTeamMates = new ValidatedMethod({
       $inc: {
         onCampaigns: 1
       }
+    }, {
+      multi: true
     })
 
     // Add this campaign to the updating user's favourites if required

@@ -8,14 +8,20 @@ import SubscriptionLimitContainer from '/imports/ui/navigation/subscription-limi
 
 const campaignsSearchQueryContainer = (Component) => {
   const SearchComponent = campaignsSearchContainer(Component)
+
   return withRouter(React.createClass({
     setQuery (opts) {
       const { location, router } = this.props
       const newQuery = {}
-      if (opts.sort) newQuery.sort = JSON.stringify(opts.sort)
+
+      if (opts.sort) {
+        newQuery.sort = JSON.stringify(opts.sort)
+      }
+
       if (opts.hasOwnProperty('term')) {
         newQuery.q = opts.term
       }
+
       if (opts.selectedMasterListSlug) {
         if (opts.selectedMasterListSlug === 'my') {
           newQuery.my = Meteor.userId()
@@ -23,13 +29,31 @@ const campaignsSearchQueryContainer = (Component) => {
           newQuery.list = opts.selectedMasterListSlug
         }
       }
-      if (opts.tagSlugs) newQuery.tag = opts.tagSlugs
+
+      if (opts.tagSlugs) {
+        newQuery.tag = opts.tagSlugs
+      }
+
       const query = Object.assign({}, location.query, newQuery)
-      if (query.q === '') delete query.q
-      if (query.list === 'all' || newQuery.my) delete query.list
-      if (newQuery.list) delete query.my
+
+      if (query.q === '') {
+        delete query.q
+      }
+
+      if (query.list === 'all' || newQuery.my) {
+        delete query.list
+      }
+
+      if (newQuery.list) {
+        delete query.my
+      }
+
       const qs = querystring.stringify(query)
-      if (!qs) return router.replace(location.pathname)
+
+      if (!qs) {
+        return router.replace(location.pathname)
+      }
+
       router.replace(`${location.pathname}?${qs}`)
     },
 

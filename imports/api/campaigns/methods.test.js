@@ -291,6 +291,38 @@ describe('Campaign add team members method', function () {
     assert.equal(updatedUsers.find(user => user._id === userIds[2]).onCampaigns, 1) // added, was 0
   })
 
+  it('should update team member campaign counts with multiple team members', function () {
+    const users = Array(3).fill(0).map(() => ({
+      _id: Random.id(),
+      profile: {
+        name: faker.name.findName(),
+        avatar: faker.image.avatar()
+      }
+    }))
+
+    users[0].onCampaigns = 1
+    users[1].onCampaigns = 1
+
+    const userIds = users.map((user) => Meteor.users.insert(user))
+    const campaign = { name: 'Campaign', team: [
+      { _id: userIds[0] },
+      { _id: userIds[1] }
+    ] }
+    const campaignId = Campaigns.insert(campaign)
+    const payload = { _id: campaignId, userIds: [], emails: [] }
+
+    setTeamMates.run.call({ userId: userIds[0] }, payload)
+
+    const updatedUsers = Meteor.users.find({
+      _id: {
+        $in: userIds
+      }
+    }).fetch()
+
+    assert.equal(updatedUsers.find(user => user._id === userIds[0]).onCampaigns, 0) // removed, was 1
+    assert.equal(updatedUsers.find(user => user._id === userIds[1]).onCampaigns, 0) // removed, was 1
+  })
+
   it('should add team members by email', function () {
     Meteor.settings.public.authentication = {
       emailDomains: [
