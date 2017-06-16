@@ -295,7 +295,6 @@ export const createContact = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
-
     // return if a matching twitter handle already exists
     const existingContact = details.twitter && Contacts.findOne({ 'socials.label': 'Twitter', 'socials.value': details.twitter })
     if (existingContact) return existingContact

@@ -113,6 +113,15 @@ module.exports = {
         this.setValue(input, social.value)
       })
 
+      contact.addresses.forEach((address, index) => {
+        Object.keys(address).forEach((field) => {
+          if (contact.addresses[index][field]) {
+            this.clear(`[data-id=address-input-${field}-${index}]`)
+            this.setValue(`[data-id=address-input-${field}-${index}]`, contact.addresses[index][field])
+          }
+        })
+      })
+
       return this
     },
     submit: function () {
