@@ -23,6 +23,7 @@ import { Dropdown, DropdownMenu, DropdownMenuItem } from '/imports/ui/navigation
 import findUrl from '/imports/lib/find-url'
 import DeletePostModal from './delete-post-modal'
 import { GREY60 } from '/imports/ui/colours'
+import { ContactAvatarList } from '/imports/ui/lists/avatar-list'
 
 const hideTextIfOnlyUrl = (item) => {
   const url = findUrl(item.message)
@@ -230,10 +231,10 @@ Post.defaultProps = {
   bgClass: 'bg-white'
 }
 
-const ContactLink = ({contact, ...props}) => (
+const ContactLink = ({contact, showOutlet = true, ...props}) => (
   <Link to={`/contact/${contact.slug}`} data-id='contact-link' {...props}>
     <span className='semibold gray10' data-id='contact-name'>{contact.name}</span>
-    { contact.outletName && <span className='gray10' data-id='contact-outlet'> ({contact.outletName})</span> }
+    { showOutlet && contact.outletName && <span className='gray10' data-id='contact-outlet'> ({contact.outletName})</span> }
   </Link>
 )
 
@@ -242,17 +243,18 @@ const ContactName = ({contacts, contact, onContactPage}) => {
     return <span data-id='contact-name'>{firstName(contacts[0])}</span>
   }
 
-  if (contacts.length > 1 && contact) {
-    const otherContacts = contact ? contacts.filter((c) => c.slug !== contact.slug).length : contacts.length
+  if (contacts.length > 1) {
+    const primary = contact || contacts[0]
+    const otherContacts = contacts.filter((c) => c.slug !== primary.slug).length
+    const name = contact ? firstName(primary) : <ContactLink contact={primary} showOutlet={false} />
+
     return (
       <span>
-        <span data-id='contact-name' className='semibold gray10'>{firstName(contact)}</span>
+        <span data-id='contact-name' className='semibold gray10'>{name}</span>
         {` and ${otherContacts} other contact${otherContacts > 1 ? 's' : ''}`}
       </span>
     )
   }
-
-  if (contacts.length > 1) return <span data-id='contact-name'>{contacts.length} contacts</span>
 
   return <ContactLink contact={contacts[0]} />
 }
@@ -393,6 +395,16 @@ export const StatusUpdate = ({item, currentUser, contact, campaign}) => {
 }
 
 export const AddContactsToCampaign = ({item, currentUser, contact, campaign}) => {
+  let details = null
+
+  if (item.contacts.length > 1) {
+    details = (
+      <div className='border-gray80 border-top gray10'>
+        <ContactAvatarList items={item.contacts} className='my0 pt3 pb0 left' maxAvatars={9} />
+      </div>
+    )
+  }
+
   return (
     <Post
       {...item}
@@ -405,6 +417,7 @@ export const AddContactsToCampaign = ({item, currentUser, contact, campaign}) =>
           <CampaignName campaigns={item.campaigns} onCampaignPage={Boolean(campaign)} />
         </span>
       }
+      details={details}
     />
   )
 }
