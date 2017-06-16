@@ -28,29 +28,40 @@ Campaigns.toRef = ({_id, slug, name, avatar, client}) => ({
 })
 
 Campaigns.findRefs = ({campaignSlugs}) => {
-  return Campaigns.find(
-    { slug: { $in: campaignSlugs } },
-    { fields: { _id: 1, slug: 1, name: 1, avatar: 1, client: 1 } }
-  ).map(Campaigns.toRef)
+  return Campaigns.find({
+    slug: {
+      $in: campaignSlugs
+    }
+  }, {
+    fields: {
+      _id: 1,
+      slug: 1,
+      name: 1,
+      avatar: 1,
+      client: 1
+    }
+  }).map(Campaigns.toRef)
 }
 
-export const CampaignRefSchema = new SimpleSchema([
-  {
-    slug: { type: String },
-    name: { type: String },
-    avatar: {
-      type: String,
-      regEx: SimpleSchema.RegEx.Url,
-      optional: true
-    },
-    clientName: {
-      type: String,
-      optional: true
-    }
+export const CampaignRefSchema = new SimpleSchema([{
+  slug: {
+    type: String
+  },
+  name: {
+    type: String
+  },
+  avatar: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Url,
+    optional: true
+  },
+  clientName: {
+    type: String,
+    optional: true
   }
-])
+}])
 
-export const MedialistSchema = new SimpleSchema([
+export const CampaignSchema = new SimpleSchema([
   AuditSchema,
   {
     name: {
@@ -106,86 +117,3 @@ export const MedialistSchema = new SimpleSchema([
     }
   }
 ])
-
-export const MedialistUpdateSchema = new SimpleSchema({
-  '_id': {
-    type: String,
-    regEx: SimpleSchema.RegEx.Id
-  },
-  name: {
-    type: String,
-    min: 1,
-    optional: true
-  },
-  clientName: {
-    type: String,
-    min: 1,
-    optional: true
-  },
-  purpose: {
-    type: String,
-    optional: true
-  },
-  links: {
-    type: [Object],
-    optional: true
-  },
-  'links.$.url': {
-    type: String,
-    regEx: SimpleSchema.RegEx.Url
-  },
-  avatar: {
-    type: String,
-    optional: true
-  }
-})
-
-export const MedialistCreateSchema = new SimpleSchema({
-  name: {
-    type: String,
-    min: 1,
-    label: 'campaign name'
-  },
-  clientName: {
-    type: String,
-    optional: true
-  },
-  purpose: {
-    type: String,
-    optional: true
-  },
-  links: {
-    type: [Object],
-    optional: true
-  },
-  'links.$.url': {
-    type: String,
-    regEx: SimpleSchema.RegEx.Url
-  },
-  avatar: {
-    type: String,
-    optional: true
-  }
-})
-
-export const MedialistRemoveSchema = new SimpleSchema({
-  _ids: {
-    type: [String],
-    regEx: SimpleSchema.RegEx.Id
-  }
-})
-
-export const MedialistAddTeamMatesSchema = new SimpleSchema({
-  _id: {
-    type: String,
-    regEx: SimpleSchema.RegEx.Id
-  },
-  userIds: {
-    type: [String],
-    regEx: SimpleSchema.RegEx.Id
-  },
-  emails: {
-    type: [String],
-    regEx: SimpleSchema.RegEx.Email
-  }
-})

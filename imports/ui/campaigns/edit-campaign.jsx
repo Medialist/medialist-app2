@@ -12,7 +12,6 @@ import FormField from '/imports/ui/forms/form-field'
 import EditableAvatar from '/imports/ui/images/editable-avatar'
 import ClientAutocomplete from '/imports/ui/campaigns/client-autocomplete'
 import { create, update, remove } from '/imports/api/campaigns/methods'
-import { MedialistCreateSchema } from '/imports/api/campaigns/campaigns'
 import { Form, Input, Textarea, Button } from '@achingbrain/react-validation'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import Scroll from '/imports/ui/navigation/scroll'
@@ -98,14 +97,19 @@ const EditCampaign = withSnackbar(React.createClass({
     }
 
     const data = cloneDeep(this.state)
-    MedialistCreateSchema.clean(data)
     data.links = data.links.filter((o) => o.url)
 
     if (!data.purpose) {
       data.purpose = null
     }
 
-    this.props.onSubmit(data)
+    this.props.onSubmit({
+      name: data.name,
+      clientName: data.clientName,
+      purpose: data.purpose,
+      links: data.links,
+      avatar: data.avatar
+    })
   },
 
   onDismissErrorBanner () {

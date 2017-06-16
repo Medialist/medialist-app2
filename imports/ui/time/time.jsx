@@ -6,15 +6,29 @@ import moment from 'moment'
 export function timeFromNowShortFormat (then) {
   const now = moment()
   const secondsAgo = now.diff(then, 'seconds')
-  if (secondsAgo < 60) return 'Just now'
+
+  if (secondsAgo < 60) {
+    return 'Just now'
+  }
 
   const minutesAgo = now.diff(then, 'minutes')
-  if (minutesAgo < 60) return `${minutesAgo}mins`
+
+  if (minutesAgo < 60) {
+    return `${minutesAgo}mins`
+  }
 
   const hoursAgo = now.diff(then, 'hours')
-  if (now.isSame(then, 'day')) return `${hoursAgo}h`
 
-  if (now.isSame(then, 'year')) return then.format('D MMM')
+  // if it's after midnight but before 4am show 'hours ago'.
+  // 4am is the limit because nothing good ever happens after 4am.
+  if (now.isSame(then, 'day') || hoursAgo < 4) {
+    return `${hoursAgo}h`
+  }
+
+  if (now.isSame(then, 'year')) {
+    return then.format('D MMM')
+  }
+
   return then.format('D MMM YYYY')
 }
 

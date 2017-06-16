@@ -4,7 +4,7 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import escapeRegExp from 'lodash.escaperegexp'
 import createUniqueSlug, { checkAllSlugsExist } from '/imports/lib/slug'
-import Campaigns, { MedialistSchema, MedialistUpdateSchema, MedialistCreateSchema, MedialistRemoveSchema, MedialistAddTeamMatesSchema } from './campaigns'
+import Campaigns, { CampaignSchema } from './campaigns'
 import Clients from '/imports/api/clients/clients'
 import Uploadcare from '/imports/lib/uploadcare'
 import Posts from '/imports/api/posts/posts'
@@ -66,7 +66,38 @@ export const batchFavouriteCampaigns = new ValidatedMethod({
 
 export const update = new ValidatedMethod({
   name: 'Campaigns/update',
-  validate: MedialistUpdateSchema.validator(),
+  validate: new SimpleSchema({
+    '_id': {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    },
+    name: {
+      type: String,
+      min: 1,
+      optional: true
+    },
+    clientName: {
+      type: String,
+      min: 1,
+      optional: true
+    },
+    purpose: {
+      type: String,
+      optional: true
+    },
+    links: {
+      type: [Object],
+      optional: true
+    },
+    'links.$.url': {
+      type: String,
+      regEx: SimpleSchema.RegEx.Url
+    },
+    avatar: {
+      type: String,
+      optional: true
+    }
+  }).validator(),
   run (data) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
@@ -136,18 +167,22 @@ export const update = new ValidatedMethod({
     // Add this campaign to the updating user's favourites if required
     Meteor.users.update({
       _id: this.userId,
-      'myCampaigns._id': { $ne: _id }
+      'myCampaigns._id': {
+        $ne: _id
+      }
     }, {
-      $push: { myCampaigns: {
-        _id: _id,
-        name: updatedMedialist.name,
-        slug: updatedMedialist.slug,
-        avatar: updatedMedialist.avatar,
-        clientName: updatedMedialist.client
-          ? updatedMedialist.client.name
-          : null,
-        updatedAt: now
-      } }
+      $push: {
+        myCampaigns: {
+          _id: _id,
+          name: updatedMedialist.name,
+          slug: updatedMedialist.slug,
+          avatar: updatedMedialist.avatar,
+          clientName: updatedMedialist.client
+            ? updatedMedialist.client.name
+            : null,
+          updatedAt: now
+        }
+      }
     })
 
     return result
@@ -156,7 +191,33 @@ export const update = new ValidatedMethod({
 
 export const create = new ValidatedMethod({
   name: 'Campaigns/create',
-  validate: MedialistCreateSchema.validator(),
+  validate: new SimpleSchema({
+    name: {
+      type: String,
+      min: 1,
+      label: 'campaign name'
+    },
+    clientName: {
+      type: String,
+      optional: true
+    },
+    purpose: {
+      type: String,
+      optional: true
+    },
+    links: {
+      type: [Object],
+      optional: true
+    },
+    'links.$.url': {
+      type: String,
+      regEx: SimpleSchema.RegEx.Url
+    },
+    avatar: {
+      type: String,
+      optional: true
+    }
+  }).validator(),
   run ({ name, clientName, avatar, purpose, links }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
@@ -183,7 +244,7 @@ export const create = new ValidatedMethod({
       updatedBy: createdBy
     }
 
-    check(doc, MedialistSchema)
+    check(doc, CampaignSchema)
     Campaigns.insert(doc)
 
     if (Meteor.isServer) {
@@ -219,7 +280,12 @@ export const create = new ValidatedMethod({
 
 export const remove = new ValidatedMethod({
   name: 'Campaigns/remove',
-  validate: MedialistRemoveSchema.validator(),
+  validate: new SimpleSchema({
+    _ids: {
+      type: [String],
+      regEx: SimpleSchema.RegEx.Id
+    }
+  }).validator(),
   run ({ _ids }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
@@ -317,7 +383,20 @@ export const remove = new ValidatedMethod({
 
 export const setTeamMates = new ValidatedMethod({
   name: 'Campaigns/setTeamMates',
-  validate: MedialistAddTeamMatesSchema.validator(),
+  validate: new SimpleSchema({
+    _id: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    },
+    userIds: {
+      type: [String],
+      regEx: SimpleSchema.RegEx.Id
+    },
+    emails: {
+      type: [String],
+      regEx: SimpleSchema.RegEx.Email
+    }
+  }).validator(),
   run ({ _id, userIds, emails }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
