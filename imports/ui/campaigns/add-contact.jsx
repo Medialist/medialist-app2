@@ -249,6 +249,8 @@ const CreateContactButton = ({ term, onCreate }) => {
 }
 
 const SelectableContact = ({contact, onContactClick}) => {
+  const campaigns = Object.keys(contact.campaigns).length
+
   return (
     <div className='flex items-center border-bottom border-gray80 py2 pl4 pointer hover-bg-gray90 hover-color-trigger hover-opacity-trigger'
       onClick={() => onContactClick(contact, false)}>
@@ -256,7 +258,7 @@ const SelectableContact = ({contact, onContactClick}) => {
         <CampaignContact contact={contact} />
       </div>
       <div className='flex-none px4 f-sm gray40 hover-gray20'>
-        {`${contact.campaigns.length} ${contact.campaigns.length === 1 ? 'campaign' : 'campaigns'}`}
+        {`${campaigns} ${campaigns === 1 ? 'campaign' : 'campaigns'}`}
       </div>
       <div className='flex-none px4 opacity-0 hover-opacity-100'>
         <AddIcon data-id='add-button' style={{fill: BLUE}} />
@@ -266,6 +268,8 @@ const SelectableContact = ({contact, onContactClick}) => {
 }
 
 const SelectedContact = ({contact, onContactClick}) => {
+  const campaigns = Object.keys(contact.campaigns).length
+
   return (
     <div className='flex items-center border-bottom border-gray80 py2 pl4 active pointer hover-bg-gray90 hover-color-trigger hover-opacity-trigger'
       onClick={() => onContactClick(contact, true)}>
@@ -273,7 +277,7 @@ const SelectedContact = ({contact, onContactClick}) => {
         <CampaignContact contact={contact} highlighted />
       </div>
       <div className='flex-none px4 f-sm gray40 hover-gray20'>
-        {`${contact.campaigns.length} ${contact.campaigns.length === 1 ? 'campaign' : 'campaigns'}`}
+        {`${campaigns} ${campaigns === 1 ? 'campaign' : 'campaigns'}`}
       </div>
       <div className='flex-none px4 hover-opacity-100'>
         <SelectedIcon style={{fill: BLUE}} />

@@ -4,7 +4,10 @@ import classNames from 'classnames'
 import { StatusValues } from '/imports/api/contacts/status'
 
 const StatusDot = ({ name, size = 12, className, style = {} }) => {
-  if (!name) return null
+  if (!name) {
+    return null
+  }
+
   const ref = name.toLowerCase().replace(' ', '-')
   className = classNames(`inline-block circle bg-${ref}`, className)
 

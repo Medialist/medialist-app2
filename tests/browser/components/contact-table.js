@@ -87,6 +87,13 @@ module.exports = {
       this.assert.visible('@noResults')
 
       return this
+    },
+    assertInPosition: function (contact, index) {
+      const selector = `[data-id=contacts-table-row-${index}][data-item='${contact._id}']`
+
+      this.assert.visible(selector)
+
+      return this
     }
   }]
 }

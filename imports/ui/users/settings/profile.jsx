@@ -78,7 +78,7 @@ export default withSnackbar(React.createClass({
             <label className='block gray40 semibold f-sm pt4 mb2' htmlFor='name'>Full name</label>
             <Input
               name='name'
-              className='input'
+              className='input placeholder-gray60'
               errorClassName='error'
               placeholder='Your name'
               value={user.profile.name}
@@ -92,7 +92,7 @@ export default withSnackbar(React.createClass({
             <Input
               name='email'
               containerClassName='inline-block w24'
-              className='input inline-block'
+              className='input placeholder-gray60 inline-block'
               errorClassName='error'
               placeholder={`yourname@${Meteor.settings.public.authentication.emailDomains[0]}`}
               value={user.emails[0].address}

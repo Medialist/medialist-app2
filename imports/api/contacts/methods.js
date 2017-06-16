@@ -27,7 +27,10 @@ export const addContactsToCampaign = new ValidatedMethod({
   }).validator(),
 
   run ({ contactSlugs, campaignSlug }) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
     checkAllSlugsExist(contactSlugs, Contacts)
     checkAllSlugsExist([campaignSlug], Campaigns)
 
@@ -39,38 +42,40 @@ export const addContactsToCampaign = new ValidatedMethod({
       return ref
     }, {})
 
-    const campaign = Campaigns.findOne(
-      { slug: campaignSlug },
-      { contacts: 1 }
-    )
+    const campaign = Campaigns.findOne({
+      slug: campaignSlug
+    }, {
+      contacts: 1
+    })
 
     // Merge incoming contacts with existing.
     // If a contact is already part of the campaign, it's status is preserved.
-    Campaigns.update(
-      { slug: campaignSlug },
-      {
-        $set: {
-          contacts: Object.assign({}, newContacts, campaign.contacts),
-          updatedAt,
-          updatedBy
-        }
+    Campaigns.update({
+      slug: campaignSlug
+    }, {
+      $set: {
+        contacts: Object.assign({}, newContacts, campaign.contacts),
+        updatedAt,
+        updatedBy
       }
-    )
+    })
 
     // Add campaign to all contacts
-    Contacts.update(
-      { slug: { $in: contactSlugs } },
-      {
-        $addToSet: {
-          campaigns: campaignSlug
+    Contacts.update({
+      slug: {
+        $in: contactSlugs
+      }
+    }, {
+      $set: {
+        [`campaigns.${campaignSlug}`]: {
+          updatedAt
         },
-        $set: {
-          updatedAt,
-          updatedBy
-        }
-      },
-      { multi: true }
-    )
+        updatedAt,
+        updatedBy
+      }
+    }, {
+      multi: true
+    })
 
     // Add an entry to the activity feed
     Posts.create({
@@ -150,8 +155,8 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
           $in: contactSlugs
         }
       }, {
-        $pull: {
-          campaigns: campaignSlug
+        $unset: {
+          [`campaigns.${campaignSlug}`]: ''
         }
       }, {
         multi: true
@@ -302,7 +307,7 @@ export const createContact = new ValidatedMethod({
     // Merge the provided details with any missing values
     const contact = Object.assign({}, details, {
       slug,
-      campaigns: [],
+      campaigns: {},
       masterLists: [],
       tags: [],
       imports: [],

@@ -33,16 +33,22 @@ const Avatar = React.createClass({
 
   render () {
     const { imageLoadError } = this.state
-    const { avatar, name, size = defaultSize } = this.props
+    const { avatar, name, email, size = defaultSize } = this.props
     const className = classNames(this.props.className, 'white semibold')
     const style = avatarStyle(size, this.props.style)
+
+    let tooltip = email
+
+    if (name) {
+      tooltip = name
+    }
 
     if (avatar && !imageLoadError) {
       const src = this.resizeAvatar(avatar, size * 2) // @2x for hdpi
 
       return (
         <div className={className} style={style}>
-          <img style={{width: '100%', height: '100%'}} src={src} alt={name} title={name} onError={this.onError} />
+          <img style={{width: '100%', height: '100%'}} src={src} alt={name} title={tooltip} onError={this.onError} />
         </div>
       )
     }
@@ -55,7 +61,7 @@ const Avatar = React.createClass({
         .join('')
 
       return (
-        <div style={style} className={classNames(className, 'initials')} title={name}>{initials}</div>
+        <div style={style} className={classNames(className, 'initials')} title={tooltip}>{initials}</div>
       )
     }
 
@@ -63,7 +69,7 @@ const Avatar = React.createClass({
 
     return (
       <div style={style} className={className}>
-        <CameraIcon className='svg-icon-xl' style={{width: `${size - 10}px`, height: `${size - 10}px`, lineHeight: `${size - 5}px`}} />
+        <CameraIcon className='svg-icon-xl' style={{width: `${size - 10}px`, height: `${size - 10}px`, lineHeight: `${size - 5}px`}} title={tooltip} />
       </div>
     )
   }

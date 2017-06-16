@@ -244,35 +244,31 @@ const ContactsPage = withSnackbar(React.createClass({
           </div>
         </div>
         <div className='bg-white shadow-2 m4 mt8' data-id='contacts-table'>
-          <div className='p4 flex items-center'>
-            <div className='flex-auto'>
-              <SearchBox onTermChange={onTermChange} placeholder='Search contacts...' data-id='search-contacts-input'>
-                <div style={{margin: '1px 4px -4px 6px'}} >
-                  {campaigns && campaigns.map((c) => (
-                    <AvatarTag
-                      key={c.slug}
-                      name={c.name}
-                      avatar={c.avatar}
-                      onRemove={() => onCampaignRemove(c)}
-                    />
-                  ))}
-                  {selectedTags && selectedTags.map((t) => (
-                    <CountTag
-                      key={t.slug}
-                      name={t.name}
-                      count={t.contactsCount}
-                      onRemove={() => onTagRemove(t)}
-                    />
-                  ))}
-                  {importId && (
-                    <CountTag name='Imported Contacts' onRemove={onImportRemove} />
-                  )}
-                </div>
-              </SearchBox>
-            </div>
-            <div className='flex-none pl4 f-xs'>
-              <ContactsTotal searching={searching} results={contacts} total={selectedMasterListSlug ? contacts.length : contactsCount} />
-            </div>
+          <div className='pt4 pl4 pr4 pb1 items-center'>
+            <SearchBox onTermChange={onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' style={{zIndex: 1}}>
+              <div style={{margin: '1px 4px -4px 6px'}} >
+                {campaigns && campaigns.map((c) => (
+                  <AvatarTag
+                    key={c.slug}
+                    name={c.name}
+                    avatar={c.avatar}
+                    onRemove={() => onCampaignRemove(c)}
+                  />
+                ))}
+                {selectedTags && selectedTags.map((t) => (
+                  <CountTag
+                    key={t.slug}
+                    name={t.name}
+                    count={t.contactsCount}
+                    onRemove={() => onTagRemove(t)}
+                  />
+                ))}
+                {importId && (
+                  <CountTag name='Imported Contacts' onRemove={onImportRemove} />
+                )}
+              </div>
+            </SearchBox>
+            <ContactsTotal searching={searching} results={contacts} total={selectedMasterListSlug ? contacts.length : contactsCount} />
           </div>
           <ContactsTable
             contacts={contacts}
@@ -347,8 +343,7 @@ const MasterListsSelectorContainer = createContainer((props) => {
 
 const ContactsTotal = ({ searching, results, total }) => {
   const num = searching ? results.length : total
-  const label = searching ? 'match' : 'total'
-  return <div>{num} contact{num === 1 ? '' : 's'} {label}</div>
+  return <div className='f-xs gray60' style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>{num} contact{num === 1 ? '' : 's'}</div>
 }
 
 const SearchableContactsPage = createSearchContainer(ContactsPage)

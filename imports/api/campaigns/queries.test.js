@@ -32,7 +32,11 @@ describe('searchCampaigns', function () {
       contacts: {},
       masterLists: []
     }))
-    campaigns[0].contacts = {'slug1': 'HOTPOT'}
+    campaigns[0].contacts = {
+      'slug1': {
+        status: 'HOTPOT'
+      }
+    }
     campaigns[2].masterLists.push({slug: 'masterListSlug0'})
     campaigns.forEach((c) => Campaigns.insert(c))
 

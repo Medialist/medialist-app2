@@ -6,8 +6,6 @@ const test = {
   '@tags': ['campaign-team'],
 
   beforeEach: function (t) {
-    t.resizeWindow(1440, 1024)
-
     t.page.authenticate()
       .register()
   },

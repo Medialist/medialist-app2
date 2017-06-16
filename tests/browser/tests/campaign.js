@@ -8,8 +8,6 @@ const test = {
   '@tags': ['campaign'],
 
   beforeEach: function (t) {
-    t.resizeWindow(1440, 1024)
-
     t.page.authenticate()
       .register()
   },
@@ -275,6 +273,117 @@ const test = {
         .cancel()
 
       campaignPage.section.info.assert.attributeContains('a[data-id=tag-link]', 'href', `/campaigns?tag=${tag}`)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should update the status of a contact and change their last updated time': function (t) {
+    let originalContact
+    let originalCampaign
+    let newStatus
+
+    t.createDomain(['campaign', 'contact', 'contact'], (campaign, contact1, contact2, done) => {
+      // make sure updateAt timestamps are different
+      t.pause(1000)
+
+      t.perform((done) => {
+        t.addContactsToCampaign([contact1], campaign, () => done())
+      })
+
+      // make sure updateAt timestamps are different
+      t.pause(1000)
+
+      t.perform((done) => {
+        t.addContactsToCampaign([contact2], campaign, () => done())
+      })
+
+      t.perform((done) => {
+        const campaignContactsPage = t.page.campaignContacts()
+          .navigate(campaign)
+
+        // should be at the bottom of the table
+        campaignContactsPage.section.contactTable.assertInPosition(contact1, 1)
+
+        done()
+      })
+
+      t.perform((done) => {
+        t.db.findContact({
+          name: contact1.name
+        })
+        .then((doc) => {
+          originalContact = doc
+
+          done()
+        })
+      })
+
+      t.perform((done) => {
+        t.db.findCampaign({
+          name: campaign.name
+        })
+        .then((doc) => {
+          originalCampaign = doc
+
+          done()
+        })
+      })
+
+      // make sure updateAt timestamps are different
+      t.pause(1000)
+
+      t.perform((done) => {
+        const campaignPage = t.page.campaign()
+          .navigate(campaign)
+
+        newStatus = domain.status(originalCampaign.contacts[contact1.slug].status)
+        t.assert.notEqual(originalCampaign.contacts[contact1.slug].status, newStatus)
+
+        campaignPage.section.campaignContacts.updateStatus(contact1, newStatus)
+
+        done()
+      })
+
+      t.perform((done) => {
+        t.db.findContact({
+          name: contact1.name
+        })
+        .then((doc) => {
+          // should have updated the contact updatedAt
+          t.assert.ok(doc.updatedAt.getTime() > originalContact.updatedAt.getTime())
+
+          // and the link to the campaign
+          t.assert.equal(doc.campaigns[campaign.slug].updatedAt.getTime(), doc.updatedAt.getTime())
+
+          done()
+        })
+      })
+
+      t.perform((done) => {
+        t.db.findCampaign({
+          name: campaign.name
+        })
+        .then((doc) => {
+          // should have updated the updatedAt value for the contact on the campaign
+          t.assert.equal(doc.contacts[contact1.slug].toLowerCase().replace(/\s+/g, '-'), newStatus)
+
+          done()
+        })
+      })
+
+      t.perform((done) => {
+        const campaignContactsPage = t.page.campaignContacts()
+          .navigate(campaign)
+
+        // should be at the top of the table
+        campaignContactsPage.section.contactTable.assertInPosition(contact1, 0)
+
+        done()
+      })
 
       done()
     })

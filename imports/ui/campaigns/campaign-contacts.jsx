@@ -4,7 +4,10 @@ import CampaignContact from '/imports/ui/campaigns/campaign-contact'
 import StatusLabel from '/imports/ui/feedback/status-label'
 
 const CampaignContacts = ({campaign, contacts, onSelectContact}) => {
-  if (!contacts) return null
+  if (!contacts) {
+    return null
+  }
+
   return (
     <div>
       {contacts.map((contact) => {

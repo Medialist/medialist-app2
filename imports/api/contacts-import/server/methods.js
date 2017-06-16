@@ -6,7 +6,7 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import slugify from '/imports/lib/slug'
 import { findOneUserRef } from '/imports/api/users/users'
 import Contacts, { ContactSchema, ContactCreateSchema } from '/imports/api/contacts/contacts'
-import ContactsImport from '../contacts-import'
+import ContactsImport from '/imports/api/contacts-import/contacts-import'
 
 export const importContacts = new ValidatedMethod({
   name: 'importContacts',
@@ -16,8 +16,10 @@ export const importContacts = new ValidatedMethod({
   }).validator(),
 
   run ({ data }) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
-    console.log(data)
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
     const createdBy = findOneUserRef(this.userId)
     const createdAt = new Date()
     const doc = {
@@ -31,7 +33,7 @@ export const importContacts = new ValidatedMethod({
       createdBy
     }
     const _id = ContactsImport.insert(doc)
-    // Do after sending the clint the import _id
+    // Do after sending the client the import _id
     Meteor.defer(function () {
       const label = `ContactsImport ${_id} with ${data.length} items`
       console.log(label)
@@ -64,7 +66,7 @@ function createContact (data, userRef, importId) {
   data.slug = slugify(data.name, Contacts)
   data.socials = data.socials || []
   data.phones = data.phones || []
-  data.campaigns = []
+  data.campaigns = {}
   data.masterLists = []
   data.tags = []
   data.imports = [importId]

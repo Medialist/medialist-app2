@@ -177,15 +177,28 @@ export default createContainer((props) => {
     Meteor.subscribe('clients')
   ]
   const loading = subs.some((s) => !s.ready())
-  const campaign = Campaigns.findOne({ slug: campaignSlug })
+  const campaign = Campaigns.findOne({
+    slug: campaignSlug
+  })
 
   return {
     ...props,
     loading,
     campaign,
-    // TODO: need to be able to sort contacts by recently updated with respect to the campaign.
-    contacts: Contacts.find({campaigns: campaignSlug}, {sort: {updatedAt: -1}}).fetch(),
-    contactsCount: Contacts.find({campaigns: campaignSlug}).count(),
+    contacts: Contacts.find({
+      [`campaigns.${campaignSlug}`]: {
+        $exists: true
+      }
+    }, {
+      sort: {
+        [`campaigns.${campaignSlug}.updatedAt`]: -1
+      }
+    }).fetch(),
+    contactsCount: Contacts.find({
+      [`campaigns.${campaignSlug}`]: {
+        $exists: true
+      }
+    }).count(),
     contactsAllCount: Contacts.allContactsCount(),
     teamMates: campaign && campaign.team,
     user: Meteor.user(),

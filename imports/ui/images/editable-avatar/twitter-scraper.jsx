@@ -145,7 +145,7 @@ const TwitterScraper = React.createClass({
         <div className='mb2'>
           <input
             ref={(el) => { this.inputEl = el }}
-            className='input'
+            className='input placeholder-gray60'
             value={inputValue}
             onChange={onInputChange}
             placeholder='Twitter username or URL' />

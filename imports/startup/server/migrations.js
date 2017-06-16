@@ -128,4 +128,28 @@ Migrations.add({
   }
 })
 
+Migrations.add({
+  version: 6,
+  name: 'Add update time to campaign contacts',
+  up: () => {
+    Contacts.find().forEach(contact => {
+      const campaigns = {}
+
+      contact.campaigns.forEach(slug => {
+        campaigns[slug] = {
+          updatedAt: contact.updatedAt
+        }
+      })
+
+      Contacts.update({
+        _id: contact._id
+      }, {
+        $set: {
+          campaigns: campaigns
+        }
+      })
+    })
+  }
+})
+
 Meteor.startup(() => Migrations.migrateTo('latest'))

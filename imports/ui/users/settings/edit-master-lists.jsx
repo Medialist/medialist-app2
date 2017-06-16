@@ -208,7 +208,7 @@ const MasterListsItem = (props) => {
     <div className='flex justify-start items-center p2 my1 border border-gray80 bg-gray90 gray60' data-item={_id}>
       <input
         ref={(input) => input && editing === _id && input.focus()}
-        className='input max-width-sm ml2'
+        className='input placeholder-gray60 max-width-sm ml2'
         defaultValue={state.masterlists[_id]}
         disabled={disabled}
         onChange={(e) => onChange(_id, e.target.value)}
@@ -269,7 +269,7 @@ const CreateMasterListInput = React.createClass({
       <div className='flex justify-start items-center p2 my1 border border-gray80 bg-gray90 gray60'>
         <input
           ref='input'
-          className='input max-width-sm ml2'
+          className='input placeholder-gray60 max-width-sm ml2'
           value={value}
           onChange={onChange}
           onBlur={onBlur}

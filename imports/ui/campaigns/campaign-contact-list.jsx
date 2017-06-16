@@ -16,9 +16,9 @@ const CampaignContactList = React.createClass({
     if (!contacts || !campaign) return null
 
     return (
-      <aside className='bg-white mb4 shadow-2'>
+      <aside className='bg-white mb4 shadow-2' data-id='campaign-contact-list'>
         <header className='border-gray80 border-bottom'>
-          <Link className='block pt5 pb4 px4' to={`/campaign/${campaign.slug}/contacts`}>
+          <Link className='block pt5 pb4 px4' to={`/campaign/${campaign.slug}/contacts`} data-id='manage-contacts'>
             <span className='f-sm blue right'>Manage</span>
             <span className='pill semibold f-xs bg-blue' style={{paddingTop: 1}}>{contactsCount}</span>
             <span className='f-md semibold gray20 ml1'>Contacts</span>
@@ -36,7 +36,7 @@ const CampaignContactList = React.createClass({
 
 const EmptyContactsList = ({onAddContactClick}) => (
   <div className='px4'>
-    <a href='#' onClick={onAddContactClick} className='block py5 bg-white blue semibold underline'>
+    <a href='#' onClick={onAddContactClick} className='block py5 bg-white blue semibold underline' data-id='add-contacts-to-campaign-button'>
       Add Contacts to this Campaign
     </a>
   </div>
@@ -46,7 +46,7 @@ const ContactsList = ({contacts, campaign}) => (
   <div>
     <div className='px4 pb3'>
       {contacts.map((contact) => (
-        <Link to={`/campaign/${campaign.slug}/contact/${contact.slug}`} className='block pt3' key={contact._id}>
+        <Link to={`/contact/${contact.slug}`} className='block pt3' key={contact._id}>
           <CampaignContact
             key={contact.slug}
             contact={contact}
@@ -60,7 +60,7 @@ const ContactsList = ({contacts, campaign}) => (
       ))}
     </div>
     <footer className='center border-gray80 border-top p4'>
-      <Link to={`/campaign/${campaign.slug}/contacts`} className='block blue'>Show all</Link>
+      <Link to={`/campaign/${campaign.slug}/contacts`} className='block blue' data-id='show-all-contacts-button'>Show all</Link>
     </footer>
   </div>
 )

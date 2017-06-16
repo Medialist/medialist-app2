@@ -86,9 +86,14 @@ npm run watch
 		{ "label" : "Mobile", "value" : "+44 (0)7980 327 310" }
 	],
 	"address" : "53 Athenlay Road, London, SE15 3EN, United Kingdom",
-	"campaigns" : [
-		"campaignSlug"
-	],
+	"campaigns" : {
+		"campaign-slug-1": {
+			"updatedAt" : ISODate("2016-02-26T13:12:53.456Z")
+		},
+		"campaign-slug-2": {
+			"updatedAt" : ISODate("2016-02-26T13:12:53.456Z")
+		}
+	},
 	"tags": [
 		{ "_id": "xyz", "slug": "nice", "name": "Nice", "count": 9 }
 	],

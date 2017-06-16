@@ -15,7 +15,10 @@ Meteor.publish('contactCount', function () {
 })
 
 Meteor.publish('my-contacts-and-campaigns', function () {
-  if (!this.userId) return this.ready()
+  if (!this.userId) {
+    return this.ready()
+  }
+
   return [
     Contacts.find({}, { sort: { updatedAt: -1 }, limit: 20 }),
     Campaigns.find({}, { sort: { updatedAt: -1 }, limit: 20 })
@@ -23,21 +26,52 @@ Meteor.publish('my-contacts-and-campaigns', function () {
 })
 
 Meteor.publish('contact-page', function (slug) {
-  if (!this.userId) return this.ready()
+  if (!this.userId) {
+    return this.ready()
+  }
+
   check(slug, String)
+
   return [
-    Contacts.find({ slug }, { fields: { importedData: 0 } }),
-    Campaigns.find({ [`contact.${slug}`]: { $exists: true } })
+    Contacts.find({
+      slug
+    }, {
+      fields: {
+        importedData: 0
+      }
+    }),
+    Campaigns.find({
+      [`contact.${slug}`]: {
+        $exists: true
+      }
+    })
   ]
 })
 
 Meteor.publish('contacts-by-campaign', function (campaignSlug, limit) {
-  if (!this.userId) return this.ready()
+  if (!this.userId) {
+    return this.ready()
+  }
+
   check(campaignSlug, String)
-  const opts = { sort: { updatedAt: -1 }, fields: { importedData: 0 } }
+
+  const opts = {
+    sort: {
+      [`campaigns.${campaignSlug}.updatedAt`]: -1
+    },
+    fields: {
+      importedData: 0
+    }
+  }
+
   if (limit) {
     check(limit, Number)
     opts.limit = limit
   }
-  return Contacts.find({ campaigns: campaignSlug }, opts)
+
+  return Contacts.find({
+    [`campaigns.${campaignSlug}`]: {
+      $exists: true
+    }
+  }, opts)
 })

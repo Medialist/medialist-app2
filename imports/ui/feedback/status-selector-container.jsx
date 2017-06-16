@@ -4,7 +4,21 @@ import StatusSelector from '/imports/ui/feedback/status-selector'
 import { createFeedbackPost } from '/imports/api/posts/methods'
 
 class StatusSelectorContainer extends React.Component {
-  onStatusChange (event) {
+  static propTypes = {
+    contactSlug: PropTypes.string.isRequired,
+    campaign: PropTypes.object.isRequired,
+    children: PropTypes.func.isRequired,
+    compact: PropTypes.bool,
+    dropdown: PropTypes.shape({
+      left: PropTypes.number,
+      width: PropTypes.number,
+      arrowAlign: PropTypes.string,
+      arrowMarginRight: PropTypes.string,
+      arrowMarginLeft: PropTypes.string
+    })
+  }
+
+  onStatusChange = (event) => {
     createFeedbackPost.call({
       contactSlug: this.props.contactSlug,
       campaignSlug: this.props.campaign.slug,
@@ -19,27 +33,13 @@ class StatusSelectorContainer extends React.Component {
       <StatusSelector
         {...props}
         status={status}
-        onChange={(event) => this.onStatusChange(event)}
+        onChange={this.onStatusChange}
         children={children(status)}
         compact={compact}
         dropdown={this.props.dropdown}
       />
     )
   }
-}
-
-StatusSelectorContainer.propTypes = {
-  contactSlug: PropTypes.string.isRequired,
-  campaign: PropTypes.object.isRequired,
-  children: PropTypes.func.isRequired,
-  compact: PropTypes.bool,
-  dropdown: PropTypes.shape({
-    left: PropTypes.number,
-    width: PropTypes.number,
-    arrowAlign: PropTypes.string,
-    arrowMarginRight: PropTypes.string,
-    arrowMarginLeft: PropTypes.string
-  })
 }
 
 export default StatusSelectorContainer
