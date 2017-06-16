@@ -226,9 +226,13 @@ const EditCampaign = withSnackbar(React.createClass({
           </div>
         </Scroll>
 
-        <div className='flex items-center p4 bg-white border-top border-gray80'>
-          {this.props.onDelete && <Dropdown>
-            <button className='flex-none btn bg-transparent not-interested' onClick={(event) => this.openDeleteMenu(event)} data-id='delete-campaign-button'>Delete Campaign</button>
+        <div className='flex p4 bg-white border-top border-gray80'>
+          <div className='flex-none flex right-align order-last'>
+            <Button className='btn bg-completed white order-last' data-id='save-campaign-button' disabled={false}>{this.props.campaign ? 'Save Changes' : 'Create Campaign'}</Button>
+            <button className='btn bg-transparent gray40 right mr2' onClick={this.props.onCancel} data-id='edit-campaign-form-cancel-button'>Cancel</button>
+          </div>
+          {this.props.onDelete && <Dropdown className='flex-auto'>
+            <button className='flex-none btn bg-transparent red' onClick={(event) => this.openDeleteMenu(event)} data-id='delete-campaign-button'>Delete Campaign</button>
             <DropdownMenu width={430} left={0} top={-270} arrowPosition='bottom' arrowAlign='left' arrowMarginLeft='55px' open={this.state.deleteMenuOpen} onDismiss={() => this.closeDeleteMenu()}>
               <div className='p1'>
                 <p className='center m6'>Are you sure you want to <strong>delete this campaign</strong>?</p>
@@ -240,10 +244,6 @@ const EditCampaign = withSnackbar(React.createClass({
               </div>
             </DropdownMenu>
           </Dropdown>}
-          <div className='flex-auto right-align'>
-            <Button className='btn bg-completed white right' data-id='save-campaign-button' disabled={false}>{this.props.campaign ? 'Save Changes' : 'Create Campaign'}</Button>
-            <button className='btn bg-transparent gray40 right mr2' onClick={this.props.onCancel} data-id='edit-campaign-form-cancel-button'>Cancel</button>
-          </div>
         </div>
       </Form>
     )

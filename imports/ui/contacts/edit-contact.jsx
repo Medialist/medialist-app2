@@ -18,6 +18,18 @@ import { Form, Input, Button } from '@achingbrain/react-validation'
 import { createContact, updateContact, batchRemoveContacts } from '/imports/api/contacts/methods'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
+import findUsername from '/imports/lib/find-username'
+
+const socials = [
+  'website',
+  'twitter',
+  'linkedin',
+  'facebook',
+  'youtube',
+  'instagram',
+  'medium',
+  'pinterest'
+]
 
 const EditContact = withSnackbar(React.createClass({
   propTypes: {
@@ -103,7 +115,23 @@ const EditContact = withSnackbar(React.createClass({
 
   onFieldChange (event) {
     const { name, value } = event.target
+
     this.setState((s) => immutable.set(s, name, value))
+  },
+
+  onFieldBlur (event) {
+    const { name, value } = event.target
+
+    if (!name.startsWith('socials')) {
+      return
+    }
+
+    const index = name.match(/socials\.(\d+)/).pop()
+    const username = findUsername(socials[index], value)
+
+    if (username !== value) {
+      this.setState((s) => immutable.set(s, name, username))
+    }
   },
 
   onAvatarChange (evt) {
@@ -318,6 +346,7 @@ const EditContact = withSnackbar(React.createClass({
                     name={`socials.${index}.value`}
                     value={value}
                     onChange={this.onFieldChange}
+                    onBlur={this.onFieldBlur}
                     placeholder={label}
                     validations={label === 'Website' ? ['url'] : ['username']} />
                 </FormField>
@@ -326,9 +355,13 @@ const EditContact = withSnackbar(React.createClass({
           </div>
         </Scroll>
 
-        <div className='flex items-center p4 bg-white border-top border-gray80'>
-          {this.props.onDelete && <Dropdown>
-            <button className='flex-none btn bg-transparent not-interested' onClick={(event) => this.openDeleteMenu(event)} data-id='delete-contact-button'>Delete Contact</button>
+        <div className='flex p4 bg-white border-top border-gray80'>
+          <div className='flex-none flex right-align order-last'>
+            <Button className='btn bg-completed white order-last' data-id='edit-contact-form-submit-button' disabled={false}>Save Changes</Button>
+            <button className='btn bg-transparent gray40 mr2' onClick={this.props.onCancel} data-id='edit-contact-form-cancel-button'>Cancel</button>
+          </div>
+          {this.props.onDelete && <Dropdown className='flex-auto'>
+            <button className='btn bg-transparent red' onClick={(event) => this.openDeleteMenu(event)} data-id='delete-contact-button'>Delete Contact</button>
             <DropdownMenu width={430} left={0} top={-270} arrowPosition='bottom' arrowAlign='left' arrowMarginLeft='55px' open={this.state.deleteMenuOpen} onDismiss={() => this.closeDeleteMenu()}>
               <div className='p1'>
                 <p className='center m6'>Are you sure you want to <strong>delete this contact</strong>?</p>
@@ -340,10 +373,6 @@ const EditContact = withSnackbar(React.createClass({
               </div>
             </DropdownMenu>
           </Dropdown>}
-          <div className='flex-auto right-align'>
-            <button className='btn bg-transparent gray40 mr2' onClick={this.props.onCancel} data-id='edit-contact-form-cancel-button'>Cancel</button>
-            <Button className='btn bg-completed white' data-id='edit-contact-form-submit-button' disabled={false}>Save Changes</Button>
-          </div>
         </div>
       </Form>
     )

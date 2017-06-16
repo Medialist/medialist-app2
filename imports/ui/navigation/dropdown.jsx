@@ -15,8 +15,8 @@ import { Check } from '/imports/ui/images/icons'
  *   </Dropdown>
  */
 
-export const Dropdown = ({children}) => (
-  <div className='inline-block align-top'>
+export const Dropdown = ({children, className}) => (
+  <div className={`inline-block align-top ${className}`}>
     {children}
   </div>
 )

@@ -45,6 +45,69 @@ const test = {
     t.end()
   },
 
+  'Should edit an existing contact and extract usernames': function (t) {
+    t.createDomain(['contact'], (contact, done) => {
+      const contactPage = t.page.contact()
+        .navigate(contact)
+        .editContact()
+
+      const updated = domain.contact()
+      const updatedWithSocialUrls = Object.assign({}, updated, {
+        socials: [{
+          label: 'Website',
+          value: updated.socials[0].value
+        }, {
+          label: 'Twitter',
+          value: `https://www.twitter.com/${updated.socials[1].value}`
+        }, {
+          label: 'LinkedIn',
+          value: `https://www.linkedin.com/in/${updated.socials[2].value}/`
+        }, {
+          label: 'Facebook',
+          value: `https://www.facebook.com/${updated.socials[3].value}`
+        }, {
+          label: 'YouTube',
+          value: `https://www.youtube.com/user/${updated.socials[4].value}`
+        }, {
+          label: 'Instagram',
+          value: `https://www.instagram.com/${updated.socials[5].value}/`
+        }, {
+          label: 'Medium',
+          value: `https://medium.com/${updated.socials[6].value}`
+        }, {
+          label: 'Pinterest',
+          value: `https://uk.pinterest.com/${updated.socials[7].value}/`
+        }, {
+          label: 'Website',
+          value: updated.socials[8].value
+        }]
+      })
+
+      contactPage.section.editContactForm
+        .verifyEditFormContents(contact)
+        .populate(updatedWithSocialUrls)
+        .submit()
+
+      t.page.main().waitForSnackbarMessage('contact-update-success')
+
+      t.perform((done) => {
+        t.db.findContact({
+          name: updated.name
+        })
+        .then((doc) => {
+          assertions.contactsAreEqual(t, updated, doc)
+
+          done()
+        })
+      })
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
   'Should delete an existing contact': function (t) {
     t.createDomain(['contact'], (contact, done) => {
       const contactPage = t.page.contact()
