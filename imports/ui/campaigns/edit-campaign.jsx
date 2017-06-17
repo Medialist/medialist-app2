@@ -231,12 +231,12 @@ const EditCampaign = withSnackbar(React.createClass({
         </Scroll>
 
         <div className='flex p4 bg-white border-top border-gray80'>
-          <div className='flex-none flex right-align order-last'>
+          <div className='flex-auto flex order-last' style={{justifyContent: 'flex-end'}}>
             <Button className='btn bg-completed white order-last' data-id='save-campaign-button' disabled={false}>{this.props.campaign ? 'Save Changes' : 'Create Campaign'}</Button>
             <button className='btn bg-transparent gray40 right mr2' onClick={this.props.onCancel} data-id='edit-campaign-form-cancel-button'>Cancel</button>
           </div>
           {this.props.onDelete && <Dropdown className='flex-auto'>
-            <button className='flex-none btn bg-transparent red' onClick={(event) => this.openDeleteMenu(event)} data-id='delete-campaign-button'>Delete Campaign</button>
+            <button className='btn bg-transparent red' onClick={(event) => this.openDeleteMenu(event)} data-id='delete-campaign-button'>Delete Campaign</button>
             <DropdownMenu width={430} left={0} top={-270} arrowPosition='bottom' arrowAlign='left' arrowMarginLeft='55px' open={this.state.deleteMenuOpen} onDismiss={() => this.closeDeleteMenu()}>
               <div className='p1'>
                 <p className='center m6'>Are you sure you want to <strong>delete this campaign</strong>?</p>
