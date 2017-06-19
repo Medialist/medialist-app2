@@ -10,8 +10,6 @@ const test = {
   '@tags': ['contacts'],
 
   beforeEach: (t) => {
-    t.resizeWindow(1440, 1024)
-
     t.page.authenticate()
       .register()
   },
@@ -33,8 +31,8 @@ const test = {
     const file = tmp.fileSync({
       postfix: '.csv'
     })
-    const contents = `Name, Email, Telephone
-${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()}`
+    const contents = `Name, Outlet, Email, Telephone
+${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()}`
     fs.writeFileSync(file.name, contents)
 
     t.page.contactImport()
@@ -42,7 +40,7 @@ ${faker.name.findName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()
       .uploadCsvFile(file.name)
       .completeImport()
       .waitForElementVisible('@status')
-      .assert.containsText('@status', 'Created 1 contacts and updated 0 contacts.')
+      .assert.containsText('@status', '1 new contacts added, 0 updated.')
 
     t.page.main().logout()
     t.end()

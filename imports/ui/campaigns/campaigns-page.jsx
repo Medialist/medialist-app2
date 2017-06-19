@@ -34,7 +34,7 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
     sort: PropTypes.object,
     term: PropTypes.string,
     setQuery: PropTypes.func,
-    snackbar: PropTypes.object
+    snackbar: PropTypes.object.isRequired
   },
 
   getInitialState () {
@@ -160,7 +160,7 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
   },
 
   render () {
-    const { campaignCount, campaigns, loading, total, sort, term, selectedTags, onTermChange, onSortChange } = this.props
+    const { campaignCount, campaigns, loading, sort, term, selectedTags, onTermChange, onSortChange, searching } = this.props
     const { onSelectionsChange, onTagRemove } = this
     const { selections } = this.state
 
@@ -198,14 +198,15 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
           onTermChange,
           selectedTags,
           onTagRemove,
-          total,
+          total: campaignCount,
           term,
           sort,
           campaigns,
           selections,
           onSortChange,
           onSelectionsChange,
-          loading
+          loading,
+          searching
         }} />
         <CampaignsActionsToast
           campaigns={selections}

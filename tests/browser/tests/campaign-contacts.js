@@ -6,8 +6,6 @@ const test = {
   '@tags': ['campaign-contacts'],
 
   beforeEach: function (t) {
-    t.resizeWindow(1440, 1024)
-
     t.page.authenticate()
       .register()
   },
@@ -264,8 +262,8 @@ const test = {
 
         t.perform((done) => {
           t.db.findContacts({
-            campaigns: {
-              $in: [campaign.slug]
+            [`campaigns.${campaign.slug}`]: {
+              $exists: true
             }
           })
           .then((docs) => {
@@ -276,6 +274,18 @@ const test = {
         })
 
         done()
+      })
+
+      t.perform((done) => {
+        t.db.findCampaign({
+          _id: campaign._id
+        })
+        .then((doc) => {
+          t.assert.equal(doc.contacts[contact1._id], undefined)
+          t.assert.equal(doc.contacts[contact2._id], undefined)
+
+          done()
+        })
       })
 
       done()

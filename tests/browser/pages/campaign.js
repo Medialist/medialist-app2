@@ -109,6 +109,28 @@ module.exports = {
           return this
         }
       }]
+    },
+    campaignContacts: {
+      selector: '[data-id=campaign-contact-list]',
+      elements: {
+        manageContactsLink: '[data-id=manage-contacts]'
+      },
+      commands: [{
+        updateStatus: function (contact, status) {
+          const openStatusDropdownButton = `[data-contact='${contact._id}'] [data-id=contact-status-selector-button]`
+          const statusButton = `[data-contact='${contact._id}'] [data-id=contact-status-${status}]`
+
+          this
+            .waitForElementVisible(openStatusDropdownButton)
+            .click(openStatusDropdownButton)
+            .waitForElementVisible(statusButton)
+            .click(statusButton)
+
+          this.waitForElementNotVisible(statusButton)
+
+          return this
+        }
+      }]
     }
   },
   commands: [{

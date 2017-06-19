@@ -5,10 +5,6 @@ const faker = require('faker')
 const test = {
   '@tags': ['authentication'],
 
-  beforeEach: (t) => {
-    t.resizeWindow(1440, 1024)
-  },
-
   'Should not allow any old email address to be used': function (t) {
     t.page.authenticate()
       .ensureNoSession()

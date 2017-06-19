@@ -118,11 +118,18 @@ export default ContactSelector
 const contactMatchesTerm = (contact, term) => {
   term = term.toLowerCase()
   const { name, outlets } = contact
-  if (name.toLowerCase().substring(0, term.length) === term) return contact
+
+  if (name.toLowerCase().substring(0, term.length) === term) {
+    return contact
+  }
+
   if (outlets.some((outlet) => {
     return [outlet.label, outlet.value]
       .map((name) => name.toLowerCase().replace('the ', '').substring(0, term.length))
       .some((name) => name === term)
-  })) return contact
+  })) {
+    return contact
+  }
+
   return null
 }

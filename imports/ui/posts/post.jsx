@@ -25,6 +25,7 @@ import DeletePostModal from './delete-post-modal'
 import EditPostModal from './edit-post-modal'
 import { GREY60 } from '/imports/ui/colours'
 import { updatePost } from '/imports/api/posts/methods'
+import { ContactAvatarList } from '/imports/ui/lists/avatar-list'
 
 const hideTextIfOnlyUrl = (item) => {
   const url = findUrl(item.message)
@@ -121,26 +122,20 @@ const turnLinksIntoClickableAnchors = (line, index) => {
 }
 
 class Post extends React.Component {
-  constructor (props) {
-    super(props)
-
-    this.state = {
-      menuOpen: false,
-      deleteOpen: false,
-      editOpen: false
-    }
+  state = {
+    menuOpen: false,
+    deleteOpen: false,
+    editOpen: false
   }
 
-  openMenu (event) {
-    event.preventDefault()
-
+  openMenu = () => {
     this.setState({
       menuOpen: true,
       deleteOpen: false
     })
   }
 
-  closeMenu () {
+  closeMenu = () => {
     this.setState({
       menuOpen: false,
       deleteOpen: false,
@@ -148,17 +143,14 @@ class Post extends React.Component {
     })
   }
 
-  editPost = (event) => {
-    event.preventDefault()
+  editPost = () => {
     this.setState({
       menuOpen: false,
       editOpen: true
     })
   }
 
-  deletePost (event) {
-    event.preventDefault()
-
+  deletePost = () => {
     this.setState({
       menuOpen: false,
       deleteOpen: true
@@ -192,15 +184,15 @@ class Post extends React.Component {
         </div>
         <div className='flex-auto' style={{paddingLeft: 13}}>
           <header className='pt2 pb3 f-md flex nowrap' data-id='post-header'>
-            <YouOrName className='semibold align-middle' currentUser={this.props.currentUser} user={this.props.createdBy} />
-            <div className='align-middle flex-auto truncate' style={{paddingLeft: 3}}>{this.props.summary}</div>
+            <YouOrName className='semibold gray10' currentUser={this.props.currentUser} user={this.props.createdBy} />
+            <div className='flex-auto truncate' style={{paddingLeft: 3}}>{this.props.summary}</div>
             <span className='f-sm semibold gray60 flex-none'>
               <Time date={this.props.updatedAt || this.props.createdAt} />
             </span>
             {this.props.editable && (
               <Dropdown className='f-sm semibold gray60 flex-none' data-id='post-menu'>
-                <ChevronOpenDown onClick={(event) => this.openMenu(event)} data-id='open-post-menu-button' className='ml1' style={{fill: GREY60}} />
-                <DropdownMenu width={180} left={-150} top={-2} arrowPosition='top' arrowAlign='right' arrowMarginRight='11px' open={this.state.menuOpen} onDismiss={() => this.closeMenu()}>
+                <ChevronOpenDown onClick={this.openMenu} data-id='open-post-menu-button' className='ml1' style={{fill: GREY60}} />
+                <DropdownMenu width={180} left={-150} top={-2} arrowPosition='top' arrowAlign='right' arrowMarginRight='11px' open={this.state.menuOpen} onDismiss={this.closeMenu}>
                   <nav className='pt1'>
                     {canEditPost &&
                       <DropdownMenuItem
@@ -210,7 +202,7 @@ class Post extends React.Component {
                       </DropdownMenuItem>
                     }
                     <DropdownMenuItem
-                      onClick={event => this.deletePost(event)}
+                      onClick={this.deletePost}
                       data-id='delete-post-button'>
                       <span className='ml2 gray20 regular'>Delete</span>
                     </DropdownMenuItem>
@@ -224,14 +216,14 @@ class Post extends React.Component {
         <DeletePostModal
           open={this.state.deleteOpen}
           post={{_id: this.props._id, type: this.props.type}}
-          onDelete={(event) => this.closeMenu(event)}
-          onDismiss={(event) => this.closeMenu(event)}
+          onDelete={this.closeMenu}
+          onDismiss={this.closeMenu}
         />
         <EditPostModal
           open={this.state.editOpen}
-          post={{...this.props}}
+          post={this.props}
           onUpdate={this.updatePost}
-          onDismiss={(event) => this.closeMenu(event)}
+          onDismiss={this.closeMenu}
         />
       </article>
     )
@@ -257,10 +249,10 @@ Post.defaultProps = {
   bgClass: 'bg-white'
 }
 
-const ContactLink = ({contact, ...props}) => (
+const ContactLink = ({contact, showOutlet = true, ...props}) => (
   <Link to={`/contact/${contact.slug}`} data-id='contact-link' {...props}>
     <span className='semibold gray10' data-id='contact-name'>{contact.name}</span>
-    { contact.outletName && <span className='gray10' data-id='contact-outlet'> ({contact.outletName})</span> }
+    { showOutlet && contact.outletName && <span className='gray10' data-id='contact-outlet'> ({contact.outletName})</span> }
   </Link>
 )
 
@@ -269,17 +261,18 @@ const ContactName = ({contacts, contact, onContactPage}) => {
     return <span data-id='contact-name'>{firstName(contacts[0])}</span>
   }
 
-  if (contacts.length > 1 && contact) {
-    const otherContacts = contact ? contacts.filter((c) => c.slug !== contact.slug).length : contacts.length
+  if (contacts.length > 1) {
+    const primary = contact || contacts[0]
+    const otherContacts = contacts.filter((c) => c.slug !== primary.slug).length
+    const name = contact ? firstName(primary) : <ContactLink contact={primary} showOutlet={false} />
+
     return (
-      <span data-id='contact-name'>
-        <span data-id='contact-name' className='semibold gray10'>{firstName(contact)}</span>
+      <span>
+        <span data-id='contact-name' className='semibold gray10'>{name}</span>
         {` and ${otherContacts} other contact${otherContacts > 1 ? 's' : ''}`}
       </span>
     )
   }
-
-  if (contacts.length > 1) return <span data-id='contact-name'>{contacts.length} contacts</span>
 
   return <ContactLink contact={contacts[0]} />
 }
@@ -289,14 +282,14 @@ const CampaignName = ({campaigns, onCampaignPage}) => {
     return null
   }
 
-  return <span> to <CampaignLink campaign={campaigns[0]} /></span>
+  return <CampaignLink campaign={campaigns[0]} />
 }
 
 const firstName = ({name}) => name.split(' ')[0]
 
 const PostSummary = ({children, status}) => (
   <span className='nowrap flex'>
-    <span className='truncate align-middle' data-id='post-summary'>
+    <span className='truncate align-middle'>
       {children}
     </span>
     { status &&
@@ -313,7 +306,7 @@ const FeedbackPostSummary = ({label, campaigns, contacts, status, contact, campa
   if (!campaign && campaigns && campaigns.length) {
     campaignLink = (
       <span>
-        <ChevronRight className='gray60 mx1' style={{verticalAlign: 1}} />
+        <ChevronRight className='gray60 mx1' />
         <CampaignLink campaign={campaigns[0]} />
       </span>
     )
@@ -324,7 +317,7 @@ const FeedbackPostSummary = ({label, campaigns, contacts, status, contact, campa
   if (!contact && contacts && contacts.length) {
     contactLink = (
       <span>
-        <ChevronRight className='gray60 mx1' style={{verticalAlign: 1}} />
+        <ChevronRight className='gray60 mx1' />
         <ContactLink contact={contacts[0]} />
       </span>
     )
@@ -332,7 +325,7 @@ const FeedbackPostSummary = ({label, campaigns, contacts, status, contact, campa
 
   return (
     <PostSummary status={status}>
-      <span className='gray10'>
+      <span className='gray10' data-id='post-summary'>
         {label}
       </span>
       {campaignLink}
@@ -410,7 +403,7 @@ export const StatusUpdate = ({item, currentUser, contact, campaign}) => {
       icon={<StatusUpdateIcon className='gray60' />}
       summary={
         <PostSummary {...item}>
-          updated <ContactName contacts={item.contacts} contact={contact} onContactPage={Boolean(contact)} />
+          <span data-id='post-summary'>updated</span> <ContactName contacts={item.contacts} contact={contact} onContactPage={Boolean(contact)} />
           {!campaign ? ' for ' : ''}
           <CampaignName campaigns={item.campaigns} onCampaignPage={Boolean(campaign)} />
         </PostSummary>
@@ -420,6 +413,16 @@ export const StatusUpdate = ({item, currentUser, contact, campaign}) => {
 }
 
 export const AddContactsToCampaign = ({item, currentUser, contact, campaign}) => {
+  let details = null
+
+  if (item.contacts.length > 1) {
+    details = (
+      <div className='border-gray80 border-top gray10'>
+        <ContactAvatarList items={item.contacts} className='my0 pt3 pb0 left' maxAvatars={9} />
+      </div>
+    )
+  }
+
   return (
     <Post
       {...item}
@@ -428,9 +431,11 @@ export const AddContactsToCampaign = ({item, currentUser, contact, campaign}) =>
       summary={
         <span data-id='post-summary'>
           added <ContactName contacts={item.contacts} contact={contact} onContactPage={Boolean(contact)} />
+          {!campaign ? ' to ' : ''}
           <CampaignName campaigns={item.campaigns} onCampaignPage={Boolean(campaign)} />
         </span>
       }
+      details={details}
     />
   )
 }

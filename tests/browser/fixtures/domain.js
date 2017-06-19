@@ -1,5 +1,12 @@
 const faker = require('faker')
 
+function status (except) {
+  return faker.helpers.randomize(
+    ['completed', 'hot-lead', 'contacted', 'to-contact', 'not-interested']
+    .filter(status => status !== except)
+  )
+}
+
 function labelValue (label, value) {
   return {
     label,
@@ -47,7 +54,8 @@ function contact () {
       labelValue('Medium', faker.internet.userName()),
       labelValue('Pinterest', faker.internet.userName()),
       labelValue('Website', faker.internet.url())
-    ]
+    ],
+    addresses: []
   }
 }
 
@@ -83,5 +91,6 @@ module.exports = {
   user,
   labelValue,
   campaignList,
-  contactList
+  contactList,
+  status
 }

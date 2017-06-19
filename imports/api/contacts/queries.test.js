@@ -17,10 +17,12 @@ describe('searchContacts', function () {
         label: `orgName${index}`,
         value: `jobName${index}`
       }],
-      campaigns: [],
+      campaigns: {},
       masterLists: []
     }))
-    contacts[1].campaigns.push('slug0')
+    contacts[1].campaigns.slug0 = {
+      updatedAt: new Date()
+    }
     contacts[2].masterLists.push({slug: 'masterListSlug0'})
     contacts.forEach((c) => Contacts.insert(c))
 
@@ -29,7 +31,11 @@ describe('searchContacts', function () {
       slug: `slug${index}`,
       contacts: {}
     }))
-    campaigns[0].contacts = {'slug1': 'HOTPOT'}
+    campaigns[0].contacts = {
+      'slug1': {
+        status: 'HOTPOT'
+      }
+    }
     campaigns.forEach((c) => Campaigns.insert(c))
 
     Meteor.users.insert({

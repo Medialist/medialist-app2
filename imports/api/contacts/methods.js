@@ -27,7 +27,10 @@ export const addContactsToCampaign = new ValidatedMethod({
   }).validator(),
 
   run ({ contactSlugs, campaignSlug }) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
     checkAllSlugsExist(contactSlugs, Contacts)
     checkAllSlugsExist([campaignSlug], Campaigns)
 
@@ -39,38 +42,40 @@ export const addContactsToCampaign = new ValidatedMethod({
       return ref
     }, {})
 
-    const campaign = Campaigns.findOne(
-      { slug: campaignSlug },
-      { contacts: 1 }
-    )
+    const campaign = Campaigns.findOne({
+      slug: campaignSlug
+    }, {
+      contacts: 1
+    })
 
     // Merge incoming contacts with existing.
     // If a contact is already part of the campaign, it's status is preserved.
-    Campaigns.update(
-      { slug: campaignSlug },
-      {
-        $set: {
-          contacts: Object.assign({}, newContacts, campaign.contacts),
-          updatedAt,
-          updatedBy
-        }
+    Campaigns.update({
+      slug: campaignSlug
+    }, {
+      $set: {
+        contacts: Object.assign({}, newContacts, campaign.contacts),
+        updatedAt,
+        updatedBy
       }
-    )
+    })
 
     // Add campaign to all contacts
-    Contacts.update(
-      { slug: { $in: contactSlugs } },
-      {
-        $addToSet: {
-          campaigns: campaignSlug
+    Contacts.update({
+      slug: {
+        $in: contactSlugs
+      }
+    }, {
+      $set: {
+        [`campaigns.${campaignSlug}`]: {
+          updatedAt
         },
-        $set: {
-          updatedAt,
-          updatedBy
-        }
-      },
-      { multi: true }
-    )
+        updatedAt,
+        updatedBy
+      }
+    }, {
+      multi: true
+    })
 
     // Add an entry to the activity feed
     Posts.create({
@@ -92,25 +97,34 @@ export const addContactsToCampaign = new ValidatedMethod({
 })
 
 /*
- * Remove mulitple Contacts from 1 Campaign
+ * Remove Contacts from Campaigns
  * - Pull all the contacts from the Campaign.contacts map
- * - Pull all campaign from all the Contact.campaings array
+ * - Pull all campaign from all the Contact.campaigns array
  * - Update updatedAt on Campaign but not Contacts.
  * - Create a Post about it.
  * - Add nothing to users favorites.
  */
-export const removeContactsFromCampaign = new ValidatedMethod({
+export const removeContactsFromCampaigns = new ValidatedMethod({
   name: 'removeContactsFromCampaign',
 
   validate: new SimpleSchema({
-    contactSlugs: { type: [String], min: 1 },
-    campaignSlug: { type: String }
+    contactSlugs: {
+      type: [String],
+      min: 1
+    },
+    campaignSlugs: {
+      type: [String],
+      min: 1
+    }
   }).validator(),
 
-  run ({ contactSlugs, campaignSlug }) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
+  run ({ contactSlugs, campaignSlugs }) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
     checkAllSlugsExist(contactSlugs, Contacts)
-    checkAllSlugsExist([campaignSlug], Campaigns)
+    checkAllSlugsExist(campaignSlugs, Campaigns)
 
     const updatedBy = findOneUserRef(this.userId)
     const updatedAt = new Date()
@@ -121,27 +135,38 @@ export const removeContactsFromCampaign = new ValidatedMethod({
       return $unset
     }, {})
 
-    Campaigns.update(
-      { slug: campaignSlug },
-      {
-        $unset,
-        $set: {
-          updatedAt,
-          updatedBy
-        }
+    Campaigns.update({
+      slug: {
+        $in: campaignSlugs
       }
-    )
+    }, {
+      $unset,
+      $set: {
+        updatedAt,
+        updatedBy
+      }
+    }, {
+      multi: true
+    })
 
-    Contacts.update(
-      { slug: { $in: contactSlugs } },
-      { $pull: { campaigns: campaignSlug } },
-      { multi: true }
-    )
+    campaignSlugs.forEach(campaignSlug => {
+      Contacts.update({
+        slug: {
+          $in: contactSlugs
+        }
+      }, {
+        $unset: {
+          [`campaigns.${campaignSlug}`]: ''
+        }
+      }, {
+        multi: true
+      })
+    })
 
     Posts.create({
-      type: 'RemoveContactsFromCampaign',
+      type: 'RemoveContactsFromCampaigns',
       contactSlugs,
-      campaignSlugs: [campaignSlug],
+      campaignSlugs,
       createdAt: updatedAt,
       createdBy: updatedBy
     })
@@ -282,9 +307,10 @@ export const createContact = new ValidatedMethod({
     // Merge the provided details with any missing values
     const contact = Object.assign({}, details, {
       slug,
-      campaigns: [],
+      campaigns: {},
       masterLists: [],
       tags: [],
+      imports: [],
       createdAt,
       createdBy,
       updatedAt: createdAt,

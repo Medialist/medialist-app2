@@ -70,7 +70,7 @@ module.exports = {
     campaignSelectorModal: campaignSelectorModal,
     contactListsModal: addtoListsModal('add-to-list-modal'),
     tagSelectorModal: tagSelectorModal('tag-selector-modal'),
-    removeContactsModal: deleteModal('remove-contacts-modal')
+    removeContactsModal: deleteModal('remove-contacts-from-campaigns-modal')
   },
   commands: [{
     navigate: function (campaign) {

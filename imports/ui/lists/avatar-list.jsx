@@ -4,6 +4,7 @@ import classNames from 'classnames'
 import { CircleAvatar, SquareAvatar, avatarStyle } from '/imports/ui/images/avatar'
 import Tooltip from '/imports/ui/navigation/tooltip'
 import { RemoveIcon } from '/imports/ui/images/icons'
+import { Link } from 'react-router'
 
 const AvatarList = React.createClass({
   propTypes: {
@@ -16,7 +17,8 @@ const AvatarList = React.createClass({
     onRemove: PropTypes.func,
     className: PropTypes.string,
     style: PropTypes.object,
-    maxAvatars: PropTypes.number
+    maxAvatars: PropTypes.number,
+    wrapper: PropTypes.func
   },
 
   getDefaultProps (props) {
@@ -26,25 +28,45 @@ const AvatarList = React.createClass({
     }
   },
 
+  onClick (item) {
+    if (this.props.onClick) {
+      this.props.onClick(item)
+    }
+  },
+
   render () {
     const { items, size, shape, className, style, onRemove } = this.props
     const Avatar = shape === 'square' ? SquareAvatar : CircleAvatar
     const maxAvatars = this.props.maxAvatars || items.length
+    let moreShape = shape
+    const moreStyle = avatarStyle(size)
+
+    if (shape === 'circle') {
+      moreShape = 'pill'
+      moreStyle.width = parseInt(moreStyle.width * 1.20, 10) + 'px'
+      moreStyle.lineHeight = parseInt(parseInt(moreStyle.lineHeight, 10) * 0.85, 10) + 'px'
+    }
 
     return (
       <ul className={classNames('list-reset center', className)} style={style}>
         {items.slice(0, maxAvatars).map((item, i) => {
-          const { avatar, name } = item
+          let avatar = <Avatar
+            avatar={item.avatar}
+            name={item.name}
+            size={size}
+            className={`border border-white ${onRemove ? 'hover-border-red' : ''}`}
+            style={{ boxSizing: 'content-box', borderWidth: 2 }}
+            onClick={() => this.onClick(item)} />
+
+          if (this.props.wrapper) {
+            avatar = <this.props.wrapper item={item}>{avatar}</this.props.wrapper>
+          }
+
           return (
             <li key={item._id || i} className='inline-block mb1' onClick={() => onRemove ? onRemove(item, i) : ''}>
-              <Tooltip title={name}>
+              <Tooltip title={item.name}>
                 <span className={`relative inline-block hover-border-trigger hover-display-trigger hover-fill-trigger`}>
-                  <Avatar
-                    avatar={avatar}
-                    name={name}
-                    size={size}
-                    className={`border border-white ${onRemove ? 'hover-border-red' : ''}`}
-                    style={{ boxSizing: 'content-box', borderWidth: 2 }} />
+                  {avatar}
                   {onRemove && <RemoveIcon
                     className='absolute display-none hover-display-block'
                     style={{
@@ -62,7 +84,7 @@ const AvatarList = React.createClass({
         })}
         {items.length > maxAvatars && (
           <Tooltip title={`${items.length - maxAvatars} more`}>
-            <span className={`white bg-gray60 round bold ${shape}`} style={avatarStyle(size)}>
+            <span className={`white bg-blue bold ${moreShape}`} style={moreStyle}>
               {`+${items.length - maxAvatars}`}
             </span>
           </Tooltip>
@@ -73,3 +95,13 @@ const AvatarList = React.createClass({
 })
 
 export default AvatarList
+
+const ContactLink = ({item, ...props}) => (
+  <Link to={`/contact/${item.slug}`} data-id='contact-link' {...props}>
+    {props.children}
+  </Link>
+)
+
+export const ContactAvatarList = (props) => {
+  return <AvatarList wrapper={ContactLink} {...props} />
+}

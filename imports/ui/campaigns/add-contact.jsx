@@ -9,6 +9,7 @@ import createSearchContainer from '/imports/ui/contacts/search-container'
 import { addContactsToCampaign } from '/imports/api/contacts/methods'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import { BLUE } from '/imports/ui/colours'
+import Scroll from '/imports/ui/navigation/scroll'
 
 const AddContact = React.createClass({
   propTypes: {
@@ -56,7 +57,6 @@ const AddContact = React.createClass({
     } = this.props
 
     const { onChange, onKeyPress } = this
-    const scrollableHeight = Math.max(window.innerHeight - 380, 80)
 
     return (
       <div data-id='add-contacts-to-campaign-modal'>
@@ -64,9 +64,9 @@ const AddContact = React.createClass({
         <AvatarList items={selectedContacts} onRemove={onRemove} className='my4 px4' />
         <div className='py3 pl4 flex border-top border-bottom border-gray80'>
           <SearchBlueIcon className='flex-none' />
-          <input className='flex-auto f-lg pa2 mx2' placeholder='Find a contact...' onChange={onChange} style={{outline: 'none'}} onKeyPress={onKeyPress} value={term} data-id='search-contacts-input' />
+          <input className='flex-auto f-lg pa2 mx2 placeholder-gray60' placeholder='Find a contact...' onChange={onChange} style={{outline: 'none'}} onKeyPress={onKeyPress} value={term} data-id='search-contacts-input' />
         </div>
-        <div style={{height: scrollableHeight, overflowY: 'scroll'}}>
+        <Scroll height={'calc(95vh - 250px)'}>
           <ContactsList
             isSelected={this.props.isSelected}
             isSelectable={this.props.isSelectable}
@@ -75,7 +75,7 @@ const AddContact = React.createClass({
             contacts={contacts}
             searching={Boolean(this.props.term)} />
           <CreateContactButton term={term} onCreate={onCreate} />
-        </div>
+        </Scroll>
         <form className='py4 border-top border-gray80 flex' onReset={onReset} onSubmit={onSubmit}>
           <div className='flex-auto'>
             <Link to='/contacts/import' className='btn bg-transparent blue ml1' data-id='import-contacts-button'>
@@ -249,6 +249,8 @@ const CreateContactButton = ({ term, onCreate }) => {
 }
 
 const SelectableContact = ({contact, onContactClick}) => {
+  const campaigns = Object.keys(contact.campaigns).length
+
   return (
     <div className='flex items-center border-bottom border-gray80 py2 pl4 pointer hover-bg-gray90 hover-color-trigger hover-opacity-trigger'
       onClick={() => onContactClick(contact, false)}>
@@ -256,7 +258,7 @@ const SelectableContact = ({contact, onContactClick}) => {
         <CampaignContact contact={contact} />
       </div>
       <div className='flex-none px4 f-sm gray40 hover-gray20'>
-        {`${contact.campaigns.length} ${contact.campaigns.length === 1 ? 'campaign' : 'campaigns'}`}
+        {`${campaigns} ${campaigns === 1 ? 'campaign' : 'campaigns'}`}
       </div>
       <div className='flex-none px4 opacity-0 hover-opacity-100'>
         <AddIcon data-id='add-button' style={{fill: BLUE}} />
@@ -266,6 +268,8 @@ const SelectableContact = ({contact, onContactClick}) => {
 }
 
 const SelectedContact = ({contact, onContactClick}) => {
+  const campaigns = Object.keys(contact.campaigns).length
+
   return (
     <div className='flex items-center border-bottom border-gray80 py2 pl4 active pointer hover-bg-gray90 hover-color-trigger hover-opacity-trigger'
       onClick={() => onContactClick(contact, true)}>
@@ -273,7 +277,7 @@ const SelectedContact = ({contact, onContactClick}) => {
         <CampaignContact contact={contact} highlighted />
       </div>
       <div className='flex-none px4 f-sm gray40 hover-gray20'>
-        {`${contact.campaigns.length} ${contact.campaigns.length === 1 ? 'campaign' : 'campaigns'}`}
+        {`${campaigns} ${campaigns === 1 ? 'campaign' : 'campaigns'}`}
       </div>
       <div className='flex-none px4 hover-opacity-100'>
         <SelectedIcon style={{fill: BLUE}} />

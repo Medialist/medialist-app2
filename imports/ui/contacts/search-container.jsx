@@ -35,7 +35,8 @@ export default (Component, opts = {}) => {
       sort: PropTypes.oneOfType([ PropTypes.object, PropTypes.array ]),
       campaignSlugs: PropTypes.arrayOf(PropTypes.string),
       selectedMasterListSlug: PropTypes.string,
-      userId: PropTypes.string
+      userId: PropTypes.string,
+      importId: PropTypes.string
     },
 
     getDefaultProps () {
@@ -45,31 +46,38 @@ export default (Component, opts = {}) => {
     mixins: [ReactMeteorData],
 
     getMeteorData () {
-      const { term, tagSlugs, selectedMasterListSlug, userId, campaignSlugs, sort, limit } = this.props
+      const { term, tagSlugs, selectedMasterListSlug, userId, campaignSlugs, importId, sort, limit } = this.props
       const opts = {
         tagSlugs,
         campaignSlugs,
         masterListSlug: selectedMasterListSlug,
         userId,
+        importId,
         sort,
         limit
       }
       const searching = !!(term && term.length >= minSearchLength)
+
       if (searching) {
         opts.term = term
       }
+
       const subs = [
         Meteor.subscribe('contactCount'),
         Meteor.subscribe('searchContacts', opts)
       ]
+
       if (userId && userId !== Meteor.userId()) {
         subs.push(Meteor.subscribe('users-by-id', {userIds: [userId]}))
       }
+
       let selectedTags = []
+
       if (tagSlugs && tagSlugs.length) {
         subs.push(Meteor.subscribe('tags-by-slug', {tagSlugs}))
         selectedTags = Tags.find({slug: { $in: tagSlugs }}).fetch()
       }
+
       const contacts = searchContacts(opts).fetch()
       const contactsCount = Contacts.allContactsCount()
       const loading = !subs.every((sub) => sub.ready())

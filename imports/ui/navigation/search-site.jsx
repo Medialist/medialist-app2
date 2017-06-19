@@ -9,7 +9,7 @@ const SearchSiteBox = (props) => {
       <div className='inline-block' onClick={() => { console.log('TODO: search site') }}>
         <SearchGrayIcon className='mx2 opacity-30' />
       </div>
-      <input className='py2 mr2 gray40 opacity-40 bg-transparent border-transparent' placeholder='Search' style={{outline: 'none'}} />
+      <input className='py2 mr2 gray40 opacity-40 bg-transparent border-transparent placeholder-gray60' placeholder='Search' style={{outline: 'none'}} />
     </div>
   )
 }

@@ -207,7 +207,7 @@ const ContactItems = React.createClass({
       emails,
       phones,
       bio,
-      address
+      addresses
     } = this.props.contact
     emails.slice(0, 1) // limit to most recent email address
     const { showMore } = this.state
@@ -223,14 +223,14 @@ const ContactItems = React.createClass({
         <li className='mb2'>
           <ContactItemBio bio={bio} />
         </li>
-        {showMore && address && (
-          <li><ContactItemAddress address={address} /></li>
-        )}
-        {address && (
+        {showMore && addresses.length ? (
+          <li><ContactItemAddress address={addresses[0]} /></li>
+        ) : null}
+        {addresses.length ? (
           <li>
             <a href='#' className='block f-sm bold blue m3' onClick={this.toggleShowMore}>Show {showMore ? 'Less' : 'More'}</a>
           </li>
-        )}
+        ) : null}
       </ul>
     )
   }
@@ -265,22 +265,29 @@ const ContactItemsPhone = ({ phone }) => {
 const ContactItemBio = ({ bio }) => {
   if (!bio) return null
   return (
-    <div>
-      <a className='block py1 clearfix'>
-        <div className='col col-2 center'><BioIcon className='gray60' /></div>
-        <div className='col col-10 f-sm gray10' style={{lineHeight: '22px'}}>{bio}</div>
-      </a>
-    </div>
+    <a className='block py1 clearfix'>
+      <div className='col col-2 center'><BioIcon className='gray60' /></div>
+      <div className='col col-10 f-sm gray10' style={{lineHeight: '22px'}}>{bio}</div>
+    </a>
   )
 }
 
 const ContactItemAddress = ({ address }) => {
+  const lines = Object.keys(address).map(k => address[k]).filter((v) => !!v)
+  const mapSearch = encodeURIComponent(lines.join(', '))
   return (
-    <div>
-      <a className='block py1 clearfix'>
-        <div className='col col-2 center'><AddressIcon className='gray60' /></div>
-        <div className='col col-10 f-sm gray10'>{address.split(',').map((line) => <div className='block mb2'>{line}</div>)}</div>
+    <div className='py1 clearfix'>
+      <a
+        className='block col col-2 center'
+        target='_blank'
+        href={`http://maps.google.co.uk/?q=${mapSearch}`}
+        title='View on Google Maps'
+      >
+        <AddressIcon className='gray60' />
       </a>
+      <div className='col col-10 f-sm gray10'>
+        {lines.map((line, i) => <div className='block mb2' key={i}>{line}</div>)}
+      </div>
     </div>
   )
 }

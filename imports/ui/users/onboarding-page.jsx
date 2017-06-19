@@ -72,7 +72,7 @@ class OnboardingPage extends React.Component {
         <div className='mb6 left-align'>
           <label className='block gray40 semibold f-sm pt4 mb2' htmlFor='name'>Your name</label>
           <Input
-            className='input'
+            className='input placeholder-gray60'
             errorClassName='error'
             name='name'
             value={this.state.name}

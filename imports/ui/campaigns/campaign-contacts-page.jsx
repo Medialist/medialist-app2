@@ -24,25 +24,21 @@ import { batchFavouriteContacts } from '/imports/api/contacts/methods'
 
 class CampaignContactsPage extends React.Component {
 
-  constructor (props, context) {
-    super(props, context)
-
-    this.state = {
-      selections: [],
-      isDropdownOpen: false,
-      addContactModal: false,
-      createContactModal: false,
-      addContactsToCampaignModal: false,
-      addTagsModal: false,
-      addToMasterListsModal: false,
-      removeContactsModal: false,
-      sort: { updatedAt: -1 },
-      term: '',
-      statusFilter: ''
-    }
+  state = {
+    selections: [],
+    isDropdownOpen: false,
+    addContactModal: false,
+    createContactModal: false,
+    addContactsToCampaignModal: false,
+    addTagsModal: false,
+    addToMasterListsModal: false,
+    removeContactsModal: false,
+    sort: { updatedAt: -1 },
+    term: '',
+    statusFilter: ''
   }
 
-  onAddContactClick () {
+  onAddContactClick = () => {
     if (this.props.contactsAllCount) {
       this.showModal('addContactModal')
     } else {
@@ -50,7 +46,7 @@ class CampaignContactsPage extends React.Component {
     }
   }
 
-  onFavouriteAll () {
+  onFavouriteAll = () => {
     const contactSlugs = this.state.selections.map((s) => s.slug)
 
     batchFavouriteContacts.call({contactSlugs}, (error) => {
@@ -62,7 +58,7 @@ class CampaignContactsPage extends React.Component {
     })
   }
 
-  onTagAll (tags) {
+  onTagAll = (tags) => {
     const slugs = this.state.selections.map((s) => s.slug)
     const names = tags.map((t) => t.name)
 
@@ -76,7 +72,7 @@ class CampaignContactsPage extends React.Component {
     })
   }
 
-  onAddAllToMasterLists (masterLists) {
+  onAddAllToMasterLists = (masterLists) => {
     const slugs = this.state.selections.map((s) => s.slug)
     const masterListIds = masterLists.map((m) => m._id)
 
@@ -90,7 +86,7 @@ class CampaignContactsPage extends React.Component {
     })
   }
 
-  onShowCreateContact (data) {
+  onShowCreateContact = (data) => {
     this.setState({
       contactPrefillData: data
     })
@@ -98,25 +94,30 @@ class CampaignContactsPage extends React.Component {
     this.showModal('createContactModal')
   }
 
-  onSortChange (sort) {
+  onSortChange = (sort) => {
     this.setState({ sort })
   }
 
-  onTermChange (term) {
+  onTermChange = (term) => {
     this.setState({ term })
   }
 
-  onSelectionsChange (selections) {
+  onSelectionsChange = (selections) => {
     this.setState({ selections })
   }
 
-  clearSelection () {
+  clearSelectionAndHideModals = () => {
+    this.hideModals()
+    this.clearSelection()
+  }
+
+  clearSelection = () => {
     this.setState({
       selections: []
     })
   }
 
-  showModal (modal) {
+  showModal = (modal) => {
     this.hideModals()
 
     this.setState((s) => ({
@@ -124,7 +125,7 @@ class CampaignContactsPage extends React.Component {
     }))
   }
 
-  hideModals () {
+  hideModals = () => {
     this.setState({
       addContactModal: false,
       createContactModal: false,
@@ -152,12 +153,12 @@ class CampaignContactsPage extends React.Component {
 
     return (
       <div>
-        <CampaignTopbar campaign={campaign} onAddContactClick={() => this.onAddContactClick()} />
+        <CampaignTopbar campaign={campaign} onAddContactClick={this.onAddContactClick} />
         <CampaignSummary campaign={campaign} statusFilter={statusFilter} onStatusClick={(statusFilter) => this.setState({statusFilter})} />
         <div className='bg-white shadow-2 m4' data-id='contacts-table'>
           <div className='p4 flex items-center'>
             <div className='flex-auto'>
-              <SearchBox onTermChange={(term) => this.onTermChange(term)} placeholder='Search contacts...' data-id='search-contacts-input' />
+              <SearchBox onTermChange={this.onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' />
             </div>
             <div className='flex-none pl4 f-xs'>
               <ContactsTotal total={contacts.length} />
@@ -169,8 +170,8 @@ class CampaignContactsPage extends React.Component {
             campaign={campaign}
             selections={selections}
             statusFilter={statusFilter}
-            onSortChange={(sort) => this.onSortChange(sort)}
-            onSelectionsChange={(selections) => this.onSelectionsChange(selections)}
+            onSortChange={this.onSortChange}
+            onSelectionsChange={this.onSelectionsChange}
             searching={Boolean(term)}
           />
         </div>
@@ -179,33 +180,33 @@ class CampaignContactsPage extends React.Component {
           contacts={selections}
           onCampaignClick={() => this.showModal('addContactsToCampaignModal')}
           onSectorClick={() => this.showModal('addToMasterListsModal')}
-          onFavouriteClick={() => this.onFavouriteAll()}
+          onFavouriteClick={this.onFavouriteAll}
           onTagClick={() => this.showModal('addTagsModal')}
           onDeleteClick={() => this.showModal('removeContactsModal')}
-          onDeselectAllClick={() => this.clearSelection()} />
+          onDeselectAllClick={this.clearSelection} />
         <CreateContactModal
           open={this.state.createContactModal}
-          onDismiss={() => this.hideModals()}
+          onDismiss={this.hideModals}
           campaign={campaign}
           prefill={contactPrefillData} />
         <AddContactModal
           open={this.state.addContactModal}
-          onDismiss={() => this.hideModals()}
-          onCreate={(data) => this.onShowCreateContact(data)}
+          onDismiss={this.hideModals}
+          onCreate={this.onShowCreateContact}
           campaign={campaign}
           campaignContacts={contacts} />
         <AddContactsToCampaign
           title='Add these Contacts to a Campaign'
           contacts={this.state.selections}
-          onDismiss={() => this.hideModals()}
+          onDismiss={this.hideModals}
           open={this.state.addContactsToCampaignModal}>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddContactsToCampaign>
         <AddTagsModal
           type='Contacts'
           open={this.state.addTagsModal}
-          onDismiss={() => this.hideModals()}
-          onUpdateTags={(tags) => this.onTagAll(tags)}
+          onDismiss={this.hideModals}
+          onUpdateTags={this.onTagAll}
           title='Tag these Contacts'>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddTagsModal>
@@ -213,16 +214,18 @@ class CampaignContactsPage extends React.Component {
           type='Contacts'
           items={this.state.selections}
           open={this.state.addToMasterListsModal}
-          onDismiss={() => this.hideModals()}
+          onDismiss={this.hideModals}
           onSave={(masterLists) => this.onAddAllToMasterLists(masterLists)}
           title='Add to a Contact List'>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddToMasterListModal>
         <RemoveContactModal
           open={this.state.removeContactsModal}
-          onDismiss={() => this.hideModals()}
-          campaign={campaign}
-          contacts={this.state.selections} />
+          onDismiss={this.hideModals}
+          onDelete={this.clearSelectionAndHideModals}
+          campaigns={[campaign]}
+          contacts={this.state.selections}
+          avatars={this.state.selections} />
       </div>
     )
   }
@@ -252,19 +255,28 @@ const contactStatusSort = ({contacts}, dir) => (a, b) => {
 const ContactsTableContainer = createContainer((props) => {
   const { campaign, term, sort, statusFilter } = props
   const contactIds = campaign.contacts ? Object.keys(campaign.contacts) : []
-  let query = { slug: { $in: contactIds } }
+  let query = {
+    slug: {
+      $in: contactIds
+    }
+  }
 
   if (term) {
     const filterRegExp = new RegExp(escapeRegExp(term), 'gi')
     query = {
-      $and: [
-        { slug: { $in: contactIds } },
-        { $or: [
-          { name: filterRegExp },
-          { 'outlets.value': filterRegExp },
-          { 'outlets.label': filterRegExp }
-        ]}
-      ]
+      $and: [{
+        slug: {
+          $in: contactIds
+        }
+      }, {
+        $or: [{
+          name: filterRegExp
+        }, {
+          'outlets.value': filterRegExp
+        }, {
+          'outlets.label': filterRegExp
+        }]
+      }]
     }
   }
 

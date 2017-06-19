@@ -57,6 +57,9 @@ const config = {
         acceptSslCerts: true,
         loggingPrefs: {
           browser: 'ALL'
+        },
+        chromeOptions: {
+          args: ['window-size=1440,1024']
         }
       }
     }

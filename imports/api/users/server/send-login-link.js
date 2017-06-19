@@ -1,17 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { Accounts } from 'meteor/accounts-base'
-
-const findOrCreateUserId = (email) => {
-  let user = Accounts.findUserByEmail(email)
-
-  if (user) {
-    return user._id
-  }
-
-  return Accounts.createUser({
-    email: email
-  })
-}
+import findOrCreateUser from './find-or-create-user'
 
 const sendEmailLogInLink = (email) => {
   const domain = email.split('@').pop()
@@ -25,20 +14,22 @@ const sendEmailLogInLink = (email) => {
     throw new Meteor.Error('INVALID_EMAIL')
   }
 
-  const userId = findOrCreateUserId(email)
+  const user = findOrCreateUser(email)
 
   if (Meteor.settings.authentication.sendLink) {
-    Accounts.sendLoginEmail(userId, email)
+    Meteor.defer(() => {
+      Accounts.sendLoginEmail(user._id, email)
+    })
 
     return
   }
 
   // mark email verified
-  Accounts.addEmail(userId, email, true)
+  Accounts.addEmail(user._id, email, true)
 
   // just sign the user in, only used for browser tests..
   const stampedLoginToken = Accounts._generateStampedLoginToken()
-  Accounts._insertLoginToken(userId, stampedLoginToken)
+  Accounts._insertLoginToken(user._id, stampedLoginToken)
 
   return stampedLoginToken
 }
