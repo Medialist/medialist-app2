@@ -93,7 +93,8 @@ const PostBoxTextArea = React.createClass({
           onChange={this.onChange}
           value={this.props.value}
           disabled={this.props.disabled}
-          data-id={this.props['data-id']} />
+          data-id={this.props['data-id']}
+          ref={(textarea) => this.props.focused && textarea && textarea.focus()} />
         {this.state.embed || this.state.embedLoading ? (
           <div className='mb3'>
             <LinkPreview {...this.state.embed} loading={this.state.embedLoading} />

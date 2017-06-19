@@ -80,6 +80,18 @@ const FeedbackOrCoverageSchema = new SimpleSchema([{
   StatusSchema
 ])
 
+const UpdatePostSchema = new SimpleSchema([{
+  _id: {
+    type: String
+  },
+  message: {
+    type: String,
+    optional: true
+  }
+},
+  StatusSchema
+])
+
 export const createFeedbackPost = new ValidatedMethod({
   name: 'createFeedbackPost',
   validate: FeedbackOrCoverageSchema.validator(),
@@ -99,6 +111,42 @@ export const createFeedbackPost = new ValidatedMethod({
       message,
       status
     })
+  }
+})
+
+export const updatePost = new ValidatedMethod({
+  name: 'updatePost',
+  validate: UpdatePostSchema.validator(),
+  run ({ _id, message, status }) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    const post = Posts.findOne({ _id })
+
+    if (!post) {
+      throw new Meteor.Error('Can\'t find post')
+    }
+
+    if (this.userId !== post.createdBy._id) {
+      throw new Meteor.Error('You can only edit posts you created')
+    }
+
+    Posts.update({ _id }, {$set: { message, status }})
+
+    if (status !== post.status) {
+      post.campaigns.forEach((campaign) => {
+        Campaigns.update({
+          slug: campaign.slug
+        }, {
+          $set: {
+            [`contacts.${post.contacts[0].slug}`]: status,
+            updatedAt: new Date(),
+            updatedBy: post.createdBy
+          }
+        })
+      })
+    }
   }
 })
 

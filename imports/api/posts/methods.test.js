@@ -4,7 +4,8 @@ import assert from 'assert'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
-import { createFeedbackPost, createCoveragePost, createNeedToKnowPost } from '/imports/api/posts/methods'
+import { createFeedbackPost, createCoveragePost, createNeedToKnowPost, updatePost } from '/imports/api/posts/methods'
+import moment from 'moment'
 
 function insertTestData () {
   Meteor.users.insert({
@@ -286,5 +287,42 @@ describe('createNeedToKnowPost', function () {
 
     const contact = Contacts.findOne({slug: contactSlug})
     assert.deepEqual(contact.updatedBy, userRef)
+  })
+})
+
+describe('updateFeedbackPost', function () {
+  beforeEach(function () {
+    resetDatabase()
+    insertTestData()
+    const campaignSlug = 'slug1'
+    const contactSlug = 'slug0'
+    const message = 'Tip top'
+    const status = 'Hot Lead'
+    createFeedbackPost.run.call({userId: 'alf'}, {
+      contactSlug, campaignSlug, message, status
+    })
+  })
+
+  it('should require the user to be logged in', function () {
+    assert.throws(() => updatePost.run.call({}, {}), /You must be logged in/)
+  })
+
+  it('should require the user updating to be the creator of the post', function () {
+    const post = Posts.findOne()
+    assert.throws(() => updatePost.run.call({userId: 'not-alf'}, { _id: post._id, message: 'this will throw' }), /You can only edit posts you created/)
+  })
+
+  it('should let users update a post and cascade updates to campaign contacts status', function () {
+    const post = Posts.findOne()
+    const { _id } = post
+
+    updatePost.run.call({userId: 'alf'}, {_id, message: 'test update2', status: 'Contacted'})
+
+    const updatedPost = Posts.findOne({ _id })
+    const campaign = Campaigns.findOne({slug: 'slug1'})
+
+    assert.equal(updatedPost.status, 'Contacted')
+    assert.equal(updatedPost.message, 'test update2')
+    assert.equal(campaign.contacts.slug0, 'Contacted')
   })
 })
