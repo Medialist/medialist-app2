@@ -5,7 +5,7 @@ import { StatusSchema } from '/imports/lib/schema'
 import { checkAllSlugsExist } from '/imports/lib/slug'
 import findUrl from '/imports/lib/find-url'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
-import Embeds, { BaseEmbedRefSchema } from '/imports/api/embeds/embeds'
+import Embeds from '/imports/api/embeds/embeds'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
@@ -81,19 +81,11 @@ const FeedbackOrCoverageSchema = new SimpleSchema([{
 ])
 
 const UpdatePostSchema = new SimpleSchema({
-  postId: {
+  _id: {
     type: String
   },
-  'update.message': {
-    type: String,
-    optional: true
-  },
-  'update.status': {
-    type: String,
-    optional: true
-  },
-  'update.embed': {
-    type: BaseEmbedRefSchema,
+  update: {
+    type: Object,
     optional: true
   }
 })
@@ -123,7 +115,7 @@ export const createFeedbackPost = new ValidatedMethod({
 export const updatePost = new ValidatedMethod({
   name: 'updatePost',
   validate: UpdatePostSchema.validator(),
-  run ({ postId: _id, update }) {
+  run ({ _id, update }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -137,27 +129,21 @@ export const updatePost = new ValidatedMethod({
       throw new Meteor.Error('You can only edit posts you created')
     }
 
-    if (update.embed && !Meteor.isSimulation) {
-      const embed = Embeds.findOneById(update.embed._id)
-      const embeds = [embed].concat(post.embeds)
+    if (update.$set.embed && !Meteor.isSimulation) {
+      const newEmbed = Embeds.findOneById(update.$set.embed._id)
+      const embeds = [newEmbed].concat(post.embeds)
       Posts.update({ _id }, {$set: { embeds }})
     }
 
-    const { message, status } = update
+    Posts.update({ _id }, update, {upsert: true})
 
-    const updates = { updatedAt: new Date() }
-    if (message) updates.message = message
-    if (status) updates.status = status
-
-    Posts.update({ _id }, {$set: updates}, {upsert: true})
-
-    if (status !== post.status) {
+    if (update.$set.status !== post.status) {
       post.campaigns.forEach((campaign) => {
         Campaigns.update({
           slug: campaign.slug
         }, {
           $set: {
-            [`contacts.${post.contacts[0].slug}`]: status,
+            [`contacts.${post.contacts[0].slug}`]: update.$set.status,
             updatedAt: new Date(),
             updatedBy: post.createdBy
           }
