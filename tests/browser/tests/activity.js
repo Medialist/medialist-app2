@@ -95,6 +95,28 @@ const test = {
     t.end()
   },
 
+  'Should prevent multiple postings of the same activity': function (t) {
+    t.createDomain(['contactList', 'campaign'], (contactList, campaign, done) => {
+      const contactsPage = t.page.contacts()
+        .navigate()
+        .waitForElementVisible('@newContactButton')
+
+      contactsPage.section.contactTable
+        .selectRow(0)
+        .selectRow(1)
+        .selectRow(2)
+
+      contactsPage.section.toast
+        .openAddContactsToCampaignModal()
+        .waitForElementVisible('[data-id=add-contacts-to-campaign-form]')
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
   'Should display context sensitive feedback posts created on contact page': function (t) {
     t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
       t.perform((done) => {
