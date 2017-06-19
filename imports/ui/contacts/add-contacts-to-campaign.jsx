@@ -60,7 +60,7 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
           placeholder='Search campaigns'
           data-id='search-input' />
         <div style={{height: '413px', overflowY: 'auto'}}>
-          <ResultList onAdd={onAdd} results={campaigns} searching={Boolean(term)} contacts={contacts} />
+          <ResultList onAdd={onAdd} results={campaigns} searching={Boolean(term)} contacts={contacts} alreadyInCampaignFilter={!!children} />
         </div>
       </div>
     )
@@ -209,16 +209,18 @@ const ResultList = React.createClass({
     onAdd: PropTypes.func.isRequired,
     results: PropTypes.array.isRequired,
     searching: PropTypes.bool,
-    contacts: PropTypes.array.isRequired
+    contacts: PropTypes.array.isRequired,
+    alreadyInCampaignFilter: PropTypes.bool.isRequired
   },
 
   render () {
-    const { results, onAdd, contacts } = this.props
+    const { results, onAdd, contacts, alreadyInCampaignFilter } = this.props
     const contactSlugs = contacts.map((c) => c.slug)
 
     return (
       <div data-id={`${this.props.searching ? 'search-results' : 'unfiltered'}`}>
         {results.map((res) => {
+          if (alreadyInCampaignFilter) return <CanJoinCampaignResult {...res} onAdd={onAdd} key={res._id} />
           const alreadyInCampaign = contactSlugs.some((c) => res.contacts[c])
           const ResultListItem = alreadyInCampaign ? CanNotJoinCampaignResult : CanJoinCampaignResult
           return <ResultListItem {...res} onAdd={onAdd} key={res._id} />

@@ -4,7 +4,12 @@ import assert from 'assert'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
-import { createFeedbackPost, createCoveragePost, createNeedToKnowPost } from '/imports/api/posts/methods'
+import {
+  createFeedbackPost,
+  createCoveragePost,
+  createNeedToKnowPost,
+  addContactsToCampaignPost
+} from '/imports/api/posts/methods'
 
 function insertTestData () {
   Meteor.users.insert({
@@ -286,5 +291,21 @@ describe('createNeedToKnowPost', function () {
 
     const contact = Contacts.findOne({slug: contactSlug})
     assert.deepEqual(contact.updatedBy, userRef)
+  })
+})
+
+describe('addContactsToCampaignPost', function () {
+  beforeEach(function () {
+    resetDatabase()
+    insertTestData()
+  })
+
+  it('should not create repeat postings for same action', function () {
+    const contactSlugs = ['slug0', 'slug1']
+    const campaignSlug = 'slug1'
+    addContactsToCampaignPost.run.call({userId: 'alf'}, {contactSlugs, campaignSlug})
+    addContactsToCampaignPost.run.call({userId: 'alf'}, {contactSlugs, campaignSlug})
+    const posts = Posts.find().count()
+    assert.equal(posts, 1)
   })
 })

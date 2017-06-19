@@ -174,6 +174,41 @@ export const createNeedToKnowPost = new ValidatedMethod({
   }
 })
 
+export const addContactsToCampaignPost = new ValidatedMethod({
+  name: 'addContactsToCampaignPost',
+  validate: new SimpleSchema({
+    contactSlugs: {
+      type: [String]
+    },
+    campaignSlug: {
+      type: String
+    }
+  }).validator(),
+  run ({contactSlugs, campaignSlug}) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    const type = 'addContactsToCampaign'
+    const contacts = Contacts.findRefs({contactSlugs})
+    const campaigns = Campaigns.findRefs({campaignSlugs: [campaignSlug]})
+    const createdBy = findOneUserRef(this.userId)
+    const createdAt = new Date()
+
+    const post = Posts.findOne({ type, contacts, campaigns, createdBy })
+
+    if (post) return
+
+    Posts.insert({
+      type,
+      contacts,
+      campaigns,
+      createdAt,
+      createdBy
+    })
+  }
+})
+
 export const remove = new ValidatedMethod({
   name: 'deletePost',
   validate: new SimpleSchema({
