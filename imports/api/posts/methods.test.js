@@ -8,7 +8,7 @@ import {
   createFeedbackPost,
   createCoveragePost,
   createNeedToKnowPost,
-  addContactsToCampaignPost
+  createAddContactsToCampaignPost
 } from '/imports/api/posts/methods'
 
 function insertTestData () {
@@ -294,7 +294,7 @@ describe('createNeedToKnowPost', function () {
   })
 })
 
-describe('addContactsToCampaignPost', function () {
+describe('createAddContactsToCampaignPost', function () {
   beforeEach(function () {
     resetDatabase()
     insertTestData()
@@ -303,8 +303,8 @@ describe('addContactsToCampaignPost', function () {
   it('should not create repeat postings for same action', function () {
     const contactSlugs = ['slug0', 'slug1']
     const campaignSlug = 'slug1'
-    addContactsToCampaignPost.run.call({userId: 'alf'}, {contactSlugs, campaignSlug})
-    addContactsToCampaignPost.run.call({userId: 'alf'}, {contactSlugs, campaignSlug})
+    createAddContactsToCampaignPost.run.call({userId: 'alf'}, {contactSlugs, campaignSlug})
+    createAddContactsToCampaignPost.run.call({userId: 'alf'}, {contactSlugs, campaignSlug})
     const posts = Posts.find().count()
     assert.equal(posts, 1)
   })
