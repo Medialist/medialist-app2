@@ -101,14 +101,35 @@ const test = {
         .navigate()
         .waitForElementVisible('@newContactButton')
 
-      contactsPage.section.contactTable
-        .selectRow(0)
-        .selectRow(1)
-        .selectRow(2)
+      t.perform(function (done) {
+        contactsPage.section.contactTable
+          .selectRow(0)
+          .selectRow(1)
+          .selectRow(2)
 
-      contactsPage.section.toast
-        .openAddContactsToCampaignModal()
-        .waitForElementVisible('[data-id=add-contacts-to-campaign-form]')
+        contactsPage.section.toast
+          .openAddContactsToCampaignModal()
+          .waitForElementVisible(`[data-slug=campaign-slug-${campaign.slug}]`)
+          .click(`[data-slug=campaign-slug-${campaign.slug}]`)
+
+        t.page.main().waitForSnackbarMessage('batch-add-contacts-to-campaign-success')
+
+        contactsPage.section.toast
+          .openAddContactsToCampaignModal()
+          .waitForElementVisible(`[data-slug=campaign-slug-${campaign.slug}]`)
+          .click(`[data-slug=campaign-slug-${campaign.slug}]`)
+
+        done()
+      })
+
+      t.perform(function (done) {
+        t.page.campaign()
+          .navigate(campaign)
+          .waitForElementVisible('[data-id=add-contacts-to-campaign-button]')
+
+          // I need to now assert that there is only one post not two duplicates
+        done()
+      })
 
       done()
     })
