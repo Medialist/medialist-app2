@@ -22,7 +22,9 @@ import {
 import { Dropdown, DropdownMenu, DropdownMenuItem } from '/imports/ui/navigation/dropdown'
 import findUrl from '/imports/lib/find-url'
 import DeletePostModal from './delete-post-modal'
+import EditPostModal from './edit-post-modal'
 import { GREY60 } from '/imports/ui/colours'
+import { updatePost } from '/imports/api/posts/methods'
 import { ContactAvatarList } from '/imports/ui/lists/avatar-list'
 
 const hideTextIfOnlyUrl = (item) => {
@@ -120,42 +122,47 @@ const turnLinksIntoClickableAnchors = (line, index) => {
 }
 
 class Post extends React.Component {
-  constructor (props) {
-    super(props)
-
-    this.state = {
-      menuOpen: false,
-      deleteOpen: false
-    }
+  state = {
+    menuOpen: false,
+    deleteOpen: false,
+    editOpen: false
   }
 
-  openMenu (event) {
-    event.preventDefault()
-
+  openMenu = () => {
     this.setState({
       menuOpen: true,
       deleteOpen: false
     })
   }
 
-  closeMenu () {
+  closeMenu = () => {
     this.setState({
       menuOpen: false,
-      deleteOpen: false
+      deleteOpen: false,
+      editOpen: false
     })
   }
 
-  editPost (event) {
-    event.preventDefault()
+  editPost = () => {
+    this.setState({
+      menuOpen: false,
+      editOpen: true
+    })
   }
 
-  deletePost (event) {
-    event.preventDefault()
-
+  deletePost = () => {
     this.setState({
       menuOpen: false,
       deleteOpen: true
     })
+  }
+
+  updatePost = (postId, update) => {
+    this.setState({
+      editOpen: false
+    })
+    const { message, status } = update
+    updatePost.call({ _id: postId, message, status })
   }
 
   render () {
@@ -163,6 +170,7 @@ class Post extends React.Component {
       'data-contact': this.props.contacts.map(contact => contact._id).join(' '),
       'data-campaign': this.props.campaigns.map(campaigns => campaigns._id).join(' ')
     }
+    const canEditPost = this.props.createdBy._id === this.props.currentUser._id
 
     return (
       <article className={`flex rounded px4 pt3 pb2 mb2 shadow-2 ${this.props.bgClass}`} data-id={dasherise(this.props.type)} {...data}>
@@ -179,18 +187,18 @@ class Post extends React.Component {
             </span>
             {this.props.editable && (
               <Dropdown className='f-sm semibold gray60 flex-none' data-id='post-menu'>
-                <ChevronOpenDown onClick={(event) => this.openMenu(event)} data-id='open-post-menu-button' className='ml1' style={{fill: GREY60}} />
-                <DropdownMenu width={180} left={-150} top={-2} arrowPosition='top' arrowAlign='right' arrowMarginRight='11px' open={this.state.menuOpen} onDismiss={() => this.closeMenu()}>
-                  <nav className='p1'>
-                    {/*
+                <ChevronOpenDown onClick={this.openMenu} data-id='open-post-menu-button' className='ml1' style={{fill: GREY60}} />
+                <DropdownMenu width={180} left={-150} top={-2} arrowPosition='top' arrowAlign='right' arrowMarginRight='11px' open={this.state.menuOpen} onDismiss={this.closeMenu}>
+                  <nav className='pt1'>
+                    {canEditPost &&
                       <DropdownMenuItem
-                        onClick={event => this.editPost(event)}
+                        onClick={this.editPost}
                         data-id='edit-post-button'>
-                          <span className='ml2 gray20 regular'>Edit Coverage</span>
+                        <span className='ml2 gray20 regular'>Edit {this.props.type.replace(/Post/g, '')}</span>
                       </DropdownMenuItem>
-                    */}
+                    }
                     <DropdownMenuItem
-                      onClick={event => this.deletePost(event)}
+                      onClick={this.deletePost}
                       data-id='delete-post-button'>
                       <span className='ml2 gray20 regular'>Delete</span>
                     </DropdownMenuItem>
@@ -204,8 +212,14 @@ class Post extends React.Component {
         <DeletePostModal
           open={this.state.deleteOpen}
           post={{_id: this.props._id, type: this.props.type}}
-          onDelete={(event) => this.closeMenu(event)}
-          onDismiss={(event) => this.closeMenu(event)}
+          onDelete={this.closeMenu}
+          onDismiss={this.closeMenu}
+        />
+        <EditPostModal
+          open={this.state.editOpen}
+          post={this.props}
+          onUpdate={this.updatePost}
+          onDismiss={this.closeMenu}
         />
       </article>
     )
