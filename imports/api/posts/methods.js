@@ -196,7 +196,7 @@ export const createAddContactsToCampaignPost = new ValidatedMethod({
     const createdAt = new Date()
 
     const post = Posts.findOne({ type, contacts, campaigns, createdBy })
-    console.log('found', post)
+
     if (post) return
 
     Posts.insert({
