@@ -20,9 +20,11 @@ const test = {
         t.page.campaign()
           .navigate(campaign)
           .addFeedbackPost(contact, 'hot-lead', 'He\'s so hot right now')
-          .editFeedbackPost(contact, 'contacted', ' Hansella!')
-          .assert.containsText(`[data-id=post-message]`, 'He\'s so hot right now Hansella!')
-          .assert.containsText(`[data-id=contact-status]`, 'CONTACTED')
+          .editFeedbackPost(contact, 'contacted', ' that Hansella!')
+          .section.activityFeed.assertHasFeedbackPostWith(contact, campaign, {
+            message: 'He\'s so hot right now that Hansella!',
+            contactStatus: 'CONTACTED'
+          })
 
         t.page.main().logout()
         done()
@@ -59,8 +61,7 @@ const test = {
           .navigate(campaign)
           .addCoveragePost(contact, 'completed', 'https://www.test.com')
           .editCoveragePost(contact, 'completed', 'update! http://medialist.io')
-          .assert.containsText(`[data-id=coverage-post][data-contact=${contact._id}]`, 'update!')
-          .assert.containsText(`[data-id=coverage-post][data-contact=${contact._id}]`, 'http://medialist.io')
+          .section.activityFeed.assertHasCoveragePostWith(contact, campaign, {message: 'update!'})
 
         done()
       })
@@ -82,8 +83,7 @@ const test = {
           .navigate(contact)
           .addNeedToKnowPost(contact, 'Need to knows')
           .editNeedToKnowPost(contact, 'Kneed 2 Nose')
-          .assert.containsText(`[data-id=need-to-know-post][data-contact=${contact._id}]`, 'Kneed 2 Nose')
-          .assert.containsText('[data-id=need-to-knows-list]', 'Kneed 2 Nose')
+          .section.activityFeed.assertHasNeedToKnowPostWith(contact, campaign, {message: 'Kneed 2 Nose'})
 
         done()
       })
