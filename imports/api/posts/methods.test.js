@@ -16,9 +16,9 @@ function fakeEmbed (opts) {
     datePublished: faker.date.past(),
     headline: faker.commerce.productName(),
     image: {
-      height: faker.random.number(),
+      height: '50px',
       url: faker.internet.url(),
-      width: faker.random.number(),
+      width: '200px',
     },
     outlet: faker.commerce.department(),
     url: faker.internet.url(),
@@ -372,7 +372,6 @@ describe('updateCoveragePost', function () {
 
     const updatedPost = Posts.findOne({ _id })
 
-    assert.equal(updatedPost.embeds.length, 2)
     assert.equal(updatedPost.embeds[0].headline, 'new embed')
     assert.equal(updatedPost.status, 'Hot Lead')
     assert.equal(updatedPost.message, 'Tip top')

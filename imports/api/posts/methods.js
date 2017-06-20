@@ -143,8 +143,7 @@ export const updatePost = new ValidatedMethod({
 
     if (embed && !Meteor.isSimulation) {
       const newEmbed = Embeds.findOneById(embed._id)
-      const embeds = [newEmbed].concat(post.embeds)
-      $set.embeds = embeds
+      $set.embeds = [newEmbed]
     }
 
     if (message) $set.message = message

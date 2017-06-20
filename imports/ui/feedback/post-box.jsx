@@ -162,7 +162,7 @@ export class FeedbackInput extends Component {
     return (
       <div>
         <PostBoxtTextArea
-          placeholder={`What is happening with ${firstName(this.props.contact)}?`}
+          placeholder={`What's happening with ${firstName(this.props.contact)}?`}
           value={this.state.message}
           focused={this.props.focused}
           disabled={this.state.posting}
