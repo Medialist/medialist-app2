@@ -13,33 +13,30 @@ import {
   createContact
 } from './methods'
 
-function createTestData () {
-  Meteor.users.insert({
-    _id: 'alf',
-    profile: { name: 'Alfonze' },
-    myContacts: [],
-    myCampaigns: []
-  })
-
-  const contacts = Array(3).fill(0).map((_, index) => ({
-    _id: `id${index}`,
-    slug: `slug${index}`,
-    campaigns: {}
-  }))
-  contacts.forEach((c) => Contacts.insert(c))
-
-  const campaigns = Array(3).fill(0).map((_, index) => ({
-    _id: `id${index}`,
-    slug: `slug${index}`,
-    contacts: {}
-  }))
-  campaigns.forEach((c) => Campaigns.insert(c))
-}
-
 describe('addContactsToCampaign', function () {
   beforeEach(function () {
     resetDatabase()
-    createTestData()
+
+    Meteor.users.insert({
+      _id: 'alf',
+      profile: { name: 'Alfonze' },
+      myContacts: [],
+      myCampaigns: []
+    })
+
+    const contacts = Array(3).fill(0).map((_, index) => ({
+      _id: `id${index}`,
+      slug: `slug${index}`,
+      campaigns: {}
+    }))
+    contacts.forEach((c) => Contacts.insert(c))
+
+    const campaigns = Array(3).fill(0).map((_, index) => ({
+      _id: `id${index}`,
+      slug: `slug${index}`,
+      contacts: {}
+    }))
+    campaigns.forEach((c) => Campaigns.insert(c))
   })
 
   it('should require the user to be logged in', function () {
