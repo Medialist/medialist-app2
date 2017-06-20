@@ -110,7 +110,7 @@ const CampaignsTable = React.createClass({
         </thead>
         <tbody>
           {campaigns.map((campaign, index) => {
-            const { _id, slug, name, avatar, client, purpose, updatedAt, updatedBy } = campaign
+            const { _id, slug, name, avatar, client, purpose, updatedAt, updatedBy, createdAt, createdBy } = campaign
             const clientName = client && client.name
             return (
               <SelectableRow data={campaign} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id} data-id={`campaigns-table-row-${index}`} data-item={_id}>
@@ -138,8 +138,8 @@ const CampaignsTable = React.createClass({
                   </td>
                 )}
                 <td className='left-align'>
-                  <span className='semibold'><TimeFromNow date={updatedAt} /></span>
-                  <span> by <YouOrName user={updatedBy} /></span>
+                  <span className='semibold'><TimeFromNow date={updatedAt || createdAt} /></span>
+                  <span> by <YouOrName user={updatedBy || createdBy} /></span>
                 </td>
               </SelectableRow>
             )

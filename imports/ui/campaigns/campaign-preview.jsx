@@ -2,7 +2,7 @@ import React from 'react'
 import { TimeFromNow } from '/imports/ui/time/time'
 import { SquareAvatar } from '/imports/ui/images/avatar'
 
-export default ({ name, avatar, client, clientName, contacts, updatedAt }) => (
+const CampaignPreview = ({ name, avatar, client, clientName, contacts, updatedAt }) => (
   <div className='flex items-center'>
     <SquareAvatar className='flex-none' size={38} avatar={avatar} name={name} />
     <div className='flex-auto pl3'>
@@ -15,3 +15,5 @@ export default ({ name, avatar, client, clientName, contacts, updatedAt }) => (
     </div>
   </div>
 )
+
+export default CampaignPreview

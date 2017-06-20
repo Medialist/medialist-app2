@@ -2,15 +2,18 @@ import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { findOneUserRef } from '/imports/api/users/users'
-import Embeds, { EmbedRefSchema } from '/imports/api/embeds/embeds'
+import Embeds from '/imports/api/embeds/embeds'
 import scraper from '/imports/api/embeds/server/scraper'
-import { check } from 'meteor/check'
 
 export const createEmbed = new ValidatedMethod({
   name: 'createEmbed',
 
   validate: new SimpleSchema({
-    url: { type: String, regEx: SimpleSchema.RegEx.Url }
+    url: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Url,
+      optional: true
+    }
   }).validator(),
 
   run ({ url }) {
@@ -18,7 +21,11 @@ export const createEmbed = new ValidatedMethod({
       throw new Meteor.Error('You must be logged in')
     }
 
-    const existingDoc = Embeds.findOneEmbed(url)
+    if (!url) {
+      return
+    }
+
+    const existingDoc = Embeds.findOneEmbedForUrl(url)
 
     if (existingDoc) {
       return Embeds.toRef(existingDoc)
@@ -29,7 +36,7 @@ export const createEmbed = new ValidatedMethod({
 
       if (doc.canonicalUrl) {
         // use the canonical url to see if we've actually seen this link before
-        const otherExistingDoc = Embeds.findOneEmbed(doc.canonicalUrl)
+        const otherExistingDoc = Embeds.findOneEmbedForUrl(doc.canonicalUrl)
 
         if (otherExistingDoc) {
           otherExistingDoc.urls = Array.isArray(otherExistingDoc.urls) ? otherExistingDoc.urls : []
@@ -73,11 +80,8 @@ export const createEmbed = new ValidatedMethod({
         datePublished: doc.datePublished,
         urls: urls,
         scrapedBy: doc.agent,
-        createdBy: findOneUserRef(this.userId),
-        createdAt: new Date()
+        createdBy: findOneUserRef(this.userId)
       }
-
-      check(embed, EmbedRefSchema)
 
       embed._id = Embeds.insert(embed)
 

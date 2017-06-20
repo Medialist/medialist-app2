@@ -46,12 +46,14 @@ TwitterClient.grabUser = function (query, cb) {
       console.error('TwitterClient.grabUser: ', err, query)
       return cb(err)
     }
+
     if (!user.id_str) {
       console.log('TwitterClient.grabUser: got user with no id_str for ', query)
       return cb('User has no id_str', user)
     }
     user._id = user.id_str
     console.log('TwitterClient.grabUser: Got ' + user.screen_name, user.name)
+
     TwitterUsers.upsert(user._id, user)
     cb(err, user)
   }))

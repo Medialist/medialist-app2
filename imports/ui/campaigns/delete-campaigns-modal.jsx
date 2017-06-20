@@ -2,7 +2,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Modal from '/imports/ui/navigation/modal'
-import { remove } from '/imports/api/campaigns/methods'
+import { removeCampaign } from '/imports/api/campaigns/methods'
 import AvatarList from '/imports/ui/lists/avatar-list'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import DeleteConfirmation from '/imports/ui/navigation/delete-confirmation'
@@ -15,7 +15,7 @@ const DeleteCampaigns = withSnackbar(React.createClass({
   },
 
   onDelete () {
-    remove.call({
+    removeCampaign.call({
       _ids: this.props.campaigns.map(campaigns => campaigns._id)
     }, (error) => {
       if (error) {

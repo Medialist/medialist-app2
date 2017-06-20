@@ -1,69 +1,83 @@
 import { Meteor } from 'meteor/meteor'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
 import assert from 'assert'
+import faker from 'faker'
 import Contacts from '/imports/api/contacts/contacts'
 import { searchContacts } from '/imports/api/contacts/queries'
 import Campaigns from '/imports/api/campaigns/campaigns'
+import { campaign, user, contact } from '/tests/browser/fixtures/domain'
+import { createContact, addContactsToCampaign, batchFavouriteContacts } from '/imports/api/contacts/methods'
+import { createCampaign } from '/imports/api/campaigns/methods'
+import { batchAddToMasterLists, createMasterList } from '/imports/api/master-lists/methods'
+import MasterLists from '/imports/api/master-lists/master-lists'
 
 describe('searchContacts', function () {
+  let users
+  let contacts
+  let campaigns
+  let masterLists
+
   beforeEach(function () {
     resetDatabase()
 
-    const contacts = Array(3).fill(0).map((_, index) => ({
-      _id: `id${index}`,
-      slug: `slug${index}`,
-      name: `name${index}`,
-      outlets: [{
-        label: `orgName${index}`,
-        value: `jobName${index}`
-      }],
-      campaigns: {},
-      masterLists: []
-    }))
-    contacts[1].campaigns.slug0 = {
-      updatedAt: new Date()
-    }
-    contacts[2].masterLists.push({slug: 'masterListSlug0'})
-    contacts.forEach((c) => Contacts.insert(c))
+    users = Array(2).fill(0)
+      .map(() => Meteor.users.insert(user()))
+      .map((_id) => Meteor.users.findOne(_id))
 
-    const campaigns = Array(3).fill(0).map((_, index) => ({
-      _id: `id${index}`,
-      slug: `slug${index}`,
-      contacts: {}
-    }))
-    campaigns[0].contacts = {
-      'slug1': {
-        status: 'HOTPOT'
-      }
-    }
-    campaigns.forEach((c) => Campaigns.insert(c))
+    campaigns = Array(3).fill(0)
+      .map(() => createCampaign.run.call({ userId: users[0]._id }, campaign()))
+      .map((slug) => Campaigns.findOne({slug}))
 
-    Meteor.users.insert({
-      _id: 'alf',
-      profile: { name: 'Alfonze' },
-      myContacts: [{_id: 'id1', slug: 'slug1'}],
-      myCampaigns: []
+    contacts = Array(3).fill(0)
+      .map(() => {
+        const details = contact()
+        details.name += ' name'
+
+        return createContact.run.call({ userId: users[0]._id }, { details })
+      })
+      .map((slug) => Contacts.findOne({slug}))
+
+    masterLists = Array(2).fill(0)
+      .map(() => createMasterList.run.call({ userId: users[0]._id }, {
+        type: 'Contacts',
+        name: faker.lorem.word()
+      }))
+      .map((_id) => MasterLists.findOne({_id}))
+
+    addContactsToCampaign.run.call({ userId: users[0]._id }, {
+      contactSlugs: [contacts[1].slug],
+      campaignSlug: campaigns[0].slug
+    })
+
+    batchAddToMasterLists.run.call({ userId: users[0]._id }, {
+      type: 'Contacts',
+      slugs: [contacts[2].slug],
+      masterListIds: [masterLists[0]._id]
+    })
+
+    batchFavouriteContacts.run.call({ userId: users[1]._id }, {
+      contactSlugs: [contacts[1].slug]
     })
   })
 
   it('should search the contacts to the campaign', function () {
-    const termSearch1Res = searchContacts({term: 'name1', sort: {name: -1}}).fetch()
+    const termSearch1Res = searchContacts({term: contacts[1].name, sort: {name: -1}}).fetch()
     assert.equal(termSearch1Res.length, 1)
-    assert.equal(termSearch1Res[0]._id, 'id1')
+    assert.equal(termSearch1Res[0]._id, contacts[1]._id)
 
     const termSearchManyRes = searchContacts({term: 'name', sort: {name: -1}}).fetch()
     assert.equal(termSearchManyRes.length, 3)
 
-    const termAndCampaignSearch1Res = searchContacts({term: 'name', campaignSlugs: ['slug0'], sort: {name: -1}}).fetch()
+    const termAndCampaignSearch1Res = searchContacts({term: 'name', campaignSlugs: [campaigns[0].slug], sort: {name: -1}}).fetch()
     assert.equal(termAndCampaignSearch1Res.length, 1)
-    assert.equal(termAndCampaignSearch1Res[0]._id, 'id1')
+    assert.equal(termAndCampaignSearch1Res[0]._id, contacts[1]._id)
 
-    const myContactsSearch1Res = searchContacts({userId: 'alf', sort: {name: -1}}).fetch()
+    const myContactsSearch1Res = searchContacts({userId: users[1]._id, sort: {name: -1}}).fetch()
     assert.equal(myContactsSearch1Res.length, 1)
-    assert.equal(myContactsSearch1Res[0]._id, 'id1')
+    assert.equal(myContactsSearch1Res[0]._id, contacts[1]._id)
 
-    const masterListSearch1Res = searchContacts({masterListSlug: 'masterListSlug0', sort: {name: -1}}).fetch()
+    const masterListSearch1Res = searchContacts({masterListSlug: masterLists[0].slug, sort: {name: -1}}).fetch()
     assert.equal(masterListSearch1Res.length, 1)
-    assert.equal(masterListSearch1Res[0]._id, 'id2')
+    assert.equal(masterListSearch1Res[0]._id, contacts[2]._id)
   })
 })

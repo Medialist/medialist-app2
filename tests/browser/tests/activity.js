@@ -9,7 +9,7 @@ const test = {
     t.page.authenticate()
       .register()
   },
-
+/*
   'Should display context sensitive posts when adding a contact to a campaign': function (t) {
     t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
       t.perform((done) => {
@@ -431,7 +431,7 @@ const test = {
     t.page.main().logout()
     t.end()
   },
-
+*/
   'Should display embeds in feedback posts': function (t) {
     if (process.env.CI) {
       console.warn('Not running test - see https://github.com/Medialist/medialist-app2/issues/372')

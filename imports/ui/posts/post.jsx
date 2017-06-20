@@ -157,11 +157,11 @@ class Post extends React.Component {
     })
   }
 
-  updatePost = (_id, { message, status, embed }) => {
+  updatePost = (_id, { message, status }) => {
     this.setState({
       editOpen: false
     })
-    updatePost.call({ _id, message, status, embed })
+    updatePost.call({ _id, message, status })
   }
 
   render () {
@@ -252,7 +252,7 @@ Post.defaultProps = {
 const ContactLink = ({contact, showOutlet = true, ...props}) => (
   <Link to={`/contact/${contact.slug}`} data-id='contact-link' {...props}>
     <span className='semibold gray10' data-id='contact-name'>{contact.name}</span>
-    { showOutlet && contact.outletName && <span className='gray10' data-id='contact-outlet'> ({contact.outletName})</span> }
+    { showOutlet && contact.outlets && contact.outlets.length && contact.outlets[0].value && <span className='gray10' data-id='contact-outlet'> ({contact.outlets[0].value})</span> }
   </Link>
 )
 

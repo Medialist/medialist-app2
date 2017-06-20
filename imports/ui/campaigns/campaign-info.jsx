@@ -9,7 +9,7 @@ import InfoHeader from '/imports/ui/lists/info-header'
 import AddToMasterListModal from '/imports/ui/master-lists/add-to-master-list-modal'
 import AddTagsModal from '/imports/ui/tags/add-tags-modal'
 import Tooltip from '/imports/ui/navigation/tooltip'
-import { update } from '/imports/api/campaigns/methods'
+import { updateCampaign } from '/imports/api/campaigns/methods'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import CampaignListLink from '/imports/ui/master-lists/campaign-list-link'
 import { setMasterLists } from '/imports/api/master-lists/methods'
@@ -84,7 +84,7 @@ const CampaignInfo = withSnackbar(React.createClass({
   },
 
   onAvatarChange (event) {
-    update.call({
+    updateCampaign.call({
       _id: this.props.campaign._id,
       avatar: event.url,
       clientName: this.props.campaign.client ? this.props.campaign.client.name : null

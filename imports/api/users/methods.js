@@ -60,7 +60,7 @@ export const verifyLoginToken = new ValidatedMethod({
   }
 })
 
-export const update = new ValidatedMethod({
+export const updateUser = new ValidatedMethod({
   name: 'User/update',
   validate: new SimpleSchema({
     name: {
@@ -89,15 +89,12 @@ export const update = new ValidatedMethod({
     // update all references to the user
     const userRef = findOneUserRef(this.userId)
 
-    // yay, non-relational
+    // yay, non-relational - nb. we cannot update `createdBy` fields as
+    // they are only settable on insert
     updateCollection(Campaigns, userRef, 'team._id', 'team.$')
-    updateCollection(Campaigns, userRef, 'createdBy._id', 'createdBy')
     updateCollection(Campaigns, userRef, 'updatedBy._id', 'updatedBy')
-    updateCollection(Contacts, userRef, 'createdBy._id', 'createdBy')
     updateCollection(Contacts, userRef, 'updatedBy._id', 'updatedBy')
-    updateCollection(Posts, userRef, 'createdBy._id', 'createdBy')
     updateCollection(Posts, userRef, 'updatedBy._id', 'updatedBy')
-    updateCollection(MasterLists, userRef, 'createdBy._id', 'createdBy')
     updateCollection(MasterLists, userRef, 'updatedBy._id', 'updatedBy')
   }
 })

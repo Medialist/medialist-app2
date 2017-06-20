@@ -279,7 +279,7 @@ const test = {
 
     t.createDomain(['contact', 'contactList'], (contact, contactList, done) => {
       t.perform((done) => {
-        t.tagContacts([contact], [tag], () => done())
+        t.tagContact(contact, [tag], () => done())
       })
 
       const contactPage = t.page.contact()
@@ -315,7 +315,7 @@ const test = {
 
     t.createDomain(['contact', 'contactList'], (contact, contactList, done) => {
       t.perform((done) => {
-        t.tagContacts([contact], [tag], () => done())
+        t.tagContact(contact, [tag], () => done())
       })
 
       const contactPage = t.page.contact()
