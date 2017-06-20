@@ -123,10 +123,12 @@ const test = {
       })
 
       t.perform(function (done) {
-        t.page.campaign()
+        const campaignPage = t.page.campaign()
           .navigate(campaign)
           .waitForElementVisible('[data-id=add-contacts-to-campaign-button]')
 
+        campaignPage.section.activityFeed
+          .assertNoDuplicatePosts(campaign)
           // I need to now assert that there is only one post not two duplicates
         done()
       })

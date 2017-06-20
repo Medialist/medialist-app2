@@ -83,6 +83,15 @@ module.exports = (prefix) => ({
 
       return this
     },
+    assertNoDuplicatePosts: function (campaign) {
+      const selector1 = `[data-id=add-contacts-to-campaign]:nth-child(1)`
+      const selector2 = `[data-id=add-contacts-to-campaign]:nth-child(2)`
+
+      this.assert.elementPresent(`${selector1}`)
+      this.assert.elementNotPresent(`${selector2}`)
+
+      return this
+    },
     deleteCoveragePostWith: function (contact, campaign) {
       return this._deletePostWith('coverage-post', contact, campaign)
     },
@@ -146,7 +155,6 @@ module.exports = (prefix) => ({
 
       return this
     },
-
     assertHasCoveragePostsForCampaign: function (campaign) {
       return this._assertHasPostForCampaign('coverage-post', campaign)
     },
