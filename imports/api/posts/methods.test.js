@@ -329,18 +329,15 @@ describe('updateFeedbackPost', function () {
 
   it('should require the user updating to be the creator of the post', function () {
     const _id = Posts.findOne()._id
-    const update = {$set: {message: 'this will throw' }}
-    assert.throws(() => updatePost.run.call({userId: 'not-alf'}, {_id, update}), /You can only edit posts you created/)
+    assert.throws(() => updatePost.run.call({userId: 'not-alf'}, {_id, message: 'this will throw'}), /You can only edit posts you created/)
   })
 
   it('should let users update a post and cascade updates to campaign contacts status', function () {
     const post = Posts.findOne()
-    const _id = post._id
-    const update = {$set: {message: 'test update2', status: 'Contacted'}}
 
-    updatePost.run.call({userId: 'alf'}, {_id, update})
+    updatePost.run.call({userId: 'alf'}, {_id: post._id, message: 'test update2', status: 'Contacted'})
 
-    const updatedPost = Posts.findOne({ _id: postId })
+    const updatedPost = Posts.findOne({ _id: post._id })
     const campaign = Campaigns.findOne({slug: 'slug1'})
 
     assert.equal(updatedPost.status, 'Contacted')
@@ -367,12 +364,11 @@ describe('updateCoveragePost', function () {
   })
 
   it('should let users update a coverage post with an embed', function () {
-    const post = Posts.findOne()._id
+    const _id = Posts.findOne()._id
     const newEmbedId = Embeds.insert(fakeEmbed({headline: 'new embed'}))
     const newEmbed = Embeds.findOneById(newEmbedId)
-    const update = {$set: { embed: newEmbed }}
 
-    updatePost.run.call({userId: 'alf'}, {_id, update})
+    updatePost.run.call({userId: 'alf'}, {_id, embed: newEmbed})
 
     const updatedPost = Posts.findOne({ _id })
 
@@ -395,10 +391,10 @@ describe('updateNeedToKnowPost', function () {
     createNeedToKnowPost.run.call({userId: 'alf'}, {
       contactSlug, message
     })
-    const _id = Posts.findOne()._id
-    const update = {$set: {message: 'test update'}}
 
-    updatePost.run.call({userId: 'alf'}, {_id, update})
+    const _id = Posts.findOne()._id
+
+    updatePost.run.call({userId: 'alf'}, {_id, message: 'test update'})
 
     const updatedPost = Posts.findOne({ _id })
 

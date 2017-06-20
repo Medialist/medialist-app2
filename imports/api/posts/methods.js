@@ -2,10 +2,11 @@ import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { StatusSchema } from '/imports/lib/schema'
+import { StatusValues } from '/imports/api/contacts/status'
 import { checkAllSlugsExist } from '/imports/lib/slug'
 import findUrl from '/imports/lib/find-url'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
-import Embeds from '/imports/api/embeds/embeds'
+import Embeds, {BaseEmbedRefSchema} from '/imports/api/embeds/embeds'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
@@ -84,8 +85,17 @@ const UpdatePostSchema = new SimpleSchema({
   _id: {
     type: String
   },
-  update: {
-    type: Object,
+  message: {
+    type: String,
+    optional: true
+  },
+  status: {
+    type: String,
+    allowedValues: StatusValues,
+    optional: true
+  },
+  embed: {
+    type: BaseEmbedRefSchema,
     optional: true
   }
 })
@@ -115,7 +125,7 @@ export const createFeedbackPost = new ValidatedMethod({
 export const updatePost = new ValidatedMethod({
   name: 'updatePost',
   validate: UpdatePostSchema.validator(),
-  run ({ _id, update }) {
+  run ({ _id, message, status, embed }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -129,21 +139,26 @@ export const updatePost = new ValidatedMethod({
       throw new Meteor.Error('You can only edit posts you created')
     }
 
-    if (update.$set.embed && !Meteor.isSimulation) {
-      const newEmbed = Embeds.findOneById(update.$set.embed._id)
+    const $set = {}
+
+    if (embed && !Meteor.isSimulation) {
+      const newEmbed = Embeds.findOneById(embed._id)
       const embeds = [newEmbed].concat(post.embeds)
-      Posts.update({ _id }, {$set: { embeds }})
+      $set.embeds = embeds
     }
 
-    Posts.update({ _id }, update, {upsert: true})
+    if (message) $set.message = message
+    if (status) $set.status = status
 
-    if (update.$set.status !== post.status) {
+    Posts.update({ _id }, {$set: $set}, {upsert: true})
+
+    if (status !== post.status) {
       post.campaigns.forEach((campaign) => {
         Campaigns.update({
           slug: campaign.slug
         }, {
           $set: {
-            [`contacts.${post.contacts[0].slug}`]: update.$set.status,
+            [`contacts.${post.contacts[0].slug}`]: status,
             updatedAt: new Date(),
             updatedBy: post.createdBy
           }
