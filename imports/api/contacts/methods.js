@@ -79,7 +79,7 @@ export const addContactsToCampaign = new ValidatedMethod({
     })
 
     // Add an entry to the activity feed
-    createAddContactsToCampaignPost.call({contactSlugs, campaignSlug})
+    createAddContactsToCampaignPost.run.call({userId: this.userId}, {contactSlugs, campaignSlug})
 
     // Add the things to the users my<Contact|Campaigns> list
     addToMyFavourites({

@@ -8,7 +8,8 @@ import {
   createFeedbackPost,
   createCoveragePost,
   createNeedToKnowPost,
-  createAddContactsToCampaignPost
+  createAddContactsToCampaignPost,
+  updatePost
 } from '/imports/api/posts/methods'
 import moment from 'moment'
 
