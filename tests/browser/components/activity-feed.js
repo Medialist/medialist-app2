@@ -84,11 +84,8 @@ module.exports = (prefix) => ({
       return this
     },
     assertNoDuplicatePosts: function (campaign) {
-      const selector1 = `[data-id=add-contacts-to-campaign]:nth-child(1)`
-      const selector2 = `[data-id=add-contacts-to-campaign]:nth-child(2)`
-
-      this.assert.elementPresent(`${selector1}`)
-      this.assert.elementNotPresent(`${selector2}`)
+      this.assert.elementPresent(`[data-id=add-contacts-to-campaign]:nth-child(1)`)
+      this.assert.elementNotPresent(`[data-id=add-contacts-to-campaign]:nth-child(2)`)
 
       return this
     },
@@ -165,7 +162,6 @@ module.exports = (prefix) => ({
 
       return this
     },
-
     assertHasNoCoveragePostsForCampaign: function (campaign) {
       return this._assertHasNoPostForCampaign('coverage-post', campaign)
     },

@@ -60,7 +60,7 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
           placeholder='Search campaigns'
           data-id='search-input' />
         <div style={{height: '413px', overflowY: 'auto'}}>
-          <ResultList onAdd={onAdd} results={campaigns} searching={Boolean(term)} contacts={contacts} alreadyInCampaignFilter={!!children} />
+          <ResultList onAdd={onAdd} results={campaigns} searching={Boolean(term)} contacts={contacts} alreadyInCampaignFilter={Boolean(children)} />
         </div>
       </div>
     )

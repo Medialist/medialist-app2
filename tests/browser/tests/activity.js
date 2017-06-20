@@ -129,7 +129,7 @@ const test = {
 
         campaignPage.section.activityFeed
           .assertNoDuplicatePosts(campaign)
-          // I need to now assert that there is only one post not two duplicates
+
         done()
       })
 
