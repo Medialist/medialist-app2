@@ -51,7 +51,8 @@ const ContactsPage = withSnackbar(React.createClass({
       addContactsToCampaignModal: false,
       addTagsModal: false,
       addToMasterListsModal: false,
-      deleteContactsModal: false
+      deleteContactsModal: false,
+      resultsTotal: 0
     }
   },
 
@@ -183,6 +184,11 @@ const ContactsPage = withSnackbar(React.createClass({
     setQuery({ importId: false })
   },
 
+  setResultsTotal (resultsTotal) {
+    if (!resultsTotal) return
+    this.setState({resultsTotal})
+  },
+
   render () {
     const {
       contactsCount,
@@ -204,11 +210,13 @@ const ContactsPage = withSnackbar(React.createClass({
       onTermChange,
       onCampaignRemove,
       onTagRemove,
-      onImportRemove
+      onImportRemove,
+      setResultsTotal
     } = this
 
     const {
-      selections
+      selections,
+      resultsTotal
     } = this.state
 
     if (!loading && contactsCount === 0) {
@@ -224,7 +232,8 @@ const ContactsPage = withSnackbar(React.createClass({
               userId={this.props.userId}
               allCount={contactsCount}
               selectedMasterListSlug={selectedMasterListSlug}
-              onChange={onMasterListChange} />
+              onChange={onMasterListChange}
+              setResultsTotal={setResultsTotal} />
           </div>
           <div className='flex-none bg-white center px4' style={{width: 240}}>
             <button className='btn bg-completed white mr1' onClick={() => this.showModal('addContactModal')} data-id='new-contact-button'>New Contact</button>
@@ -268,7 +277,7 @@ const ContactsPage = withSnackbar(React.createClass({
                 )}
               </div>
             </SearchBox>
-            <ContactsTotal searching={searching} results={contacts} total={selectedMasterListSlug ? contacts.length : contactsCount} />
+            <ContactsTotal searching={searching} results={contacts} total={resultsTotal} />
           </div>
           <ContactsTable
             contacts={contacts}

@@ -16,8 +16,10 @@ class MasterListsSelector extends React.Component {
     this.resetState = this.resetState.bind(this)
   }
 
-  componentWillReceiveProps () {
+  componentWillReceiveProps (props) {
     this.resetState()
+    const resultTotal = calculateResultTotal(props)
+    this.props.setResultsTotal(resultTotal)
   }
 
   resetState () {
@@ -177,3 +179,8 @@ const MenuItem = ({name, count, slug, onClick}) => (
     <div className='inline-block px1 py-2px ml1 f-xs rounded gray60 bg-gray90 hover-blue hover-bg-white'>{count}</div>
   </div>
 )
+
+export const calculateResultTotal = (props) => {
+  const { selectedSlug, items } = props
+  return items.filter((item) => item.slug === selectedSlug)[0].count
+}
