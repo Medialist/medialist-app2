@@ -5,6 +5,7 @@ import assert from 'assert'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
+import Embeds from '/imports/api/embeds/embeds'
 import {
   createFeedbackPost,
   createCoveragePost,
