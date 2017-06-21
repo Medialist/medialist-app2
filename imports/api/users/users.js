@@ -36,7 +36,7 @@ export const findUserRefs = (userIds) => {
 /*
  * Add contacts or campaigns (or both) to the users my<Type> Arrays.
  */
-export const addToMyFavourites = ({userId, contactSlugs = [], campaignSlugs = [], updatedAt = new Date()}) => {
+export const addToMyFavourites = ({userId, contactSlugs = [], campaignSlugs = []}) => {
   const user = Meteor.users.findOne({
     _id: userId
   }, {
@@ -45,8 +45,8 @@ export const addToMyFavourites = ({userId, contactSlugs = [], campaignSlugs = []
       myCampaigns: 1
     }
   })
-  const myContacts = findMyContactRefs({user, contactSlugs, updatedAt})
-  const myCampaigns = findMyCampaignRefs({user, campaignSlugs, updatedAt})
+  const myContacts = findMyContactRefs({user, contactSlugs})
+  const myCampaigns = findMyCampaignRefs({user, campaignSlugs})
   const $set = {}
 
   if (myContacts.length) {
@@ -72,25 +72,7 @@ function findMyContactRefs ({user, contactSlugs, updatedAt}) {
     return []
   }
 
-  const newRefs = Contacts.find({
-    slug: {
-      $in: contactSlugs
-    }
-  }, {
-    fields: {
-      avatar: 1,
-      slug: 1,
-      name: 1,
-      outlets: 1
-    }
-  }).map((contact) => ({
-    _id: contact._id,
-    name: contact.name,
-    slug: contact.slug,
-    avatar: contact.avatar,
-    outlets: contact.outlets,
-    updatedAt
-  }))
+  const newRefs = Contacts.findRefs({ contactSlugs })
 
   // Preserve other favs.
   const existingRefs = user.myContacts.filter((c) => !contactSlugs.includes(c.slug))
@@ -102,20 +84,12 @@ function findMyContactRefs ({user, contactSlugs, updatedAt}) {
 // Returns a new `myCampaigns` array by creating new ContactRef-like objects
 // for the `campaignSlugs` and merging them with the users existing ones.
 function findMyCampaignRefs ({user, campaignSlugs, updatedAt}) {
-  if (campaignSlugs.length === 0) return []
+  if (campaignSlugs.length === 0) {
+    return []
+  }
 
   // transform campaigns into refs for user.myCampaigns array.
-  const newRefs = Campaigns.find(
-    { slug: { $in: campaignSlugs } },
-    { fields: { avatar: 1, slug: 1, name: 1, client: 1 } }
-  ).map((campaign) => ({
-    _id: campaign._id,
-    name: campaign.name,
-    slug: campaign.slug,
-    avatar: campaign.avatar,
-    clientName: campaign.client && campaign.client.name || '',
-    updatedAt
-  }))
+  const newRefs = Campaigns.findRefs({ campaignSlugs })
 
   // Preserve other favs.
   const existingRefs = user.myCampaigns.filter((c) => !campaignSlugs.includes(c.slug))

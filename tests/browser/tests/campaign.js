@@ -216,7 +216,7 @@ const test = {
 
     t.createDomain(['campaign', 'campaignList'], (campaign, campaignList, done) => {
       t.perform((done) => {
-        t.tagCampaigns([campaign], [tag], () => done())
+        t.tagCampaign(campaign, [tag], () => done())
       })
 
       const campaignPage = t.page.campaign()
@@ -252,7 +252,7 @@ const test = {
 
     t.createDomain(['campaign', 'campaignList'], (campaign, campaignList, done) => {
       t.perform((done) => {
-        t.tagCampaigns([campaign], [tag], () => done())
+        t.tagCampaign(campaign, [tag], () => done())
       })
 
       const campaignPage = t.page.campaign()
@@ -352,12 +352,12 @@ const test = {
         t.db.findContact({
           name: contact1.name
         })
-        .then((doc) => {
+        .then((updatedContact) => {
           // should have updated the contact updatedAt
-          t.assert.ok(doc.updatedAt.getTime() > originalContact.updatedAt.getTime())
+          t.assert.ok(updatedContact.updatedAt.getTime() > originalContact.updatedAt.getTime())
 
           // and the link to the campaign
-          t.assert.equal(doc.campaigns[campaign.slug].updatedAt.getTime(), doc.updatedAt.getTime())
+          t.assert.ok(updatedContact.campaigns[campaign.slug].updatedAt.getTime() > originalContact.campaigns[campaign.slug].updatedAt.getTime())
 
           done()
         })

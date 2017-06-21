@@ -2,13 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import nothing from '/imports/lib/nothing'
-
-const MasterLists = new Mongo.Collection('MasterLists')
-MasterLists.allow(nothing)
-if (Meteor.isServer) {
-  MasterLists._ensureIndex({slug: 1})
-}
-export default MasterLists
+import { AuditSchema } from '/imports/lib/schema'
 
 const TypeSchema = new SimpleSchema({
   type: {
@@ -18,8 +12,8 @@ const TypeSchema = new SimpleSchema({
 })
 
 export const MasterListSchema = new SimpleSchema([
-  TypeSchema,
-  {
+  AuditSchema,
+  TypeSchema, {
     name: {
       type: String,
       min: 1
@@ -34,56 +28,9 @@ export const MasterListSchema = new SimpleSchema([
     },
     order: {
       type: Number
-    },
-    deleted: {
-      type: Date,
-      optional: true
     }
   }
 ])
-
-export const MasterListCreationSchema = new SimpleSchema([
-  TypeSchema,
-  {
-    name: {
-      type: String,
-      min: 1
-    }
-  }
-])
-
-export const MasterListUpdateSchema = new SimpleSchema({
-  _id: {
-    type: String,
-    regEx: SimpleSchema.RegEx.Id
-  },
-  name: {
-    type: String,
-    min: 1
-  }
-})
-
-export const MasterListAddItemsSchema = new SimpleSchema({
-  _id: {
-    type: String,
-    regEx: SimpleSchema.RegEx.Id
-  },
-  items: {
-    type: [String],
-    regEx: SimpleSchema.RegEx.Id
-  }
-})
-
-export const MasterListRemoveItemSchema = new SimpleSchema({
-  _id: {
-    type: String,
-    regEx: SimpleSchema.RegEx.Id
-  },
-  item: {
-    type: String,
-    regEx: SimpleSchema.RegEx.Id
-  }
-})
 
 export const MasterListRefSchema = new SimpleSchema({
   _id: {
@@ -100,23 +47,12 @@ export const MasterListRefSchema = new SimpleSchema({
   }
 })
 
-export const MasterListDelSchema = new SimpleSchema({
-  _ids: {
-    type: [String],
-    regEx: SimpleSchema.RegEx.Id
-  }
-})
+const MasterLists = new Mongo.Collection('MasterLists')
+MasterLists.attachSchema(MasterListSchema)
+MasterLists.allow(nothing)
 
-export const MasterListsSetMasterLists = new SimpleSchema([
-  TypeSchema,
-  {
-    item: {
-      type: String,
-      regEx: SimpleSchema.RegEx.Id
-    },
-    masterLists: {
-      type: [String],
-      regEx: SimpleSchema.RegEx.Id
-    }
-  }
-])
+if (Meteor.isServer) {
+  MasterLists._ensureIndex({slug: 1})
+}
+
+export default MasterLists

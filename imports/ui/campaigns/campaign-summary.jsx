@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import values from 'lodash.values'
 import { SquareAvatar } from '/imports/ui/images/avatar'
 import EditableAvatar from '/imports/ui/images/editable-avatar'
-import { update } from '/imports/api/campaigns/methods'
+import { updateCampaign } from '/imports/api/campaigns/methods'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import StatusStats from '/imports/ui/contacts/status-stats'
 
@@ -16,7 +16,7 @@ const CamapignSummary = withSnackbar(React.createClass({
   },
   onAvatarChange (e) {
     const { _id } = this.props.campaign
-    update.call({ _id, avatar: e.url }, (error) => {
+    updateCampaign.call({ _id, avatar: e.url }, (error) => {
       if (error) {
         console.error('Failed to update campaign avatar', error)
         this.props.snackbar.error('campaign-avatar-update-error')
