@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Modal from '/imports/ui/navigation/modal'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
-import { FeedbackInput } from '/imports/ui/feedback/post-box'
+import { FeedbackInput, CoverageInput, NeedToKnowInput } from '/imports/ui/feedback/post-box'
 
 class EditPost extends React.Component {
   static propTypes = {
@@ -27,6 +27,11 @@ class EditPost extends React.Component {
     const contact = contacts[0]
     const contactStatus = {[contact.slug]: post.status}
     const campaign = Object.assign({}, campaigns[0], {contacts: contactStatus})
+    const Component = {
+      'FeedbackPost': FeedbackInput,
+      'CoveragePost': CoverageInput,
+      'NeedToKnowPost': NeedToKnowInput
+    }[type]
 
     return (
       <div data-id='edit-post-modal'>
@@ -34,7 +39,7 @@ class EditPost extends React.Component {
           {icon}<span className='mx1'>Edit</span>{type.replace(/Post/g, '')}
         </div>
         <div className='p3'>
-          <FeedbackInput {...post} onSubmit={this.props.onUpdate.bind(null, _id)} focused contact={contacts[0]} campaign={campaign} isEdit />
+          <Component {...post} onSubmit={this.props.onUpdate.bind(null, _id)} focused contact={contacts[0]} campaign={campaign} isEdit />
         </div>
       </div>
     )
