@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import nothing from '/imports/lib/nothing'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
-import { UserRefSchema, CreatedAtSchema } from '/imports/lib/schema'
+import { CreatedAtSchema } from '/imports/lib/schema'
 
 export const EmbedSchema = new SimpleSchema([
   CreatedAtSchema, {

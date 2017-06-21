@@ -69,7 +69,7 @@ const createTestEmbeds = (count, creatorId) => {
       image: {
         url: faker.image.imageUrl(),
         height: 50,
-        width: 200,
+        width: 200
       },
       outlet: faker.company.companyName(),
       url: faker.internet.url(),
