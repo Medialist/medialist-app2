@@ -2,10 +2,11 @@ import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { StatusSchema } from '/imports/lib/schema'
+import { StatusValues } from '/imports/api/contacts/status'
 import { checkAllSlugsExist } from '/imports/lib/slug'
 import findUrl from '/imports/lib/find-url'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
-import Embeds from '/imports/api/embeds/embeds'
+import Embeds, {BaseEmbedRefSchema} from '/imports/api/embeds/embeds'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
@@ -80,17 +81,24 @@ const FeedbackOrCoverageSchema = new SimpleSchema([{
   StatusSchema
 ])
 
-const UpdatePostSchema = new SimpleSchema([{
+const UpdatePostSchema = new SimpleSchema({
   _id: {
     type: String
   },
   message: {
     type: String,
     optional: true
+  },
+  status: {
+    type: String,
+    allowedValues: StatusValues,
+    optional: true
+  },
+  embed: {
+    type: BaseEmbedRefSchema,
+    optional: true
   }
-},
-  StatusSchema
-])
+})
 
 export const createFeedbackPost = new ValidatedMethod({
   name: 'createFeedbackPost',
@@ -117,11 +125,10 @@ export const createFeedbackPost = new ValidatedMethod({
 export const updatePost = new ValidatedMethod({
   name: 'updatePost',
   validate: UpdatePostSchema.validator(),
-  run ({ _id, message, status }) {
+  run ({ _id, message, status, embed }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
-
     const post = Posts.findOne({ _id })
 
     if (!post) {
@@ -132,7 +139,17 @@ export const updatePost = new ValidatedMethod({
       throw new Meteor.Error('You can only edit posts you created')
     }
 
-    Posts.update({ _id }, {$set: { message, status }})
+    const $set = {}
+
+    if (embed && !Meteor.isSimulation) {
+      const newEmbed = Embeds.findOneById(embed._id)
+      $set.embeds = [newEmbed]
+    }
+
+    if (message) $set.message = message
+    if (status) $set.status = status
+
+    Posts.update({ _id }, {$set: $set}, {upsert: true})
 
     if (status !== post.status) {
       post.campaigns.forEach((campaign) => {
@@ -141,6 +158,19 @@ export const updatePost = new ValidatedMethod({
         }, {
           $set: {
             [`contacts.${post.contacts[0].slug}`]: status,
+            updatedAt: new Date(),
+            updatedBy: post.createdBy
+          }
+        })
+      })
+    }
+
+    if (post.type === 'NeedToKnowPost') {
+      post.contacts.forEach((contact) => {
+        Contacts.update({
+          slug: contact.slug
+        }, {
+          $set: {
             updatedAt: new Date(),
             updatedBy: post.createdBy
           }
