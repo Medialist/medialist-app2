@@ -123,6 +123,10 @@ const ContactsPage = withSnackbar(React.createClass({
     })
   },
 
+  batchUpdateStatus (contacts, status) {
+    console.log({contacts, status})
+  },
+
   clearSelection () {
     this.setState({
       selections: []
@@ -288,6 +292,7 @@ const ContactsPage = withSnackbar(React.createClass({
           onSectorClick={() => this.showModal('addToMasterListsModal')}
           onFavouriteClick={() => this.onFavouriteAll()}
           onTagClick={() => this.showModal('addTagsModal')}
+          onStatusClick={this.batchUpdateStatus}
           onDeleteClick={() => this.showModal('deleteContactsModal')}
           onDeselectAllClick={() => this.clearSelection()} />
         <CreateContactModal
