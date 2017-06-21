@@ -10,6 +10,8 @@ import { user, contact } from '../../../../tests/browser/fixtures/domain'
 let userId = null
 
 describe('importContacts', function () {
+  this.timeout(30000)
+
   beforeEach(function () {
     resetDatabase()
     userId = Meteor.users.insert({...user(), myContacts: []})
