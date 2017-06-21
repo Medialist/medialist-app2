@@ -350,7 +350,7 @@ describe('updateCoveragePost', function () {
   it('should remove an embed from a post', function () {
     if (process.env.CI) {
       console.warn('Not running test - see https://github.com/Medialist/medialist-app2/issues/372')
-      return done()
+      return
     }
 
     this.timeout(60000)
