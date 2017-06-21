@@ -400,3 +400,18 @@ export const searchOutlets = new ValidatedMethod({
     return suggestions
   }
 })
+
+export const batchUpdateStatus = new ValidatedMethod({
+  name: 'batchUpdateStatus',
+
+  validate: new SimpleSchema({
+    contacts: { type: [Object] },
+    status: { type: String }
+  }).validator(),
+
+  run ({contacts, status}) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+  }
+})

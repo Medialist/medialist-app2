@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { Meteor } from 'meteor/meteor'
 import escapeRegExp from 'lodash.escaperegexp'
 import { createContainer } from 'meteor/react-meteor-data'
+import { StatusIndex } from '/imports/api/contacts/status'
 import ContactsTable from '/imports/ui/contacts/contacts-table'
 import SearchBox from '/imports/ui/lists/search-box'
 import ContactsActionsToast from '/imports/ui/contacts/contacts-actions-toast'
@@ -12,7 +13,6 @@ import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
 import { CreateContactModal } from '../contacts/edit-contact'
 import AddContactModal from '/imports/ui/campaigns/add-contact'
-import { StatusIndex } from '/imports/api/contacts/status'
 import RemoveContactModal from '/imports/ui/campaigns/remove-contact'
 import AddContactsToCampaign from '/imports/ui/contacts/add-contacts-to-campaign'
 import AddTagsModal from '/imports/ui/tags/add-tags-modal'
@@ -84,6 +84,10 @@ class CampaignContactsPage extends React.Component {
 
       this.context.snackbar.show(`Added ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'} to ${masterLists.length} ${masterLists.length === 1 ? 'Contact List' : 'Contact Lists'}`, 'batch-add-contacts-to-contact-list-success')
     })
+  }
+
+  batchUpdateStatus = (contacts, status) => {
+    console.log({contacts, status})
   }
 
   onShowCreateContact = (data) => {
@@ -182,6 +186,7 @@ class CampaignContactsPage extends React.Component {
           onSectorClick={() => this.showModal('addToMasterListsModal')}
           onFavouriteClick={this.onFavouriteAll}
           onTagClick={() => this.showModal('addTagsModal')}
+          onStatusClick={this.batchUpdateStatus}
           onDeleteClick={() => this.showModal('removeContactsModal')}
           onDeselectAllClick={this.clearSelection} />
         <CreateContactModal

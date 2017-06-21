@@ -57,6 +57,8 @@ class ContactsActionsToast extends React.Component {
       onDeselectAllClick
     } = this.props
 
+    const canBatchStatusUpdate = campaign && contacts
+
     return (
       <Toast data-id='contact-actions-toast'>
         { contacts.length && (
@@ -87,7 +89,7 @@ class ContactsActionsToast extends React.Component {
                   data-id='contact-actions-add-to-my-contacts'
                   style={{width: '21px', height: '21px'}} />
               </Tooltip>
-              <Dropdown title='Add Status'>
+              {canBatchStatusUpdate && <Dropdown title='Add Status'>
                 <StatusUpdateIcon
                   className='mx3 pointer gray60 hover-blue'
                   onClick={this.openStatusMenu}
@@ -109,7 +111,7 @@ class ContactsActionsToast extends React.Component {
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenu>
-              </Dropdown>
+              </Dropdown>}
               <Tooltip title='Add Tags'>
                 <TagIcon
                   className='mx3 pointer gray60 hover-blue'
