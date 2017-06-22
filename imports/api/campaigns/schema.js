@@ -1,34 +1,33 @@
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
-import { MasterListRefSchema } from '/imports/api/master-lists/master-lists'
-import { TagRefSchema } from '/imports/api/tags/tags'
-import { AuditSchema, UserRefSchema, LinkSchema } from '/imports/lib/schema'
+import { MasterListRefSchema } from '/imports/api/master-lists/schema'
+import { TagRefSchema } from '/imports/api/tags/schema'
+import { IdSchema, AuditSchema, UserRefSchema, LinkSchema } from '/imports/lib/schema'
 
-export const CampaignRefSchema = new SimpleSchema([{
-  _id: {
-    type: String,
-    regEx: SimpleSchema.RegEx.Id
-  },
-  slug: {
-    type: String
-  },
-  name: {
-    type: String
-  },
-  avatar: {
-    type: String,
-    regEx: SimpleSchema.RegEx.Url,
-    optional: true
-  },
-  clientName: {
-    type: String,
-    optional: true
-  },
-  updatedAt: {
-    type: Date
+export const CampaignRefSchema = new SimpleSchema([
+  IdSchema, {
+    slug: {
+      type: String
+    },
+    name: {
+      type: String
+    },
+    avatar: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Url,
+      optional: true
+    },
+    clientName: {
+      type: String,
+      optional: true
+    },
+    updatedAt: {
+      type: Date
+    }
   }
-}])
+])
 
 export const CampaignSchema = new SimpleSchema([
+  IdSchema,
   AuditSchema, {
     name: {
       type: String,

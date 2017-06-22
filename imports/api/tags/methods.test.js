@@ -86,11 +86,13 @@ describe('Tags/batchAddTags', function () {
     }).forEach((c, i) => {
       const hotTag = c.tags.find((t) => t.slug === existingTag.slug)
       assert.deepEqual(hotTag, {
+        _id: existingTag._id,
         name: existingTag.name,
         slug: existingTag.slug,
         count: 3
       })
       const coldTag = c.tags.find((t) => t.slug === 'cold')
+      delete coldTag._id
       assert.deepEqual(coldTag, {
         name: 'Cold',
         slug: 'cold',
@@ -177,11 +179,14 @@ describe('Tags/set', function () {
 
     const contact1 = Contacts.findOne({_id: contacts[1]._id})
     assert.deepEqual(contact1.tags.find((t) => t.slug === existingTag.slug), {
+      _id: existingTag._id,
       name: existingTag.name,
       slug: existingTag.slug,
       count: 2
     })
-    assert.deepEqual(contact1.tags.find((t) => t.slug === 'cold'), {
+    const coldTag2 = contact1.tags.find((t) => t.slug === 'cold')
+    delete coldTag2._id
+    assert.deepEqual(coldTag2, {
       name: 'Cold',
       slug: 'cold',
       count: 1
