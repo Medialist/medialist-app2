@@ -92,9 +92,13 @@ export const updateUser = new ValidatedMethod({
     // yay, non-relational - nb. we cannot update `createdBy` fields as
     // they are only settable on insert
     updateCollection(Campaigns, userRef, 'team._id', 'team.$')
+    updateCollection(Campaigns, userRef, 'createdBy._id', 'createdBy')
     updateCollection(Campaigns, userRef, 'updatedBy._id', 'updatedBy')
+    updateCollection(Contacts, userRef, 'createdBy._id', 'createdBy')
     updateCollection(Contacts, userRef, 'updatedBy._id', 'updatedBy')
+    updateCollection(Posts, userRef, 'createdBy._id', 'createdBy')
     updateCollection(Posts, userRef, 'updatedBy._id', 'updatedBy')
+    updateCollection(MasterLists, userRef, 'createdBy._id', 'createdBy')
     updateCollection(MasterLists, userRef, 'updatedBy._id', 'updatedBy')
   }
 })

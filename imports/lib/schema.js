@@ -68,8 +68,7 @@ export const CreatedAtSchema = new SimpleSchema({
     }
   },
   createdBy: {
-    type: UserRefSchema,
-    denyUpdate: true
+    type: UserRefSchema
   }
 })
 
