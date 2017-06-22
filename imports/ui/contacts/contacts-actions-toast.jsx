@@ -94,7 +94,7 @@ class ContactsActionsToast extends React.Component {
                   <StatusUpdateIcon
                     className='mx3 pointer gray60 hover-blue'
                     onClick={this.openStatusMenu}
-                    data-id='contact-actions-add-status'
+                    data-id='contact-actions-update-status'
                     style={{width: '21px', height: '21px'}} />
                 </Tooltip>
                 <DropdownMenu
