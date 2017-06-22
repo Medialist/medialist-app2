@@ -9,7 +9,7 @@ import ValidationBanner from '/imports/ui/forms/validation-banner'
 import FormField from '/imports/ui/forms/form-field'
 import FormSection from '/imports/ui/forms/form-section'
 import OutletAutocomplete from '/imports/ui/forms/outlet-autocomplete'
-import { CameraIcon, FilledCircle, EmailIcon, PhoneIcon } from '/imports/ui/images/icons'
+import { CameraIcon, FilledCircle, EmailIcon, PhoneIcon, AddressIcon } from '/imports/ui/images/icons'
 import { SocialMap, SocialIcon } from '/imports/ui/social/social'
 import EditableAvatar from '/imports/ui/images/editable-avatar/editable-avatar'
 import Scroll from '/imports/ui/navigation/scroll'
@@ -30,6 +30,15 @@ const socials = [
   'medium',
   'pinterest'
 ]
+
+const emptyAddress = { street: '', city: '', postcode: '', country: '' }
+
+function cleanAddresses (addresses) {
+  if (!addresses) return []
+  return addresses
+    .filter((address) => Object.keys(address).some((field) => !!address[field].length))
+    .map((address) => Object.assign({}, emptyAddress, address))
+}
 
 const EditContact = withSnackbar(React.createClass({
   propTypes: {
@@ -73,6 +82,7 @@ const EditContact = withSnackbar(React.createClass({
       emails: atLeastOne(contact.emails, {label: 'Email', value: ''}),
       phones: atLeastOne(contact.phones, {label: 'Phone', value: ''}),
       socials,
+      addresses: contact.addresses || [emptyAddress],
       fixHeaderPosition: false,
       errorHeader: null,
       deleteMenuOpen: false
@@ -110,6 +120,7 @@ const EditContact = withSnackbar(React.createClass({
     data.emails = data.emails.filter((o) => o.value)
     data.phones = data.phones.filter((o) => o.value)
     data.socials = data.socials.filter((o) => o.value)
+    data.addresses = cleanAddresses(data.addresses)
     this.props.onSubmit(data)
   },
 
@@ -225,7 +236,7 @@ const EditContact = withSnackbar(React.createClass({
 
   render () {
     const { onAvatarChange, onAvatarError, onAddJob, onAddEmail, onAddPhone, onAddSocial, inputSize, onScrollChange, onDismissErrorBanner } = this
-    const { name, avatar, outlets, emails, phones, socials, fixHeaderPosition } = this.state
+    const { name, avatar, outlets, emails, phones, socials, addresses, fixHeaderPosition } = this.state
     return (
       <Form data-id='edit-contact-form' className='relative' onSubmit={this.onSubmit} ref={(form) => { this.form = form }}>
         <ValidationBanner error={this.state.errorHeader} onDismiss={onDismissErrorBanner} />
@@ -350,6 +361,53 @@ const EditContact = withSnackbar(React.createClass({
                     placeholder={label}
                     validations={label === 'Website' ? ['url'] : ['username']} />
                 </FormField>
+              ))}
+            </FormSection>
+
+            <FormSection label='Address'>
+              {addresses.map(({street, city, postcode, country}, index) => (
+                <div key={`contact-addresses-${index}`}>
+                  <FormField icon={<AddressIcon />}>
+                    <Input
+                      className='col col-12 input placeholder-gray60'
+                      data-id={`address-input-street-${index}`}
+                      name={`addresses.${index}.street`}
+                      value={street}
+                      onChange={this.onFieldChange}
+                      placeholder='Street'
+                      validations={[]}
+                     />
+                  </FormField>
+                  <div className='clearfix'>
+                    <Input
+                      className='input placeholder-gray60 inline-block my2 left'
+                      data-id={`address-input-city-${index}`}
+                      name={`addresses.${index}.city`}
+                      value={city}
+                      onChange={this.onFieldChange}
+                      placeholder='City'
+                      style={{width: '48%'}}
+                      validations={[]} />
+                    <Input
+                      className='input placeholder-gray60 inline-block my2 right'
+                      data-id={`address-input-postcode-${index}`}
+                      name={`addresses.${index}.postcode`}
+                      value={postcode}
+                      onChange={this.onFieldChange}
+                      placeholder='Postcode'
+                      style={{width: '48%'}}
+                      validations={[]} />
+                  </div>
+                  <Input
+                    className='input placeholder-gray60 inline-block mb2 left'
+                    data-id={`address-input-country-${index}`}
+                    name={`addresses.${index}.country`}
+                    value={country}
+                    onChange={this.onFieldChange}
+                    placeholder='Country'
+                    style={{width: '48%'}}
+                    validations={[]} />
+                </div>
               ))}
             </FormSection>
           </div>
