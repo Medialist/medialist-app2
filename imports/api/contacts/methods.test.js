@@ -13,6 +13,15 @@ import {
   createContact,
   batchUpdateStatus
 } from './methods'
+import moment from 'moment'
+
+function createCampaignContactsStatus (campaign, status) {
+  return Object.keys(campaign.contacts)
+    .reduce((o, slug) => {
+      o[slug] = status
+      return o
+    }, {})
+}
 
 function insertTestData () {
   Meteor.users.insert({
@@ -425,22 +434,33 @@ describe('batchUpdateStatus', function () {
         o[contact.slug] = 'To Contact'
         return o
       }, {})
-    Campaigns.update({}, {$set: {contacts}}, {multi: true})
+    Campaigns.update({}, {$set: {contacts, updatedAt: new Date()}}, {multi: true})
   })
 
   it('Should be able to batch update campaign contacts status', function () {
     const campaign = Campaigns.findOne()
-    const contacts = Object.keys(campaign.contacts)
-      .reduce((o, slug) => {
-        o[slug] = 'Complete'
-        return o
-      }, {})
+    const contacts = createCampaignContactsStatus(campaign, 'Complete')
     const _id = campaign._id
 
     batchUpdateStatus.run.call({userId: 'alf'}, { _id, contacts })
 
     const updatedCampaign = Campaigns.findOne({ _id })
 
+    console.log('---------times-------', campaign.updatedAt, updatedCampaign.updatedAt)
     assert.ok(Object.keys(updatedCampaign.contacts).every((slug) => updatedCampaign.contacts[slug] === 'Complete'))
+    assert.ok(moment(campaign.updatedAt).isBefore(updatedCampaign.updatedAt))
+    assert.equal(updatedCampaign.updatedBy._id, 'alf')
+  })
+
+  it('Should create a post when batch updating campaign contacts status', function () {
+    const campaign = Campaigns.findOne()
+    const contacts = createCampaignContactsStatus(campaign, 'Complete')
+    const _id = campaign._id
+
+    batchUpdateStatus.run.call({userId: 'alf'}, { _id, contacts })
+
+    const post = Posts.findOne({type: 'StatusUpdate'})
+    assert.equal(post.status, 'Complete')
+    assert.equal(post.contacts.length, Object.keys(contacts).length)
   })
 })

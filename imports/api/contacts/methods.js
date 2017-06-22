@@ -420,18 +420,35 @@ export const batchUpdateStatus = new ValidatedMethod({
       throw new Meteor.Error('You must be logged in')
     }
 
-    const campaign = Campaigns.find({ _id })
+    const campaign = Campaigns.findOne({ _id })
 
     if (!campaign) {
       throw new Meteor.Error('Can\'t find campaign')
     }
 
+    const contactsStatus = Object.assign({}, campaign.contacts, contacts)
+
     const update = {
       $set: {
-        contacts: Object.assign({}, campaign.contacts, contacts)
+        contacts: contactsStatus,
+        updatedBy: findOneUserRef(this.userId),
+        updatedAt: new Date()
       }
     }
 
-    return Campaigns.update({ _id }, update)
+    Campaigns.update({ _id }, update)
+
+    const contactsSlugs = Object.keys(contacts)
+
+    checkAllSlugsExist(contactsSlugs, Contacts)
+
+    Posts.create({
+      type: 'StatusUpdate',
+      contactSlugs: contactsSlugs,
+      campaignSlugs: [campaign.slug],
+      status: contactsStatus[contactsSlugs[0]],
+      createdAt: new Date(),
+      createdBy: findOneUserRef(this.userId)
+    })
   }
 })

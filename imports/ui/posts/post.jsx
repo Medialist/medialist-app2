@@ -261,7 +261,6 @@ const ContactName = ({contacts, contact, onContactPage}) => {
     const primary = contact || contacts[0]
     const otherContacts = contacts.filter((c) => c.slug !== primary.slug).length
     const name = contact ? firstName(primary) : <ContactLink contact={primary} showOutlet={false} />
-
     return (
       <span>
         <span data-id='contact-name' className='semibold gray10'>{name}</span>
@@ -392,6 +391,16 @@ export const NeedToKnowPost = ({item, currentUser, contact}) => (
 )
 
 export const StatusUpdate = ({item, currentUser, contact, campaign}) => {
+  let details = null
+
+  if (item.contacts.length > 1 && !contact) {
+    details = (
+      <div className='border-gray80 border-top gray10'>
+        <ContactAvatarList items={item.contacts} className='my0 pt3 pb0 left' maxAvatars={9} />
+      </div>
+    )
+  }
+
   return (
     <Post
       {...item}
@@ -404,6 +413,7 @@ export const StatusUpdate = ({item, currentUser, contact, campaign}) => {
           <CampaignName campaigns={item.campaigns} onCampaignPage={Boolean(campaign)} />
         </PostSummary>
       }
+      details={details}
     />
   )
 }

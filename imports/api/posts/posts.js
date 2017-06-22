@@ -58,13 +58,14 @@ export const PostSchema = new SimpleSchema([
   }
 ])
 
-Posts.create = ({type, contactSlugs = [], campaignSlugs = [], createdBy, createdAt}) => {
+Posts.create = ({type, contactSlugs = [], campaignSlugs = [], status = 'To Contact', createdBy, createdAt}) => {
   const contacts = Contacts.findRefs({contactSlugs})
   const campaigns = Campaigns.findRefs({campaignSlugs})
   const post = {
     type,
     contacts,
     campaigns,
+    status,
     createdBy,
     createdAt
   }
