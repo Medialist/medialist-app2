@@ -2,10 +2,8 @@ import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { Counter } from 'meteor/natestrauser:publish-performant-counts'
 import nothing from '/imports/lib/nothing'
-import { CampaignSchema } from '/imports/api/campaigns/schema'
 
 const Campaigns = new Mongo.Collection('campaigns')
-Campaigns.attachSchema(CampaignSchema)
 Campaigns.allow(nothing)
 
 if (Meteor.isServer) {

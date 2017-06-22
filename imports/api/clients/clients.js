@@ -13,7 +13,6 @@ export const ClientSchema = new SimpleSchema([
 ])
 
 const Clients = new Mongo.Collection('clients')
-Clients.attachSchema(ClientSchema)
 Clients.allow(nothing)
 
 export default Clients

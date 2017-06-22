@@ -2,13 +2,10 @@ import { Mongo } from 'meteor/mongo'
 import nothing from '/imports/lib/nothing'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
-import { PostSchema, PostTypes } from '/imports/api/posts/schema'
+import { PostTypes } from '/imports/api/posts/schema'
 
 const Posts = new Mongo.Collection('posts')
-
 Posts.types = PostTypes
-
-Posts.attachSchema(PostSchema)
 Posts.allow(nothing)
 
 Posts.feedLimit = {

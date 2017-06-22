@@ -2,10 +2,8 @@ import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import nothing from '/imports/lib/nothing'
 import { cleanSlug } from '/imports/lib/slug'
-import { TagSchema } from '/imports/api/tags/schema'
 
 const Tags = new Mongo.Collection('tags')
-Tags.attachSchema(TagSchema)
 Tags.allow(nothing)
 
 if (Meteor.isServer) {

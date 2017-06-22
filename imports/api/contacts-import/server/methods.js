@@ -3,7 +3,8 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import slugify from '/imports/lib/slug'
 import { findOneUserRef } from '/imports/api/users/users'
-import Contacts, { ContactCreateSchema } from '/imports/api/contacts/contacts'
+import Contacts from '/imports/api/contacts/contacts'
+import { ContactCreateSchema } from '/imports/api/contacts/schema'
 import ContactsImport from '/imports/api/contacts-import/contacts-import'
 
 export const importContacts = new ValidatedMethod({

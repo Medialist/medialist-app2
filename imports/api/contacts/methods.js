@@ -6,7 +6,8 @@ import slugify, { checkAllSlugsExist } from '/imports/lib/slug'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
-import Contacts, { ContactCreateSchema } from '/imports/api/contacts/contacts'
+import Contacts from '/imports/api/contacts/contacts'
+import { ContactCreateSchema } from '/imports/api/contacts/schema'
 import MasterLists from '/imports/api/master-lists/master-lists'
 
 /*

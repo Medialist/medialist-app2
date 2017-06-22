@@ -1,10 +1,8 @@
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import nothing from '/imports/lib/nothing'
-import { EmbedSchema } from '/imports/api/embeds/schema'
 
 const Embeds = new Mongo.Collection('embeds')
-Embeds.attachSchema(EmbedSchema)
 Embeds.allow(nothing)
 
 export default Embeds

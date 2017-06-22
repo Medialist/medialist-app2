@@ -178,8 +178,6 @@ export const UserSchema = new SimpleSchema([
   }
 ])
 
-Meteor.users.attachSchema(UserSchema)
-
 export const createUser = (details) => {
   return Meteor.users.insert(details)
 }
