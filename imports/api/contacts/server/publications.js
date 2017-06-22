@@ -20,8 +20,8 @@ Meteor.publish('my-contacts-and-campaigns', function () {
   }
 
   return [
-    Contacts.find({}, { sort: { updatedAt: -1 }, limit: 20 }),
-    Campaigns.find({}, { sort: { updatedAt: -1 }, limit: 20 })
+    Contacts.find({}, { sort: { updatedAt: -1 }, limit: 2000 }),
+    Campaigns.find({}, { sort: { updatedAt: -1 }, limit: 2000 })
   ]
 })
 

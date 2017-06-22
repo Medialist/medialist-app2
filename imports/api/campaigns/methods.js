@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor'
-import { check } from 'meteor/check'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import escapeRegExp from 'lodash.escaperegexp'
 import createUniqueSlug, { checkAllSlugsExist } from '/imports/lib/slug'
-import Campaigns, { CampaignSchema } from './campaigns'
+import Campaigns from './campaigns'
 import Clients from '/imports/api/clients/clients'
 import Uploadcare from '/imports/lib/uploadcare'
 import Posts from '/imports/api/posts/posts'
@@ -12,6 +11,7 @@ import { addToMyFavourites, findOneUserRef, findUserRefs } from '/imports/api/us
 import MasterLists from '/imports/api/master-lists/master-lists'
 import Contacts from '/imports/api/contacts/contacts'
 import toUserRef from '/imports/lib/to-user-ref'
+import { LinkSchema } from '/imports/lib/schema'
 
 let sendCampaignLink = () => ([])
 let createInvitationLink = () => ([])
@@ -51,7 +51,10 @@ export const batchFavouriteCampaigns = new ValidatedMethod({
   name: 'batchFavouriteCampaigns',
 
   validate: new SimpleSchema({
-    campaignSlugs: { type: [String] }
+    campaignSlugs: {
+      type: [String],
+      defaultValue: []
+    }
   }).validator(),
 
   run ({ campaignSlugs }) {
@@ -60,11 +63,15 @@ export const batchFavouriteCampaigns = new ValidatedMethod({
     }
 
     checkAllSlugsExist(campaignSlugs, Campaigns)
-    addToMyFavourites({userId: this.userId, campaignSlugs})
+
+    addToMyFavourites({
+      userId: this.userId,
+      campaignSlugs
+    })
   }
 })
 
-export const update = new ValidatedMethod({
+export const updateCampaign = new ValidatedMethod({
   name: 'Campaigns/update',
   validate: new SimpleSchema({
     '_id': {
@@ -86,12 +93,8 @@ export const update = new ValidatedMethod({
       optional: true
     },
     links: {
-      type: [Object],
-      optional: true
-    },
-    'links.$.url': {
-      type: String,
-      regEx: SimpleSchema.RegEx.Url
+      type: [LinkSchema],
+      defaultValue: []
     },
     avatar: {
       type: String,
@@ -117,11 +120,9 @@ export const update = new ValidatedMethod({
     data.client = findOrCreateClientRef(data.clientName)
     delete data.clientName
 
-    const user = Meteor.users.findOne({ _id: this.userId })
-    const now = new Date()
+    const userRef = findOneUserRef(this.userId)
 
-    data.updatedAt = now
-    data.updatedBy = findOneUserRef(user._id)
+    data.updatedBy = userRef
 
     const result = Campaigns.update({
       _id
@@ -135,61 +136,42 @@ export const update = new ValidatedMethod({
 
     // Add this user to the updated campaign's team if required
     Campaigns.update({
-      _id,
-      'team._id': {
-        $ne: this.userId
-      }
+      _id
     }, {
       $push: {
-        team: data.updatedBy
+        team: userRef
       }
     })
 
-    const updatedMedialist = Campaigns.findOne({ _id })
+    const updatedCampaign = Campaigns.findOne({ _id })
 
     // Update existing users' favourite campaigns with new denormalised data
     Meteor.users.update({
       'myCampaigns._id': _id
     }, {
       $set: {
-        'myCampaigns.$.name': updatedMedialist.name,
-        'myCampaigns.$.slug': updatedMedialist.slug,
-        'myCampaigns.$.avatar': updatedMedialist.avatar,
-        'myCampaigns.$.clientName': updatedMedialist.client
-          ? updatedMedialist.client.name
+        'myCampaigns.$.name': updatedCampaign.name,
+        'myCampaigns.$.slug': updatedCampaign.slug,
+        'myCampaigns.$.avatar': updatedCampaign.avatar,
+        'myCampaigns.$.clientName': updatedCampaign.client
+          ? updatedCampaign.client.name
           : null,
-        'myCampaigns.$.updatedAt': now
+        'myCampaigns.$.updatedAt': updatedCampaign.updatedAt
       }
     }, {
       multi: true
     })
 
-    // Add this campaign to the updating user's favourites if required
-    Meteor.users.update({
-      _id: this.userId,
-      'myCampaigns._id': {
-        $ne: _id
-      }
-    }, {
-      $push: {
-        myCampaigns: {
-          _id: _id,
-          name: updatedMedialist.name,
-          slug: updatedMedialist.slug,
-          avatar: updatedMedialist.avatar,
-          clientName: updatedMedialist.client
-            ? updatedMedialist.client.name
-            : null,
-          updatedAt: now
-        }
-      }
+    addToMyFavourites({
+      userId: this.userId,
+      campaignSlugs: [updatedCampaign.slug]
     })
 
     return result
   }
 })
 
-export const create = new ValidatedMethod({
+export const createCampaign = new ValidatedMethod({
   name: 'Campaigns/create',
   validate: new SimpleSchema({
     name: {
@@ -206,12 +188,8 @@ export const create = new ValidatedMethod({
       optional: true
     },
     links: {
-      type: [Object],
-      optional: true
-    },
-    'links.$.url': {
-      type: String,
-      regEx: SimpleSchema.RegEx.Url
+      type: [LinkSchema],
+      defaultValue: []
     },
     avatar: {
       type: String,
@@ -226,7 +204,7 @@ export const create = new ValidatedMethod({
     const slug = createUniqueSlug(name, Campaigns)
     const client = findOrCreateClientRef(clientName)
     const createdBy = findOneUserRef(this.userId)
-    const createdAt = new Date()
+
     const doc = {
       name,
       slug,
@@ -238,23 +216,19 @@ export const create = new ValidatedMethod({
       team: [createdBy],
       masterLists: [],
       tags: [],
-      createdAt,
-      createdBy,
-      updatedAt: createdAt,
-      updatedBy: createdBy
+      createdBy: createdBy
     }
 
-    check(doc, CampaignSchema)
-    Campaigns.insert(doc)
+    const campaignId = Campaigns.insert(doc)
+    const campaign = Campaigns.findOne({_id: campaignId})
 
     if (Meteor.isServer) {
-      Uploadcare.store(doc.avatar)
+      Uploadcare.store(campaign.avatar)
     }
 
     addToMyFavourites({
       userId: this.userId,
-      campaignSlugs: [slug],
-      updatedAt: createdAt
+      campaignSlugs: [campaign.slug]
     })
 
     // update campaign count
@@ -269,8 +243,7 @@ export const create = new ValidatedMethod({
     // Add an entry to the activity feed
     Posts.create({
       type: 'CreateCampaign',
-      campaignSlugs: [slug],
-      createdAt,
+      campaignSlugs: [campaign.slug],
       createdBy
     })
 
@@ -278,7 +251,7 @@ export const create = new ValidatedMethod({
   }
 })
 
-export const remove = new ValidatedMethod({
+export const removeCampaign = new ValidatedMethod({
   name: 'Campaigns/remove',
   validate: new SimpleSchema({
     _ids: {
@@ -390,14 +363,16 @@ export const setTeamMates = new ValidatedMethod({
     },
     userIds: {
       type: [String],
-      regEx: SimpleSchema.RegEx.Id
+      regEx: SimpleSchema.RegEx.Id,
+      defaultValue: []
     },
     emails: {
       type: [String],
-      regEx: SimpleSchema.RegEx.Email
+      regEx: SimpleSchema.RegEx.Email,
+      defaultValue: []
     }
   }).validator(),
-  run ({ _id, userIds, emails }) {
+  run ({ _id, userIds = [], emails = [] }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -405,7 +380,7 @@ export const setTeamMates = new ValidatedMethod({
     const campaign = Campaigns.findOne(_id)
 
     if (!campaign) {
-      throw new Meteor.Error('Medialist not found')
+      throw new Meteor.Error('Campaign not found')
     }
 
     const user = Meteor.users.findOne({
@@ -416,8 +391,6 @@ export const setTeamMates = new ValidatedMethod({
 
     // dedupe user id list
     userIds = Array.from(new Set(userIds.concat(newUserIds)))
-
-    const now = new Date()
 
     // who used to be on the team
     const existingUserIds = campaign.team.map(user => user._id)
@@ -433,7 +406,6 @@ export const setTeamMates = new ValidatedMethod({
     // update the team
     const result = Campaigns.update(campaign._id, {
       $set: {
-        updatedAt: now,
         updatedBy: toUserRef(user),
         team: findUserRefs(userIds)
       }
@@ -466,21 +438,9 @@ export const setTeamMates = new ValidatedMethod({
     })
 
     // Add this campaign to the updating user's favourites if required
-    Meteor.users.update({
-      _id: this.userId,
-      'myCampaigns._id': {
-        $ne: campaign._id
-      }
-    }, {
-      $push: {
-        myCampaigns: {
-          name: campaign.name,
-          slug: campaign.slug,
-          avatar: campaign.avatar,
-          clientName: campaign.client ? campaign.client.name : null,
-          updatedAt: now
-        }
-      }
+    addToMyFavourites({
+      userId: this.userId,
+      campaignSlugs: [campaign.slug]
     })
 
     if (!this.isSimulation) {

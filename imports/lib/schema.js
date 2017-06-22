@@ -16,8 +16,14 @@ export const StatusSchema = new SimpleSchema({
 })
 
 export const LabelValueSchema = new SimpleSchema({
-  label: { type: String },
-  value: { type: String }
+  label: {
+    type: String,
+    optional: true
+  },
+  value: {
+    type: String,
+    optional: true
+  }
 })
 
 export const UserRefSchema = new SimpleSchema({
@@ -25,30 +31,66 @@ export const UserRefSchema = new SimpleSchema({
     type: String,
     regEx: SimpleSchema.RegEx.Id
   },
-  'name': {
+  name: {
     type: String,
     optional: true,
     min: 1
   },
-  'avatar': {
+  avatar: {
     type: String,
     optional: true,
     regEx: SimpleSchema.RegEx.Url
   },
-  'email': {
+  email: {
     type: String,
-    optional: true
+    optional: true,
+    regEx: SimpleSchema.RegEx.Email
   }
 })
 
 export const CreatedAtSchema = new SimpleSchema({
-  createdAt: { type: Date },
-  createdBy: { type: UserRefSchema }
+  createdAt: {
+    type: Date,
+    denyUpdate: true,
+    autoValue: function () {
+      if (this.isInsert) {
+        return new Date()
+      }
+
+      return this.value
+    }
+  },
+  createdBy: {
+    type: UserRefSchema,
+    denyUpdate: true
+  }
 })
 
-export const AuditSchema = new SimpleSchema({
-  createdAt: { type: Date },
-  createdBy: { type: UserRefSchema },
-  updatedAt: { type: Date },
-  updatedBy: { type: UserRefSchema }
+export const AuditSchema = new SimpleSchema([
+  CreatedAtSchema, {
+    updatedAt: {
+      type: Date,
+      optional: true,
+      denyInsert: true,
+      autoValue: function () {
+        if (this.isUpdate) {
+          return new Date()
+        }
+
+        this.unset()
+      }
+    },
+    updatedBy: {
+      type: UserRefSchema,
+      optional: true,
+      denyInsert: true
+    }
+  }
+])
+
+export const LinkSchema = new SimpleSchema({
+  url: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Url
+  }
 })

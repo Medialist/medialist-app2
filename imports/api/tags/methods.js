@@ -6,8 +6,9 @@ import Tags from '/imports/api/tags/tags'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import { checkAllSlugsExist, cleanSlug } from '/imports/lib/slug'
+import { findOneUserRef } from '/imports/api/users/users'
 
-const createTagsWhereNecessary = (names) => {
+const createTagsWhereNecessary = (userId, names) => {
   const tags = names.map((n) => ({
     name: n,
     slug: cleanSlug(n)
@@ -28,7 +29,8 @@ const createTagsWhereNecessary = (names) => {
     .map((t) => (
       Object.assign(t, {
         contactsCount: 0,
-        campaignsCount: 0
+        campaignsCount: 0,
+        createdBy: findOneUserRef(userId)
       })
     ))
 
@@ -201,7 +203,7 @@ export const batchAddTags = new ValidatedMethod({
 
     checkAllSlugsExist(slugs, Collection)
 
-    const tags = createTagsWhereNecessary(names)
+    const tags = createTagsWhereNecessary(this.userId, names)
 
     tags
       .forEach((t) => updateTaggedItems(this.userId, Collection, countField, slugs, t))
@@ -238,7 +240,7 @@ export const setTags = new ValidatedMethod({
     const countField = `${type.toLowerCase()}Count`
     const Collection = type === 'Contacts' ? Contacts : Campaigns
 
-    setTaggedItems(this.userId, _id, createTagsWhereNecessary(tags)
+    setTaggedItems(this.userId, _id, createTagsWhereNecessary(this.userId, tags)
       // Update Collection with tags where missing.
       .map((t) => ({
         name: t.name,

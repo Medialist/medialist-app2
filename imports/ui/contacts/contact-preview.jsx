@@ -9,7 +9,7 @@ const ContactPreview = ({contact, ...props}) => (
         {contact.name}
       </div>
       <div className='f-sm normal gray20 truncate'>{(contact.outlets && contact.outlets.length) ? contact.outlets[0].value : null}</div>
-      <div className='f-sm normal gray40 truncate'>{contact.outlets.map((o) => o.label).join(', ')}</div>
+      <div className='f-sm normal gray40 truncate'>{(contact.outlets && contact.outlets.length) ? contact.outlets.map((o) => o.label).join(', ') : null}</div>
     </div>
   </div>
 )

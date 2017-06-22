@@ -7,42 +7,34 @@ import Contacts from '/imports/api/contacts/contacts'
 import Posts from '/imports/api/posts/posts'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import {
-  update
+  updateUser
 } from '/imports/api/users/methods'
 import faker from 'faker'
+import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists } from '/tests/fixtures/server-domain'
 import toUserRef from '/imports/lib/to-user-ref'
+import { setTeamMates } from '/imports/api/campaigns/methods'
+import { updateContact } from '/imports/api/contacts/methods'
+import { updateMasterList } from '/imports/api/master-lists/methods'
 
 describe('User update method', function () {
-  let user
+  let users
 
   beforeEach(function () {
     resetDatabase()
 
-    const id = Meteor.users.insert({
-      _id: Random.id(),
-      profile: {
-        name: faker.name.findName(),
-        avatar: faker.image.cats()
-      },
-      myContacts: [],
-      myCampaigns: []
-    })
-
-    user = Meteor.users.findOne({
-      _id: id
-    })
+    users = createTestUsers(3)
   })
 
   it('should require the user to be logged in', function () {
-    assert.throws(() => update.run.call({}, {}), /You must be logged in/)
+    assert.throws(() => updateUser.run.call({}, {}), /You must be logged in/)
   })
 
   it('should validate the parameters', function () {
-    assert.throws(() => update.validate({name: ['a'], avatar: null}), /Name must be a string/)
-    assert.throws(() => update.validate({name: null, avatar: ['a']}), /Name is required/)
-    assert.throws(() => update.validate({name: 'hello', avatar: ['a']}), /Avatar must be a string/)
-    assert.throws(() => update.validate({name: 'hello', avatar: 'not a url'}), /Avatar must be a valid URL/)
-    assert.doesNotThrow(() => update.validate({name: faker.name.findName(), avatar: faker.image.imageUrl()}))
+    assert.throws(() => updateUser.validate({name: ['a'], avatar: null}), /Name must be a string/)
+    assert.throws(() => updateUser.validate({name: null, avatar: ['a']}), /Name is required/)
+    assert.throws(() => updateUser.validate({name: 'hello', avatar: ['a']}), /Avatar must be a string/)
+    assert.throws(() => updateUser.validate({name: 'hello', avatar: 'not a url'}), /Avatar must be a valid URL/)
+    assert.doesNotThrow(() => updateUser.validate({name: faker.name.findName(), avatar: faker.image.imageUrl()}))
   })
 
   it('should update a user', function () {
@@ -51,104 +43,56 @@ describe('User update method', function () {
       avatar: faker.image.business()
     }
 
-    const before = Meteor.users.findOne({_id: user._id})
+    const before = Meteor.users.findOne({_id: users[0]._id})
     assert.notEqual(data.name, before.profile.name)
     assert.notEqual(data.avatar, before.profile.avatar)
 
-    update.run.call({userId: user._id}, data)
+    updateUser.run.call({userId: users[0]._id}, data)
 
-    const after = Meteor.users.findOne({_id: user._id})
+    const after = Meteor.users.findOne({_id: users[0]._id})
     assert.equal(data.name, after.profile.name)
     assert.equal(data.avatar, after.profile.avatar)
   })
 
   it('should update all refs to a user', function () {
-    const users = Array(2).fill(0).map((_, index) => ({
-      _id: Random.id(),
-      profile: {
-        name: faker.name.findName(),
-        avatar: faker.name.findName()
-      }
-    }))
-    users.forEach((u) => Meteor.users.insert(u))
+    const campaigns = createTestCampaigns(1, users[0]._id)
+      .concat(createTestCampaigns(1, users[1]._id))
 
-    const userRef = {
-      _id: user._id,
-      name: user.profile.name,
-      avatar: user.profile.avatar
-    }
-
-    const campaigns = [{
-      _id: Random.id(),
-      name: `${faker.hacker.phrase()}`,
-      team: [
-        toUserRef(users[0]),
-        userRef,
-        toUserRef(users[1])
-      ],
-      createdBy: userRef,
-      updatedBy: userRef
+    setTeamMates.run.call({
+      userId: users[0]._id
     }, {
-      _id: Random.id(),
-      name: `${faker.hacker.phrase()}`,
-      team: [
-        toUserRef(users[0]),
-        toUserRef(users[1])
-      ],
-      createdBy: toUserRef(users[0]),
-      updatedBy: toUserRef(users[0])
-    }]
-    campaigns.forEach((c) => Campaigns.insert(c))
+      _id: campaigns[0]._id,
+      userIds: [
+        users[0]._id,
+        users[1]._id,
+        users[2]._id
+      ]
+    })
 
-    const contacts = [{
-      _id: Random.id(),
-      name: faker.name.findName(),
-      createdBy: userRef,
-      updatedBy: userRef
+    setTeamMates.run.call({
+      userId: users[1]._id
     }, {
-      _id: Random.id(),
-      name: faker.name.findName(),
-      createdBy: toUserRef(users[0]),
-      updatedBy: toUserRef(users[0])
-    }]
-    contacts.forEach((c) => Contacts.insert(c))
+      _id: campaigns[1]._id,
+      userIds: [
+        users[0]._id,
+        users[1]._id
+      ]
+    })
 
-    const posts = [{
-      _id: Random.id(),
-      type: 'type-a',
-      contacts: [],
-      campaigns: [],
-      createdBy: userRef,
-      updatedBy: userRef
-    }, {
-      _id: Random.id(),
-      type: 'type-b',
-      contacts: [],
-      campaigns: [],
-      createdBy: toUserRef(users[0]),
-      updatedBy: toUserRef(users[0])
-    }]
-    posts.forEach((c) => Posts.insert(c))
+    const contacts = createTestContacts(1, users[0]._id)
+      .concat(createTestContacts(1, users[1]._id))
 
-    const masterLists = [{
-      _id: Random.id(),
-      name: faker.name.findName(),
-      createdBy: userRef,
-      updatedBy: userRef
-    }, {
-      _id: Random.id(),
-      name: faker.name.findName(),
-      createdBy: toUserRef(users[0]),
-      updatedBy: toUserRef(users[0])
-    }]
-    masterLists.forEach((l) => MasterLists.insert(l))
+    const masterLists = createTestCampaignLists(1, users[0]._id)
+      .concat(createTestContactLists(1, users[1]._id))
 
     const data = {
       name: faker.name.findName(),
       avatar: faker.image.business()
     }
 
-    update.run.call({userId: user._id}, data)
+    updateUser.run.call({
+      userId: users[1]._id
+    }, data)
 
     const updatedCampaigns = Campaigns.find({
       _id: {
@@ -161,17 +105,38 @@ describe('User update method', function () {
     }).fetch()
 
     assert.equal(updatedCampaigns[0].team.length, 3)
-    assert.equal(updatedCampaigns[0].team[0].name, users[0].profile.name)
-    assert.equal(updatedCampaigns[0].team[1].name, data.name)
-    assert.equal(updatedCampaigns[0].team[2].name, users[1].profile.name)
-    assert.equal(updatedCampaigns[0].createdBy.name, data.name)
-    assert.equal(updatedCampaigns[0].updatedBy.name, data.name)
+    assert.ok(updatedCampaigns[0].team.find(t => t._id === users[0]._id))
+    assert.equal(updatedCampaigns[0].team.find(t => t._id === users[0]._id).name, users[0].profile.name)
+    assert.ok(updatedCampaigns[0].team.find(t => t._id === users[1]._id))
+    assert.equal(updatedCampaigns[0].team.find(t => t._id === users[1]._id).name, data.name)
+    assert.ok(updatedCampaigns[0].team.find(t => t._id === users[2]._id))
+    assert.equal(updatedCampaigns[0].team.find(t => t._id === users[2]._id).name, users[2].profile.name)
+    assert.equal(updatedCampaigns[0].updatedBy.name, users[0].profile.name)
 
     assert.equal(updatedCampaigns[1].team.length, 2)
-    assert.equal(updatedCampaigns[1].team[0].name, users[0].profile.name)
-    assert.equal(updatedCampaigns[1].team[1].name, users[1].profile.name)
-    assert.equal(updatedCampaigns[1].createdBy.name, users[0].profile.name)
-    assert.equal(updatedCampaigns[1].updatedBy.name, users[0].profile.name)
+    assert.ok(updatedCampaigns[1].team.find(t => t._id === users[0]._id))
+    assert.equal(updatedCampaigns[1].team.find(t => t._id === users[0]._id).name, users[0].profile.name)
+    assert.ok(updatedCampaigns[1].team.find(t => t._id === users[1]._id))
+    assert.equal(updatedCampaigns[1].team.find(t => t._id === users[1]._id).name, data.name)
+    assert.equal(updatedCampaigns[1].updatedBy.name, data.name)
+
+    updateContact.run.call({
+      userId: users[0]._id
+    }, {
+      contactId: contacts[0]._id,
+      details: {
+        name: faker.name.findName()
+      }
+    })
+
+    updateContact.run.call({
+      userId: users[1]._id
+    }, {
+      contactId: contacts[1]._id,
+      details: {
+        name: faker.name.findName()
+      }
+    })
 
     const updatedContacts = Contacts.find({
       _id: {
@@ -183,27 +148,22 @@ describe('User update method', function () {
       }
     }).fetch()
 
-    assert.equal(updatedContacts[0].createdBy.name, data.name)
-    assert.equal(updatedContacts[0].updatedBy.name, data.name)
+    assert.equal(updatedContacts[0].updatedBy.name, users[0].profile.name)
+    assert.equal(updatedContacts[1].updatedBy.name, data.name)
 
-    assert.equal(updatedContacts[1].createdBy.name, users[0].profile.name)
-    assert.equal(updatedContacts[1].updatedBy.name, users[0].profile.name)
-
-    const updatedPosts = Posts.find({
-      _id: {
-        $in: posts.map(c => c._id)
-      }
+    updateMasterList.run.call({
+      userId: users[0]._id
     }, {
-      sort: {
-        createdAt: 1
-      }
-    }).fetch()
+      _id: masterLists[0]._id,
+      name: faker.lorem.word()
+    })
 
-    assert.equal(updatedPosts[0].createdBy.name, data.name)
-    assert.equal(updatedPosts[0].updatedBy.name, data.name)
-
-    assert.equal(updatedPosts[1].createdBy.name, users[0].profile.name)
-    assert.equal(updatedPosts[1].updatedBy.name, users[0].profile.name)
+    updateMasterList.run.call({
+      userId: users[1]._id
+    }, {
+      _id: masterLists[1]._id,
+      name: faker.lorem.word()
+    })
 
     const updatedMasterLists = MasterLists.find({
       _id: {
@@ -215,10 +175,7 @@ describe('User update method', function () {
       }
     }).fetch()
 
-    assert.equal(updatedMasterLists[0].createdBy.name, data.name)
-    assert.equal(updatedMasterLists[0].updatedBy.name, data.name)
-
-    assert.equal(updatedMasterLists[1].createdBy.name, users[0].profile.name)
-    assert.equal(updatedMasterLists[1].updatedBy.name, users[0].profile.name)
+    assert.equal(updatedMasterLists[0].updatedBy.name, users[0].profile.name)
+    assert.equal(updatedMasterLists[1].updatedBy.name, data.name)
   })
 })

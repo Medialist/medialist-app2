@@ -50,9 +50,30 @@ module.exports = {
 
   afterEach: (t, done) => {
     t.ddp.client.close()
-    t.db.connection.close(true, () => {
-      done()
-    })
+    t.db.connection.close(true)
+
+    if (t.currentTest.results.failed > 0 || t.currentTest.results.errors > 0) {
+      console.info('')
+
+      t.getLog('browser', (result) => {
+        if (!result || !result.forEach) {
+          console.error('Could not load browser logs!')
+          return
+        }
+
+        console.info('Browser logs:')
+        console.info('')
+
+        result.forEach(log => {
+          console.info(`[${log.level}] ${new Date(log.timestamp)} - ${log.message}`)
+        })
+
+        console.info('')
+      })
+      t.end()
+    }
+
+    done()
   }
 }
 

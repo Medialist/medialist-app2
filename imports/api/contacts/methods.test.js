@@ -1,10 +1,16 @@
 import { Meteor } from 'meteor/meteor'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
 import assert from 'assert'
+import faker from 'faker'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
 import MasterLists from '/imports/api/master-lists/master-lists'
+import { campaign, user, contact } from '/tests/browser/fixtures/domain'
+import { createCampaign } from '/imports/api/campaigns/methods'
+import { createMasterList, batchAddToMasterLists } from '/imports/api/master-lists/methods'
+import { createFeedbackPost, createCoveragePost } from '/imports/api/posts/methods'
+import { findOneUserRef } from '/imports/api/users/users'
 import {
   addContactsToCampaign,
   removeContactsFromCampaigns,
@@ -12,31 +18,31 @@ import {
   batchRemoveContacts,
   createContact
 } from './methods'
+import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists } from '/tests/fixtures/server-domain'
 
 describe('addContactsToCampaign', function () {
+  let userId
+  let contacts
+  let camapgins
+
   beforeEach(function () {
     resetDatabase()
 
-    Meteor.users.insert({
-      _id: 'alf',
-      profile: { name: 'Alfonze' },
-      myContacts: [],
-      myCampaigns: []
-    })
+    userId = Meteor.users.insert(user())
 
-    const contacts = Array(3).fill(0).map((_, index) => ({
-      _id: `id${index}`,
-      slug: `slug${index}`,
-      campaigns: {}
-    }))
-    contacts.forEach((c) => Contacts.insert(c))
+    contacts = Array(3)
+      .fill(0)
+      .map(() => createContact.run.call({
+        userId
+      }, {details: contact()}))
+      .map(slug => Contacts.findOne({slug}))
 
-    const campaigns = Array(3).fill(0).map((_, index) => ({
-      _id: `id${index}`,
-      slug: `slug${index}`,
-      contacts: {}
-    }))
-    campaigns.forEach((c) => Campaigns.insert(c))
+    campaigns = Array(3)
+      .fill(0)
+      .map(() => createCampaign.run.call({
+        userId
+      }, campaign()))
+      .map(slug => Campaigns.findOne({slug}))
   })
 
   it('should require the user to be logged in', function () {
@@ -51,16 +57,19 @@ describe('addContactsToCampaign', function () {
   })
 
   it('should add all contacts to the campaign', function () {
-    const contactSlugs = ['slug0', 'slug1']
-    const campaignSlug = 'slug1'
-    addContactsToCampaign.run.call({userId: 'alf'}, {contactSlugs, campaignSlug})
+    const contactSlugs = [contacts[0].slug, contacts[1].slug]
+    const campaignSlug = campaigns[1].slug
+    addContactsToCampaign.run.call({ userId }, {
+      contactSlugs,
+      campaignSlug
+    })
 
     Campaigns.find({
       slug: campaignSlug
     }).forEach((c) => {
       assert.deepEqual(c.contacts, {
-        'slug0': 'To Contact',
-        'slug1': 'To Contact'
+        [contacts[0].slug]: 'To Contact',
+        [contacts[1].slug]: 'To Contact'
       }, 'Campaigns contain contacts')
     })
 
@@ -79,45 +88,45 @@ describe('addContactsToCampaign', function () {
 
   it('should merge contacts with existing ones', function () {
     Campaigns.update({
-      _id: 'id2'
+      _id: campaigns[2]._id
     }, {
       $set: {
         contacts: {
-          'slug0': 'Hot!'
+          [contacts[0].slug]: 'Hot!'
         }
       }
     })
     Contacts.update({
-      _id: 'id0'
+      _id: contacts[0]._id
     }, {
       $set: {
         campaigns: {
-          'slug2': {
+          [campaigns[2].slug]: {
             updatedAt: new Date()
           }
         }
       }
     })
-    const contactSlugs = ['slug0', 'slug1']
-    const campaignSlug = 'slug2'
-    addContactsToCampaign.run.call({userId: 'alf'}, {contactSlugs, campaignSlug})
+    const contactSlugs = [contacts[0].slug, contacts[1].slug]
+    const campaignSlug = campaigns[2].slug
+    addContactsToCampaign.run.call({ userId }, {contactSlugs, campaignSlug})
 
-    const campaign = Campaigns.findOne({_id: 'id2'})
+    const campaign = Campaigns.findOne({_id: campaigns[2]._id})
 
     assert.deepEqual(campaign.contacts, {
-      'slug0': 'Hot!',
-      'slug1': 'To Contact'
+      [contacts[0].slug]: 'Hot!',
+      [contacts[1].slug]: 'To Contact'
     }, 'Campaigns contain merged contacts')
 
-    assert.deepEqual(Campaigns.findOne({_id: 'id0'}).contacts, {}, 'Other campaigns are unharmed')
+    assert.deepEqual(Campaigns.findOne({_id: campaigns[0]._id}).contacts, {}, 'Other campaigns are unharmed')
 
     Contacts.find({_id: {$in: contactSlugs}}).forEach((c) => {
       assert.equal(Object.keys(c.campaigns).length, 1, 'Contacts are in campaigns')
-      assert.ok(c.campaigns['slug1'])
-      assert.ok(c.campaigns['slug2'])
+      assert.ok(c.campaigns[campaigns[1].slug])
+      assert.ok(c.campaigns[campaigns[2].slug])
     })
 
-    assert.deepEqual(Contacts.findOne({_id: 'id2'}).campaigns, [], 'Other contacts are unharmed')
+    assert.deepEqual(Contacts.findOne({_id: contacts[2]._id}).campaigns, [], 'Other contacts are unharmed')
   })
 })
 
@@ -140,47 +149,43 @@ describe('removeContactsFromCampaigns', function () {
   // TODO: it should use a deleted flag
   // TODO: it should it remove them from plenty other places too.
   it('should remove the contacts from the campaign', function () {
-    const user = {
-      _id: 'kKz46qgWmbGHrznJC',
-      profile: {
-        name: 'Bob'
-      },
-      myContacts: [],
-      services: {}
-    }
-    Meteor.users.insert(user)
+    const testUser = Meteor.users.findOne(Meteor.users.insert(user()))
 
-    const contacts = Array(3).fill(0).map((_, index) => ({
-      _id: `${index}`,
-      slug: `${index}`,
-      name: `${index}`,
-      avatar: `${index}`,
-      outlets: []
-    }))
-    contacts[0].campaigns = ['0']
-    contacts[2].campaigns = ['0']
-    contacts.forEach((c) => Contacts.insert(c))
+    const contacts = Array(3)
+      .fill(0)
+      .map(() => createContact.run.call({
+        userId: testUser._id
+      }, {details: contact()}))
+      .map(slug => Contacts.findOne({slug}))
 
-    const campaigns = Array(1).fill(0).map((_, index) => ({
-      _id: `${index}`,
-      slug: `${index}`,
-      contacts: {
-        '2': '2',
-        '0': '0'
-      }
-    }))
-    campaigns.forEach((c) => Campaigns.insert(c))
+    const campaigns = Array(1)
+      .fill(0)
+      .map(() => createCampaign.run.call({
+        userId: testUser._id
+      }, campaign()))
+      .map(slug => Campaigns.findOne({slug}))
 
-    const userId = 'kKz46qgWmbGHrznJC'
-    const contactSlugs = ['1', '2']
-    const campaignSlugs = ['0']
-    removeContactsFromCampaigns.run.call({userId}, {contactSlugs, campaignSlugs})
+    addContactsToCampaign.run.call({
+      userId: testUser._id
+    }, {
+      contactSlugs: [contacts[0].slug, contacts[2].slug],
+      campaignSlug: campaigns[0].slug
+    })
 
-    const campaign = Campaigns.findOne()
+    removeContactsFromCampaigns.run.call({
+      userId: testUser._id
+    }, {
+      contactSlugs: [contacts[1].slug, contacts[2].slug],
+      campaignSlugs: [campaigns[0].slug]
+    })
 
-    assert.equal(Object.keys(campaign.contacts).length, 1)
-    assert.deepEqual(campaign.contacts, {
-      '0': '0'
+    const testCampaign = Campaigns.findOne({
+      _id: campaigns[0]._id
+    })
+
+    assert.equal(Object.keys(testCampaign.contacts).length, 1)
+    assert.deepEqual(testCampaign.contacts, {
+      [contacts[0].slug]: 'To Contact'
     })
   })
 })
@@ -201,30 +206,37 @@ describe('batchFavouriteContacts', function () {
   })
 
   it('should add all contacts to favourites', function () {
-    const contacts = Array(3).fill(0).map((_, index) => ({
-      _id: `${index}`,
-      slug: `${index}`,
-      name: `${index}`,
-      slug: `${index}`,
-      avatar: `${index}`,
-      outlets: `${index}`,
-      campaigns: []
-    }))
-    contacts.forEach((c) => Contacts.insert(c))
-    Meteor.users.insert({_id: '1', myContacts: [{slug: 'oldie'}]})
-    const contactSlugs = ['0', '1']
-    batchFavouriteContacts.run.call({userId: '1'}, {contactSlugs})
-    const user = Meteor.users.findOne('1')
-    assert.equal(user.myContacts.length, 3)
-    const myContactRef = user.myContacts.find((c) => c.slug === '0')
-    delete myContactRef.updatedAt
-    assert.deepEqual(myContactRef, {
-      _id: '0',
-      name: '0',
-      slug: '0',
-      avatar: '0',
-      outlets: '0'
+    const testUser = Meteor.users.findOne(Meteor.users.insert(user()))
+    const otherUser = Meteor.users.findOne(Meteor.users.insert(user()))
+
+    const contacts = Array(4)
+      .fill(0)
+      .map(() => createContact.run.call({
+        userId: otherUser._id
+      }, {details: contact()}))
+      .map(slug => Contacts.findOne({slug}))
+
+    assert.equal(Meteor.users.findOne(testUser._id).myContacts.length, 0)
+
+    batchFavouriteContacts.run.call({
+      userId: testUser._id
+    }, {
+      contactSlugs: [contacts[2].slug]
     })
+
+    assert.equal(Meteor.users.findOne(testUser._id).myContacts.length, 1)
+
+    batchFavouriteContacts.run.call({
+      userId: testUser._id
+    }, {
+      contactSlugs: [contacts[0].slug, contacts[1].slug]
+    })
+
+    const userNow = Meteor.users.findOne(testUser._id)
+    assert.equal(userNow.myContacts.length, 3)
+    const myContactRef = userNow.myContacts.find((c) => c.slug === contacts[0].slug)
+
+    assert.deepEqual(myContactRef, Contacts.toRef(contacts[0]))
   })
 })
 
@@ -244,100 +256,127 @@ describe('batchRemoveContacts', function () {
   })
 
   it('should remove the contact from Contacts and all other places', function () {
-    const contacts = Array(3).fill(0).map((_, index) => ({
-      _id: `${index}`,
-      slug: `${index}`,
-      name: `${index}`,
-      avatar: `${index}`,
-      outlets: []
-    }))
-    contacts.forEach((c) => Contacts.insert(c))
-    const users = Array(2).fill(0).map((_, index) => ({
-      _id: `${index}`,
-      name: `${index}`
-    }))
-    users[0].myContacts = [{_id: '0'}, {_id: '1'}]
-    users[1].myContacts = [{_id: '2'}, {_id: '0'}]
-    users.forEach((u) => Meteor.users.insert(u))
+    const users = createTestUsers(4)
+    const contacts = createTestContacts(4)
+    const masterLists = createTestContactLists(1)
+    const campaigns = createTestCampaigns(2)
 
-    MasterLists.insert({
-      type: 'Contacts',
-      name: 'A master list',
-      items: [
+    batchFavouriteContacts.run.call({
+      userId: users[1]._id
+    }, {
+      contactSlugs: [contacts[0].slug, contacts[1].slug]
+    })
+
+    batchFavouriteContacts.run.call({
+      userId: users[2]._id
+    }, {
+      contactSlugs: [contacts[2].slug, contacts[0].slug]
+    })
+
+    batchAddToMasterLists.run.call({
+      userId: users[3]._id
+    }, {
+      slugs: [
+        contacts[0].slug,
+        contacts[1].slug,
+        contacts[2].slug
+      ],
+      masterListIds: [
+        masterLists[0]._id
+      ]
+    })
+
+    addContactsToCampaign.run.call({
+      userId: users[3]._id
+    }, {
+      contactSlugs: [
+        contacts[0].slug,
+        contacts[1].slug,
+        contacts[2].slug
+      ],
+      campaignSlug: campaigns[0].slug
+    })
+
+    const aPostWithContact0Id = createFeedbackPost.run.call({
+      userId: users[3]._id
+    }, {
+      contactSlug: contacts[0].slug,
+      campaignSlug: campaigns[0].slug,
+      message: faker.lorem.sentence()
+    })
+
+    const aPostWithContact1Id = createCoveragePost.run.call({
+      userId: users[3]._id
+    }, {
+      contactSlug: contacts[1].slug,
+      campaignSlug: campaigns[0].slug,
+      message: faker.lorem.sentence()
+    })
+
+    const aPostWithContact01And2Id = Posts.create({
+      type: 'AddContactsToCampaign',
+      contactSlugs: [
+        contacts[0].slug,
+        contacts[1].slug,
+        contacts[2].slug,
+      ],
+      campaignSlugs: [
+        campaigns[0].slug
+      ],
+      createdBy: findOneUserRef(users[0]._id)
+    })
+
+    const anUnrelatedPostId = Posts.create({
+      type: 'AddContactsToCampaign',
+      contactSlugs: [
+        contacts[3].slug
+      ],
+      campaignSlugs: [
+        campaigns[1].slug
+      ],
+      createdBy: findOneUserRef(users[0]._id)
+    })
+
+    const user1BeforeDelete = Meteor.users.findOne({_id: users[1]._id})
+    assert.equal(user1BeforeDelete.myContacts.length, 2)
+    assert.ok(user1BeforeDelete.myContacts.find(c => c._id === contacts[0]._id))
+    assert.ok(user1BeforeDelete.myContacts.find(c => c._id === contacts[1]._id))
+
+    batchRemoveContacts.run.call({
+      userId: users[0]._id
+    }, {
+      _ids: [
         contacts[0]._id,
-        contacts[1]._id,
         contacts[2]._id
       ]
     })
 
-    Campaigns.insert({
-      name: 'A campaign',
-      contacts: {
-        [contacts[0].slug]: 'to-contact',
-        [contacts[1].slug]: 'to-contact',
-        [contacts[2].slug]: 'to-contact'
-      }
+    const user0 = Meteor.users.findOne({_id: users[0]._id})
+    assert.ok(!user0.myContacts.find(c => c._id === contacts[0]._id))
+    assert.ok(!user0.myContacts.find(c => c._id === contacts[2]._id))
+
+    const user1 = Meteor.users.findOne({_id: users[1]._id})
+    assert.ok(!user1.myContacts.find(c => c._id === contacts[0]._id))
+    assert.ok(user1.myContacts.find(c => c._id === contacts[1]._id))
+    assert.ok(!user1.myContacts.find(c => c._id === contacts[2]._id))
+
+    const list = MasterLists.findOne({name: masterLists[0].name})
+    assert.ok(!list.items.find(c => c._id === contacts[0]._id))
+    assert.ok(!list.items.find(c => c._id === contacts[2]._id))
+
+    const campaign0 = Campaigns.findOne({_id: campaigns[0]._id})
+    assert.equal(Object.keys(campaign0.contacts).length, 1)
+    assert.deepEqual(campaign0.contacts, {
+      [contacts[1].slug]: 'To Contact'
     })
 
-    Posts.insert({
-      name: 'A post with contact 0',
-      type: 'FeedbackPost',
-      contacts: [{
-        _id: contacts[0]._id
-      }]
-    })
-    Posts.insert({
-      name: 'A post with contact 1',
-      type: 'FeedbackPost',
-      contacts: [{
-        _id: contacts[1]._id
-      }]
-    })
-    Posts.insert({
-      name: 'A post with contact 0 1 and 2',
-      type: 'CoveragePost',
-      contacts: [{
-        _id: contacts[0]._id
-      }, {
-        _id: contacts[1]._id
-      }, {
-        _id: contacts[2]._id
-      }]
-    })
-    Posts.insert({
-      name: 'An unrelated post',
-      type: 'CampaignPost',
-      contacts: []
-    })
+    assert.equal(Posts.findOne({_id: aPostWithContact0Id}), null)
+    assert.ok(Posts.findOne({_id: aPostWithContact1Id}))
+    assert.ok(Posts.findOne({_id: anUnrelatedPostId}))
 
-    const userId = 'jake'
-    const _ids = ['0', '2']
-    batchRemoveContacts.run.call({userId}, {_ids})
-
-    const user0 = Meteor.users.findOne({_id: '0'})
-    assert.equal(user0.myContacts.length, 1)
-    assert.deepEqual(user0.myContacts[0], {_id: '1'})
-
-    const user1 = Meteor.users.findOne({_id: '1'})
-    assert.equal(user1.myContacts.length, 0)
-
-    const list = MasterLists.findOne({name: 'A master list'})
-    assert.equal(list.items.length, 1)
-    assert.deepEqual(list.items, ['1'])
-
-    const campaign = Campaigns.findOne({name: 'A campaign'})
-    assert.equal(Object.keys(campaign.contacts).length, 1)
-    assert.deepEqual(campaign.contacts, {
-      '1': 'to-contact'
-    })
-
-    assert.equal(Posts.findOne({name: 'A post with contact 0'}), null)
-    assert.ok(Posts.findOne({name: 'A post with contact 1'}))
-    assert.ok(Posts.findOne({name: 'An unrelated post'}))
-
-    const postWithAllContacts = Posts.findOne({name: 'A post with contact 0 1 and 2'})
+    const postWithAllContacts = Posts.findOne({_id: aPostWithContact01And2Id})
     assert.equal(postWithAllContacts.contacts.length, 1)
-    assert.deepEqual(postWithAllContacts.contacts, [{_id: '1'}])
+    assert.deepEqual(postWithAllContacts.contacts, Contacts.findRefs({contactSlugs: [contacts[1].slug]}))
   })
 })
 
@@ -371,43 +410,19 @@ describe('createContact', function () {
   })
 
   it('should add a doc to Contacts and the current user\'s myContacts array', function () {
-    const user = {
-      _id: 'kKz46qgWmbGHrznJC',
-      profile: {
-        name: 'Bob'
-      },
-      myContacts: [],
-      services: {}
-    }
-    Meteor.users.insert(user)
+    const users = Array(1)
+      .fill(0)
+      .map(() => Meteor.users.insert(user()))
+      .map((_id) => Meteor.users.findOne(_id))
 
-    const details = {
-      name: 'Journaldo',
-      avatar: 'https://laser.cat/lrg.png',
-      outlets: [
-        {label: 'Gordian', value: 'knot'}
-      ],
-      emails: [
-        {label: 'email', value: 'j@gord.ian'}
-      ],
-      phones: [],
-      socials: [],
-      addresses: []
-    }
-
+    const details = contact()
     const userId = user._id
-    createContact.run.call({userId}, {details})
-
-    const contact = Contacts.findOne()
-    Object.keys(details).forEach((k) => {
-      assert.deepEqual(contact[k], details[k])
-    })
-    assert.equal(contact.slug, 'journaldo')
+    const slug = createContact.run.call({ userId : users[0]._id }, { details: details })
 
     const myContacts = Meteor.users.findOne().myContacts
     assert.equal(myContacts.length, 1)
-    Object.keys(myContacts[0]).forEach((k) => {
-      assert.deepEqual(myContacts[0][k], contact[k])
-    })
+    assert.deepEqual(myContacts[0], Contacts.findRefs({
+      contactSlugs: [slug]
+    })[0])
   })
 })

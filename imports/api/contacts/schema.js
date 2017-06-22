@@ -5,6 +5,10 @@ import { LabelValueSchema, AuditSchema } from '/imports/lib/schema'
 import { check } from 'meteor/check'
 
 export const ContactRefSchema = new SimpleSchema({
+  _id: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id
+  },
   slug: {
     type: String
   },
@@ -15,6 +19,13 @@ export const ContactRefSchema = new SimpleSchema({
     type: String,
     regEx: SimpleSchema.RegEx.Url,
     optional: true
+  },
+  outlets: {
+    type: [LabelValueSchema],
+    defaultValue: null
+  },
+  updatedAt: {
+    type: Date
   }
 })
 

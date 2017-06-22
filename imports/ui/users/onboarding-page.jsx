@@ -6,7 +6,7 @@ import { browserHistory } from 'react-router'
 import { CircleAvatar } from '/imports/ui/images/avatar'
 import EditableAvatarWithButtons from '/imports/ui/images/editable-avatar-with-buttons'
 import { Form, Input, Button } from '@achingbrain/react-validation'
-import { update } from '/imports/api/users/methods'
+import { updateUser } from '/imports/api/users/methods'
 
 class OnboardingPage extends React.Component {
   constructor (props, context) {
@@ -35,7 +35,7 @@ class OnboardingPage extends React.Component {
   onSubmit (event) {
     event.preventDefault()
 
-    update.call({
+    updateUser.call({
       name: this.state.name,
       avatar: this.state.avatar || undefined
     }, (error) => {

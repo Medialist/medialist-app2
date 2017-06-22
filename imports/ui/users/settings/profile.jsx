@@ -6,7 +6,7 @@ import { CircleAvatar } from '/imports/ui/images/avatar'
 import { LockIcon } from '/imports/ui/images/icons'
 import EditableAvatarWithButtons from '/imports/ui/images/editable-avatar-with-buttons'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
-import { update } from '/imports/api/users/methods'
+import { updateUser } from '/imports/api/users/methods'
 
 export default withSnackbar(React.createClass({
   propTypes: {
@@ -27,7 +27,7 @@ export default withSnackbar(React.createClass({
       return
     }
 
-    update.call({
+    updateUser.call({
       name: this.state.name,
       avatar: this.state.avatar ? this.state.avatar : undefined
     }, (error) => {

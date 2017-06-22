@@ -1,18 +1,18 @@
-import moment from 'moment'
 import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
-import { check } from 'meteor/check'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import slugify from '/imports/lib/slug'
 import { findOneUserRef } from '/imports/api/users/users'
-import Contacts, { ContactSchema, ContactCreateSchema } from '/imports/api/contacts/contacts'
+import Contacts, { ContactCreateSchema } from '/imports/api/contacts/contacts'
 import ContactsImport from '/imports/api/contacts-import/contacts-import'
 
 export const importContacts = new ValidatedMethod({
   name: 'importContacts',
 
   validate: new SimpleSchema({
-    data: { type: [ContactCreateSchema] }
+    data: {
+      type: [ContactCreateSchema]
+    }
   }).validator(),
 
   run ({ data }) {
@@ -21,7 +21,6 @@ export const importContacts = new ValidatedMethod({
     }
 
     const createdBy = findOneUserRef(this.userId)
-    const createdAt = new Date()
     const doc = {
       data,
       results: {
@@ -29,10 +28,11 @@ export const importContacts = new ValidatedMethod({
         updated: [],
         failed: []
       },
-      createdAt,
       createdBy
     }
+
     const _id = ContactsImport.insert(doc)
+
     // Do after sending the client the import _id
     Meteor.defer(function () {
       const label = `ContactsImport ${_id} with ${data.length} items`
@@ -41,16 +41,19 @@ export const importContacts = new ValidatedMethod({
       processImport({_id, ...doc})
       console.timeEnd(label)
     })
+
     return _id
   }
 })
 
 function processImport (doc) {
   const {data, createdBy} = doc
+
   data.forEach((contactData, i) => {
     if (contactData.emails && contactData.emails.length) {
-      var emails = contactData.emails.map(e => e.value)
-      var contact = Contacts.findOne({'emails.value': {$in: emails}})
+      const emails = contactData.emails.map(e => e.value)
+      const contact = Contacts.findOne({'emails.value': {$in: emails}})
+
       if (contact) {
         mergeContact(contactData, contact, createdBy, doc._id)
       } else {
@@ -62,7 +65,7 @@ function processImport (doc) {
   })
 }
 
-function createContact (data, userRef, importId) {
+function createContact (data, createdBy, importId) {
   data.slug = slugify(data.name, Contacts)
   data.socials = data.socials || []
   data.phones = data.phones || []
@@ -70,38 +73,53 @@ function createContact (data, userRef, importId) {
   data.masterLists = []
   data.tags = []
   data.imports = [importId]
-  data.createdAt = new Date()
-  data.createdBy = userRef
-  data.updatedAt = data.createdAt
-  data.updatedBy = data.createdBy
+  data.createdBy = createdBy
 
-  check(data, ContactSchema)
+  const id = Contacts.insert(data)
 
-  var id = Contacts.insert(data)
-  ContactsImport.update({_id: importId}, {$push: {'results.created': id}})
+  ContactsImport.update({
+    _id: importId
+  }, {
+    $push: {
+      'results.created': id
+    }
+  })
 }
 
-function mergeContact (data, contact, userRef, importId) {
+function mergeContact (data, contact, createdBy, importId) {
   contact.emails = addIfDistinct('value', contact.emails, data.emails)
   contact.phones = addIfDistinct('value', contact.phones, data.phones)
   contact.outlets = addIfDistinct('label', contact.outlets, data.outlets)
   contact.socials = addIfDistinct('label', contact.socials, data.socials)
   contact.addresses = addIfCurrentlyEmpty(contact.addresses, data.addresses)
   contact.imports.push(importId)
-  contact.createdAt = moment(contact.createdAt).toDate()
-  contact.updatedAt = new Date()
-  contact.updatedBy = userRef
+  contact.updatedBy = createdBy
 
-  var id = contact._id
+  const id = contact._id
   delete contact._id
-  check(contact, ContactSchema)
+  delete contact.createdBy
+  delete contact.createdAt
 
-  Contacts.update({_id: id}, {$set: contact})
-  ContactsImport.update({_id: importId}, {$push: {'results.updated': id}})
+  Contacts.update({
+    _id: id
+  }, {
+    $set: contact
+  })
+
+  ContactsImport.update({
+    _id: importId
+  }, {
+    $push: {
+      'results.updated': id
+    }
+  })
 }
 
 function addIfCurrentlyEmpty (oldList = [], newList = []) {
-  if (oldList.length > 0) return oldList
+  if (oldList.length > 0) {
+    return oldList
+  }
+
   return oldList.concat(newList)
 }
 

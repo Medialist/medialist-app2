@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor'
-import { check } from 'meteor/check'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import escapeRegExp from 'lodash.escaperegexp'
@@ -8,7 +7,7 @@ import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
 import { createAddContactsToCampaignPost } from '/imports/api/posts/methods'
-import Contacts, { ContactSchema, ContactCreateSchema } from '/imports/api/contacts/contacts'
+import Contacts, { ContactCreateSchema } from '/imports/api/contacts/contacts'
 import MasterLists from '/imports/api/master-lists/master-lists'
 
 /*
@@ -56,7 +55,6 @@ export const addContactsToCampaign = new ValidatedMethod({
     }, {
       $set: {
         contacts: Object.assign({}, newContacts, campaign.contacts),
-        updatedAt,
         updatedBy
       }
     })
@@ -71,7 +69,6 @@ export const addContactsToCampaign = new ValidatedMethod({
         [`campaigns.${campaignSlug}`]: {
           updatedAt
         },
-        updatedAt,
         updatedBy
       }
     }, {
@@ -85,8 +82,7 @@ export const addContactsToCampaign = new ValidatedMethod({
     addToMyFavourites({
       userId: this.userId,
       contactSlugs,
-      campaignSlugs: [campaignSlug],
-      updatedAt
+      campaignSlugs: [campaignSlug]
     })
   }
 })
@@ -122,7 +118,6 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
     checkAllSlugsExist(campaignSlugs, Campaigns)
 
     const updatedBy = findOneUserRef(this.userId)
-    const updatedAt = new Date()
 
     // a map of contacts.<slug> properties to delete from the campaign
     const $unset = contactSlugs.reduce(($unset, slug) => {
@@ -137,7 +132,6 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
     }, {
       $unset,
       $set: {
-        updatedAt,
         updatedBy
       }
     }, {
@@ -152,18 +146,13 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
       }, {
         $unset: {
           [`campaigns.${campaignSlug}`]: ''
+        },
+        $set: {
+          updatedBy
         }
       }, {
         multi: true
       })
-    })
-
-    Posts.create({
-      type: 'RemoveContactsFromCampaigns',
-      contactSlugs,
-      campaignSlugs,
-      createdAt: updatedAt,
-      createdBy: updatedBy
     })
   }
 })
@@ -180,7 +169,10 @@ export const batchFavouriteContacts = new ValidatedMethod({
   run ({ contactSlugs }) {
     if (!this.userId) throw new Meteor.Error('You must be logged in')
     checkAllSlugsExist(contactSlugs, Contacts)
-    addToMyFavourites({userId: this.userId, contactSlugs})
+    addToMyFavourites({
+      userId: this.userId,
+      contactSlugs
+    })
   }
 })
 
@@ -293,10 +285,12 @@ export const createContact = new ValidatedMethod({
 
     // return if a matching twitter handle already exists
     const existingContact = details.twitter && Contacts.findOne({ 'socials.label': 'Twitter', 'socials.value': details.twitter })
-    if (existingContact) return existingContact
+
+    if (existingContact) {
+      return existingContact
+    }
 
     const createdBy = findOneUserRef(this.userId)
-    const createdAt = new Date()
     const slug = slugify(details.name, Contacts)
 
     // Merge the provided details with any missing values
@@ -306,20 +300,15 @@ export const createContact = new ValidatedMethod({
       masterLists: [],
       tags: [],
       imports: [],
-      createdAt,
-      createdBy,
-      updatedAt: createdAt,
-      updatedBy: createdBy
+      createdBy
     })
 
     // Save the contact
-    check(contact, ContactSchema)
     Contacts.insert(contact)
 
     addToMyFavourites({
       userId: this.userId,
-      contactSlugs: [slug],
-      updatedAt: createdAt
+      contactSlugs: [slug]
     })
 
     return slug
@@ -342,26 +331,42 @@ export const updateContact = new ValidatedMethod({
     if (!this.userId) throw new Meteor.Error('You must be logged in')
 
     const existingContact = Contacts.findOne({ _id: contactId })
-    if (!existingContact) throw new Meteor.Error('updateContact.nosuchcontact', `Could not find a contact ${contactId}`)
+
+    if (!existingContact) {
+      throw new Meteor.Error('updateContact.nosuchcontact', `Could not find a contact ${contactId}`)
+    }
 
     const updatedBy = findOneUserRef(this.userId)
-    const updatedAt = new Date()
 
-    // Merge the provided details with any missing values
     const $set = Object.assign(details, {
-      updatedBy,
-      updatedAt
+      updatedBy
     })
 
-    Contacts.update({_id: contactId}, {$set})
+    Contacts.update({_id: contactId}, {
+      $set
+    })
+
+    const updatedContact = Contacts.findOne({_id: contactId})
+
+    // Update existing users' favourite contacts with new denormalised data
+    Meteor.users.update({
+      'myContacts._id': contactId
+    }, {
+      $set: {
+        'myContacts.$.name': updatedContact.name,
+        'myContacts.$.slug': updatedContact.slug,
+        'myContacts.$.avatar': updatedContact.avatar,
+        'myContacts.$.outlets': updatedContact.outlets,
+        'myContacts.$.updatedAt': updatedContact.updatedAt
+      }
+    }, {
+      multi: true
+    })
 
     addToMyFavourites({
       userId: this.userId,
-      contactSlugs: [existingContact.slug],
-      updatedAt
+      contactSlugs: [existingContact.slug]
     })
-
-    // TODO: if any props are in the contact ref, update all refs...
 
     return contactId
   }

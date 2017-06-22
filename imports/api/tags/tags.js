@@ -3,9 +3,48 @@ import { Mongo } from 'meteor/mongo'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import nothing from '/imports/lib/nothing'
 import { cleanSlug } from '/imports/lib/slug'
+import { CreatedAtSchema } from '/imports/lib/schema'
+
+export const TagSchema = new SimpleSchema([
+  CreatedAtSchema, {
+    name: {
+      type: String,
+      min: 1
+    },
+    slug: {
+      type: String,
+      min: 1
+    },
+    contactsCount: {
+      type: Number,
+      min: 0,
+      defaultValue: 0
+    },
+    campaignsCount: {
+      type: Number,
+      min: 0,
+      defaultValue: 0
+    }
+  }
+])
+
+export const TagRefSchema = new SimpleSchema({
+  name: {
+    type: String,
+    min: 1
+  },
+  slug: {
+    type: String,
+    min: 1
+  },
+  count: {
+    type: Number,
+    min: 0
+  }
+})
 
 const Tags = new Mongo.Collection('tags')
-
+Tags.attachSchema(TagSchema)
 Tags.allow(nothing)
 
 if (Meteor.isServer) {
@@ -31,44 +70,3 @@ Tags.suggest = ({type, userId, searchTerm}) => {
 }
 
 export default Tags
-
-export const TagSchema = new SimpleSchema({
-  name: {
-    type: String,
-    min: 1
-  },
-  slug: {
-    type: String,
-    min: 1
-  },
-  contactsCount: {
-    type: Number,
-    min: 0
-  },
-  campaignsCount: {
-    type: Number,
-    min: 0
-  },
-  users: {
-    type: [String],
-    regEx: SimpleSchema.RegEx.Id
-  },
-  updatedAt: {
-    type: Date
-  }
-})
-
-export const TagRefSchema = new SimpleSchema({
-  name: {
-    type: String,
-    min: 1
-  },
-  slug: {
-    type: String,
-    min: 1
-  },
-  count: {
-    type: Number,
-    min: 0
-  }
-})
