@@ -20,7 +20,7 @@ import AddToMasterListModal from '/imports/ui/master-lists/add-to-master-list-mo
 import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import { batchAddTags } from '/imports/api/tags/methods'
-import { batchFavouriteContacts } from '/imports/api/contacts/methods'
+import { batchFavouriteContacts, batchUpdateStatus } from '/imports/api/contacts/methods'
 
 class CampaignContactsPage extends React.Component {
 
@@ -86,8 +86,20 @@ class CampaignContactsPage extends React.Component {
     })
   }
 
-  batchUpdateStatus = (contacts, status) => {
-    console.log({contacts, status})
+  onBatchUpdateStatus = (contacts, status) => {
+    const contactsStatus = contacts.reduce((o, contact) => {
+      o[contact.slug] = status
+      return o
+    }, {})
+
+    batchUpdateStatus.call({_id: this.props.campaign._id, contacts: contactsStatus}, (error) => {
+      if (error) {
+        console.error(error)
+        return this.context.snackbar.error('batch-update-status-failure')
+      }
+
+      this.context.snackbar.show(`${contacts.length} ${contacts.length === 1 ? 'contact' : 'contacts'} marked as ${status}`, 'batch-update-status-success')
+    })
   }
 
   onShowCreateContact = (data) => {
@@ -186,7 +198,7 @@ class CampaignContactsPage extends React.Component {
           onSectorClick={() => this.showModal('addToMasterListsModal')}
           onFavouriteClick={this.onFavouriteAll}
           onTagClick={() => this.showModal('addTagsModal')}
-          onStatusClick={this.batchUpdateStatus}
+          onStatusClick={this.onBatchUpdateStatus}
           onDeleteClick={() => this.showModal('removeContactsModal')}
           onDeselectAllClick={this.clearSelection} />
         <CreateContactModal

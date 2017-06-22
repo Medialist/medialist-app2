@@ -405,13 +405,33 @@ export const batchUpdateStatus = new ValidatedMethod({
   name: 'batchUpdateStatus',
 
   validate: new SimpleSchema({
-    contacts: { type: [Object] },
-    status: { type: String }
+    _id: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    },
+    contacts: {
+      type: Object,
+      blackbox: true
+    }
   }).validator(),
 
-  run ({contacts, status}) {
+  run ({_id, contacts}) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
+
+    const campaign = Campaigns.find({ _id })
+
+    if (!campaign) {
+      throw new Meteor.Error('Can\'t find campaign')
+    }
+
+    const update = {
+      $set: {
+        contacts: Object.assign({}, campaign.contacts, contacts)
+      }
+    }
+
+    return Campaigns.update({ _id }, update)
   }
 })

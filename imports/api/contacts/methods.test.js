@@ -10,33 +10,37 @@ import {
   removeContactsFromCampaigns,
   batchFavouriteContacts,
   batchRemoveContacts,
-  createContact
+  createContact,
+  batchUpdateStatus
 } from './methods'
+
+function insertTestData () {
+  Meteor.users.insert({
+    _id: 'alf',
+    profile: { name: 'Alfonze' },
+    myContacts: [],
+    myCampaigns: []
+  })
+
+  const contacts = Array(3).fill(0).map((_, index) => ({
+    _id: `id${index}`,
+    slug: `slug${index}`,
+    campaigns: {}
+  }))
+  contacts.forEach((c) => Contacts.insert(c))
+
+  const campaigns = Array(3).fill(0).map((_, index) => ({
+    _id: `id${index}`,
+    slug: `slug${index}`,
+    contacts: {}
+  }))
+  campaigns.forEach((c) => Campaigns.insert(c))
+}
 
 describe('addContactsToCampaign', function () {
   beforeEach(function () {
     resetDatabase()
-
-    Meteor.users.insert({
-      _id: 'alf',
-      profile: { name: 'Alfonze' },
-      myContacts: [],
-      myCampaigns: []
-    })
-
-    const contacts = Array(3).fill(0).map((_, index) => ({
-      _id: `id${index}`,
-      slug: `slug${index}`,
-      campaigns: {}
-    }))
-    contacts.forEach((c) => Contacts.insert(c))
-
-    const campaigns = Array(3).fill(0).map((_, index) => ({
-      _id: `id${index}`,
-      slug: `slug${index}`,
-      contacts: {}
-    }))
-    campaigns.forEach((c) => Campaigns.insert(c))
+    insertTestData()
   })
 
   it('should require the user to be logged in', function () {
@@ -409,5 +413,34 @@ describe('createContact', function () {
     Object.keys(myContacts[0]).forEach((k) => {
       assert.deepEqual(myContacts[0][k], contact[k])
     })
+  })
+})
+
+describe('batchUpdateStatus', function () {
+  beforeEach(function () {
+    resetDatabase()
+    insertTestData()
+    const contacts = Contacts.find({}).fetch()
+      .reduce((o, contact) => {
+        o[contact.slug] = 'To Contact'
+        return o
+      }, {})
+    Campaigns.update({}, {$set: {contacts}}, {multi: true})
+  })
+
+  it('Should be able to batch update campaign contacts status', function () {
+    const campaign = Campaigns.findOne()
+    const contacts = Object.keys(campaign.contacts)
+      .reduce((o, slug) => {
+        o[slug] = 'Complete'
+        return o
+      }, {})
+    const _id = campaign._id
+
+    batchUpdateStatus.run.call({userId: 'alf'}, { _id, contacts })
+
+    const updatedCampaign = Campaigns.findOne({ _id })
+
+    assert.ok(Object.keys(updatedCampaign.contacts).every((slug) => updatedCampaign.contacts[slug] === 'Complete'))
   })
 })
