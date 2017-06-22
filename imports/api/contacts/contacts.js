@@ -53,6 +53,26 @@ Contacts.findRefs = ({contactSlugs}) => {
   }).map(Contacts.toRef)
 }
 
+Contacts.findOneRef = (contactSlugOrId) => {
+  return Contacts.toRef(Contacts.findOne({
+    $or: [{
+      _id: contactSlugOrId
+    }, {
+      slug: contactSlugOrId
+    }]
+  }, {
+    fields: {
+      _id: 1,
+      slug: 1,
+      name: 1,
+      avatar: 1,
+      outlets: 1,
+      updatedAt: 1,
+      createdAt: 1
+    }
+  }))
+}
+
 Contacts.status = StatusMap
 Contacts.phoneTypes = [
   'Mobile',

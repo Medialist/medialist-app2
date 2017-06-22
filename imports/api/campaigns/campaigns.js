@@ -16,7 +16,21 @@ export default Campaigns
 
 Campaigns.allCampaignsCount = () => Counter.get('campaignCount')
 
-Campaigns.toRef = ({_id, slug, name, avatar, client, updatedAt, createdAt}) => {
+Campaigns.toRef = (campaign) => {
+  if (!campaign) {
+    return null
+  }
+
+  const {
+    _id,
+    slug,
+    name,
+    avatar,
+    client,
+    updatedAt,
+    createdAt
+  } = campaign
+
   const ref = {
     _id,
     slug,
@@ -53,4 +67,24 @@ Campaigns.findRefs = ({campaignSlugs}) => {
       createdAt: 1
     }
   }).map(Campaigns.toRef)
+}
+
+Campaigns.findOneRef = (campaignSlugOrId) => {
+  return Campaigns.toRef(Campaigns.findOne({
+    $or: [{
+      _id: campaignSlugOrId
+    }, {
+      slug: campaignSlugOrId
+    }]
+  }, {
+    fields: {
+      _id: 1,
+      slug: 1,
+      name: 1,
+      avatar: 1,
+      client: 1,
+      updatedAt: 1,
+      createdAt: 1
+    }
+  }))
 }

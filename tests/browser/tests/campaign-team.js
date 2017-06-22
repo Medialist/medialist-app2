@@ -6,7 +6,7 @@ const test = {
   '@tags': ['campaign-team'],
 
   beforeEach: function (t) {
-    t.page.authenticate()
+    this.user = t.page.authenticate()
       .register()
   },
 

@@ -13,7 +13,9 @@ module.exports = {
     contactInfo: '[data-id=contact-info]',
     openPostMenuButton: '[data-id=open-post-menu-button]',
     editPostButton: '[data-id=edit-post-button]',
-    createPostButton: '[data-id=create-post-button]'
+    createPostButton: '[data-id=create-post-button]',
+    addToFavouritesButton: '[data-id=add-to-my-contacts-button]',
+    removeFromFavouritesButton: '[data-id=remove-from-my-contacts-button]'
   },
   sections: {
     info: {
@@ -77,6 +79,16 @@ module.exports = {
         .click('@createPostButton')
 
       return this
+    },
+    favouriteContact: function () {
+      return this
+        .waitForElementVisible('@addToFavouritesButton')
+        .click('@addToFavouritesButton')
+    },
+    unFavouriteContact: function () {
+      return this
+        .waitForElementVisible('@removeFromFavouritesButton')
+        .click('@removeFromFavouritesButton')
     }
   }]
 }

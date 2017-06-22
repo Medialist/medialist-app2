@@ -7,9 +7,54 @@ const faker = require('faker')
 const test = {
   '@tags': ['contact'],
 
-  beforeEach: (t) => {
-    t.page.authenticate()
+  beforeEach: function (t) {
+    this.user = t.page.authenticate()
       .register()
+  },
+
+  'Should favourite and unfavourite a contact': function (t) {
+    t.createDomain(['contact'], (contact, done) => {
+      const contactPage = t.page.contact()
+        .navigate(contact)
+        .favouriteContact()
+
+      t.page.main().waitForSnackbarMessage('contact-info-favourite-success')
+
+      t.perform((done) => {
+        t.db.findUser({
+          profile: {
+            name: this.user.name
+          }
+        })
+        .then((doc) => {
+          t.assert.ok(doc.myContacts.find(c => c._id === contact._id))
+
+          done()
+        })
+      })
+
+      contactPage.unFavouriteContact()
+
+      t.page.main().waitForSnackbarMessage('contact-info-unfavourite-success')
+
+      t.perform((done) => {
+        t.db.findUser({
+          profile: {
+            name: this.user.name
+          }
+        })
+        .then((doc) => {
+          t.assert.ok(!doc.myContacts.find(c => c._id === contact._id))
+
+          done()
+        })
+      })
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   },
 
   'Should edit an existing contact': function (t) {

@@ -82,8 +82,19 @@ const ContactInfo = withSnackbar(React.createClass({
   },
 
   onToggleFavourite () {
-    Meteor.call('contacts/toggle-favourite', this.props.contact.slug, (err) => {
-      if (err) console.error('Could not toggle favourite status for contact', err)
+    Meteor.call('contacts/toggle-favourite', this.props.contact.slug, (error, state) => {
+      if (error) {
+        console.error('Could not toggle favourite status for contact', error)
+        this.props.snackbar.error('contact-favourite-failure')
+
+        return
+      }
+
+      if (state) {
+        this.props.snackbar.show(`Contact added to your favourites`, 'contact-info-favourite-success')
+      } else {
+        this.props.snackbar.show(`Contact removed from your favourites`, 'contact-info-unfavourite-success')
+      }
     })
   },
 
@@ -102,6 +113,7 @@ const ContactInfo = withSnackbar(React.createClass({
     const { _id, name, avatar, outlets, masterLists, tags } = contact
     const isFavourite = myContacts.some((c) => c._id === _id)
     const tooltip = isFavourite ? 'Remove from My Contacts' : 'Add to My Contacts'
+    const favouriteButtonId = isFavourite ? 'remove-from-my-contacts-button' : 'add-to-my-contacts-button'
     const { socials } = contact
 
     return (
@@ -114,7 +126,7 @@ const ContactInfo = withSnackbar(React.createClass({
             <div className='semibold f-xl gray10'>
               {name}
               <Tooltip title={tooltip}>
-                <FavouritesIcon className='mx1 pointer' onClick={this.onToggleFavourite} style={{width: '18px', height: '18px', fill: isFavourite ? GOLD : GREY60}} />
+                <FavouritesIcon data-id={favouriteButtonId} className='mx1 pointer' onClick={this.onToggleFavourite} style={{width: '18px', height: '18px', fill: isFavourite ? GOLD : GREY60}} />
               </Tooltip>
             </div>
             <div style={{paddingTop: 4}}>
