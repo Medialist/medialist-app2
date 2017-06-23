@@ -129,7 +129,7 @@ const Menu = ({children}) => (
     zIndex: 500,
     background: 'white',
     boxShadow: '0px 1px 10px 0px rgba(0,0,0,0.20)'
-  }}>
+  }} className='rounded'>
     {children}
   </div>
 )
