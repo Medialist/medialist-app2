@@ -66,7 +66,7 @@ class ContactsActionsToast extends React.Component {
               <span className='gray20'>contact{contacts.length === 1 ? '' : 's'} selected</span>
             </div>
             <div className='flex-auto center'>
-              <Tooltip title='Add to Campaigns'>
+              <Tooltip title='Add to Campaign'>
                 <FeedCampaignIcon
                   className='mx3 pointer gray60 hover-blue'
                   onClick={() => onCampaignClick(contacts)}
@@ -119,7 +119,7 @@ class ContactsActionsToast extends React.Component {
                   data-id='contact-actions-add-tags'
                   style={{width: '21px', height: '21px'}} />
               </Tooltip>
-              <Tooltip title={`${campaign ? 'Remove' : 'Delete'} Contacts`}>
+              <Tooltip title={`${campaign ? 'Remove' : 'Delete'} Contact${contacts.length > 1 ? 's' : ''}`}>
                 <DeleteIcon
                   className='mx3 pointer gray60 hover-red'
                   onClick={() => onDeleteClick(contacts)}
