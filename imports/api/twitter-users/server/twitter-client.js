@@ -3,6 +3,11 @@ import { check, Match } from 'meteor/check'
 import NpmTwitter from 'twitter'
 import twitterScreenName from 'twitter-screen-name'
 import TwitterUsers from '/imports/api/twitter-users/server/twitter-users'
+import { rateLimit } from 'meteor/dandv:rate-limit'
+
+// Twitter allows 180 calls every 15 minutes or one every 5 seconds
+// https://dev.twitter.com/rest/public/rate-limiting
+const RATE_LIMIT = 5000
 
 class TwitterStream {
   constructor (stream) {
@@ -39,35 +44,37 @@ const TwitterClient = new Twitter({
   access_token_secret: Meteor.settings.twitter.access_token_secret
 })
 
-TwitterClient.grabUser = function (query, cb) {
+TwitterClient.grabUser = rateLimit(function (query, cb) {
   cb = cb || function () {}
   TwitterClient.twitter.get('users/show', query, Meteor.bindEnvironment(function (err, user) {
     if (err) {
       console.error('TwitterClient.grabUser: ', err, query)
       return cb(err)
     }
+
     if (!user.id_str) {
       console.log('TwitterClient.grabUser: got user with no id_str for ', query)
       return cb('User has no id_str', user)
     }
+
     user._id = user.id_str
-    console.log('TwitterClient.grabUser: Got ' + user.screen_name, user.name)
+
     TwitterUsers.upsert(user._id, user)
     cb(err, user)
   }))
-}
+}, RATE_LIMIT)
 
-TwitterClient.grabUserByScreenName = function (screenName, cb) {
+TwitterClient.grabUserByScreenName = rateLimit(function (screenName, cb) {
   const opts = {screen_name: twitterScreenName(screenName)}
   TwitterClient.grabUser(opts, cb)
-}
+}, RATE_LIMIT)
 
-TwitterClient.grabUserById = function (id, cb) {
+TwitterClient.grabUserById = rateLimit(function (id, cb) {
   TwitterClient.grabUser({user_id: id}, cb)
-}
+}, RATE_LIMIT)
 
 // Max 100 users: https://dev.twitter.com/rest/reference/get/users/lookup
-TwitterClient.lookupUsers = (identifiers, cb) => {
+TwitterClient.lookupUsers = rateLimit((identifiers, cb) => {
   check(identifiers, {
     id: Match.Optional([String]),
     screenName: Match.Optional([String])
@@ -95,6 +102,6 @@ TwitterClient.lookupUsers = (identifiers, cb) => {
 
     cb(null, users)
   }))
-}
+}, RATE_LIMIT)
 
 export default TwitterClient

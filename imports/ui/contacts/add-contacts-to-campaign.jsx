@@ -3,9 +3,8 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router'
 import Modal from '/imports/ui/navigation/modal'
 import { AddIcon, SelectedIcon } from '/imports/ui/images/icons'
+import CampaignPreview from '/imports/ui/campaigns/campaign-preview'
 import createSearchContainer from '/imports/ui/campaigns/campaign-search-container'
-import { SquareAvatar } from '/imports/ui/images/avatar'
-import { TimeFromNow } from '/imports/ui/time/time'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import { addContactsToCampaign } from '/imports/api/contacts/methods'
 import { BLUE } from '/imports/ui/colours'
@@ -144,27 +143,6 @@ export default Modal(AddContactsToCampaignsContainer, {
   'data-id': 'campaign-selector-modal'
 })
 
-const CampaignResult = (props) => {
-  const { style, avatar, name, client, updatedAt } = props
-  return (
-    <div style={{lineHeight: 1.3, ...style}}>
-      <SquareAvatar size={38} avatar={avatar} name={name} />
-      <div className='inline-block align-top pl3' style={{width: 220}}>
-        <div className='f-md semibold gray10 truncate' data-id='campaign-name'>{name}</div>
-        <div className='f-sm normal nowrap'>
-          {client && (
-            <span>
-              <span className='gray20 truncate' data-id='client-name'>{client.name}</span>
-              <span> &mdash; </span>
-            </span>
-          )}
-          <TimeFromNow className='gray40' date={updatedAt} data-id='updated-time' />
-        </div>
-      </div>
-    </div>
-  )
-}
-
 const CanJoinCampaignResult = (props) => {
   const {onAdd, ...res} = props
   const contactCount = Object.keys(res.contacts).length
@@ -174,7 +152,7 @@ const CanJoinCampaignResult = (props) => {
       key={res.slug}
       onClick={() => onAdd(res)}>
       <div className='flex-auto'>
-        <CampaignResult {...res} />
+        <CampaignPreview {...res} />
       </div>
       <div className='flex-none f-sm gray40 hover-gray20 px4' data-id='contact-count'>
         {contactCount} {contactCount === 1 ? 'contact' : 'contacts'}
@@ -191,7 +169,7 @@ const CanNotJoinCampaignResult = (props) => {
     <div className='border-bottom border-gray80'>
       <div className='flex items-center py2 pl4 opacity-50' key={props.slug}>
         <div className='flex-auto'>
-          <CampaignResult {...props} />
+          <CampaignPreview {...props} />
         </div>
         <div className='flex-none px4 f-sm gray40'>
           Already in campaign

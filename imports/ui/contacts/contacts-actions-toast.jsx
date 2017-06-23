@@ -2,25 +2,48 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Toast from '/imports/ui/navigation/toast'
 import Tooltip from '/imports/ui/navigation/tooltip'
+import dasherise from 'dasherize'
+import { Dropdown, DropdownMenu, DropdownMenuItem } from '/imports/ui/navigation/dropdown'
+import { StatusValues } from '/imports/api/contacts/status'
+import StatusLabel from '/imports/ui/feedback/status-label'
 import {
   FeedCampaignIcon,
   FavouritesIcon,
   ListIcon,
   TagIcon,
+  StatusUpdateIcon,
   DeleteIcon
 } from '/imports/ui/images/icons'
 
-const ContactsActionsToast = React.createClass({
-  propTypes: {
+class ContactsActionsToast extends React.Component {
+  static propTypes = {
     campaign: PropTypes.object,
     contacts: PropTypes.array.isRequired,
     onCampaignClick: PropTypes.func.isRequired,
     onSectorClick: PropTypes.func.isRequired,
     onFavouriteClick: PropTypes.func.isRequired,
     onTagClick: PropTypes.func.isRequired,
+    onStatusClick: PropTypes.func.isRequired,
     onDeleteClick: PropTypes.func.isRequired,
     onDeselectAllClick: PropTypes.func.isRequired
-  },
+  }
+
+  state = {
+    openStatusMenu: false
+  }
+
+  openStatusMenu = () => {
+    this.setState({openStatusMenu: true})
+  }
+
+  closeStatusMenu = () => {
+    this.setState({openStatusMenu: false})
+  }
+
+  onStatusClick = (contacts, status) => {
+    this.props.onStatusClick(contacts, status)
+    this.closeStatusMenu()
+  }
 
   render () {
     const {
@@ -33,6 +56,8 @@ const ContactsActionsToast = React.createClass({
       onDeleteClick,
       onDeselectAllClick
     } = this.props
+
+    const canBatchStatusUpdate = campaign && contacts
 
     return (
       <Toast data-id='contact-actions-toast'>
@@ -64,6 +89,31 @@ const ContactsActionsToast = React.createClass({
                   data-id='contact-actions-add-to-my-contacts'
                   style={{width: '21px', height: '21px'}} />
               </Tooltip>
+              {canBatchStatusUpdate ? <Dropdown>
+                <Tooltip title='Update status'>
+                  <StatusUpdateIcon
+                    className='mx3 pointer gray60 hover-blue'
+                    onClick={this.openStatusMenu}
+                    data-id='contact-actions-update-status'
+                    style={{width: '21px', height: '21px'}} />
+                </Tooltip>
+                <DropdownMenu
+                  width={193}
+                  arrowPosition='bottom'
+                  top={-244}
+                  open={this.state.openStatusMenu}
+                  onDismiss={this.closeStatusMenu}>
+                  {StatusValues.map((status) => (
+                    <DropdownMenuItem
+                      key={status}
+                      selected={false}
+                      onClick={(event) => this.onStatusClick(contacts, status)}
+                      data-id={`contact-status-${dasherise(status).replace(/\s/g, '')}`}>
+                      <StatusLabel name={status} className='gray20' />
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenu>
+              </Dropdown> : null}
               <Tooltip title='Add Tags'>
                 <TagIcon
                   className='mx3 pointer gray60 hover-blue'
@@ -87,6 +137,6 @@ const ContactsActionsToast = React.createClass({
       </Toast>
     )
   }
-})
+}
 
 export default ContactsActionsToast

@@ -11,6 +11,11 @@ module.exports = {
     activityFeed: activityFeed('dashboard')
   },
   commands: [{
+    navigate: function () {
+      this.api.url('http://localhost:3000/')
+      this.waitForElementVisible(this.section.activityFeed.selector)
 
+      return this
+    }
   }]
 }

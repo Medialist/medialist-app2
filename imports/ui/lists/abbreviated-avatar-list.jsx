@@ -36,15 +36,18 @@ const AbbreviatedAvatarList = React.createClass({
 
   renderExcess ({ avatarExcess, tooltipExcess, tooltipItems }) {
     const { size, shape } = this.props
-    const className = 'inline-block overflow-hidden bg-blue border border-white semibold align-middle center'
+    const className = 'inline-block overflow-hidden bg-blue semibold align-middle center rounded'
     const fontSize = ((size / defaultSize) * 13).toFixed(0) + 'px'
-    const style = { minWidth: size * 1.3, height: size, lineHeight: size + 'px', fontSize, boxSizing: 'content-box', borderWidth: 2 }
-    if (shape === 'circle') style.borderRadius = '99999px'
+    const style = { minWidth: size * 1.3, height: size, lineHeight: size + 'px', fontSize, boxSizing: 'content-box', marginTop: '1px' }
+
+    if (shape === 'circle') {
+      style.borderRadius = '99999px'
+    }
 
     return (
-      <li className='inline-block mb1' style={{ marginLeft: '2px' }}>
+      <li className='inline-block mb1' style={{ marginLeft: '5px' }}>
         <Tooltip position='bottom' title={this.renderTooltip({ tooltipExcess, tooltipItems })}>
-          <span className='relative inline-block'>
+          <span className='inline-block'>
             <div className={className} style={style}>
               <div className='white px2'>+{avatarExcess}</div>
             </div>
@@ -66,14 +69,13 @@ const AbbreviatedAvatarList = React.createClass({
         {items.slice(0, maxAvatars).map((item, i) => {
           const { avatar, name } = item
           return (
-            <li key={item._id || i} className='inline-block f-xs semibold' style={{ marginLeft: i ? '2px' : 0 }}>
+            <li key={item._id || i} className='inline-block f-xs semibold' style={{ marginLeft: i ? '5px' : 0 }}>
               <Tooltip title={name}>
                 <span className='relative inline-block'>
                   <Avatar
                     avatar={avatar}
                     name={name}
                     size={size}
-                    className='border border-white'
                     style={{ boxSizing: 'content-box', borderWidth: 2 }} />
                 </span>
               </Tooltip>

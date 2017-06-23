@@ -157,18 +157,22 @@ class Post extends React.Component {
     })
   }
 
-  updatePost = (postId, update) => {
+  updatePost = (_id, { message, status }) => {
     this.setState({
       editOpen: false
     })
-    const { message, status } = update
-    updatePost.call({ _id: postId, message, status })
+    updatePost.call({ _id, message, status })
   }
 
   render () {
     const data = {
       'data-contact': this.props.contacts.map(contact => contact._id).join(' '),
       'data-campaign': this.props.campaigns.map(campaigns => campaigns._id).join(' ')
+    }
+    const postTypeLabels = {
+      'FeedbackPost': 'Feedback',
+      'CoveragePost': 'Coverage',
+      'NeedToKnowPost': 'Need-to-Knows'
     }
     const canEditPost = this.props.createdBy._id === this.props.currentUser._id
 
@@ -183,7 +187,7 @@ class Post extends React.Component {
             <YouOrName className='semibold gray10' currentUser={this.props.currentUser} user={this.props.createdBy} />
             <div className='flex-auto truncate' style={{paddingLeft: 3}}>{this.props.summary}</div>
             <span className='f-sm semibold gray60 flex-none'>
-              <Time date={this.props.createdAt} />
+              <Time date={this.props.updatedAt || this.props.createdAt} />
             </span>
             {this.props.editable && (
               <Dropdown className='f-sm semibold gray60 flex-none' data-id='post-menu'>
@@ -194,7 +198,7 @@ class Post extends React.Component {
                       <DropdownMenuItem
                         onClick={this.editPost}
                         data-id='edit-post-button'>
-                        <span className='ml2 gray20 regular'>Edit {this.props.type.replace(/Post/g, '')}</span>
+                        <span className='ml2 gray20 regular'>Edit {postTypeLabels[this.props.type]}</span>
                       </DropdownMenuItem>
                     }
                     <DropdownMenuItem
@@ -248,7 +252,7 @@ Post.defaultProps = {
 const ContactLink = ({contact, showOutlet = true, ...props}) => (
   <Link to={`/contact/${contact.slug}`} data-id='contact-link' {...props}>
     <span className='semibold gray10' data-id='contact-name'>{contact.name}</span>
-    { showOutlet && contact.outletName && <span className='gray10' data-id='contact-outlet'> ({contact.outletName})</span> }
+    { showOutlet && contact.outlets && contact.outlets.length && contact.outlets[0].value && <span className='gray10' data-id='contact-outlet'> ({contact.outlets[0].value})</span> }
   </Link>
 )
 
@@ -261,7 +265,6 @@ const ContactName = ({contacts, contact, onContactPage}) => {
     const primary = contact || contacts[0]
     const otherContacts = contacts.filter((c) => c.slug !== primary.slug).length
     const name = contact ? firstName(primary) : <ContactLink contact={primary} showOutlet={false} />
-
     return (
       <span>
         <span data-id='contact-name' className='semibold gray10'>{name}</span>
@@ -392,6 +395,16 @@ export const NeedToKnowPost = ({item, currentUser, contact}) => (
 )
 
 export const StatusUpdate = ({item, currentUser, contact, campaign}) => {
+  let details = null
+
+  if (item.contacts.length > 1 && !contact) {
+    details = (
+      <div className='border-gray80 border-top gray10'>
+        <ContactAvatarList items={item.contacts} className='my0 pt3 pb0 left' maxAvatars={9} />
+      </div>
+    )
+  }
+
   return (
     <Post
       {...item}
@@ -404,6 +417,7 @@ export const StatusUpdate = ({item, currentUser, contact, campaign}) => {
           <CampaignName campaigns={item.campaigns} onCampaignPage={Boolean(campaign)} />
         </PostSummary>
       }
+      details={details}
     />
   )
 }

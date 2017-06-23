@@ -11,7 +11,7 @@ import FormSection from '/imports/ui/forms/form-section'
 import FormField from '/imports/ui/forms/form-field'
 import EditableAvatar from '/imports/ui/images/editable-avatar'
 import ClientAutocomplete from '/imports/ui/campaigns/client-autocomplete'
-import { create, update, remove } from '/imports/api/campaigns/methods'
+import { createCampaign, updateCampaign, removeCampaign } from '/imports/api/campaigns/methods'
 import { Form, Input, Textarea, Button } from '@achingbrain/react-validation'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import Scroll from '/imports/ui/navigation/scroll'
@@ -260,7 +260,7 @@ const EditCampaignForm = withRouter(withSnackbar(React.createClass({
   },
 
   onSubmit (details) {
-    update.call({ _id: this.props.campaign._id, ...details }, (error) => {
+    updateCampaign.call({ _id: this.props.campaign._id, ...details }, (error) => {
       if (error) {
         console.log(error)
         this.props.snackbar.error('campaign-update-failure')
@@ -276,7 +276,7 @@ const EditCampaignForm = withRouter(withSnackbar(React.createClass({
   onDelete (event) {
     event.preventDefault()
 
-    remove.call({
+    removeCampaign.call({
       _ids: [this.props.campaign._id]
     }, (error) => {
       if (error) {
@@ -308,7 +308,7 @@ const CreateCampaignForm = withRouter(withSnackbar(React.createClass({
   },
 
   onSubmit (details) {
-    create.call(details, (error, slug) => {
+    createCampaign.call(details, (error, slug) => {
       if (error) {
         console.log(error)
         this.props.snackbar.error('campaign-create-failure')

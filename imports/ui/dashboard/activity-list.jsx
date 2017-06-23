@@ -23,7 +23,7 @@ const ActivityList = React.createClass({
             console.log(`ActivityList - No UI component found for Post type: "${item.type}". Ignoring.`)
             return ''
           }
-          const editable = ['FeedbackPost'].indexOf(item.type) > -1
+          const editable = ['FeedbackPost', 'CoveragePost', 'NeedToKnowPost'].indexOf(item.type) > -1
           return (
             <Post
               key={item._id}

@@ -35,6 +35,9 @@ module.exports = (prefix) => ({
     assertHasCreatedCampaignPostWith: function (campaign, data) {
       return this._assertHasPostWith('create-campaign', null, campaign, data)
     },
+    assertHasStatusUpdatePostWith: function (campaign, data) {
+      return this._assertHasPostWith('status-update', null, campaign, data)
+    },
     _assertHasPostWith: function (type, contact, campaign, data) {
       let selector = `[data-id='${type}']`
 

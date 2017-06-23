@@ -55,7 +55,17 @@ function contact () {
       labelValue('Pinterest', faker.internet.userName()),
       labelValue('Website', faker.internet.url())
     ],
-    addresses: []
+    addresses: [{
+      street: faker.address.streetAddress(),
+      city: faker.address.city(),
+      postcode: faker.random.alphaNumeric(),
+      country: faker.address.country()
+    }, {
+      street: faker.address.streetAddress(),
+      city: faker.address.city(),
+      postcode: faker.random.alphaNumeric(),
+      country: faker.address.country()
+    }]
   }
 }
 

@@ -6,7 +6,7 @@ const test = {
   '@tags': ['campaign-contacts'],
 
   beforeEach: function (t) {
-    t.page.authenticate()
+    this.user = t.page.authenticate()
       .register()
   },
 
@@ -228,6 +228,47 @@ const test = {
 
         contactsPage.section.contactTable
           .assertInSearchResults(contact)
+
+        done()
+      })
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should update contacts status from campaign contacts page toast menu': function (t) {
+    t.createDomain(['campaign', 'contact', 'contact', 'contact'], (campaign, contact1, contact2, contact3, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact1, contact2, contact3], campaign, () => done())
+      })
+
+      t.perform((done) => {
+        const campaignContactsPage = t.page.campaignContacts()
+          .navigate(campaign)
+
+        campaignContactsPage.section.contactTable
+          .selectRow(0)
+          .selectRow(1)
+          .selectRow(2)
+
+        campaignContactsPage.section.toast
+          .openStatusDropdown()
+
+        campaignContactsPage.section.toast.section.dropdown
+          .selectStatus('Hot Lead')
+
+        done()
+      })
+
+      t.perform((done) => {
+        const dashboardPage = t.page.dashboard()
+          .navigate()
+
+        dashboardPage.section.activityFeed
+          .assertHasStatusUpdatePostWith(campaign, {contactStatus: 'hot-lead'})
 
         done()
       })

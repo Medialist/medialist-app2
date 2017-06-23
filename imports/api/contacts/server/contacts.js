@@ -1,8 +1,6 @@
 import Contacts from '/imports/api/contacts/contacts'
 import TwitterClient from '/imports/api/twitter-users/server/twitter-client'
 
-Contacts._ensureIndex({'slug': 1})
-
 Contacts.find({}).observeChanges({
   changed (id, fields) {
     checkScreenNameUpdate(id, fields)

@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Modal from '/imports/ui/navigation/modal'
-import { remove } from '/imports/api/posts/methods'
+import { removePost } from '/imports/api/posts/methods'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import DeleteConfirmation from '/imports/ui/navigation/delete-confirmation'
 import dasherise from 'dasherize'
@@ -14,7 +14,7 @@ const DeletePost = withSnackbar(React.createClass({
   },
 
   onDelete () {
-    remove.call({
+    removePost.call({
       _ids: [this.props.post._id]
     }, (error) => {
       if (error) {

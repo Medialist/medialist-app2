@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { Meteor } from 'meteor/meteor'
 import escapeRegExp from 'lodash.escaperegexp'
 import { createContainer } from 'meteor/react-meteor-data'
+import { StatusIndex } from '/imports/api/contacts/status'
 import ContactsTable from '/imports/ui/contacts/contacts-table'
 import SearchBox from '/imports/ui/lists/search-box'
 import ContactsActionsToast from '/imports/ui/contacts/contacts-actions-toast'
@@ -12,7 +13,6 @@ import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
 import { CreateContactModal } from '../contacts/edit-contact'
 import AddContactModal from '/imports/ui/campaigns/add-contact'
-import { StatusIndex } from '/imports/api/contacts/status'
 import RemoveContactModal from '/imports/ui/campaigns/remove-contact'
 import AddContactsToCampaign from '/imports/ui/contacts/add-contacts-to-campaign'
 import AddTagsModal from '/imports/ui/tags/add-tags-modal'
@@ -20,7 +20,7 @@ import AddToMasterListModal from '/imports/ui/master-lists/add-to-master-list-mo
 import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import { batchAddTags } from '/imports/api/tags/methods'
-import { batchFavouriteContacts } from '/imports/api/contacts/methods'
+import { batchFavouriteContacts, batchUpdateStatus } from '/imports/api/contacts/methods'
 
 class CampaignContactsPage extends React.Component {
 
@@ -83,6 +83,18 @@ class CampaignContactsPage extends React.Component {
       }
 
       this.context.snackbar.show(`Added ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'} to ${masterLists.length} ${masterLists.length === 1 ? 'Contact List' : 'Contact Lists'}`, 'batch-add-contacts-to-contact-list-success')
+    })
+  }
+
+  onBatchUpdateStatus = (contacts, status) => {
+    const contactSlugs = contacts.map((c) => c.slug)
+    batchUpdateStatus.call({_id: this.props.campaign._id, contacts: contactSlugs, status}, (error) => {
+      if (error) {
+        console.error(error)
+        return this.context.snackbar.error('batch-update-status-failure')
+      }
+
+      this.context.snackbar.show(`${contacts.length} ${contacts.length === 1 ? 'contact' : 'contacts'} marked as ${status}`, 'batch-update-status-success')
     })
   }
 
@@ -182,6 +194,7 @@ class CampaignContactsPage extends React.Component {
           onSectorClick={() => this.showModal('addToMasterListsModal')}
           onFavouriteClick={this.onFavouriteAll}
           onTagClick={() => this.showModal('addTagsModal')}
+          onStatusClick={this.onBatchUpdateStatus}
           onDeleteClick={() => this.showModal('removeContactsModal')}
           onDeselectAllClick={this.clearSelection} />
         <CreateContactModal
