@@ -77,14 +77,7 @@ export const AuditSchema = new SimpleSchema([
     updatedAt: {
       type: Date,
       optional: true,
-      denyInsert: true,
-      autoValue: function () {
-        if (this.isUpdate) {
-          return new Date()
-        }
-
-        this.unset()
-      }
+      denyInsert: true
     },
     updatedBy: {
       type: UserRefSchema,

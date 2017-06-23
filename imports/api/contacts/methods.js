@@ -55,7 +55,8 @@ export const addContactsToCampaign = new ValidatedMethod({
     }, {
       $set: {
         contacts: Object.assign({}, newContacts, campaign.contacts),
-        updatedBy
+        updatedBy,
+        updatedAt
       }
     })
 
@@ -69,7 +70,8 @@ export const addContactsToCampaign = new ValidatedMethod({
         [`campaigns.${campaignSlug}`]: {
           updatedAt
         },
-        updatedBy
+        updatedBy,
+        updatedAt
       }
     }, {
       multi: true
@@ -123,6 +125,7 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
     checkAllSlugsExist(campaignSlugs, Campaigns)
 
     const updatedBy = findOneUserRef(this.userId)
+    const updatedAt = new Date()
 
     // a map of contacts.<slug> properties to delete from the campaign
     const $unset = contactSlugs.reduce(($unset, slug) => {
@@ -137,7 +140,8 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
     }, {
       $unset,
       $set: {
-        updatedBy
+        updatedBy,
+        updatedAt
       }
     }, {
       multi: true
@@ -153,7 +157,8 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
           [`campaigns.${campaignSlug}`]: ''
         },
         $set: {
-          updatedBy
+          updatedBy,
+          updatedAt
         }
       }, {
         multi: true
@@ -341,9 +346,11 @@ export const updateContact = new ValidatedMethod({
     }
 
     const updatedBy = findOneUserRef(this.userId)
+    const updatedAt = new Date()
 
     const $set = Object.assign(details, {
-      updatedBy
+      updatedBy,
+      updatedAt
     })
 
     Contacts.update({_id: contactId}, {

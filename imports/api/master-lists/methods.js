@@ -197,7 +197,8 @@ export const updateMasterList = new ValidatedMethod({
     }, {
       $set: {
         name,
-        updatedBy: findOneUserRef(this.userId)
+        updatedBy: findOneUserRef(this.userId),
+        updatedAt: new Date()
       }
     })
 

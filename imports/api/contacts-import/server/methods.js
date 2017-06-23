@@ -95,6 +95,7 @@ function mergeContact (data, contact, createdBy, importId) {
   contact.addresses = addIfCurrentlyEmpty(contact.addresses, data.addresses)
   contact.imports.push(importId)
   contact.updatedBy = createdBy
+  contact.updatedAt = new Date()
 
   const id = contact._id
   delete contact._id

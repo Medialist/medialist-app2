@@ -123,6 +123,7 @@ export const updateCampaign = new ValidatedMethod({
     const userRef = findOneUserRef(this.userId)
 
     data.updatedBy = userRef
+    data.updatedAt = new Date()
 
     const result = Campaigns.update({
       _id
@@ -407,6 +408,7 @@ export const setTeamMates = new ValidatedMethod({
     const result = Campaigns.update(campaign._id, {
       $set: {
         updatedBy: toUserRef(user),
+        updatedAt: new Date(),
         team: findUserRefs(userIds)
       }
     })
