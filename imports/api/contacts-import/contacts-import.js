@@ -4,15 +4,8 @@ import nothing from '/imports/lib/nothing'
 import { CreatedAtSchema } from '/imports/lib/schema'
 import { ContactCreateSchema } from '/imports/api/contacts/schema'
 
-const ContactsImport = new Mongo.Collection('contactsImport')
-
-ContactsImport.allow(nothing)
-
-export default ContactsImport
-
 export const ContactsImportSchema = new SimpleSchema([
-  CreatedAtSchema,
-  {
+  CreatedAtSchema, {
     data: {
       type: [ContactCreateSchema]
     },
@@ -32,3 +25,9 @@ export const ContactsImportSchema = new SimpleSchema([
     }
   }
 ])
+
+const ContactsImport = new Mongo.Collection('contactsImport')
+ContactsImport.attachSchema(ContactsImportSchema)
+ContactsImport.allow(nothing)
+
+export default ContactsImport

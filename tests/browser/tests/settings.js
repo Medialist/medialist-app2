@@ -5,8 +5,8 @@ const faker = require('faker')
 const test = {
   '@tags': ['settings'],
 
-  beforeEach: (t) => {
-    t.user = t.page.authenticate()
+  beforeEach: function (t) {
+    this.user = t.user = t.page.authenticate()
       .register()
   },
 

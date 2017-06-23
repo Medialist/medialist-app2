@@ -17,7 +17,8 @@ const defaults = configure({
   SELENIUM_HOST: '127.0.0.1',
   BROWSER: 'chrome',
   PARALLEL: false,
-  REPORTS_DIR: '.reports'
+  REPORTS_DIR: '.reports',
+  CI: false
 })
 
 const config = {
@@ -45,6 +46,8 @@ const config = {
       selenium_port: defaults.SELENIUM_PORT,
       selenium_host: defaults.SELENIUM_HOST,
       silent: true,
+      end_session_on_fail: defaults.CI,
+      skip_testcases_on_fail: true,
       screenshots: {
         enabled: true,
         on_failure: true,

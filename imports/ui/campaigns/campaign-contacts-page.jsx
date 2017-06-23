@@ -87,12 +87,8 @@ class CampaignContactsPage extends React.Component {
   }
 
   onBatchUpdateStatus = (contacts, status) => {
-    const contactsStatus = contacts.reduce((o, contact) => {
-      o[contact.slug] = status
-      return o
-    }, {})
-
-    batchUpdateStatus.call({_id: this.props.campaign._id, contacts: contactsStatus}, (error) => {
+    const contactSlugs = contacts.map((c) => c.slug)
+    batchUpdateStatus.call({_id: this.props.campaign._id, contacts: contactSlugs, status}, (error) => {
       if (error) {
         console.error(error)
         return this.context.snackbar.error('batch-update-status-failure')

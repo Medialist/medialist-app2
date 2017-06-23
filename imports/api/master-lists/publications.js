@@ -7,5 +7,5 @@ Meteor.publish('master-lists', function () {
     return this.ready()
   }
 
-  return MasterLists.find({ deleted: null })
+  return MasterLists.find({})
 })

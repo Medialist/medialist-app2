@@ -3,6 +3,8 @@ import Embeds from '/imports/api/embeds/embeds'
 import Posts from '/imports/api/posts/posts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
+import Tags from '/imports/api/tags/tags'
+import { EmbedSchema } from '/imports/api/embeds/schema'
 
 Migrations.add({
   version: 1,
@@ -147,6 +149,106 @@ Migrations.add({
         $set: {
           campaigns: campaigns
         }
+      })
+    })
+  }
+})
+
+Migrations.add({
+  version: 7,
+  name: 'Make existing documents conform to schema',
+  up: () => {
+    console.info('Updating campaigns')
+    Campaigns.find().fetch().forEach(campaign => {
+      const set = {
+        tags: Tags.findRefsForCampaigns({ tagSlugs: (campaign.tags || []).map(t => t.slug).filter(s => !!s) })
+      }
+
+      Campaigns.update({
+        _id: campaign._id
+      }, {
+        $set: set
+      })
+    })
+
+    console.info('Updating contacts')
+    Contacts.find().fetch().forEach(contact => {
+      const set = {
+        tags: Tags.findRefsForContacts({ tagSlugs: (contact.tags || []).map(t => t.slug).filter(s => !!s) })
+      }
+
+      Contacts.update({
+        _id: contact._id
+      }, {
+        $set: set
+      })
+    })
+
+    console.info('Updating embeds')
+    Embeds.find().fetch().forEach(embed => {
+      const _id = embed._id
+
+      EmbedSchema.clean(embed)
+      delete embed._id
+      delete embed.createdAt
+      delete embed.createdBy
+      delete embed.updatedAt
+
+      Embeds.update({
+        _id
+      }, {
+        $set: embed
+      })
+    })
+
+    console.info('Updating posts')
+    Posts.find().fetch().forEach(post => {
+      const set = {
+        embeds: (post.embeds || []).map(e => Embeds.findOneEmbedRefForUrl(e.url)).filter(e => !!e),
+        contacts: Contacts.findRefs({contactSlugs: (post.contacts || []).map(c => c.slug)}),
+        campaigns: Campaigns.findRefs({campaignSlugs: (post.campaigns || []).map(c => c.slug)})
+      }
+
+      Posts.update({
+        _id: post._id
+      }, {
+        $set: set
+      })
+    })
+
+    console.info('Updating users')
+    Meteor.users.find().fetch().forEach(user => {
+      const set = {
+        myCampaigns: user.myCampaigns || [],
+        myContacts: user.myContacts || []
+      }
+
+      set.myCampaigns = set.myCampaigns
+        .map(campaign => {
+          if (campaign._id) {
+            return campaign
+          }
+
+          if (campaign.slug) {
+            return Campaigns.findRefs({campaignSlugs: [campaign.slug]})[0]
+          }
+        })
+        .filter(campaign => !!campaign)
+
+      set.myContacts = set.myContacts
+        .map(contact => {
+          if (contact._id) {
+            return contact
+          }
+
+          if (contact.slug) {
+            return Contacts.findRefs({contactSlugs: [contact.slug]})[0]
+          }
+        })
+        .filter(contact => !!contact)
+
+      Meteor.users.update(user._id, {
+        $set: set
       })
     })
   }

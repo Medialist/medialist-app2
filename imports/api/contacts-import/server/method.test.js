@@ -10,6 +10,8 @@ import { user, contact } from '../../../../tests/browser/fixtures/domain'
 let userId = null
 
 describe('importContacts', function () {
+  this.timeout(30000)
+
   beforeEach(function () {
     resetDatabase()
     userId = Meteor.users.insert({...user(), myContacts: []})
@@ -33,14 +35,21 @@ describe('importContacts', function () {
     const observer = ContactsImport.find({_id}).observeChanges({
       changed: function (id, fields) {
         const {results} = fields
-        if (!results || !results.created) return
-        if (results.created.length !== contactsToImport.length) return
+
+        if (!results || !results.created) {
+          return
+        }
+
+        if (results.created.length !== contactsToImport.length) {
+          return
+        }
+
         done()
       }
     })
   })
 
-  it('should mergee contacts', function (done) {
+  it('should merge contacts', function (done) {
     const contactsToImport = Array(10).fill(0).map(contact)
     contactsToImport.forEach((c) => createContact.run.call({userId}, {details: c}))
 
@@ -49,10 +58,16 @@ describe('importContacts', function () {
     const observer = ContactsImport.find({_id}).observeChanges({
       changed: function (id, fields) {
         const {results} = fields
-        if (!results || !results.updated) return
-        if (results.updated.length !== contactsToImport.length) return
-        done()
 
+        if (!results || !results.updated) {
+          return
+        }
+
+        if (results.updated.length !== contactsToImport.length) {
+          return
+        }
+
+        done()
       }
     })
   })

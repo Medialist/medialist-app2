@@ -89,7 +89,7 @@ class ContactsActionsToast extends React.Component {
                   data-id='contact-actions-add-to-my-contacts'
                   style={{width: '21px', height: '21px'}} />
               </Tooltip>
-              {canBatchStatusUpdate && <Dropdown>
+              {canBatchStatusUpdate ? <Dropdown>
                 <Tooltip title='Update status'>
                   <StatusUpdateIcon
                     className='mx3 pointer gray60 hover-blue'
@@ -113,7 +113,7 @@ class ContactsActionsToast extends React.Component {
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenu>
-              </Dropdown>}
+              </Dropdown> : null}
               <Tooltip title='Add Tags'>
                 <TagIcon
                   className='mx3 pointer gray60 hover-blue'

@@ -2,67 +2,83 @@ import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { StatusSchema } from '/imports/lib/schema'
+import { StatusValues } from '/imports/api/contacts/status'
 import { checkAllSlugsExist } from '/imports/lib/slug'
 import findUrl from '/imports/lib/find-url'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
-import Embeds from '/imports/api/embeds/embeds'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
 
-function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, message, status}) {
-  const campaign = Campaigns.findOne({
-    slug: campaignSlug
-  })
+let createEmbed = {
+  run: () => {}
+}
 
-  if (campaign.contacts[contactSlug] && campaign.contacts[contactSlug] === status && !message) {
-    return
+if (Meteor.isServer) {
+  createEmbed = require('/imports/api/embeds/server/methods').createEmbed
+}
+
+function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, message, status}) {
+  if (campaignSlug) {
+    const campaign = Campaigns.findOne({
+      slug: campaignSlug
+    })
+
+    if (campaign.contacts[contactSlug] && campaign.contacts[contactSlug] === status && !message) {
+      return
+    }
   }
 
   const createdBy = findOneUserRef(userId)
-  const now = new Date()
-  const url = findUrl(message)
-  const embed = Embeds.findOneEmbedRef(url)
-  const post = {
+  const embed = createEmbed.run.call({
+    userId
+  }, {
+    url: findUrl(message)
+  })
+
+  const postId = Posts.create({
     // Feedback without a message is rendered as a different post type.
     type: message ? type : 'StatusUpdate',
-    contacts: Contacts.findRefs({contactSlugs: [contactSlug]}),
-    campaigns: Campaigns.findRefs({campaignSlugs: [campaignSlug]}),
+    contactSlugs: [contactSlug],
+    campaignSlugs: campaignSlug ? [campaignSlug] : [],
     embeds: embed ? [embed] : [],
     status,
     message,
-    createdBy,
-    createdAt: now
+    createdBy
+  })
+
+  const contactUpdates = {
+    updatedBy: createdBy,
+    updatedAt: new Date()
   }
 
-  Posts.insert(post)
+  if (campaignSlug) {
+    Campaigns.update({
+      slug: campaignSlug
+    }, {
+      $set: {
+        [`contacts.${contactSlug}`]: status,
+        updatedBy: createdBy,
+        updatedAt: new Date()
+      }
+    })
 
-  Campaigns.update({
-    slug: campaignSlug
-  }, {
-    $set: {
-      [`contacts.${contactSlug}`]: status,
-      updatedAt: now,
-      updatedBy: createdBy
-    }
-  })
+    contactUpdates[`campaigns.${campaignSlug}.updatedAt`] = new Date()
+  }
 
   Contacts.update({
     slug: contactSlug
   }, {
-    $set: {
-      updatedAt: now,
-      updatedBy: createdBy,
-      [`campaigns.${campaignSlug}.updatedAt`]: now
-    }
+    $set: contactUpdates
   })
 
   addToMyFavourites({
     userId,
     contactSlugs: [contactSlug],
-    campaignSlugs: [campaignSlug],
-    updatedAt: now
+    campaignSlugs: campaignSlug ? [campaignSlug] : []
   })
+
+  return postId
 }
 
 const FeedbackOrCoverageSchema = new SimpleSchema([{
@@ -70,18 +86,6 @@ const FeedbackOrCoverageSchema = new SimpleSchema([{
     type: String
   },
   campaignSlug: {
-    type: String
-  },
-  message: {
-    type: String,
-    optional: true
-  }
-},
-  StatusSchema
-])
-
-const UpdatePostSchema = new SimpleSchema([{
-  _id: {
     type: String
   },
   message: {
@@ -103,7 +107,7 @@ export const createFeedbackPost = new ValidatedMethod({
     checkAllSlugsExist([contactSlug], Contacts)
     checkAllSlugsExist([campaignSlug], Campaigns)
 
-    postFeedbackOrCoverage({
+    return postFeedbackOrCoverage({
       type: 'FeedbackPost',
       userId: this.userId,
       contactSlug,
@@ -116,7 +120,20 @@ export const createFeedbackPost = new ValidatedMethod({
 
 export const updatePost = new ValidatedMethod({
   name: 'updatePost',
-  validate: UpdatePostSchema.validator(),
+  validate: new SimpleSchema({
+    _id: {
+      type: String
+    },
+    message: {
+      type: String,
+      optional: true
+    },
+    status: {
+      type: String,
+      allowedValues: StatusValues,
+      optional: true
+    }
+  }).validator(),
   run ({ _id, message, status }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
@@ -132,7 +149,35 @@ export const updatePost = new ValidatedMethod({
       throw new Meteor.Error('You can only edit posts you created')
     }
 
-    Posts.update({ _id }, {$set: { message, status }})
+    const userRef = findOneUserRef(this.userId)
+    const updatedAt = new Date()
+
+    const $set = {
+      updatedBy: userRef,
+      updatedAt
+    }
+
+    if (message) {
+      $set.message = message
+
+      const embed = createEmbed.run.call({
+        userId: this.userId
+      }, {
+        url: findUrl(message)
+      })
+
+      $set.embeds = embed ? [embed] : []
+    }
+
+    if (status) {
+      $set.status = status
+    }
+
+    Posts.update({
+      _id
+    }, {
+      $set: $set
+    })
 
     if (status !== post.status) {
       post.campaigns.forEach((campaign) => {
@@ -141,8 +186,21 @@ export const updatePost = new ValidatedMethod({
         }, {
           $set: {
             [`contacts.${post.contacts[0].slug}`]: status,
-            updatedAt: new Date(),
-            updatedBy: post.createdBy
+            updatedBy: userRef,
+            updatedAt
+          }
+        })
+      })
+    }
+
+    if (post.type === 'NeedToKnowPost') {
+      post.contacts.forEach((contact) => {
+        Contacts.update({
+          slug: contact.slug
+        }, {
+          $set: {
+            updatedBy: userRef,
+            updatedAt
           }
         })
       })
@@ -161,7 +219,7 @@ export const createCoveragePost = new ValidatedMethod({
     checkAllSlugsExist([contactSlug], Contacts)
     checkAllSlugsExist([campaignSlug], Campaigns)
 
-    postFeedbackOrCoverage({
+    return postFeedbackOrCoverage({
       type: 'CoveragePost',
       userId: this.userId,
       contactSlug,
@@ -189,40 +247,16 @@ export const createNeedToKnowPost = new ValidatedMethod({
 
     checkAllSlugsExist([contactSlug], Contacts)
 
-    const createdBy = findOneUserRef(this.userId)
-    const createdAt = new Date()
-    const url = findUrl(message)
-    const embed = Embeds.findOneEmbedRef(url)
-    const post = {
+    return postFeedbackOrCoverage({
       type: 'NeedToKnowPost',
-      contacts: Contacts.findRefs({contactSlugs: [contactSlug]}),
-      campaigns: [],
-      embeds: embed ? [embed] : [],
-      message,
-      createdBy,
-      createdAt
-    }
-
-    Posts.insert(post)
-
-    Contacts.update({
-      slug: contactSlug
-    }, {
-      $set: {
-        updatedAt: createdAt,
-        updatedBy: createdBy
-      }
-    })
-
-    addToMyFavourites({
       userId: this.userId,
-      contactSlugs: [contactSlug],
-      updatedAt: createdAt
+      contactSlug,
+      message
     })
   }
 })
 
-export const remove = new ValidatedMethod({
+export const removePost = new ValidatedMethod({
   name: 'deletePost',
   validate: new SimpleSchema({
     _ids: {

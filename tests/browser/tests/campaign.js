@@ -8,8 +8,53 @@ const test = {
   '@tags': ['campaign'],
 
   beforeEach: function (t) {
-    t.page.authenticate()
+    this.user = t.page.authenticate()
       .register()
+  },
+
+  'Should favourite and unfavourite a campaign': function (t) {
+    t.createDomain(['campaign'], (campaign, done) => {
+      const campaignPage = t.page.campaign()
+        .navigate(campaign)
+        .favouriteCampaign()
+
+      t.page.main().waitForSnackbarMessage('campaign-info-favourite-success')
+
+      t.perform((done) => {
+        t.db.findUser({
+          profile: {
+            name: this.user.name
+          }
+        })
+        .then((doc) => {
+          t.assert.ok(doc.myCampaigns.find(c => c._id === campaign._id))
+
+          done()
+        })
+      })
+
+      campaignPage.unFavouriteCampaign()
+
+      t.page.main().waitForSnackbarMessage('campaign-info-unfavourite-success')
+
+      t.perform((done) => {
+        t.db.findUser({
+          profile: {
+            name: this.user.name
+          }
+        })
+        .then((doc) => {
+          t.assert.ok(!doc.myCampaigns.find(c => c._id === campaign._id))
+
+          done()
+        })
+      })
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   },
 
   'Should edit an existing campaign': function (t) {
@@ -216,7 +261,7 @@ const test = {
 
     t.createDomain(['campaign', 'campaignList'], (campaign, campaignList, done) => {
       t.perform((done) => {
-        t.tagCampaigns([campaign], [tag], () => done())
+        t.tagCampaign(campaign, [tag], () => done())
       })
 
       const campaignPage = t.page.campaign()
@@ -252,7 +297,7 @@ const test = {
 
     t.createDomain(['campaign', 'campaignList'], (campaign, campaignList, done) => {
       t.perform((done) => {
-        t.tagCampaigns([campaign], [tag], () => done())
+        t.tagCampaign(campaign, [tag], () => done())
       })
 
       const campaignPage = t.page.campaign()
@@ -352,12 +397,12 @@ const test = {
         t.db.findContact({
           name: contact1.name
         })
-        .then((doc) => {
+        .then((updatedContact) => {
           // should have updated the contact updatedAt
-          t.assert.ok(doc.updatedAt.getTime() > originalContact.updatedAt.getTime())
+          t.assert.ok(updatedContact.updatedAt.getTime() > originalContact.updatedAt.getTime())
 
           // and the link to the campaign
-          t.assert.equal(doc.campaigns[campaign.slug].updatedAt.getTime(), doc.updatedAt.getTime())
+          t.assert.ok(updatedContact.campaigns[campaign.slug].updatedAt.getTime() > originalContact.campaigns[campaign.slug].updatedAt.getTime())
 
           done()
         })

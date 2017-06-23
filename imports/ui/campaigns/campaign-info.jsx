@@ -9,7 +9,7 @@ import InfoHeader from '/imports/ui/lists/info-header'
 import AddToMasterListModal from '/imports/ui/master-lists/add-to-master-list-modal'
 import AddTagsModal from '/imports/ui/tags/add-tags-modal'
 import Tooltip from '/imports/ui/navigation/tooltip'
-import { update } from '/imports/api/campaigns/methods'
+import { updateCampaign } from '/imports/api/campaigns/methods'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import CampaignListLink from '/imports/ui/master-lists/campaign-list-link'
 import { setMasterLists } from '/imports/api/master-lists/methods'
@@ -84,7 +84,7 @@ const CampaignInfo = withSnackbar(React.createClass({
   },
 
   onAvatarChange (event) {
-    update.call({
+    updateCampaign.call({
       _id: this.props.campaign._id,
       avatar: event.url,
       clientName: this.props.campaign.client ? this.props.campaign.client.name : null
@@ -110,11 +110,16 @@ const CampaignInfo = withSnackbar(React.createClass({
     Meteor.call('campaigns/toggle-favourite', this.props.campaign.slug, (error, state) => {
       if (error) {
         console.error('Could not toggle favourite status for campaign', error)
-
         this.props.snackbar.error('campaign-favourite-failure')
+
+        return
       }
 
-      this.props.snackbar.show(`Campaign ${state ? 'added to' : 'removed from'} your favourites`, 'campaign-info-favourite-success')
+      if (state) {
+        this.props.snackbar.show(`Campaign added to your favourites`, 'campaign-info-favourite-success')
+      } else {
+        this.props.snackbar.show(`Campaign removed from your favourites`, 'campaign-info-unfavourite-success')
+      }
     })
   },
 
@@ -135,6 +140,7 @@ const CampaignInfo = withSnackbar(React.createClass({
     const { name, client, avatar, purpose, links, team, tags, masterLists } = this.props.campaign
     const isFavourite = user.myCampaigns.some((m) => m._id === campaign._id)
     const tooltip = isFavourite ? 'Remove from My Campaigns' : 'Add to My Campaigns'
+    const favouriteButtonId = isFavourite ? 'remove-from-my-campaigns-button' : 'add-to-my-campaigns-button'
     return (
       <div data-id='campaign-details'>
         <div className='flex items-start mb1' data-id='campaign-info'>
@@ -145,7 +151,7 @@ const CampaignInfo = withSnackbar(React.createClass({
             <div className='semibold f-xl mb1'>
               <span data-id='campaign-name'>{name}</span>
               <Tooltip title={tooltip}>
-                <FavouritesIcon className='mx1 pointer' onClick={onToggleFavourite} style={{width: '18px', height: '18px', fill: isFavourite ? GOLD : GREY60}} />
+                <FavouritesIcon data-id={favouriteButtonId} className='mx1 pointer' onClick={onToggleFavourite} style={{width: '18px', height: '18px', fill: isFavourite ? GOLD : GREY60}} />
               </Tooltip>
             </div>
             <div className='f-sm gray10 mb2' data-id='campaign-client'>{client && client.name}</div>

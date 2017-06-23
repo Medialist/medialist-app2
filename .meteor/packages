@@ -28,3 +28,5 @@ poetic:accounts-passwordless
 email
 felixble:server-templates
 percolate:migrations
+aldeed:collection2
+dandv:rate-limit

@@ -49,6 +49,16 @@ exports.assertion = function (actual, expected) {
       }
     }
 
+    for (let k = 0; k < expected.addresses.length; k++) {
+      const address = expected.addresses[k]
+
+      const notSame = Object.keys(address).some(function (field) {
+        return expected.addresses[k][field] !== actual.addresses[k][field]
+      })
+
+      if (notSame) return false
+    }
+
     return true
   }
 }

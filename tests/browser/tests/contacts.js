@@ -9,8 +9,8 @@ const assertions = require('../fixtures/assertions')
 const test = {
   '@tags': ['contacts'],
 
-  beforeEach: (t) => {
-    t.page.authenticate()
+  beforeEach: function (t) {
+    this.user = t.page.authenticate()
       .register()
   },
 

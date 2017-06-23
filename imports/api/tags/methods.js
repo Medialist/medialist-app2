@@ -6,8 +6,9 @@ import Tags from '/imports/api/tags/tags'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import { checkAllSlugsExist, cleanSlug } from '/imports/lib/slug'
+import { findOneUserRef } from '/imports/api/users/users'
 
-const createTagsWhereNecessary = (names) => {
+const createTagsWhereNecessary = (userId, names, type) => {
   const tags = names.map((n) => ({
     name: n,
     slug: cleanSlug(n)
@@ -16,38 +17,24 @@ const createTagsWhereNecessary = (names) => {
   const tagSlugs = tags.map((t) => t.slug)
 
   // find all existing tags
-  const existingTags = Tags.find({
-    slug: {
-      $in: tagSlugs
-    }
-  }).fetch()
-
-  // find any new tags
-  const newTags = tags
-    .filter((t1) => !existingTags.find((t2) => t2.slug === t1.slug))
-    .map((t) => (
-      Object.assign(t, {
-        contactsCount: 0,
-        campaignsCount: 0
-      })
-    ))
+  const existingTags = Tags[`findRefsFor${type}`]({tagSlugs})
 
   // insert missing tags
-  newTags
-    .forEach((t) => Tags.insert(t))
+  tags
+    .filter((t1) => !existingTags.find((t2) => t2.slug === t1.slug))
+    .map((tag) => (
+      Object.assign(tag, {
+        contactsCount: 0,
+        campaignsCount: 0,
+        createdBy: findOneUserRef(userId)
+      })
+    ))
+    .map((tag) => Tags.insert(tag))
 
-  return existingTags.concat(newTags)
+  return Tags[`findRefsFor${type}`]({tagSlugs})
 }
 
-const updateTaggedItems = (userId, Collection, countField, slugs, t) => {
-  const now = new Date()
-
-  const tag = {
-    name: t.name,
-    slug: t.slug,
-    count: t[countField]
-  }
-
+const updateTaggedItems = (userId, Collection, countField, slugs, tag) => {
   // Add tags to contacts / campaigns.
   // Returns number of contacts modfied.
   const added = Collection.update({
@@ -60,9 +47,6 @@ const updateTaggedItems = (userId, Collection, countField, slugs, t) => {
   }, {
     $push: {
       tags: tag
-    },
-    $set: {
-      updatedAt: now
     }
   }, {
     multi: true
@@ -81,7 +65,7 @@ const updateTaggedItems = (userId, Collection, countField, slugs, t) => {
 
   // Update counts on tags
   Tags.update({
-    slug: t.slug
+    slug: tag.slug
   }, {
     $inc: {
       [countField]: added
@@ -201,10 +185,10 @@ export const batchAddTags = new ValidatedMethod({
 
     checkAllSlugsExist(slugs, Collection)
 
-    const tags = createTagsWhereNecessary(names)
+    const tags = createTagsWhereNecessary(this.userId, names, type)
 
     tags
-      .forEach((t) => updateTaggedItems(this.userId, Collection, countField, slugs, t))
+      .forEach((tag) => updateTaggedItems(this.userId, Collection, countField, slugs, tag))
   }
 })
 
@@ -238,13 +222,7 @@ export const setTags = new ValidatedMethod({
     const countField = `${type.toLowerCase()}Count`
     const Collection = type === 'Contacts' ? Contacts : Campaigns
 
-    setTaggedItems(this.userId, _id, createTagsWhereNecessary(tags)
-      // Update Collection with tags where missing.
-      .map((t) => ({
-        name: t.name,
-        slug: t.slug,
-        count: t[countField]
-      })), Collection, countField
+    setTaggedItems(this.userId, _id, createTagsWhereNecessary(this.userId, tags, type), Collection, countField
     )
   }
 })

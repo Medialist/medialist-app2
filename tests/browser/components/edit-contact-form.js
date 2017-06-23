@@ -16,6 +16,7 @@ module.exports = {
     mediumInput: '[data-id=social-input-medium]',
     pinterestInput: '[data-id=social-input-pinterest]',
     addSocialButton: '[data-id=add-social-button]',
+    addAddressButton: '[data-id=add-address-button]',
     submitButton: '[data-id=edit-contact-form-submit-button]',
     cancelButton: '[data-id=edit-contact-form-cancel-button]',
     deleteButton: '[data-id=delete-contact-button]',
@@ -41,6 +42,12 @@ module.exports = {
 
       contact.socials.forEach((social, index) => {
         this.assert.attributeEquals(`[data-id=social-input-${index}]`, 'value', social.value)
+      })
+
+      contact.addresses.forEach((address, index) => {
+        Object.keys(address).forEach(field => {
+          this.assert.attributeEquals(`[data-id=address-input-${field}-${index}]`, 'value', address[field])
+        })
       })
 
       return this
@@ -111,6 +118,28 @@ module.exports = {
         this.waitForElementVisible(input)
         this.clear(input)
         this.setValue(input, social.value)
+      })
+
+      contact.addresses.forEach((address, index) => {
+        const input = `[data-id=address-input-street-${index}]`
+
+        if (index > 0) {
+          this.ifElementNotPresent(input, () => {
+            this.waitForElementVisible('@addAddressButton')
+            this.click('@addAddressButton')
+            this.waitForElementVisible(input)
+          })
+        }
+
+        Object.keys(address).forEach((field) => {
+          const fieldSelector = `[data-id=address-input-${field}-${index}]`
+
+          if (contact.addresses[index][field]) {
+            this.waitForElementVisible(fieldSelector)
+            this.clear(fieldSelector)
+            this.setValue(fieldSelector, contact.addresses[index][field])
+          }
+        })
       })
 
       return this
