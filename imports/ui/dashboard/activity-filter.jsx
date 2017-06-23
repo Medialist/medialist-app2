@@ -34,7 +34,8 @@ const Filter = ({name, selected, onClick}) => {
 const ActivityFilter = React.createClass({
   propTypes: {
     selected: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
+    campaign: PropTypes.object
   },
   getInitialState () {
     return { open: false }
@@ -63,8 +64,11 @@ const ActivityFilter = React.createClass({
           </span>
           <DropdownMenu width={213} open={open} onDismiss={toggleDropdown}>
             <nav className='py1'>
-              {filterNames.map((filterName) => (
-                <Filter key={filterName} name={filterName} selected={filterName === selected} onClick={() => this.onLinkClick(filterName)} />)
+              {filterNames
+                // remove need-to-knows from campaign page
+                .filter((filterName) => this.props.campaign ? filterName !== 'Need-to-knows' : true)
+                .map((filterName) => (
+                  <Filter key={filterName} name={filterName} selected={filterName === selected} onClick={() => this.onLinkClick(filterName)} />)
               )}
             </nav>
           </DropdownMenu>

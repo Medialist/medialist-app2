@@ -26,6 +26,12 @@ const ActivityFeed = React.createClass({
 
   onFilterChange (filterType) {
     this.setState({ filterType })
+
+    if (filterType === 'Need-to-knows') {
+      this.setState({
+        filterCampaign: null
+      })
+    }
   },
 
   onCampaignFilterChange (filterCampaign) {
@@ -41,11 +47,13 @@ const ActivityFeed = React.createClass({
         <div className='flex justify-start items-center pb3'>
           <ActivityFilter
             selected={filterType}
-            onChange={onFilterChange} />
+            onChange={onFilterChange}
+            campaign={campaign} />
           {!campaign && <span className='gray80 flex-none'>|</span>}
           {!campaign && <CampaignFilterContainer
             disabled={filterType === filterNames[3]}
             contact={contact}
+            initialCampaignFilter={filterCampaign}
             onCampaignFilter={onCampaignFilterChange}
           />}
           <hr className='flex-auto pl2' style={{height: 1}} />
@@ -92,6 +100,7 @@ const ActivityListContainer = createContainer((props) => {
     'Need-to-knows': ['NeedToKnowPost'],
     'Updates': ['StatusUpdate', 'AddContactsToCampaign']
   }
+
   const types = typesForFilter[filter] || Posts.types
   const subs = [
     Meteor.subscribe('campaign-favourites'),
