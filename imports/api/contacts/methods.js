@@ -436,7 +436,7 @@ export const batchUpdateStatus = new ValidatedMethod({
     if (!campaign) {
       throw new Meteor.Error('Can\'t find campaign')
     }
-    console.log('~~~~~~~~~~~~~~', {contacts})
+
     checkAllSlugsExist(contacts, Contacts)
 
     const campaignContactsStatus = contacts.reduce((o, slug) => {
