@@ -179,8 +179,8 @@ const CampaignInfo = withSnackbar(React.createClass({
           <InfoHeader name='Team' onClick={onEditTeamClick} data-id='edit-campaign-team-members-button' />
           <div className='px2 py3'>
             {team.map((teamMember, ind) => (
-              <span className='inline-block' style={{marginRight: '5px', marginBottom: '10px'}}>
-                <CircleAvatar {...teamMember} size={38} key={ind} showTooltip />
+              <span className='inline-block' style={{marginRight: '5px', marginBottom: '10px'}} key={ind}>
+                <CircleAvatar {...teamMember} size={38} showTooltip />
               </span>
             ))}
           </div>
