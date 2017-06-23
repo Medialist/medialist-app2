@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import CampaignSelector from '/imports/ui/feedback/campaign-selector'
+import ContactSelector from '/imports/ui/feedback/contact-selector'
 import StatusMap from '/imports/api/contacts/status'
 import StatusLabel from '/imports/ui/feedback/status-label'
 import StatusSelector from '/imports/ui/feedback/status-selector'
@@ -118,7 +119,9 @@ export class FeedbackInput extends Component {
     focused: PropTypes.bool.isRequired,
     onSubmit: PropTypes.func.isRequired,
     message: PropTypes.string,
-    isEdit: PropTypes.bool
+    isEdit: PropTypes.bool,
+    selectableContacts: PropTypes.array,
+    currentCampaign: PropTypes.object
   }
 
   constructor (props) {
@@ -173,18 +176,21 @@ export class FeedbackInput extends Component {
           disabled={!this.state.message || this.state.posting || !this.state.status || !this.state.campaign}
           onPost={this.onSubmit}
           isEdit={this.props.isEdit}>
-          <CampaignSelector
-            contact={this.props.contact}
-            onChange={this.onFieldChange}
-            campaigns={this.props.campaigns}
-            campaign={this.state.campaign} />
-          <div className='ml1 inline-block'>
-            <StatusSelector
-              buttonStyle={{padding: '6px 15px 7px'}}
-              status={this.state.status}
+          {this.props.selectableContacts ? (
+            <ContactSelector
+              selectedContact={this.props.contact}
+              selectedStatus={this.state.status}
+              campaign={this.props.currentCampaign}
+              contacts={this.props.selectableContacts}
+              onContactChange={this.onFieldChange}
+              onStatusChange={this.onFieldChange} />
+          ) : (
+            <CampaignSelector
+              contact={this.props.contact}
               onChange={this.onFieldChange}
-              disabled={!this.state.campaign} />
-          </div>
+              campaigns={this.props.campaigns}
+              campaign={this.state.campaign} />
+          )}
         </PostBoxButtons>
       </div>
     )

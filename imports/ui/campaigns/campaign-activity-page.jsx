@@ -146,7 +146,7 @@ const CampaignActivityPage = React.createClass({
               contacts={contacts}
               onFeedback={onFeedback}
               onCoverage={onCoverage} />
-            <ActivityFeed data-id='campaign-activity-feed' campaign={campaign} />
+            <ActivityFeed data-id='campaign-activity-feed' campaign={campaign} contacts={contacts} />
           </div>
           <div className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
             <CampaignContactList contacts={contacts.slice(0, 7)} contactsCount={contactsCount} campaign={campaign} onAddContactClick={onAddContactClick} />

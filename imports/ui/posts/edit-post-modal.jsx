@@ -39,7 +39,15 @@ class EditPost extends React.Component {
           {icon}<span className='mx1'>Edit</span>{type.replace(/Post/g, '')}
         </div>
         <div className='p3'>
-          <Component {...post} onSubmit={this.props.onUpdate.bind(null, _id)} focused contact={contacts[0]} campaign={campaign} isEdit />
+          <Component
+            {...post}
+            onSubmit={this.props.onUpdate.bind(null, _id)}
+            focused
+            contact={contacts[0]}
+            campaign={campaign}
+            isEdit
+            selectableContacts={this.props.selectableContacts}
+            currentCampaign={this.props.currentCampaign} />
         </div>
       </div>
     )

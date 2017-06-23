@@ -224,6 +224,9 @@ class Post extends React.Component {
           post={this.props}
           onUpdate={this.updatePost}
           onDismiss={this.closeMenu}
+          campaign={this.props.campaigns[0]}
+          selectableContacts={this.props.selectableContacts}
+          currentCampaign={this.props.currentCampaign}
         />
       </article>
     )
@@ -333,25 +336,29 @@ const FeedbackPostSummary = ({label, campaigns, contacts, status, contact, campa
   )
 }
 
-export const FeedbackPost = ({item, currentUser, contact, campaign}) => (
-  <Post
-    {...item}
-    currentUser={currentUser}
-    icon={<FeedFeedbackIcon className='blue-dark' style={{verticalAlign: -2}} />}
-    summary={<FeedbackPostSummary {...item} label='logged feedback' contact={contact} campaign={campaign} />}
-    details={
-      <div className='border-gray80 border-top gray10' data-id='post-message'>
-        {hideTextIfOnlyUrl(item)}
-        {item.embeds && item.embeds[0] ? (
-          <div className='pb2 mt4'>
-            <LinkPreview {...item.embeds[0]} />
-          </div>
-        ) : null}
-      </div>
-    }
-    editable
-  />
-)
+export const FeedbackPost = ({item, currentUser, contact, campaign, contacts}) => {
+  return (
+    <Post
+      {...item}
+      selectableContacts={contacts}
+      currentCampaign={campaign}
+      currentUser={currentUser}
+      icon={<FeedFeedbackIcon className='blue-dark' style={{verticalAlign: -2}} />}
+      summary={<FeedbackPostSummary {...item} label='logged feedback' contact={contact} campaign={campaign} />}
+      details={
+        <div className='border-gray80 border-top gray10' data-id='post-message'>
+          {hideTextIfOnlyUrl(item)}
+          {item.embeds && item.embeds[0] ? (
+            <div className='pb2 mt4'>
+              <LinkPreview {...item.embeds[0]} />
+            </div>
+          ) : null}
+        </div>
+      }
+      editable
+    />
+  )
+}
 
 export const CoveragePost = ({item, currentUser, contact, campaign}) => (
   <Post

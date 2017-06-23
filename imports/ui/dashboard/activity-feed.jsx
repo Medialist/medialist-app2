@@ -14,7 +14,8 @@ const ActivityFeed = React.createClass({
   propTypes: {
     campaign: PropTypes.object,
     contact: PropTypes.object,
-    'data-id': PropTypes.string
+    'data-id': PropTypes.string,
+    contacts: PropTypes.array
   },
 
   getInitialState () {
@@ -34,7 +35,7 @@ const ActivityFeed = React.createClass({
 
   render () {
     const { onFilterChange, onCampaignFilterChange } = this
-    const { contact, campaign } = this.props
+    const { contact, campaign, contacts } = this.props
     const { filterType, filterCampaign } = this.state
     return (
       <div data-id={this.props['data-id']}>
@@ -54,7 +55,7 @@ const ActivityFeed = React.createClass({
           {(nearBottom) => (
             <SubscriptionLimitContainer wantMore={nearBottom}>
               {(limit) => (
-                <ActivityListContainer limit={limit} filter={filterType} campaign={filterCampaign || campaign} contact={contact} />
+                <ActivityListContainer limit={limit} filter={filterType} campaign={filterCampaign || campaign} contact={contact} contacts={contacts} />
               )}
             </SubscriptionLimitContainer>
           )}
