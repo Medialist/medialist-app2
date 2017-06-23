@@ -1,6 +1,7 @@
 'use strict'
 
 const seleniumServer = require('selenium-server/package.json')
+const tmp = require('tmp')
 
 const configure = (obj) => {
   Object.keys(obj).forEach(key => {
@@ -30,7 +31,7 @@ const config = {
   custom_assertions_path: 'tests/browser/assertions',
 
   selenium: {
-    start_process: true,
+    start_process: false,
     server_path: `./node_modules/selenium-server/lib/runner/selenium-server-standalone-${seleniumServer.version}.jar`,
     host: defaults.SELENIUM_HOST,
     port: defaults.SELENIUM_PORT,
@@ -62,8 +63,24 @@ const config = {
           browser: 'ALL'
         },
         chromeOptions: {
-          args: ['window-size=1440,1024']
+          args: ['window-size=1440,1024', '--headless'],
+          binary: '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary'
         }
+      }
+    },
+    chrome: {
+      end_session_on_fail: false,
+      selenium_port: 9515,
+      selenium_host: 'localhost',
+      default_path_prefix: '',
+      desiredCapabilities: {
+        browserName: 'chrome',
+        chromeOptions: {
+          args: ['--headless'],
+          binary: '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary'
+        },
+        acceptSslCerts: true,
+        javascriptEnabled: true
       }
     }
   }
