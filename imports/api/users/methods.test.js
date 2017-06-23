@@ -112,6 +112,7 @@ describe('User update method', function () {
     assert.ok(updatedCampaigns[0].team.find(t => t._id === users[2]._id))
     assert.equal(updatedCampaigns[0].team.find(t => t._id === users[2]._id).name, users[2].profile.name)
     assert.equal(updatedCampaigns[0].updatedBy.name, users[0].profile.name)
+    assert.equal(updatedCampaigns[0].createdBy.name, users[0].profile.name)
 
     assert.equal(updatedCampaigns[1].team.length, 2)
     assert.ok(updatedCampaigns[1].team.find(t => t._id === users[0]._id))
@@ -119,6 +120,7 @@ describe('User update method', function () {
     assert.ok(updatedCampaigns[1].team.find(t => t._id === users[1]._id))
     assert.equal(updatedCampaigns[1].team.find(t => t._id === users[1]._id).name, data.name)
     assert.equal(updatedCampaigns[1].updatedBy.name, data.name)
+    assert.equal(updatedCampaigns[1].createdBy.name, data.name)
 
     updateContact.run.call({
       userId: users[0]._id
