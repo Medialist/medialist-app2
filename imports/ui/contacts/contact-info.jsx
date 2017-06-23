@@ -152,7 +152,7 @@ const ContactInfo = withSnackbar(React.createClass({
                 to={`/campaign/${slug}`}
                 className='mr1 mb1'
               >
-                <SquareAvatar name={name} avatar={avatar} size={38} />
+                <SquareAvatar name={name} avatar={avatar} size={38} showTooltip />
               </Link>
             ))}
             {campaigns.length > 5 && (
