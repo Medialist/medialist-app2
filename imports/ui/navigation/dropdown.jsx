@@ -40,7 +40,7 @@ const Container = ({open, top = 0, children}) => (
     display: open ? null : 'none',
     position: 'relative',
     top
-  }}>
+  }} data-id='dropdown-menu'>
     {children}
   </div>
 )

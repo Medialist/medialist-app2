@@ -8,6 +8,7 @@ import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
 import Contacts from '/imports/api/contacts/contacts'
 import { ContactCreateSchema } from '/imports/api/contacts/schema'
+import { StatusSchema } from '/imports/lib/schema'
 import MasterLists from '/imports/api/master-lists/master-lists'
 
 /*
@@ -409,5 +410,56 @@ export const searchOutlets = new ValidatedMethod({
       .filter((s) => s.match(termRegExp))
 
     return suggestions
+  }
+})
+
+export const batchUpdateStatus = new ValidatedMethod({
+  name: 'batchUpdateStatus',
+
+  validate: new SimpleSchema([{
+    _id: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    },
+    contacts: {
+      type: [String]
+    }
+  }, StatusSchema]).validator(),
+
+  run ({_id, contacts, status}) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    const campaign = Campaigns.findOne({ _id })
+
+    if (!campaign) {
+      throw new Meteor.Error('Can\'t find campaign')
+    }
+
+    checkAllSlugsExist(contacts, Contacts)
+
+    const campaignContactsStatus = contacts.reduce((o, slug) => {
+      o[slug] = status
+      return o
+    }, {})
+
+    const update = {
+      $set: {
+        contacts: Object.assign({}, campaign.contacts, campaignContactsStatus),
+        updatedBy: findOneUserRef(this.userId),
+        updatedAt: new Date()
+      }
+    }
+
+    Campaigns.update({ _id }, update)
+
+    Posts.create({
+      type: 'StatusUpdate',
+      contactSlugs: contacts,
+      campaignSlugs: [campaign.slug],
+      status: status,
+      createdBy: findOneUserRef(this.userId)
+    })
   }
 })
