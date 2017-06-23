@@ -151,7 +151,7 @@ const CampaignInfo = withSnackbar(React.createClass({
             <div className='semibold f-xl mb1'>
               <span data-id='campaign-name'>{name}</span>
               <Tooltip title={tooltip}>
-                <FavouritesIcon data-id={favouriteButtonId} className='mx1 pointer' onClick={onToggleFavourite} style={{width: '18px', height: '18px', fill: isFavourite ? GOLD : GREY60}} />
+                <FavouritesIcon data-id={favouriteButtonId} className='mx1 pointer' onClick={onToggleFavourite} style={{width: '18px', height: '18px', fill: isFavourite ? GOLD : GREY60}} svgStyle={{verticalAlign: '0px'}} />
               </Tooltip>
             </div>
             <div className='f-sm gray10 mb2' data-id='campaign-client'>{client && client.name}</div>
