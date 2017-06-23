@@ -3,7 +3,6 @@
   "version": "9.0.0",
   "private": true,
   "scripts": {
-    "postinstall": "run-s build:*",
     "start": "run-s build watch:server:prod",
     "test": "run-p lint ava",
     "test:server": "meteor test --once --driver-package dispatch:mocha --port 3100",

@@ -345,6 +345,19 @@ npm run test:browser -- --tag contacts
 
 More generally anything after `--` will be passed to the nightwatch executable.
 
+## Infrastructure and Deployment
+
+You can build and run medialist as Docker container.
+
+```sh
+docker build -t medialist .
+```
+
+```sh
+docker run -p 3000:3000 -e "MONGO_URL=mongodb://<db url here>" -e "ROOT_URL=<deploy url here>" -e "METEOR_SETTINGS=$(cat settings.json)" medialist
+```
+
+
 [Basscss]: http://www.basscss.com/
 [postcss]: http://postcss.org/
 [postcss-custom-media]: https://github.com/postcss/postcss-custom-media
