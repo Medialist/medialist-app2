@@ -71,7 +71,23 @@ export const ContactCreateSchema = new SimpleSchema({
   },
   addresses: {
     type: [Object],
-    defaultValue: []
+    autoValue: function () {
+      if (!this.value) {
+        return []
+      }
+
+      return this.value.filter(address => {
+        let allEmpty = true
+
+        for (var key in address) {
+          if (address[key]) {
+            allEmpty = false
+          }
+        }
+
+        return !allEmpty
+      })
+    }
   },
   'addresses.$.street': {
     type: String,

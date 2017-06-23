@@ -425,4 +425,37 @@ describe('createContact', function () {
       contactSlugs: [slug]
     })[0])
   })
+
+  it('should strip empty addresses', function () {
+    const users = createTestUsers(1)
+    const details = contact()
+
+    assert.equal(details.addresses.length, 2)
+
+    details.addresses.push({
+      street: '',
+      city: '',
+      postcode: '',
+      country: ''
+    })
+
+    assert.equal(details.addresses.length, 3)
+
+    const slug = createContact.run.call({
+      userId : users[0]._id
+    }, {
+      details: details
+    })
+
+    const createdContact = Contacts.findOne({
+      slug: slug
+    })
+    assert.equal(createdContact.addresses.length, 2)
+
+    createdContact.addresses.forEach(address => {
+      Object.keys(address).forEach(field => {
+        assert.ok(address[field])
+      })
+    })
+  })
 })

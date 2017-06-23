@@ -82,7 +82,7 @@ const EditContact = withSnackbar(React.createClass({
       emails: atLeastOne(contact.emails, {label: 'Email', value: ''}),
       phones: atLeastOne(contact.phones, {label: 'Phone', value: ''}),
       socials,
-      addresses: contact.addresses || [emptyAddress],
+      addresses: atLeastOne(contact.addresses, { street: '', city: '', postcode: '', country: '' }),
       fixHeaderPosition: false,
       errorHeader: null,
       deleteMenuOpen: false
@@ -194,6 +194,10 @@ const EditContact = withSnackbar(React.createClass({
     this.onAdd('socials', {label: 'Website', value: ''})
   },
 
+  onAddAddress () {
+    this.onAdd('addresses', { street: '', city: '', postcode: '', country: '' })
+  },
+
   inputSize (value) {
     if (!value || value.length < 11) return 12
     return value.length + 2
@@ -235,8 +239,9 @@ const EditContact = withSnackbar(React.createClass({
   },
 
   render () {
-    const { onAvatarChange, onAvatarError, onAddJob, onAddEmail, onAddPhone, onAddSocial, inputSize, onScrollChange, onDismissErrorBanner } = this
+    const { onAvatarChange, onAvatarError, onAddJob, onAddEmail, onAddPhone, onAddSocial, onAddAddress, inputSize, onScrollChange, onDismissErrorBanner } = this
     const { name, avatar, outlets, emails, phones, socials, addresses, fixHeaderPosition } = this.state
+
     return (
       <Form data-id='edit-contact-form' className='relative' onSubmit={this.onSubmit} ref={(form) => { this.form = form }}>
         <ValidationBanner error={this.state.errorHeader} onDismiss={onDismissErrorBanner} />
@@ -364,9 +369,9 @@ const EditContact = withSnackbar(React.createClass({
               ))}
             </FormSection>
 
-            <FormSection label='Address'>
+            <FormSection label='Addresses' addLinkText='Add another address' addLinkId='add-address-button' onAdd={onAddAddress} addLinkClassName=''>
               {addresses.map(({street, city, postcode, country}, index) => (
-                <div key={`contact-addresses-${index}`}>
+                <div className='clearfix' key={`contact-addresses-${index}`}>
                   <FormField icon={<AddressIcon />}>
                     <Input
                       className='col col-12 input placeholder-gray60'

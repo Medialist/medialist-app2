@@ -60,6 +60,11 @@ function contact () {
       city: faker.address.city(),
       postcode: faker.random.alphaNumeric(),
       country: faker.address.country()
+    }, {
+      street: faker.address.streetAddress(),
+      city: faker.address.city(),
+      postcode: faker.random.alphaNumeric(),
+      country: faker.address.country()
     }]
   }
 }
