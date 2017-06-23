@@ -273,9 +273,9 @@ export const createAddContactsToCampaignPost = new ValidatedMethod({
 
     const type = 'AddContactsToCampaign'
     const contacts = Contacts.findRefs({contactSlugs})
-    const campaigns = Campaigns.findRefs({campaignSlugs: [campaignSlug]})
     const createdBy = findOneUserRef(this.userId)
-    const post = Posts.findOne({ type, contacts, campaigns, createdBy })
+
+    const post = Posts.findOne({type, 'contacts._id': {$all: contacts.map((c) => c._id)}, 'campaigns.slug': campaignSlug, createdBy})
 
     if (post) return
 
