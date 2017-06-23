@@ -1,6 +1,13 @@
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { StatusValues } from '/imports/api/contacts/status'
 
+export const IdSchema = new SimpleSchema({
+  _id: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id
+  }
+})
+
 export const TypeSchema = new SimpleSchema({
   type: {
     type: String,
@@ -61,8 +68,7 @@ export const CreatedAtSchema = new SimpleSchema({
     }
   },
   createdBy: {
-    type: UserRefSchema,
-    denyUpdate: true
+    type: UserRefSchema
   }
 })
 
@@ -71,14 +77,7 @@ export const AuditSchema = new SimpleSchema([
     updatedAt: {
       type: Date,
       optional: true,
-      denyInsert: true,
-      autoValue: function () {
-        if (this.isUpdate) {
-          return new Date()
-        }
-
-        this.unset()
-      }
+      denyInsert: true
     },
     updatedBy: {
       type: UserRefSchema,

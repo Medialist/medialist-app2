@@ -15,7 +15,9 @@ module.exports = {
     feedbackInput: '[data-id=feedback-input]',
     selectContactButton: '[data-id=select-contact-button]',
     openPostMenuButton: '[data-id=open-post-menu-button]',
-    editPostButton: '[data-id=edit-post-button]'
+    editPostButton: '[data-id=edit-post-button]',
+    addToFavouritesButton: '[data-id=add-to-my-campaigns-button]',
+    removeFromFavouritesButton: '[data-id=remove-from-my-campaigns-button]'
   },
   sections: {
     info: {
@@ -282,6 +284,16 @@ module.exports = {
         .click('@createPostButton')
 
       return this
+    },
+    favouriteCampaign: function () {
+      return this
+        .waitForElementVisible('@addToFavouritesButton')
+        .click('@addToFavouritesButton')
+    },
+    unFavouriteCampaign: function () {
+      return this
+        .waitForElementVisible('@removeFromFavouritesButton')
+        .click('@removeFromFavouritesButton')
     }
   }]
 }

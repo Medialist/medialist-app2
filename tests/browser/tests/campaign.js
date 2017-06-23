@@ -8,8 +8,53 @@ const test = {
   '@tags': ['campaign'],
 
   beforeEach: function (t) {
-    t.page.authenticate()
+    this.user = t.page.authenticate()
       .register()
+  },
+
+  'Should favourite and unfavourite a campaign': function (t) {
+    t.createDomain(['campaign'], (campaign, done) => {
+      const campaignPage = t.page.campaign()
+        .navigate(campaign)
+        .favouriteCampaign()
+
+      t.page.main().waitForSnackbarMessage('campaign-info-favourite-success')
+
+      t.perform((done) => {
+        t.db.findUser({
+          profile: {
+            name: this.user.name
+          }
+        })
+        .then((doc) => {
+          t.assert.ok(doc.myCampaigns.find(c => c._id === campaign._id))
+
+          done()
+        })
+      })
+
+      campaignPage.unFavouriteCampaign()
+
+      t.page.main().waitForSnackbarMessage('campaign-info-unfavourite-success')
+
+      t.perform((done) => {
+        t.db.findUser({
+          profile: {
+            name: this.user.name
+          }
+        })
+        .then((doc) => {
+          t.assert.ok(!doc.myCampaigns.find(c => c._id === campaign._id))
+
+          done()
+        })
+      })
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   },
 
   'Should edit an existing campaign': function (t) {

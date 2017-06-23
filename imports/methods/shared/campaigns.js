@@ -11,21 +11,27 @@ Meteor.methods({
 
     const user = Meteor.users.findOne(this.userId, { fields: { myCampaigns: 1 } })
     check(campaignSlug, String)
-    const campaign = Campaigns.findOne({ slug: campaignSlug }, { fields: { image: 1, slug: 1, name: 1, client: 1 } })
+    const campaignRef = Campaigns.findOneRef(campaignSlug)
 
-    if (!campaign) {
+    if (!campaignRef) {
       throw new Meteor.Error('Cannot find campaign')
     }
 
-    if (user.myCampaigns.some((m) => m._id === campaign._id)) {
-      Meteor.users.update(this.userId, { $pull: { myCampaigns: { _id: campaign._id } } })
+    if (user.myCampaigns.some((m) => m._id === campaignRef._id)) {
+      Meteor.users.update(this.userId, {
+        $pull: {
+          myCampaigns: {
+            _id: campaignRef._id
+          }
+        }
+      })
 
       return false
     }
 
     Meteor.users.update(this.userId, {
       $push: {
-        myCampaigns: Campaigns.toRef(campaign)
+        myCampaigns: campaignRef
       }
     })
 

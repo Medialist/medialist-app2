@@ -7,7 +7,8 @@ import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
 import { createAddContactsToCampaignPost } from '/imports/api/posts/methods'
-import Contacts, { ContactCreateSchema } from '/imports/api/contacts/contacts'
+import Contacts from '/imports/api/contacts/contacts'
+import { ContactCreateSchema } from '/imports/api/contacts/schema'
 import MasterLists from '/imports/api/master-lists/master-lists'
 
 /*
@@ -55,7 +56,8 @@ export const addContactsToCampaign = new ValidatedMethod({
     }, {
       $set: {
         contacts: Object.assign({}, newContacts, campaign.contacts),
-        updatedBy
+        updatedBy,
+        updatedAt
       }
     })
 
@@ -69,7 +71,8 @@ export const addContactsToCampaign = new ValidatedMethod({
         [`campaigns.${campaignSlug}`]: {
           updatedAt
         },
-        updatedBy
+        updatedBy,
+        updatedAt
       }
     }, {
       multi: true
@@ -118,6 +121,7 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
     checkAllSlugsExist(campaignSlugs, Campaigns)
 
     const updatedBy = findOneUserRef(this.userId)
+    const updatedAt = new Date()
 
     // a map of contacts.<slug> properties to delete from the campaign
     const $unset = contactSlugs.reduce(($unset, slug) => {
@@ -132,7 +136,8 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
     }, {
       $unset,
       $set: {
-        updatedBy
+        updatedBy,
+        updatedAt
       }
     }, {
       multi: true
@@ -148,7 +153,8 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
           [`campaigns.${campaignSlug}`]: ''
         },
         $set: {
-          updatedBy
+          updatedBy,
+          updatedAt
         }
       }, {
         multi: true
@@ -282,7 +288,6 @@ export const createContact = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
-
     // return if a matching twitter handle already exists
     const existingContact = details.twitter && Contacts.findOne({ 'socials.label': 'Twitter', 'socials.value': details.twitter })
 
@@ -337,9 +342,11 @@ export const updateContact = new ValidatedMethod({
     }
 
     const updatedBy = findOneUserRef(this.userId)
+    const updatedAt = new Date()
 
     const $set = Object.assign(details, {
-      updatedBy
+      updatedBy,
+      updatedAt
     })
 
     Contacts.update({_id: contactId}, {

@@ -48,7 +48,8 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
   })
 
   const contactUpdates = {
-    updatedBy: createdBy
+    updatedBy: createdBy,
+    updatedAt: new Date()
   }
 
   if (campaignSlug) {
@@ -57,7 +58,8 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
     }, {
       $set: {
         [`contacts.${contactSlug}`]: status,
-        updatedBy: createdBy
+        updatedBy: createdBy,
+        updatedAt: new Date()
       }
     })
 
@@ -148,9 +150,11 @@ export const updatePost = new ValidatedMethod({
     }
 
     const userRef = findOneUserRef(this.userId)
+    const updatedAt = new Date()
 
     const $set = {
-      updatedBy: userRef
+      updatedBy: userRef,
+      updatedAt
     }
 
     if (message) {
@@ -182,7 +186,8 @@ export const updatePost = new ValidatedMethod({
         }, {
           $set: {
             [`contacts.${post.contacts[0].slug}`]: status,
-            updatedBy: userRef
+            updatedBy: userRef,
+            updatedAt
           }
         })
       })
@@ -194,7 +199,8 @@ export const updatePost = new ValidatedMethod({
           slug: contact.slug
         }, {
           $set: {
-            updatedBy: userRef
+            updatedBy: userRef,
+            updatedAt
           }
         })
       })
@@ -269,17 +275,14 @@ export const createAddContactsToCampaignPost = new ValidatedMethod({
     const contacts = Contacts.findRefs({contactSlugs})
     const campaigns = Campaigns.findRefs({campaignSlugs: [campaignSlug]})
     const createdBy = findOneUserRef(this.userId)
-    const createdAt = new Date()
-
     const post = Posts.findOne({ type, contacts, campaigns, createdBy })
 
     if (post) return
 
-    Posts.insert({
+    Posts.create({
       type,
-      contacts,
-      campaigns,
-      createdAt,
+      contactSlugs,
+      campaignSlugs: [campaignSlug],
       createdBy
     })
   }

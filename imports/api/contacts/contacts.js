@@ -4,12 +4,8 @@ import { Counter } from 'meteor/natestrauser:publish-performant-counts'
 import values from 'lodash.values'
 import nothing from '/imports/lib/nothing'
 import StatusMap from '/imports/api/contacts/status'
-import { ContactRefSchema, ContactCreateSchema, ContactSchema } from './schema'
-
-export { ContactRefSchema, ContactCreateSchema, ContactSchema }
 
 const Contacts = new Mongo.Collection('contacts')
-Contacts.attachSchema(ContactSchema)
 Contacts.allow(nothing)
 
 if (Meteor.isServer) {
@@ -51,6 +47,26 @@ Contacts.findRefs = ({contactSlugs}) => {
       createdAt: 1
     }
   }).map(Contacts.toRef)
+}
+
+Contacts.findOneRef = (contactSlugOrId) => {
+  return Contacts.toRef(Contacts.findOne({
+    $or: [{
+      _id: contactSlugOrId
+    }, {
+      slug: contactSlugOrId
+    }]
+  }, {
+    fields: {
+      _id: 1,
+      slug: 1,
+      name: 1,
+      avatar: 1,
+      outlets: 1,
+      updatedAt: 1,
+      createdAt: 1
+    }
+  }))
 }
 
 Contacts.status = StatusMap

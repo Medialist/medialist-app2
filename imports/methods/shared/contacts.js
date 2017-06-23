@@ -10,26 +10,30 @@ Meteor.methods({
 
     const user = Meteor.users.findOne(this.userId, { fields: { myContacts: 1 } })
     check(contactSlug, String)
-    const contact = Contacts.findOne({ slug: contactSlug }, { fields: { avatar: 1, slug: 1, name: 1, outlets: 1 } })
+    const contactRef = Contacts.findOneRef(contactSlug)
 
-    if (!contact) {
+    if (!contactRef) {
       throw new Meteor.Error('Cannot find contact')
     }
 
-    if (user.myContacts.some((c) => c._id === contact._id)) {
-      return Meteor.users.update(this.userId, {
+    if (user.myContacts.some((c) => c._id === contactRef._id)) {
+      Meteor.users.update(this.userId, {
         $pull: {
           myContacts: {
-            _id: contact._id
+            _id: contactRef._id
           }
         }
       })
+
+      return false
     }
 
-    return Meteor.users.update(this.userId, {
+    Meteor.users.update(this.userId, {
       $push: {
-        myContacts: Contacts.toRef(contact)
+        myContacts: contactRef
       }
     })
+
+    return true
   }
 })

@@ -1,50 +1,9 @@
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
-import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import nothing from '/imports/lib/nothing'
 import { cleanSlug } from '/imports/lib/slug'
-import { CreatedAtSchema } from '/imports/lib/schema'
-
-export const TagSchema = new SimpleSchema([
-  CreatedAtSchema, {
-    name: {
-      type: String,
-      min: 1
-    },
-    slug: {
-      type: String,
-      min: 1
-    },
-    contactsCount: {
-      type: Number,
-      min: 0,
-      defaultValue: 0
-    },
-    campaignsCount: {
-      type: Number,
-      min: 0,
-      defaultValue: 0
-    }
-  }
-])
-
-export const TagRefSchema = new SimpleSchema({
-  name: {
-    type: String,
-    min: 1
-  },
-  slug: {
-    type: String,
-    min: 1
-  },
-  count: {
-    type: Number,
-    min: 0
-  }
-})
 
 const Tags = new Mongo.Collection('tags')
-Tags.attachSchema(TagSchema)
 Tags.allow(nothing)
 
 if (Meteor.isServer) {
@@ -67,6 +26,63 @@ Tags.suggest = ({type, userId, searchTerm}) => {
     const userSort = [[`users.${userId}`, 'desc']]
     return Tags.find(query, { sort: userSort.concat(sort), limit })
   }
+}
+
+Tags.toRef = ({_id, name, slug, contactsCount = 0, campaignsCount = 0}) => {
+  const ref = {
+    _id,
+    slug,
+    name,
+    count: contactsCount + campaignsCount
+  }
+
+  return ref
+}
+
+Tags.findRefs = ({tagSlugs}) => {
+  return Tags.find({
+    slug: {
+      $in: tagSlugs
+    }
+  }, {
+    fields: {
+      _id: 1,
+      name: 1,
+      slug: 1,
+      contactsCount: 1,
+      campaignsCount: 1
+    }
+  }).map(Tags.toRef)
+}
+
+Tags.findRefsForCampaigns = ({tagSlugs}) => {
+  return Tags.find({
+    slug: {
+      $in: tagSlugs
+    }
+  }, {
+    fields: {
+      _id: 1,
+      name: 1,
+      slug: 1,
+      campaignsCount: 1
+    }
+  }).map(Tags.toRef)
+}
+
+Tags.findRefsForContacts = ({tagSlugs}) => {
+  return Tags.find({
+    slug: {
+      $in: tagSlugs
+    }
+  }, {
+    fields: {
+      _id: 1,
+      name: 1,
+      slug: 1,
+      contactsCount: 1
+    }
+  }).map(Tags.toRef)
 }
 
 export default Tags

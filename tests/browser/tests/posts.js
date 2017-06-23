@@ -3,10 +3,8 @@
 const test = {
   '@tags': ['posts'],
 
-  beforeEach: (t) => {
-    t.resizeWindow(1440, 1024)
-
-    t.page.authenticate()
+  beforeEach: function (t) {
+    this.user = t.page.authenticate()
       .register()
   },
 
