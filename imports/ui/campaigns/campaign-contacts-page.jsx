@@ -163,6 +163,14 @@ class CampaignContactsPage extends React.Component {
       statusFilter
     } = this.state
 
+    let contactsTotal
+
+    if (statusFilter) {
+      contactsTotal = Object.keys(campaign.contacts).filter((slug) => campaign.contacts[slug] === statusFilter).length
+    } else {
+      contactsTotal = Object.keys(campaign.contacts).length
+    }
+
     return (
       <div>
         <CampaignTopbar campaign={campaign} onAddContactClick={this.onAddContactClick} />
@@ -173,7 +181,7 @@ class CampaignContactsPage extends React.Component {
               <SearchBox onTermChange={this.onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' />
             </div>
             <div className='flex-none pl4 f-xs'>
-              <ContactsTotal total={contacts.length} />
+              <ContactsTotal total={contactsTotal} />
             </div>
           </div>
           <ContactsTableContainer
