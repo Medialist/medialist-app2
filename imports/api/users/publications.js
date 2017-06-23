@@ -6,7 +6,7 @@ import { CampaignRefSchema } from '/imports/api/campaigns/schema'
 import { ContactRefSchema } from '/imports/api/contacts/schema'
 import { IdSchema } from '/imports/lib/schema'
 
-const DEFAULT_LIMIT = 50
+const DEFAULT_LIMIT = 2000
 
 Meteor.publish(null, function () {
   if (!this.userId) {
