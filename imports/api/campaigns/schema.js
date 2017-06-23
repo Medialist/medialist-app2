@@ -53,12 +53,10 @@ export const CampaignSchema = new SimpleSchema([
     },
     'client._id': {
       type: String,
-      regEx: SimpleSchema.RegEx.Id,
-      optional: true
+      regEx: SimpleSchema.RegEx.Id
     },
     'client.name': {
       type: String,
-      min: 1,
       optional: true
     },
     masterLists: {
