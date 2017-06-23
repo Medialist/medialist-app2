@@ -4,6 +4,7 @@ const contactTable = require('../components/contact-table')
 const addtoListsModal = require('../components/add-to-lists-modal')
 const tagSelectorModal = require('../components/tag-selector-modal')
 const deleteModal = require('../components/delete-modal')
+const dropdown = require('../components/status-dropdown')
 const campaignSelectorModal = require('../components/campaign-selector-modal')
 
 module.exports = {
@@ -26,8 +27,10 @@ module.exports = {
         addToContactList: '[data-id=contact-actions-add-to-contact-list]',
         addToMyContacts: '[data-id=contact-actions-add-to-my-contacts]',
         addTagsToContacts: '[data-id=contact-actions-add-tags]',
+        openContactsStatusDropdown: '[data-id=contact-actions-update-status]',
         removeContacts: '[data-id=contact-actions-remove]'
       },
+      sections: { dropdown },
       commands: [{
         openAddContactsToCampaignModal: function () {
           this
@@ -61,6 +64,13 @@ module.exports = {
           this
             .waitForElementVisible('@removeContacts')
             .click('@removeContacts')
+
+          return this
+        },
+        openStatusDropdown: function () {
+          this
+            .waitForElementVisible('@openContactsStatusDropdown')
+            .click('@openContactsStatusDropdown')
 
           return this
         }

@@ -58,7 +58,7 @@ export const DropdownMenu = ({
         {arrowPosition === false ? null : <div style={arrowStyle} />}
         <div
           {...props}
-          className='Menu'
+          className='Menu rounded'
           children={children}
           style={{
             display: 'flex',

@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
 import assert from 'assert'
 import faker from 'faker'
+import moment from 'moment'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
@@ -16,33 +17,22 @@ import {
   removeContactsFromCampaigns,
   batchFavouriteContacts,
   batchRemoveContacts,
-  createContact
+  createContact,
+  batchUpdateStatus
 } from './methods'
 import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists } from '/tests/fixtures/server-domain'
 
 describe('addContactsToCampaign', function () {
-  let userId
+  let users
   let contacts
   let camapgins
 
   beforeEach(function () {
     resetDatabase()
 
-    userId = Meteor.users.insert(user())
-
-    contacts = Array(3)
-      .fill(0)
-      .map(() => createContact.run.call({
-        userId
-      }, {details: contact()}))
-      .map(slug => Contacts.findOne({slug}))
-
-    campaigns = Array(3)
-      .fill(0)
-      .map(() => createCampaign.run.call({
-        userId
-      }, campaign()))
-      .map(slug => Campaigns.findOne({slug}))
+    users = createTestUsers(1)
+    contacts = createTestContacts(3)
+    campaigns = createTestCampaigns(3)
   })
 
   it('should require the user to be logged in', function () {
@@ -59,7 +49,7 @@ describe('addContactsToCampaign', function () {
   it('should add all contacts to the campaign', function () {
     const contactSlugs = [contacts[0].slug, contacts[1].slug]
     const campaignSlug = campaigns[1].slug
-    addContactsToCampaign.run.call({ userId }, {
+    addContactsToCampaign.run.call({ userId: users[0]._id }, {
       contactSlugs,
       campaignSlug
     })
@@ -109,7 +99,7 @@ describe('addContactsToCampaign', function () {
     })
     const contactSlugs = [contacts[0].slug, contacts[1].slug]
     const campaignSlug = campaigns[2].slug
-    addContactsToCampaign.run.call({ userId }, {contactSlugs, campaignSlug})
+    addContactsToCampaign.run.call({ userId: users[0]._id }, {contactSlugs, campaignSlug})
 
     const campaign = Campaigns.findOne({_id: campaigns[2]._id})
 
@@ -455,6 +445,70 @@ describe('createContact', function () {
     createdContact.addresses.forEach(address => {
       Object.keys(address).forEach(field => {
         assert.ok(address[field])
+      })
+    })
+  })
+})
+
+describe('batchUpdateStatus', function () {
+  let users
+  let contacts
+  let campaigns
+
+  beforeEach(function () {
+    resetDatabase()
+
+    users = createTestUsers(1)
+    contacts = createTestContacts(3)
+    campaigns = createTestCampaigns(1)
+
+    const contactsStatus = contacts
+      .reduce((o, contact) => {
+        o[contact.slug] = 'To Contact'
+        return o
+      }, {})
+    Campaigns.update({_id: campaigns[0]._id}, {$set: {contacts: contactsStatus, updatedAt: new Date()}}, {multi: true})
+  })
+
+  it('Should be able to batch update campaign contacts status', function () {
+    const campaign = Campaigns.findOne({_id: campaigns[0]._id})
+    const contactsSlugs = Object.keys(campaign.contacts)
+    const _id = campaign._id
+
+    batchUpdateStatus.run.call({userId: users[0]._id}, { _id, contacts: contactsSlugs, status: 'Completed' })
+
+    const updatedCampaign = Campaigns.findOne({ _id })
+
+    assert.ok(Object.keys(updatedCampaign.contacts).every((slug) => updatedCampaign.contacts[slug] === 'Completed'))
+    assert.ok(moment(campaign.updatedAt).isBefore(updatedCampaign.updatedAt))
+    assert.equal(updatedCampaign.updatedBy._id, users[0]._id)
+  })
+
+  it('Should create a post when batch updating campaign contacts status', function () {
+    const campaign = Campaigns.findOne({_id: campaigns[0]._id})
+    const contactsSlugs = Object.keys(campaign.contacts)
+    const _id = campaign._id
+
+    batchUpdateStatus.run.call({userId: users[0]._id}, { _id, contacts: contactsSlugs, status: 'Completed' })
+
+    const post = Posts.findOne({type: 'StatusUpdate'})
+    assert.equal(post.status, 'Completed')
+    assert.equal(post.contacts.length, Object.keys(contacts).length)
+  })
+
+  it('Should not over write other campaign contacts status', function () {
+    const campaign = Campaigns.findOne({_id: campaigns[0]._id})
+    const contactsSlugs = [contacts[0].slug, contacts[1].slug]
+    const _id = campaign._id
+
+    batchUpdateStatus.run.call({userId: users[0]._id}, { _id, contacts: contactsSlugs, status: 'Completed' })
+
+    Campaigns.find({ _id })
+      .forEach((c) => {
+      assert.deepEqual(c.contacts, {
+        [contacts[0].slug]: 'Completed',
+        [contacts[1].slug]: 'Completed',
+        [contacts[2].slug]: 'To Contact'
       })
     })
   })

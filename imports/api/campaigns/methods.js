@@ -80,12 +80,10 @@ export const updateCampaign = new ValidatedMethod({
     },
     name: {
       type: String,
-      min: 1,
       optional: true
     },
     clientName: {
       type: String,
-      min: 1,
       optional: true
     },
     purpose: {
