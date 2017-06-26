@@ -203,6 +203,7 @@ export const createCampaign = new ValidatedMethod({
     const slug = createUniqueSlug(name, Campaigns)
     const client = findOrCreateClientRef(clientName)
     const createdBy = findOneUserRef(this.userId)
+    const createdAt = new Date()
 
     const doc = {
       name,
@@ -215,7 +216,10 @@ export const createCampaign = new ValidatedMethod({
       team: [createdBy],
       masterLists: [],
       tags: [],
-      createdBy: createdBy
+      createdBy,
+      createdAt,
+      updatedBy: createdBy,
+      updatedAt: createdAt
     }
 
     const campaignId = Campaigns.insert(doc)
