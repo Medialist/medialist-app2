@@ -26,27 +26,49 @@ export const searchCampaigns = ({
   check(limit, Number)
 
   const query = {}
+
   if (masterListSlug) {
     query['masterLists.slug'] = masterListSlug
   }
+
   if (tagSlugs && tagSlugs.length) {
-    query['tags.slug'] = { $in: tagSlugs }
+    query['tags.slug'] = {
+      $in: tagSlugs
+    }
   }
+
   if (userId) {
     const user = Meteor.users.findOne({_id: userId})
     const myContacts = user ? user.myCampaigns : []
-    query.slug = { $in: myContacts.map((c) => c.slug) }
+
+    query.slug = {
+      $in: myContacts.map((c) => c.slug)
+    }
   }
+
   if (contactSlug) {
-    query[`contacts.${contactSlug}`] = { $exists: true }
+    query[`contacts.${contactSlug}`] = {
+      $exists: true
+    }
   }
+
   if (term && term.length >= minSearchLength) {
     const termRegExp = new RegExp(escapeRegExp(term), 'gi')
-    query.$or = [
-      { name: termRegExp },
-      { 'purpose': termRegExp },
-      { 'client.name': termRegExp }
-    ]
+
+    query.$or = [{
+      name: termRegExp
+    }, {
+      'purpose': termRegExp
+    }, {
+      'client.name': termRegExp
+    }, {
+      'tags.slug': termRegExp
+    }, {
+      'masterLists.slug': termRegExp
+    }]
   }
-  return Campaigns.find(query, {sort, limit})
+
+  return Campaigns.find(query, {
+    sort, limit
+  })
 }
