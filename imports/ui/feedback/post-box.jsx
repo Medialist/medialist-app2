@@ -316,7 +316,7 @@ export class NeedToKnowInput extends Component {
           focused={this.props.focused}
           disabled={!this.state.message || this.state.posting}
           onPost={this.onSubmit}
-          isEdit >
+          isEdit={this.props.isEdit} >
           <button style={{padding: '7px 15px'}} className='btn bg-transparent border-gray80 bold'>B</button>
           <button style={{padding: '7px 15px'}} className='btn bg-transparent border-gray80 italic ml3'>i</button>
         </PostBoxButtons>
