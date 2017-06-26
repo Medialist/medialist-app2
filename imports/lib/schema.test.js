@@ -14,7 +14,7 @@ import Posts from '/imports/api/posts/posts'
 import { PostSchema } from '/imports/api/posts/schema'
 import Tags from '/imports/api/tags/tags'
 import { TagSchema } from '/imports/api/tags/schema'
-import { UserSchema } from '/imports/api/users/publications'
+import { UserSchema } from '/imports/api/users/schema'
 
 // attach schemas after any migrations have run
 Campaigns.attachSchema(CampaignSchema)
