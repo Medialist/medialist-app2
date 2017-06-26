@@ -62,9 +62,9 @@ export const searchCampaigns = ({
     }, {
       'client.name': termRegExp
     }, {
-      'tags.slug': termRegExp
+      'tags.name': termRegExp
     }, {
-      'masterLists.slug': termRegExp
+      'masterLists.name': termRegExp
     }]
   }
 
