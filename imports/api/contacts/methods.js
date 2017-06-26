@@ -301,6 +301,7 @@ export const createContact = new ValidatedMethod({
     }
 
     const createdBy = findOneUserRef(this.userId)
+    const createdAt = new Date()
     const slug = slugify(details.name, Contacts)
 
     // Merge the provided details with any missing values
@@ -310,7 +311,10 @@ export const createContact = new ValidatedMethod({
       masterLists: [],
       tags: [],
       imports: [],
-      createdBy
+      createdBy,
+      createdAt,
+      updatedBy: createdBy,
+      updatedAt: createdAt
     })
 
     // Save the contact
