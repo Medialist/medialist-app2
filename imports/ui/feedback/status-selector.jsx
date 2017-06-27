@@ -37,6 +37,10 @@ class StatusSelector extends React.Component {
     this.setState({
       open: true
     })
+
+    if (this.props.onOpen) {
+      this.props.onOpen()
+    }
   }
 
   closeDropdown (event) {
@@ -48,6 +52,10 @@ class StatusSelector extends React.Component {
     this.setState({
       open: false
     })
+
+    if (this.props.onClose) {
+      this.props.onClose()
+    }
   }
 
   render () {
@@ -118,7 +126,9 @@ StatusSelector.propTypes = {
     arrowAlign: PropTypes.string,
     arrowMarginRight: PropTypes.string,
     arrowMarginLeft: PropTypes.string
-  })
+  }),
+  onOpen: PropTypes.func,
+  onClose: PropTypes.func
 }
 
 StatusSelector.defaultProps = {

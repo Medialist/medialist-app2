@@ -46,7 +46,7 @@ function createComponents (svgs, next) {
 }
 
 function wrap (svg) {
-  const ComponentName = toCamalCase(svg.fileName)
+  const ComponentName = toCamelCase(svg.fileName)
   const iconName = svg.fileName.replace('.jsx', '')
 
   // oh god my eyes
@@ -86,14 +86,19 @@ export default function ${ComponentName} (props) {
     fill: style.fill || 'currentColor'
   }, props.svgStyle))
 
-  return (<span {...props} style={style} className={className} dangerouslySetInnerHTML={{ __html: \`
+  const spanProps = Object.assign({}, props)
+  delete spanProps.svgStyle
+
+  return (
+    <span {...spanProps} style={style} className={className} dangerouslySetInnerHTML={{ __html: \`
 ${content}
-  \` }}></span>)
+  \` }}></span>
+  )
 }
 `
 }
 
-function toCamalCase (slug) {
+function toCamelCase (slug) {
   return slug
     .split('-')
     .map((iconName) => iconName.charAt(0).toUpperCase() + iconName.slice(1))
@@ -110,7 +115,7 @@ function createIndex (icons, next) {
 
 function createListOfImports (icons) {
   return icons.reduce((imp, icon) => {
-    imp += `import ${toCamalCase(icon)} from './${icon.replace('.svg', '.jsx')}'\n`
+    imp += `import ${toCamelCase(icon)} from './${icon.replace('.svg', '.jsx')}'\n`
     return imp
   }, '')
 }
@@ -118,7 +123,7 @@ function createListOfImports (icons) {
 function createListOfExports (icons) {
   return icons.reduce((exp, icon, i) => {
     exp += '  '
-    exp += toCamalCase(icon)
+    exp += toCamelCase(icon)
     if (i !== icons.length - 1) exp += ',\n'
     if (i === icons.length - 1) exp += '\n}\n'
     return exp

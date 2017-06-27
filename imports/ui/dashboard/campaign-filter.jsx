@@ -11,14 +11,20 @@ const CampaignFilter = React.createClass({
     loading: PropTypes.bool.isRequired,
     contact: PropTypes.object,
     campaigns: PropTypes.array.isRequired,
-    onCampaignFilter: PropTypes.func.isRequired
+    onCampaignFilter: PropTypes.func.isRequired,
+    initialCampaignFilter: PropTypes.object
   },
   getInitialState () {
     return {
       open: false,
-      campaign: null,
+      campaign: this.props.initialCampaignFilter || null,
       status: null
     }
+  },
+  componentWillReceiveProps (props) {
+    this.setState({
+      campaign: props.initialCampaignFilter
+    })
   },
   closeDropdown () {
     this.setState({open: false})

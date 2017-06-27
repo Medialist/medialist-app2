@@ -47,7 +47,10 @@ export const searchContacts = ({
   if (userId) {
     const user = Meteor.users.findOne({_id: userId})
     const myContacts = user ? user.myContacts : []
-    query.slug = { $in: myContacts.map((c) => c.slug) }
+
+    query.slug = {
+      $in: myContacts.map((c) => c.slug)
+    }
   }
 
   if (importId) {
@@ -56,11 +59,18 @@ export const searchContacts = ({
 
   if (term && term.length >= minSearchLength) {
     const termRegExp = new RegExp(escapeRegExp(term), 'gi')
-    query.$or = [
-      { name: termRegExp },
-      { 'outlets.value': termRegExp },
-      { 'outlets.label': termRegExp }
-    ]
+
+    query.$or = [{
+      name: termRegExp
+    }, {
+      'outlets.value': termRegExp
+    }, {
+      'outlets.label': termRegExp
+    }, {
+      'tags.name': termRegExp
+    }, {
+      'masterLists.name': termRegExp
+    }]
   }
   return Contacts.find(query, {sort, limit})
 }

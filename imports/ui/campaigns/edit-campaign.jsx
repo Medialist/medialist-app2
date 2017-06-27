@@ -180,7 +180,7 @@ const EditCampaign = withSnackbar(React.createClass({
             </div>
           </div>
           <div className='pb6'>
-            <FormSection label='Client'>
+            <FormSection label='Client' className='pl6 pb0 mx-auto'>
               <FormField icon={<FilledCircle />}>
                 <ClientAutocomplete
                   style={{width: 472}}
@@ -196,7 +196,7 @@ const EditCampaign = withSnackbar(React.createClass({
               </FormField>
             </FormSection>
 
-            <FormSection label='Key Message'>
+            <FormSection label='Key Message'className='pl6 pb0 mx-auto'>
               <FormField icon={<BioIcon />}>
                 <Textarea
                   style={{height: '70px'}}
@@ -212,7 +212,7 @@ const EditCampaign = withSnackbar(React.createClass({
               </FormField>
             </FormSection>
 
-            <FormSection label='Links' addLinkText='Add another link' addLinkId='add-link-button' onAdd={this.addLink}>
+            <FormSection label='Links' addLinkText='Add another link' addLinkId='add-link-button' onAdd={this.addLink} className='pl6 pb0 mx-auto'>
               {this.state.links.map((link, index) => (
                 <FormField icon={<WebsiteIcon />} key={index}>
                   <Input

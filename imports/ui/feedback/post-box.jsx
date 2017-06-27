@@ -132,7 +132,8 @@ export class FeedbackInput extends Component {
       status,
       campaign,
       message: this.props.message || '',
-      posting: false
+      posting: false,
+      shouldFocusTextArea: true
     }
   }
 
@@ -158,6 +159,18 @@ export class FeedbackInput extends Component {
     })
   }
 
+  onOpenDropDown = () => {
+    this.setState({
+      shouldFocusTextArea: false
+    })
+  }
+
+  onCloseDropDown = () => {
+    this.setState({
+      shouldFocusTextArea: true
+    })
+  }
+
   render () {
     return (
       <div>
@@ -167,7 +180,8 @@ export class FeedbackInput extends Component {
           focused={this.props.focused}
           disabled={this.state.posting}
           onChange={this.onFieldChange}
-          data-id='feedback-input' />
+          data-id='feedback-input'
+          shouldFocus={this.state.shouldFocusTextArea} />
         <PostBoxButtons
           focused={this.props.focused}
           disabled={!this.state.message || this.state.posting || !this.state.status || !this.state.campaign}
@@ -177,13 +191,17 @@ export class FeedbackInput extends Component {
             contact={this.props.contact}
             onChange={this.onFieldChange}
             campaigns={this.props.campaigns}
-            campaign={this.state.campaign} />
+            campaign={this.state.campaign}
+            onOpen={this.onOpenDropDown}
+            onClose={this.onCloseDropDown} />
           <div className='ml1 inline-block'>
             <StatusSelector
               buttonStyle={{padding: '6px 15px 7px'}}
               status={this.state.status}
               onChange={this.onFieldChange}
-              disabled={!this.state.campaign} />
+              disabled={!this.state.campaign}
+              onOpen={this.onOpenDropDown}
+              onClose={this.onCloseDropDown} />
           </div>
         </PostBoxButtons>
       </div>
@@ -207,7 +225,8 @@ export class CoverageInput extends Component {
     status: StatusMap.completed,
     campaign: this.props.campaign,
     message: this.props.message || '',
-    posting: false
+    posting: false,
+    shouldFocusTextArea: true
   }
 
   onFieldChange = (event) => {
@@ -232,6 +251,18 @@ export class CoverageInput extends Component {
     })
   }
 
+  onOpenDropDown = () => {
+    this.setState({
+      shouldFocusTextArea: false
+    })
+  }
+
+  onCloseDropDown = () => {
+    this.setState({
+      shouldFocusTextArea: true
+    })
+  }
+
   render () {
     return (
       <div>
@@ -241,7 +272,8 @@ export class CoverageInput extends Component {
           focused={this.props.focused}
           disabled={this.state.posting}
           onChange={this.onFieldChange}
-          data-id='coverage-input' />
+          data-id='coverage-input'
+          shouldFocus={this.state.shouldFocusTextArea} />
         <PostBoxButtons
           focused={this.props.focused}
           disabled={!this.state.message || this.state.posting || !this.state.campaign}
@@ -251,12 +283,16 @@ export class CoverageInput extends Component {
             contact={this.props.contact}
             onChange={this.onFieldChange}
             campaigns={this.props.campaigns}
-            campaign={this.state.campaign} />
+            campaign={this.state.campaign}
+            onOpen={this.onOpenDropDown}
+            onClose={this.onCloseDropDown} />
           <div className='ml1 inline-block'>
             <StatusSelector
               buttonStyle={{padding: '6px 15px 7px'}}
               status={this.state.status}
               onChange={this.onFieldChange}
+              onOpen={this.onOpenDropDown}
+              onClose={this.onCloseDropDown}
             >
               <StatusLabel name={this.state.status} />
             </StatusSelector>
@@ -311,12 +347,13 @@ export class NeedToKnowInput extends Component {
           focused={this.props.focused}
           disabled={this.state.posting}
           onChange={this.onFieldChange}
-          data-id='need-to-know-input' />
+          data-id='need-to-know-input'
+          shouldFocus />
         <PostBoxButtons
           focused={this.props.focused}
           disabled={!this.state.message || this.state.posting}
           onPost={this.onSubmit}
-          isEdit >
+          isEdit={this.props.isEdit} >
           <button style={{padding: '7px 15px'}} className='btn bg-transparent border-gray80 bold'>B</button>
           <button style={{padding: '7px 15px'}} className='btn bg-transparent border-gray80 italic ml3'>i</button>
         </PostBoxButtons>
