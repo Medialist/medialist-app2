@@ -83,7 +83,6 @@ const PostBoxTextArea = React.createClass({
   },
 
   render () {
-    console.info('this.props.shouldFocus', this.props.shouldFocus)
     return (
       <div>
         <textarea
