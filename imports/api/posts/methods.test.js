@@ -7,7 +7,7 @@ import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
 import Embeds from '/imports/api/embeds/embeds'
-import { createFeedbackPost, createCoveragePost, createNeedToKnowPost, updatePost, createAddContactsToCampaignPost } from '/imports/api/posts/methods'
+import { createFeedbackPost, createCoveragePost, createNeedToKnowPost, updatePost } from '/imports/api/posts/methods'
 import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists, createTestEmbeds } from '/tests/fixtures/server-domain'
 import { addContactsToCampaign } from '/imports/api/contacts/methods'
 import toUserRef from '/imports/lib/to-user-ref'
@@ -263,29 +263,6 @@ describe('createNeedToKnowPost', function () {
 
     const contact = Contacts.findOne({slug: contactSlug})
     assert.deepEqual(contact.updatedBy, userRef)
-  })
-})
-
-describe('createAddContactsToCampaignPost', function () {
-  let users
-  let contacts
-  let campaigns
-
-  beforeEach(function () {
-    resetDatabase()
-
-    users = createTestUsers(2)
-    contacts = createTestContacts(1)
-    campaigns = createTestCampaigns(1)
-  })
-
-  it('should not create repeat postings for same action', function () {
-    const contactSlugs = contacts.map((c) => c.slug)
-    const campaignSlug = campaigns[0].slug
-    createAddContactsToCampaignPost.run.call({userId: users[0]._id}, {contactSlugs, campaignSlug})
-    createAddContactsToCampaignPost.run.call({userId: users[0]._id}, {contactSlugs, campaignSlug})
-    const posts = Posts.find({type: 'AddContactsToCampaign'}).count()
-    assert.equal(posts, 1)
   })
 })
 
