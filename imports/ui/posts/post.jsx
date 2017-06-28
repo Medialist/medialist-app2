@@ -250,6 +250,10 @@ Post.defaultProps = {
 }
 
 const ContactLink = ({contact, showOutlet = true, ...props}) => {
+  if (!contact) {
+    return <span className='gray60'>Unknown</span>
+  }
+
   let outlet = null
 
   if (showOutlet && contact.outlets && contact.outlets.length && contact.outlets[0].value) {

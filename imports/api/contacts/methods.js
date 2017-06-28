@@ -267,7 +267,7 @@ export const batchRemoveContacts = new ValidatedMethod({
       // remove contact related posts with no contacts
       Posts.remove({
         type: {
-          $in: ['FeedbackPost', 'CoveragePost', 'NeedToKnowPost', 'AddContactsToCampaign']
+          $in: ['FeedbackPost', 'CoveragePost', 'NeedToKnowPost', 'AddContactsToCampaign', 'StatusUpdate']
         },
         contacts: {
           $exists: true,
