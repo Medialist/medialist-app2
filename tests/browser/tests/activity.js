@@ -127,8 +127,8 @@ const test = {
           .navigate(campaign)
           .waitForElementVisible('[data-id=add-contacts-to-campaign-button]')
 
-        campaignPage.section.activityFeed
-          .assertNoDuplicatePosts(campaign)
+        campaignPage.section.activityFeed.assert.elementPresent(`[data-id=add-contacts-to-campaign]:nth-child(1)`)
+        campaignPage.section.activityFeed.assert.elementNotPresent(`[data-id=add-contacts-to-campaign]:nth-child(2)`)
 
         done()
       })

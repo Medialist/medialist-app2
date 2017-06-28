@@ -150,7 +150,8 @@ const CanJoinCampaignResult = (props) => {
     <div
       className='flex items-center pointer border-bottom border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger hover-color-trigger'
       key={res.slug}
-      onClick={() => onAdd(res)}>
+      onClick={() => onAdd(res)}
+      data-slug={`campaign-slug-${res.slug}`}>
       <div className='flex-auto'>
         <CampaignPreview {...res} />
       </div>
@@ -166,7 +167,7 @@ const CanJoinCampaignResult = (props) => {
 
 const CanNotJoinCampaignResult = (props) => {
   return (
-    <div className='border-bottom border-gray80'>
+    <div className='border-bottom border-gray80' data-slug={`campaign-slug-${props.slug}`}>
       <div className='flex items-center py2 pl4 opacity-50' key={props.slug}>
         <div className='flex-auto'>
           <CampaignPreview {...props} />

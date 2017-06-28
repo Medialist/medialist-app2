@@ -86,12 +86,6 @@ module.exports = (prefix) => ({
 
       return this
     },
-    assertNoDuplicatePosts: function (campaign) {
-      this.assert.elementPresent(`[data-id=add-contacts-to-campaign]:nth-child(1)`)
-      this.assert.elementNotPresent(`[data-id=add-contacts-to-campaign]:nth-child(2)`)
-
-      return this
-    },
     deleteCoveragePostWith: function (contact, campaign) {
       return this._deletePostWith('coverage-post', contact, campaign)
     },

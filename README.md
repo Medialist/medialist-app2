@@ -386,6 +386,14 @@ npm run test:browser -- --tag contacts
 
 More generally anything after `--` will be passed to the nightwatch executable.
 
+or run a specific file and test case like
+
+```sh
+npm run test:browser -- \
+--test tests/browser/tests/activity.js \
+--testcase "Should prevent multiple postings of the same activity"
+```
+
 [Basscss]: http://www.basscss.com/
 [postcss]: http://postcss.org/
 [postcss-custom-media]: https://github.com/postcss/postcss-custom-media
