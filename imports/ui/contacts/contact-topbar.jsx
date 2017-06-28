@@ -19,7 +19,7 @@ const ContactTopbar = React.createClass({
         </div>
         <div className='px4 inline-block'>
           <button className='btn white bg-blue mx2' onClick={onAddToCampaignClick}>
-            Add <FirstName contact={contact} /> to Campaign
+            Add <FirstName contact={contact} /> to a Campaign
           </button>
         </div>
       </Topbar>

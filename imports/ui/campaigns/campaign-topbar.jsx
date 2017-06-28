@@ -18,7 +18,7 @@ const CampaignTopbar = React.createClass({
           <NavLink to={`/campaign/${campaign.slug}/contacts`}>Contacts</NavLink>
         </div>
         <button type='button' className='btn white bg-blue mx6' onClick={onAddContactClick} data-id='add-contacts-to-campaign-button'>
-          Add Contacts to Campaign
+          Add Contacts to this Campaign
         </button>
       </Topbar>
     )

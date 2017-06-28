@@ -151,7 +151,7 @@ const CampaignInfo = withSnackbar(React.createClass({
             <div className='semibold f-xl mb1'>
               <span data-id='campaign-name'>{name}</span>
               <Tooltip title={tooltip}>
-                <FavouritesIcon data-id={favouriteButtonId} className='mx1 pointer' onClick={onToggleFavourite} style={{width: '18px', height: '18px', fill: isFavourite ? GOLD : GREY60}} />
+                <FavouritesIcon data-id={favouriteButtonId} className='mx1 pointer' onClick={onToggleFavourite} style={{width: '18px', height: '18px', fill: isFavourite ? GOLD : GREY60}} svgStyle={{verticalAlign: '-1px'}} />
               </Tooltip>
             </div>
             <div className='f-sm gray10 mb2' data-id='campaign-client'>{client && client.name}</div>
@@ -176,9 +176,13 @@ const CampaignInfo = withSnackbar(React.createClass({
           </div>
         </section>
         <section data-id='campaign-team-members'>
-          <InfoHeader name='Team Members' onClick={onEditTeamClick} data-id='edit-campaign-team-members-button' />
+          <InfoHeader name='Team' onClick={onEditTeamClick} data-id='edit-campaign-team-members-button' />
           <div className='px2 py3'>
-            {team.map((teamMember, ind) => <CircleAvatar {...teamMember} size={38} style={{marginLeft: '2px'}} key={ind} />)}
+            {team.map((teamMember, ind) => (
+              <span className='inline-block' style={{marginRight: '5px', marginBottom: '10px'}} key={ind}>
+                <CircleAvatar {...teamMember} size={38} showTooltip />
+              </span>
+            ))}
           </div>
         </section>
         <section>

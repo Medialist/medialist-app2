@@ -60,7 +60,7 @@ export const CreatedAtSchema = new SimpleSchema({
     type: Date,
     denyUpdate: true,
     autoValue: function () {
-      if (this.isInsert) {
+      if (!this.isSet && this.isInsert) {
         return new Date()
       }
 
@@ -76,13 +76,11 @@ export const AuditSchema = new SimpleSchema([
   CreatedAtSchema, {
     updatedAt: {
       type: Date,
-      optional: true,
-      denyInsert: true
+      optional: true
     },
     updatedBy: {
       type: UserRefSchema,
-      optional: true,
-      denyInsert: true
+      optional: true
     }
   }
 ])

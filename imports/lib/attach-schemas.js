@@ -16,13 +16,14 @@ import Tags from '/imports/api/tags/tags'
 import { TagSchema } from '/imports/api/tags/schema'
 import { UserSchema } from '/imports/api/users/schema'
 
-// attach schemas after any migrations have run
-Campaigns.attachSchema(CampaignSchema)
-Clients.attachSchema(ClientSchema)
-Contacts.attachSchema(ContactSchema)
-Embeds.attachSchema(EmbedSchema)
-MasterLists.attachSchema(MasterListSchema)
-Orgs.attachSchema(OrgSchema)
-Posts.attachSchema(PostSchema)
-Tags.attachSchema(TagSchema)
-Meteor.users.attachSchema(UserSchema)
+export default function () {
+  Campaigns.attachSchema(CampaignSchema)
+  Clients.attachSchema(ClientSchema)
+  Contacts.attachSchema(ContactSchema)
+  Embeds.attachSchema(EmbedSchema)
+  MasterLists.attachSchema(MasterListSchema)
+  Orgs.attachSchema(OrgSchema)
+  Posts.attachSchema(PostSchema)
+  Tags.attachSchema(TagSchema)
+  Meteor.users.attachSchema(UserSchema)
+}

@@ -20,7 +20,9 @@ const CampaignSelector = React.createClass({
     contact: PropTypes.object.isRequired,
     campaigns: PropTypes.array.isRequired,
     campaign: PropTypes.object,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
+    onOpen: PropTypes.func,
+    onClose: PropTypes.func
   },
   getInitialState () {
     return {
@@ -32,11 +34,19 @@ const CampaignSelector = React.createClass({
     this.setState({
       open: true
     })
+
+    if (this.props.onOpen) {
+      this.props.onOpen()
+    }
   },
   closeDropdown () {
     this.setState({
       open: false
     })
+
+    if (this.props.onClose) {
+      this.props.onClose()
+    }
   },
   onLinkClick (campaign) {
     this.setState({
@@ -50,6 +60,10 @@ const CampaignSelector = React.createClass({
         value: campaign
       }
     })
+
+    if (this.props.onClose) {
+      this.props.onClose()
+    }
   },
   onClearFilter () {
     this.props.onChange({

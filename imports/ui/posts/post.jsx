@@ -249,12 +249,24 @@ Post.defaultProps = {
   bgClass: 'bg-white'
 }
 
-const ContactLink = ({contact, showOutlet = true, ...props}) => (
-  <Link to={`/contact/${contact.slug}`} data-id='contact-link' {...props}>
-    <span className='semibold gray10' data-id='contact-name'>{contact.name}</span>
-    { showOutlet && contact.outlets && contact.outlets.length && contact.outlets[0].value && <span className='gray10' data-id='contact-outlet'> ({contact.outlets[0].value})</span> }
-  </Link>
-)
+const ContactLink = ({contact, showOutlet = true, ...props}) => {
+  if (!contact) {
+    return <span className='gray60'>Unknown</span>
+  }
+
+  let outlet = null
+
+  if (showOutlet && contact.outlets && contact.outlets.length && contact.outlets[0].value) {
+    outlet = <span className='gray10' data-id='contact-outlet'> ({contact.outlets[0].value})</span>
+  }
+
+  return (
+    <Link to={`/contact/${contact.slug}`} data-id='contact-link' {...props}>
+      <span className='semibold gray10' data-id='contact-name'>{contact.name}</span>
+      {outlet}
+    </Link>
+  )
+}
 
 const ContactName = ({contacts, contact, onContactPage}) => {
   if (onContactPage) {

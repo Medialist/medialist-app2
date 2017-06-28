@@ -64,10 +64,14 @@ describe('searchCampaigns', function () {
     })
   })
 
-  it('should search the contacts to the campaign', function () {
+  it('should search for campaigns', function () {
     const termSearch1Res = searchCampaigns({term: campaigns[1].name, sort: {name: -1}}).fetch()
     assert.equal(termSearch1Res.length, 1)
     assert.equal(termSearch1Res[0]._id, campaigns[1]._id)
+
+    const termSearch2Res = searchCampaigns({term: masterLists[0].name, sort: {name: -1}}).fetch()
+    assert.equal(termSearch2Res.length, 1)
+    assert.equal(termSearch2Res[0]._id, campaigns[2]._id)
 
     const termSearchManyRes = searchCampaigns({term: 'name', sort: {name: -1}}).fetch()
     assert.equal(termSearchManyRes.length, 3)

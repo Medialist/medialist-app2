@@ -23,7 +23,7 @@ class ContactsActionsToast extends React.Component {
     onSectorClick: PropTypes.func.isRequired,
     onFavouriteClick: PropTypes.func.isRequired,
     onTagClick: PropTypes.func.isRequired,
-    onStatusClick: PropTypes.func.isRequired,
+    onStatusClick: PropTypes.func,
     onDeleteClick: PropTypes.func.isRequired,
     onDeselectAllClick: PropTypes.func.isRequired
   }
@@ -57,8 +57,6 @@ class ContactsActionsToast extends React.Component {
       onDeselectAllClick
     } = this.props
 
-    const canBatchStatusUpdate = campaign && contacts
-
     return (
       <Toast data-id='contact-actions-toast'>
         { contacts.length && (
@@ -68,7 +66,7 @@ class ContactsActionsToast extends React.Component {
               <span className='gray20'>contact{contacts.length === 1 ? '' : 's'} selected</span>
             </div>
             <div className='flex-auto center'>
-              <Tooltip title='Add to Campaigns'>
+              <Tooltip title='Add to Campaign'>
                 <FeedCampaignIcon
                   className='mx3 pointer gray60 hover-blue'
                   onClick={() => onCampaignClick(contacts)}
@@ -89,7 +87,7 @@ class ContactsActionsToast extends React.Component {
                   data-id='contact-actions-add-to-my-contacts'
                   style={{width: '21px', height: '21px'}} />
               </Tooltip>
-              {canBatchStatusUpdate ? <Dropdown>
+              {this.props.onStatusClick ? <Dropdown>
                 <Tooltip title='Update status'>
                   <StatusUpdateIcon
                     className='mx3 pointer gray60 hover-blue'
@@ -121,7 +119,7 @@ class ContactsActionsToast extends React.Component {
                   data-id='contact-actions-add-tags'
                   style={{width: '21px', height: '21px'}} />
               </Tooltip>
-              <Tooltip title={`${campaign ? 'Remove' : 'Delete'} Contacts`}>
+              <Tooltip title={`${campaign ? 'Remove' : 'Delete'} Contact${contacts.length > 1 ? 's' : ''}`}>
                 <DeleteIcon
                   className='mx3 pointer gray60 hover-red'
                   onClick={() => onDeleteClick(contacts)}

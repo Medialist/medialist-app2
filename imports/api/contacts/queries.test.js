@@ -65,6 +65,10 @@ describe('searchContacts', function () {
     assert.equal(termSearch1Res.length, 1)
     assert.equal(termSearch1Res[0]._id, contacts[1]._id)
 
+    const termSearch2Res = searchContacts({term: masterLists[0].name, sort: {name: -1}}).fetch()
+    assert.equal(termSearch2Res.length, 1)
+    assert.equal(termSearch2Res[0]._id, contacts[2]._id)
+
     const termSearchManyRes = searchContacts({term: 'name', sort: {name: -1}}).fetch()
     assert.equal(termSearchManyRes.length, 3)
 
