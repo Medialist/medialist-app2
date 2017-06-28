@@ -45,10 +45,16 @@ export const addToMyFavourites = ({userId, contactSlugs = [], campaignSlugs = []
   }
 
   const $addToSet = {}
+  const $pull = {}
 
   if (contactRefs.length) {
     $addToSet.myContacts = {
       $each: contactRefs
+    }
+    $pull.myContacts = {
+      _id: {
+        $in: contactRefs.map(c => c._id)
+      }
     }
   }
 
@@ -56,9 +62,20 @@ export const addToMyFavourites = ({userId, contactSlugs = [], campaignSlugs = []
     $addToSet.myCampaigns = {
       $each: campaignRefs
     }
+    $pull.myCampaigns = {
+      _id: {
+        $in: campaignRefs.map(c => c._id)
+      }
+    }
   }
 
-  return Meteor.users.update({
+  Meteor.users.update({
+    _id: userId
+  }, {
+    $pull
+  })
+
+  Meteor.users.update({
     _id: userId
   }, {
     $addToSet
