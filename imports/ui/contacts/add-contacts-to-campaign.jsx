@@ -59,7 +59,7 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
           placeholder='Search campaigns'
           data-id='search-input' />
         <div style={{height: '413px', overflowY: 'auto'}}>
-          <ResultList onAdd={onAdd} results={campaigns} searching={Boolean(term)} contacts={contacts} />
+          <ResultList onAdd={onAdd} results={campaigns} searching={Boolean(term)} contacts={contacts} alreadyInCampaignFilter={Boolean(children)} />
         </div>
       </div>
     )
@@ -150,7 +150,8 @@ const CanJoinCampaignResult = (props) => {
     <div
       className='flex items-center pointer border-bottom border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger hover-color-trigger'
       key={res.slug}
-      onClick={() => onAdd(res)}>
+      onClick={() => onAdd(res)}
+      data-slug={`campaign-slug-${res.slug}`}>
       <div className='flex-auto'>
         <CampaignPreview {...res} />
       </div>
@@ -166,7 +167,7 @@ const CanJoinCampaignResult = (props) => {
 
 const CanNotJoinCampaignResult = (props) => {
   return (
-    <div className='border-bottom border-gray80'>
+    <div className='border-bottom border-gray80' data-slug={`campaign-slug-${props.slug}`}>
       <div className='flex items-center py2 pl4 opacity-50' key={props.slug}>
         <div className='flex-auto'>
           <CampaignPreview {...props} />
@@ -187,16 +188,18 @@ const ResultList = React.createClass({
     onAdd: PropTypes.func.isRequired,
     results: PropTypes.array.isRequired,
     searching: PropTypes.bool,
-    contacts: PropTypes.array.isRequired
+    contacts: PropTypes.array.isRequired,
+    alreadyInCampaignFilter: PropTypes.bool.isRequired
   },
 
   render () {
-    const { results, onAdd, contacts } = this.props
+    const { results, onAdd, contacts, alreadyInCampaignFilter } = this.props
     const contactSlugs = contacts.map((c) => c.slug)
 
     return (
       <div data-id={`${this.props.searching ? 'search-results' : 'unfiltered'}`}>
         {results.map((res) => {
+          if (alreadyInCampaignFilter) return <CanJoinCampaignResult {...res} onAdd={onAdd} key={res._id} />
           const alreadyInCampaign = contactSlugs.some((c) => res.contacts[c])
           const ResultListItem = alreadyInCampaign ? CanNotJoinCampaignResult : CanJoinCampaignResult
           return <ResultListItem {...res} onAdd={onAdd} key={res._id} />

@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import escapeRegExp from 'lodash.escaperegexp'
+import difference from 'lodash.difference'
 import slugify, { checkAllSlugsExist } from '/imports/lib/slug'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import Campaigns from '/imports/api/campaigns/campaigns'
@@ -38,16 +39,29 @@ export const addContactsToCampaign = new ValidatedMethod({
     const updatedBy = findOneUserRef(this.userId)
     const updatedAt = new Date()
 
-    const newContacts = contactSlugs.reduce((ref, slug) => {
+    const campaign = Campaigns.findOne(
+      { slug: campaignSlug },
+      { contacts: 1 }
+    )
+
+    // Add the things to the users my<Contact|Campaigns> list
+    addToMyFavourites({
+      userId: this.userId,
+      contactSlugs,
+      campaignSlugs: [campaignSlug]
+    })
+
+    const newContactSlugs = difference(contactSlugs, Object.keys(campaign.contacts))
+
+    if (newContactSlugs.length === 0) {
+      // User hasn't changed anything, so we're done.
+      return
+    }
+
+    const newContactRefs = newContactSlugs.reduce((ref, slug) => {
       ref[slug] = Contacts.status.toContact
       return ref
     }, {})
-
-    const campaign = Campaigns.findOne({
-      slug: campaignSlug
-    }, {
-      contacts: 1
-    })
 
     // Merge incoming contacts with existing.
     // If a contact is already part of the campaign, it's status is preserved.
@@ -55,16 +69,16 @@ export const addContactsToCampaign = new ValidatedMethod({
       slug: campaignSlug
     }, {
       $set: {
-        contacts: Object.assign({}, newContacts, campaign.contacts),
+        contacts: Object.assign({}, newContactRefs, campaign.contacts),
         updatedBy,
         updatedAt
       }
     })
 
-    // Add campaign to all contacts
+    // Add campaign to contacts that were added
     Contacts.update({
       slug: {
-        $in: contactSlugs
+        $in: newContactSlugs
       }
     }, {
       $set: {
@@ -81,16 +95,9 @@ export const addContactsToCampaign = new ValidatedMethod({
     // Add an entry to the activity feed
     Posts.create({
       type: 'AddContactsToCampaign',
-      contactSlugs,
+      contactSlugs: newContactSlugs,
       campaignSlugs: [campaignSlug],
       createdBy: updatedBy
-    })
-
-    // Add the things to the users my<Contact|Campaigns> list
-    addToMyFavourites({
-      userId: this.userId,
-      contactSlugs,
-      campaignSlugs: [campaignSlug]
     })
   }
 })
