@@ -48,6 +48,10 @@ const EditCampaign = withSnackbar(React.createClass({
     return state
   },
 
+  componentDidMount () {
+    this.nameInput.focus()
+  },
+
   onAvatarChange ({url}) {
     this.setState({avatar: url})
   },
@@ -176,7 +180,8 @@ const EditCampaign = withSnackbar(React.createClass({
                 value={this.state.name}
                 size={inputSize(this.state.name)}
                 onChange={this.onFieldChange}
-                validations={['required']} />
+                validations={['required']}
+                ref={(el) => { this.nameInput = el }} />
             </div>
           </div>
           <div className='pb6'>

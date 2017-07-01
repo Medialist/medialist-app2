@@ -90,6 +90,10 @@ const EditContact = withSnackbar(React.createClass({
     return state
   },
 
+  componentDidMount () {
+    this.nameInput.focus()
+  },
+
   onSubmit (evt) {
     evt.preventDefault()
 
@@ -270,7 +274,8 @@ const EditContact = withSnackbar(React.createClass({
                 value={name}
                 size={inputSize(name)}
                 onChange={this.onFieldChange}
-                validations={['required']} />
+                validations={['required']}
+                ref={(el) => { this.nameInput = el }} />
             </div>
           </div>
 
