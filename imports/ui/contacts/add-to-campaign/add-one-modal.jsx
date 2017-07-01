@@ -5,7 +5,7 @@ import Modal from '/imports/ui/navigation/modal'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import { addContactsToCampaign } from '/imports/api/contacts/methods'
 import { CanJoinCampaignResult, CanNotJoinCampaignResult } from '/imports/ui/contacts/add-to-campaign/campaign-result'
-import CampaignSearch from '/imports/ui/contacts/campaign-search'
+import CampaignSearch from '/imports/ui/contacts/add-to-campaign/campaign-search'
 
 class AddContactToCampaign extends React.Component {
 
@@ -48,7 +48,7 @@ class AddContactToCampaignContainer extends React.Component {
     onContactPage: PropTypes.bool
   }
 
-  onCampaignSelected (item) {
+  onCampaignSelected = (item) => {
     const {contact, onDismiss} = this.props
     const campaignSlug = item.slug
     const contactSlugs = [contact.slug]

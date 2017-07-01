@@ -6,7 +6,6 @@ import { CanJoinCampaignResult } from '/imports/ui/contacts/add-to-campaign/camp
 
 class CampaignSearch extends React.Component {
   static propTypes = {
-    term: PropTypes.string,
     onTermChange: PropTypes.func.isRequired,
     campaigns: PropTypes.array.isRequired,
     onCampaignSelected: PropTypes.func.isRequired,
@@ -15,9 +14,9 @@ class CampaignSearch extends React.Component {
 
   static defaultProps = {
     renderCampaigns: (campaigns, onCampaignSelected) => {
-      return campaigns.map((c) => {
+      return campaigns.map((c) => (
         <CanJoinCampaignResult {...c} onSelect={onCampaignSelected} key={c._id} />
-      })
+      ))
     }
   }
 
@@ -61,4 +60,20 @@ class CampaignSearch extends React.Component {
   }
 }
 
-export default createSearchContainer(CampaignSearch)
+const WrappedCampaignSearch = createSearchContainer(CampaignSearch)
+
+class CampaignSearchContainer extends React.Component {
+  state = {
+    term: ''
+  }
+
+  onTermChange (term) {
+    this.setState({ term })
+  }
+
+  render () {
+    return <WrappedCampaignSearch {...this.props} term={this.state.term} onTermChange={this.onTermChange} />
+  }
+}
+
+export default CampaignSearchContainer

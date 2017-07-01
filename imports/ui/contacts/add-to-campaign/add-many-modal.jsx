@@ -5,7 +5,7 @@ import Modal from '/imports/ui/navigation/modal'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import { addContactsToCampaign } from '/imports/api/contacts/methods'
 import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
-import CampaignSearch from '/imports/ui/contacts/campaign-search'
+import CampaignSearch from '/imports/ui/contacts/add-to-campaign/campaign-search'
 
 class AddContactsToCampaign extends React.Component {
 
@@ -42,11 +42,11 @@ class AddManyContactsToCampaignContainer extends React.Component {
     onContactPage: PropTypes.bool
   }
 
-  onCampaignSelected (item) {
+  onCampaignSelected = (item) => {
     const {contacts, onDismiss} = this.props
     const campaignSlug = item.slug
-    const constactSlugs = contacts.map((c) => c.slug)
-    addContactsToCampaign.call({constactSlugs, campaignSlug}, (error) => {
+    const contactSlugs = contacts.map((c) => c.slug)
+    addContactsToCampaign.call({contactSlugs, campaignSlug}, (error) => {
       if (error) {
         console.log(error)
         return this.props.snackbar.error('batch-add-contacts-to-campaign-success')

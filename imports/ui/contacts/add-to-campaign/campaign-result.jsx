@@ -4,13 +4,13 @@ import CampaignPreview from '/imports/ui/campaigns/campaign-preview'
 import { BLUE } from '/imports/ui/colours'
 
 export const CanJoinCampaignResult = (props) => {
-  const {onSelected, ...res} = props
+  const {onSelect, ...res} = props
   const contactCount = Object.keys(res.contacts).length
   return (
     <div
       className='flex items-center pointer border-bottom border-gray80 py2 pl4 hover-bg-gray90 hover-opacity-trigger hover-color-trigger'
       key={res.slug}
-      onClick={() => onSelected(res)}
+      onClick={() => onSelect(res)}
       data-slug={`campaign-slug-${res.slug}`}>
       <div className='flex-auto'>
         <CampaignPreview {...res} />
