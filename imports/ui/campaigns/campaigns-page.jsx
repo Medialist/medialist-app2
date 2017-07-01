@@ -21,6 +21,7 @@ import CampaignLink from '/imports/ui/campaigns/campaign-link'
 import CampaignListLink from '/imports/ui/master-lists/campaign-list-link'
 import TagLink from '/imports/ui/campaigns/tag-link'
 import DeleteCampaignsModal from '/imports/ui/campaigns/delete-campaigns-modal'
+import { addRecentCampaignList } from '/imports/api/users/methods'
 
 const CampaignsPage = withSnackbar(withRouter(React.createClass({
   propTypes: {
@@ -60,6 +61,8 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
   },
 
   onMasterListChange (selectedMasterListSlug) {
+    addRecentCampaignList.call({ slug: selectedMasterListSlug })
+
     this.props.setQuery({ selectedMasterListSlug })
   },
 
@@ -253,14 +256,35 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
 
 const MasterListsSelectorContainer = createContainer((props) => {
   const { selectedMasterListSlug, userId } = props
-  const lists = MasterLists.find({type: 'Campaigns'}).map(({slug, name, items}) => ({
-    slug, name, count: items.length
-  }))
-  const items = [
-    { slug: 'all', name: 'All', count: props.allCount },
-    { slug: 'my', name: 'My Campaigns', count: Meteor.user().myCampaigns.length }
-  ].concat(lists)
+  const user = Meteor.user()
+  const lists = MasterLists
+    .find({
+      type: 'Campaigns'
+    })
+    .map(({slug, name, items}) => ({
+      slug, name, count: items.length
+    }))
+  const items = [{
+    slug: 'all',
+    name: 'All',
+    count: props.allCount
+  }, {
+    slug: 'my',
+    name: 'My Campaigns',
+    count: user.myCampaigns.length
+  }]
+    .concat(
+      user.recentCampaignLists
+        .map(slug => lists.find(list => list.slug === slug))
+        .filter(list => !!list)
+    )
+    .concat(
+      lists.filter(list => !user.recentCampaignLists
+        .find(slug => list.slug === slug))
+    )
+
   const selectedSlug = userId ? 'my' : selectedMasterListSlug
+
   return { ...props, items, selectedSlug }
 }, MasterListsSelector)
 

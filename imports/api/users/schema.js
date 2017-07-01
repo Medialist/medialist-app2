@@ -79,6 +79,20 @@ export const UserSchema = new SimpleSchema([
       type: Number,
       min: 0,
       defaultValue: 0
+    },
+    recentCampaignLists: {
+      type: [{
+        type: String,
+        regEx: SimpleSchema.RegEx.Id
+      }],
+      defaultValue: []
+    },
+    recentContactLists: {
+      type: [{
+        type: String,
+        regEx: SimpleSchema.RegEx.Id
+      }],
+      defaultValue: []
     }
   }
 ])

@@ -16,7 +16,9 @@ Meteor.publish(null, function () {
       myCampaigns: 1,
       myContacts: 1,
       onCampaigns: 1,
-      emails: 1
+      emails: 1,
+      recentCampaignLists: 1,
+      recentContactLists: 1
     }
   })
 })
