@@ -223,8 +223,7 @@ class CampaignContactsPage extends React.Component {
           type='Contacts'
           open={this.state.addTagsModal}
           onDismiss={this.hideModals}
-          onUpdateTags={this.onTagAll}
-          title='Tag these Contacts'>
+          onUpdateTags={this.onTagAll}>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddTagsModal>
         <AddToMasterListModal
@@ -232,8 +231,7 @@ class CampaignContactsPage extends React.Component {
           items={this.state.selections}
           open={this.state.addToMasterListsModal}
           onDismiss={this.hideModals}
-          onSave={(masterLists) => this.onAddAllToMasterLists(masterLists)}
-          title='Add to a Contact List'>
+          onSave={(masterLists) => this.onAddAllToMasterLists(masterLists)}>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddToMasterListModal>
         <RemoveContactModal

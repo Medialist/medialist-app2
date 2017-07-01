@@ -208,13 +208,11 @@ const CampaignInfo = withSnackbar(React.createClass({
           onDismiss={dismissAddToMasterList}
           onSave={(masterLists) => this.onAddCampaignToMasterLists(masterLists)}
           selectedMasterLists={masterLists}
-          type='Campaigns'
-          title={`Add ${name} to a Campaign List`} />
+          type='Campaigns' />
         <AddTagsModal
           type='Campaigns'
           open={addTagsOpen}
           onDismiss={dismissAddTags}
-          title={`Tag the ${name} Campaign`}
           selectedTags={tags}
           onUpdateTags={onUpdateTags} />
       </div>

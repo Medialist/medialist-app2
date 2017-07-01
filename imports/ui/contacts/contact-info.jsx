@@ -190,13 +190,11 @@ const ContactInfo = withSnackbar(React.createClass({
           onDismiss={dismissAddToMasterList}
           onSave={onAddContactToMasterLists}
           selectedMasterLists={masterLists}
-          type='Contacts'
-          title={`Add ${name} to a Contact List`} />
+          type='Contacts' />
         <AddTagsModal
           type='Contacts'
           open={addTagsOpen}
           onDismiss={dismissAddTags}
-          title={`Tag ${name.split(' ')[0]}`}
           selectedTags={tags}
           onUpdateTags={onUpdateTags} />
       </div>

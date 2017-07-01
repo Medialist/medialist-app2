@@ -313,8 +313,7 @@ const ContactsPage = withSnackbar(React.createClass({
           type='Contacts'
           open={this.state.addTagsModal}
           onDismiss={() => this.hideModals()}
-          onUpdateTags={(tags) => this.onTagAll(tags)}
-          title='Tag these Contacts'>
+          onUpdateTags={(tags) => this.onTagAll(tags)}>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddTagsModal>
         <AddToMasterListModal
@@ -322,8 +321,7 @@ const ContactsPage = withSnackbar(React.createClass({
           items={this.state.selections}
           open={this.state.addToMasterListsModal}
           onDismiss={() => this.hideModals()}
-          onSave={(masterLists) => this.onAddAllToMasterLists(masterLists)}
-          title='Add to a Contact List'>
+          onSave={(masterLists) => this.onAddAllToMasterLists(masterLists)}>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddToMasterListModal>
         <DeleteContactsModal
