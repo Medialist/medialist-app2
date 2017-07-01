@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
+import { Meteor } from 'meteor/meteor'
 import Modal from '/imports/ui/navigation/modal'
 import { Check } from '/imports/ui/images/icons'
 import { createContainer } from 'meteor/react-meteor-data'
@@ -77,7 +78,21 @@ class AddToMasterList extends React.Component {
 
 const AddToMasterListContainer = createContainer(({open, type, ...props}) => {
   // master lists are subscribed to at the layout level
-  const allMasterLists = open ? MasterLists.find({type}).fetch() : []
+  let allMasterLists = []
+
+  if (open) {
+    const user = Meteor.user()
+    const lists = MasterLists.find({type}).fetch()
+
+    allMasterLists = user[`recent${type.substring(0, type.length - 1)}Lists`]
+      .map(slug => lists.find(list => list.slug === slug))
+      .filter(list => !!list)
+      .concat(
+        lists.filter(list => !user.recentCampaignLists
+          .find(slug => list.slug === slug))
+      )
+  }
+
   return { open, type, allMasterLists, ...props }
 }, AddToMasterList)
 
