@@ -18,9 +18,9 @@ class AddContactToCampaign extends React.Component {
   renderCampaigns = (campaigns, onCampaignSelected) => {
     const {contact} = this.props
     return campaigns.map((campaign) => {
-      const alreadyInCampaign = !!campaign[contact.slug]
+      const alreadyInCampaign = !!campaign.contacts[contact.slug]
       const ResultListItem = alreadyInCampaign ? CanNotJoinCampaignResult : CanJoinCampaignResult
-      return <ResultListItem {...campaign} onSelected={onCampaignSelected} key={campaign._id} />
+      return <ResultListItem {...campaign} onSelect={onCampaignSelected} key={campaign._id} />
     })
   }
 

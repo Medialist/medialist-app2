@@ -67,7 +67,7 @@ class CampaignSearchContainer extends React.Component {
     term: ''
   }
 
-  onTermChange (term) {
+  onTermChange = (term) => {
     this.setState({ term })
   }
 
