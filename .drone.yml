@@ -13,4 +13,4 @@ pipeline:
 
 services:
   selenium:
-    images: selenium/standalone-chrome
+    image: selenium/standalone-chrome
