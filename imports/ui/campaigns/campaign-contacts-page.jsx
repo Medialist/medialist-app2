@@ -163,18 +163,22 @@ class CampaignContactsPage extends React.Component {
       statusFilter
     } = this.state
 
+    let contactsTotal
+
+    if (statusFilter) {
+      contactsTotal = Object.keys(campaign.contacts).filter((slug) => campaign.contacts[slug] === statusFilter).length
+    } else {
+      contactsTotal = Object.keys(campaign.contacts).length
+    }
+
     return (
       <div>
         <CampaignTopbar campaign={campaign} onAddContactClick={this.onAddContactClick} />
         <CampaignSummary campaign={campaign} statusFilter={statusFilter} onStatusClick={(statusFilter) => this.setState({statusFilter})} />
         <div className='bg-white shadow-2 m4' data-id='contacts-table'>
-          <div className='p4 flex items-center'>
-            <div className='flex-auto'>
-              <SearchBox onTermChange={this.onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' />
-            </div>
-            <div className='flex-none pl4 f-xs'>
-              <ContactsTotal total={contacts.length} />
-            </div>
+          <div className='pt4 pl4 pr4 pb1 items-center'>
+            <SearchBox onTermChange={this.onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' style={{zIndex: 1}} />
+            <ContactsTotal searching={Boolean(term)} results={contacts} total={contactsTotal} />
           </div>
           <ContactsTableContainer
             sort={sort}
@@ -219,8 +223,7 @@ class CampaignContactsPage extends React.Component {
           type='Contacts'
           open={this.state.addTagsModal}
           onDismiss={this.hideModals}
-          onUpdateTags={this.onTagAll}
-          title='Tag these Contacts'>
+          onUpdateTags={this.onTagAll}>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddTagsModal>
         <AddToMasterListModal
@@ -228,8 +231,7 @@ class CampaignContactsPage extends React.Component {
           items={this.state.selections}
           open={this.state.addToMasterListsModal}
           onDismiss={this.hideModals}
-          onSave={(masterLists) => this.onAddAllToMasterLists(masterLists)}
-          title='Add to a Contact List'>
+          onSave={(masterLists) => this.onAddAllToMasterLists(masterLists)}>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddToMasterListModal>
         <RemoveContactModal
@@ -254,9 +256,10 @@ CampaignContactsPage.contextTypes = {
   snackbar: PropTypes.object
 }
 
-const ContactsTotal = ({ total }) => (
-  <div>{total} contact{total === 1 ? '' : 's'} total</div>
-)
+const ContactsTotal = ({ searching, results, total }) => {
+  const num = searching ? results.length : total
+  return <div className='f-xs gray60' style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>{num} contact{num === 1 ? '' : 's'}</div>
+}
 
 // dir is -1 or 1. Returns a sort functon.
 const contactStatusSort = ({contacts}, dir) => (a, b) => {

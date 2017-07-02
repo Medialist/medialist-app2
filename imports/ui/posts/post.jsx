@@ -250,6 +250,10 @@ Post.defaultProps = {
 }
 
 const ContactLink = ({contact, showOutlet = true, ...props}) => {
+  if (!contact) {
+    return <span className='gray60'>Unknown</span>
+  }
+
   let outlet = null
 
   if (showOutlet && contact.outlets && contact.outlets.length && contact.outlets[0].value) {
@@ -265,7 +269,7 @@ const ContactLink = ({contact, showOutlet = true, ...props}) => {
 }
 
 const ContactName = ({contacts, contact, onContactPage}) => {
-  if (contacts.length === 1 && onContactPage) {
+  if (onContactPage) {
     return <span data-id='contact-name'>{firstName(contacts[0])}</span>
   }
 
@@ -453,7 +457,7 @@ export const AddContactsToCampaign = ({item, currentUser, contact, campaign}) =>
           <CampaignName campaigns={item.campaigns} onCampaignPage={Boolean(campaign)} />
         </span>
       }
-      details={details}
+      details={contact ? null : details}
     />
   )
 }

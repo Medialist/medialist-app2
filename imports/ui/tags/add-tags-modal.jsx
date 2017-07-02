@@ -68,7 +68,7 @@ const TagSelector = React.createClass({
 
     return (
       <div>
-        <div className='pt6 center f-xl normal'>{this.props.title}</div>
+        <div className='pt6 center f-xl normal'>Tags</div>
         {this.props.children}
         <div className='pt6 border-bottom border-gray80'>
           <SearchBox
@@ -93,7 +93,7 @@ const TagSelector = React.createClass({
         </div>
         <div className='p4 bg-white'>
           <div className='clearfix'>
-            <button className='btn bg-completed white right' onClick={this.onSave} data-id='tag-selector-modal-save-button'>Save Changes</button>
+            <button className='btn bg-completed white right' onClick={this.onSave} data-id='tag-selector-modal-save-button'>Save</button>
             <button className='btn bg-transparent gray40 right mr2' onClick={this.props.onDismiss} data-id='tag-selector-modal-cancel-button'>Cancel</button>
           </div>
         </div>

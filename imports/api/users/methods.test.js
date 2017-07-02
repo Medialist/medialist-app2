@@ -7,7 +7,9 @@ import Contacts from '/imports/api/contacts/contacts'
 import Posts from '/imports/api/posts/posts'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import {
-  updateUser
+  updateUser,
+  addRecentCampaignList,
+  addRecentContactList
 } from '/imports/api/users/methods'
 import faker from 'faker'
 import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists } from '/tests/fixtures/server-domain'
@@ -179,5 +181,139 @@ describe('User update method', function () {
 
     assert.equal(updatedMasterLists[0].updatedBy.name, users[0].profile.name)
     assert.equal(updatedMasterLists[1].updatedBy.name, data.name)
+  })
+})
+
+describe('addRecentCampaignList', function () {
+  let users
+  let campaignLists
+
+  beforeEach(function () {
+    resetDatabase()
+
+    users = createTestUsers(1)
+    campaignLists = createTestCampaignLists(6)
+  })
+
+  it('should require the user to be logged in', function () {
+    assert.throws(() => addRecentCampaignList.run.call({}, {}), /You must be logged in/)
+  })
+
+  it('should validate the parameters', function () {
+    assert.throws(() => addRecentCampaignList.validate({slug: 5}), /Slug must be a string/)
+    assert.throws(() => addRecentCampaignList.validate({}), /Slug is required/)
+    assert.doesNotThrow(() => addRecentCampaignList.validate({slug: faker.lorem.slug()}))
+  })
+
+  it('should add a recent campaign list', function () {
+    const user = Meteor.users.findOne({_id: users[0]._id})
+    assert.equal(0, user.recentCampaignLists.length)
+
+    addRecentCampaignList.run.call({userId: users[0]._id}, {slug: campaignLists[0].slug})
+
+    const updatedUser = Meteor.users.findOne({_id: users[0]._id})
+    assert.equal(1, updatedUser.recentCampaignLists.length)
+    assert.equal(campaignLists[0].slug, updatedUser.recentCampaignLists[0])
+  })
+
+  it('should not add the same recent campaign lists twice', function () {
+    const user = Meteor.users.findOne({_id: users[0]._id})
+    assert.equal(0, user.recentCampaignLists.length)
+
+    addRecentCampaignList.run.call({userId: users[0]._id}, {slug: campaignLists[0].slug})
+    addRecentCampaignList.run.call({userId: users[0]._id}, {slug: campaignLists[1].slug})
+    addRecentCampaignList.run.call({userId: users[0]._id}, {slug: campaignLists[0].slug})
+
+    const updatedUser = Meteor.users.findOne({_id: users[0]._id})
+    assert.equal(2, updatedUser.recentCampaignLists.length)
+    assert.equal(campaignLists[0].slug, updatedUser.recentCampaignLists[0])
+    assert.equal(campaignLists[1].slug, updatedUser.recentCampaignLists[1])
+  })
+
+  it('should only add 5 recent campaign lists', function () {
+    const user = Meteor.users.findOne({_id: users[0]._id})
+    assert.equal(0, user.recentCampaignLists.length)
+
+    addRecentCampaignList.run.call({userId: users[0]._id}, {slug: campaignLists[0].slug})
+    addRecentCampaignList.run.call({userId: users[0]._id}, {slug: campaignLists[1].slug})
+    addRecentCampaignList.run.call({userId: users[0]._id}, {slug: campaignLists[2].slug})
+    addRecentCampaignList.run.call({userId: users[0]._id}, {slug: campaignLists[3].slug})
+    addRecentCampaignList.run.call({userId: users[0]._id}, {slug: campaignLists[4].slug})
+    addRecentCampaignList.run.call({userId: users[0]._id}, {slug: campaignLists[5].slug})
+
+    const updatedUser = Meteor.users.findOne({_id: users[0]._id})
+    assert.equal(5, updatedUser.recentCampaignLists.length)
+    assert.equal(campaignLists[5].slug, updatedUser.recentCampaignLists[0])
+    assert.equal(campaignLists[4].slug, updatedUser.recentCampaignLists[1])
+    assert.equal(campaignLists[3].slug, updatedUser.recentCampaignLists[2])
+    assert.equal(campaignLists[2].slug, updatedUser.recentCampaignLists[3])
+    assert.equal(campaignLists[1].slug, updatedUser.recentCampaignLists[4])
+  })
+})
+
+describe('addRecentContactList', function () {
+  let users
+  let contactLists
+
+  beforeEach(function () {
+    resetDatabase()
+
+    users = createTestUsers(1)
+    contactLists = createTestContactLists(6)
+  })
+
+  it('should require the user to be logged in', function () {
+    assert.throws(() => addRecentContactList.run.call({}, {}), /You must be logged in/)
+  })
+
+  it('should validate the parameters', function () {
+    assert.throws(() => addRecentContactList.validate({slug: 5}), /Slug must be a string/)
+    assert.throws(() => addRecentContactList.validate({}), /Slug is required/)
+    assert.doesNotThrow(() => addRecentContactList.validate({slug: faker.lorem.slug()}))
+  })
+
+  it('should add a recent contact list', function () {
+    const user = Meteor.users.findOne({_id: users[0]._id})
+    assert.equal(0, user.recentContactLists.length)
+
+    addRecentContactList.run.call({userId: users[0]._id}, {slug: contactLists[0].slug})
+
+    const updatedUser = Meteor.users.findOne({_id: users[0]._id})
+    assert.equal(1, updatedUser.recentContactLists.length)
+    assert.equal(contactLists[0].slug, updatedUser.recentContactLists[0])
+  })
+
+  it('should not add the same recent contact list twice', function () {
+    const user = Meteor.users.findOne({_id: users[0]._id})
+    assert.equal(0, user.recentContactLists.length)
+
+    addRecentContactList.run.call({userId: users[0]._id}, {slug: contactLists[0].slug})
+    addRecentContactList.run.call({userId: users[0]._id}, {slug: contactLists[1].slug})
+    addRecentContactList.run.call({userId: users[0]._id}, {slug: contactLists[0].slug})
+
+    const updatedUser = Meteor.users.findOne({_id: users[0]._id})
+    assert.equal(2, updatedUser.recentContactLists.length)
+    assert.equal(contactLists[0].slug, updatedUser.recentContactLists[0])
+    assert.equal(contactLists[1].slug, updatedUser.recentContactLists[1])
+  })
+
+  it('should only add 5 recent contact lists', function () {
+    const user = Meteor.users.findOne({_id: users[0]._id})
+    assert.equal(0, user.recentContactLists.length)
+
+    addRecentContactList.run.call({userId: users[0]._id}, {slug: contactLists[0].slug})
+    addRecentContactList.run.call({userId: users[0]._id}, {slug: contactLists[1].slug})
+    addRecentContactList.run.call({userId: users[0]._id}, {slug: contactLists[2].slug})
+    addRecentContactList.run.call({userId: users[0]._id}, {slug: contactLists[3].slug})
+    addRecentContactList.run.call({userId: users[0]._id}, {slug: contactLists[4].slug})
+    addRecentContactList.run.call({userId: users[0]._id}, {slug: contactLists[5].slug})
+
+    const updatedUser = Meteor.users.findOne({_id: users[0]._id})
+    assert.equal(5, updatedUser.recentContactLists.length)
+    assert.equal(contactLists[5].slug, updatedUser.recentContactLists[0])
+    assert.equal(contactLists[4].slug, updatedUser.recentContactLists[1])
+    assert.equal(contactLists[3].slug, updatedUser.recentContactLists[2])
+    assert.equal(contactLists[2].slug, updatedUser.recentContactLists[3])
+    assert.equal(contactLists[1].slug, updatedUser.recentContactLists[4])
   })
 })

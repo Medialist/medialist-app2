@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
+import { Meteor } from 'meteor/meteor'
 import Modal from '/imports/ui/navigation/modal'
 import { Check } from '/imports/ui/images/icons'
 import { createContainer } from 'meteor/react-meteor-data'
@@ -15,7 +16,6 @@ class AddToMasterList extends React.Component {
     selectedMasterLists: PropTypes.array,
     allMasterLists: PropTypes.array.isRequired,
     type: PropTypes.oneOf(['Campaigns', 'Contacts']),
-    title: PropTypes.string.isRequired,
     children: PropTypes.node
   }
 
@@ -45,15 +45,13 @@ class AddToMasterList extends React.Component {
       return null
     }
 
-    const { type, title, allMasterLists, children } = this.props
+    const { type, allMasterLists, children } = this.props
     const { selectedMasterLists } = this.state
-
-    const confirmText = `Add ${type.substring(0, this.props.items.length === 1 ? type.length - 1 : undefined)}`
 
     return (
       <div data-id='add-to-list-modal'>
         <div className='py6 center border-bottom border-gray80'>
-          <span className='f-xl'>{title}</span>
+          <span className='f-xl'>{type.substring(0, type.length - 1)} Lists</span>
           {children}
         </div>
         <Scroll height={'calc(90vh - 250px)'} className='bg-gray90'>
@@ -69,7 +67,7 @@ class AddToMasterList extends React.Component {
           ))}
         </Scroll>
         <div className='p4 bg-white border-top border-gray80'>
-          <button className='btn bg-completed white right' onClick={() => this.onSave()} data-id='add-to-list-modal-save-button'>{confirmText}</button>
+          <button className='btn bg-completed white right' onClick={() => this.onSave()} data-id='add-to-list-modal-save-button'>Save</button>
           <button className='btn bg-transparent gray40 right mr2' onClick={(event) => this.props.onDismiss(event)} data-id='add-to-list-modal-cancel-button'>Cancel</button>
           <Link to={`/settings/${type.toLowerCase()}-master-lists`} className='btn bg-transparent blue' data-id='add-to-list-modal-manage-lists-button'>Manage {this.props.type.substring(0, this.props.type.length - 1)} Lists</Link>
         </div>
@@ -80,7 +78,21 @@ class AddToMasterList extends React.Component {
 
 const AddToMasterListContainer = createContainer(({open, type, ...props}) => {
   // master lists are subscribed to at the layout level
-  const allMasterLists = open ? MasterLists.find({type}).fetch() : []
+  let allMasterLists = []
+
+  if (open) {
+    const user = Meteor.user()
+    const lists = MasterLists.find({type}).fetch()
+
+    allMasterLists = user[`recent${type.substring(0, type.length - 1)}Lists`]
+      .map(slug => lists.find(list => list.slug === slug))
+      .filter(list => !!list)
+      .concat(
+        lists.filter(list => !user.recentCampaignLists
+          .find(slug => list.slug === slug))
+      )
+  }
+
   return { open, type, allMasterLists, ...props }
 }, AddToMasterList)
 
