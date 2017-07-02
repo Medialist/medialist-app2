@@ -8,7 +8,9 @@ const tagSelectorModal = require('../components/tag-selector-modal')
 const findUrl = require('../../../imports/lib/find-url')
 
 module.exports = {
-  url: 'http://localhost:3000/campaigns',
+  url: function () {
+    return this.api.launchUrl + '/campaigns'
+  },
   elements: {
     addContactsButton: '[data-id=add-contacts-to-campaign-button]',
     createPostButton: '[data-id=create-post-button]',

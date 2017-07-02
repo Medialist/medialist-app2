@@ -8,7 +8,9 @@ const addToListsModal = require('../components/add-to-lists-modal')
 const tagSelectorModal = require('../components/tag-selector-modal')
 
 module.exports = {
-  url: 'http://localhost:3000/contacts',
+  url: function () {
+    return this.api.launchUrl + '/contacts'
+  },
   elements: {
     contactInfo: '[data-id=contact-info]',
     openPostMenuButton: '[data-id=open-post-menu-button]',

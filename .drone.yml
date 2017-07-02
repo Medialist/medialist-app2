@@ -3,6 +3,7 @@ pipeline:
     image: node:4.8.3
     environment:
       SELENIUM_HOST: selenium
+      SELENIUM_LAUNCH_URL: http://test:8080
     commands:
       - curl -sL https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
       - meteor npm install --production --quiet

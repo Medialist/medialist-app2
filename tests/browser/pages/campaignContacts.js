@@ -8,7 +8,9 @@ const dropdown = require('../components/status-dropdown')
 const campaignSelectorModal = require('../components/campaign-selector-modal')
 
 module.exports = {
-  url: 'http://localhost:3000/campaigns',
+  url: function () {
+    return this.api.launchUrl + '/campaigns'
+  },
   elements: {
 
   },

@@ -6,7 +6,9 @@ const tagSelectorModal = require('../components/tag-selector-modal')
 const deleteModal = require('../components/delete-modal')
 
 module.exports = {
-  url: 'http://localhost:3000/contacts',
+  url: function () {
+    return this.api.launchUrl + '/contacts'
+  },
   elements: {
     newCampaignButton: '[data-id=create-campaign-button]',
     editCampaignButton: '[data-id=edit-campaign-button]',

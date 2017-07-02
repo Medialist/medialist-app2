@@ -3,7 +3,9 @@
 const activityFeed = require('../components/activity-feed')
 
 module.exports = {
-  url: 'http://localhost:3000/',
+  url: function () {
+    return this.api.launchUrl
+  },
   elements: {
 
   },

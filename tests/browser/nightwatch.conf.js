@@ -15,6 +15,7 @@ const configure = (obj) => {
 const defaults = configure({
   SELENIUM_PORT: 4444,
   SELENIUM_HOST: '127.0.0.1',
+  SELENIUM_LAUNCH_URL: 'http://localhost:3000',
   BROWSER: 'chrome',
   PARALLEL: false,
   REPORTS_DIR: '.reports',
@@ -42,7 +43,7 @@ const config = {
 
   test_settings: {
     default: {
-      launch_url: 'http://localhost',
+      launch_url: defaults.SELENIUM_LAUNCH_URL,
       selenium_port: defaults.SELENIUM_PORT,
       selenium_host: defaults.SELENIUM_HOST,
       silent: true,
