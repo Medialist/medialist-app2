@@ -1,0 +1,18 @@
+pipeline:
+  build:
+    image: node:4.8.3
+    environment:
+      - METEOR_ALLOW_SUPERUSER=true
+    commands:
+      - google-chrome --version
+      - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+      - sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb stable main" >> /etc/apt/sources.list.d/google.list'
+      - sudo apt-get update
+      - sudo apt-get --only-upgrade install google-chrome-stable
+      - google-chrome --version
+      - curl -sL https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
+      - meteor npm install --production --quiet
+      - meteor npm install --only=dev --quiet
+      - meteor npm test
+      - meteor npm run test:server:ci
+      - meteor npm run test:browser:ci
