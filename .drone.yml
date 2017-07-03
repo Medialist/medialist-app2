@@ -6,7 +6,7 @@ pipeline:
       SELENIUM_LAUNCH_URL: http://test:8080
     commands:
       - curl -sL https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
-      - meteor npm install --quiet
+      - meteor npm install
       - meteor npm test
       - meteor npm run test:server:ci
       - meteor npm run test:browser:ci
