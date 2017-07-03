@@ -2,10 +2,10 @@ pipeline:
   test:
     image: node:4.8.3
     environment:
-      SELENIUM_START: "false"
+      SELENIUM_START: y
       SELENIUM_HOST: selenium
-      SELENIUM_LAUNCH_URL: http://test:8080
-      METEOR_ALLOW_SUPERUSER: "true"
+      SELENIUM_LAUNCH_URL: http://test:3000
+      METEOR_ALLOW_SUPERUSER: n
       LC_ALL: "POSIX"
     commands:
       - curl -sL https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
