@@ -13,6 +13,7 @@ const configure = (obj) => {
 }
 
 const defaults = configure({
+  SELENIUM_START: true,
   SELENIUM_PORT: 4444,
   SELENIUM_HOST: '127.0.0.1',
   SELENIUM_LAUNCH_URL: 'http://localhost:3000',
@@ -31,10 +32,8 @@ const config = {
   custom_assertions_path: 'tests/browser/assertions',
 
   selenium: {
-    start_process: true,
+    start_process: defaults.SELENIUM_START,
     server_path: `./node_modules/selenium-server/lib/runner/selenium-server-standalone-${seleniumServer.version}.jar`,
-    host: defaults.SELENIUM_HOST,
-    port: defaults.SELENIUM_PORT,
     cli_args: {
       'webdriver.chrome.driver': './node_modules/chromedriver/bin/chromedriver',
       'webdriver.gecko.driver': './node_modules/geckodriver/bin/geckodriver'
@@ -66,6 +65,11 @@ const config = {
           args: ['window-size=1440,1024']
         }
       }
+    },
+    chrome: {
+      selenium_port: 9515,
+      selenium_host: 'localhost',
+      default_path_prefix: ''
     }
   }
 }

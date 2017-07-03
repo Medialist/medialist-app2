@@ -2,6 +2,7 @@ pipeline:
   test:
     image: node:4.8.3
     environment:
+      SELENIUM_START: "false"
       SELENIUM_HOST: selenium
       SELENIUM_LAUNCH_URL: http://test:8080
       METEOR_ALLOW_SUPERUSER: "true"
@@ -10,8 +11,6 @@ pipeline:
       - curl -sL https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
       - meteor npm install --quiet
       - meteor npm run build --quiet
-      - meteor npm test
-      - meteor npm run test:server:ci
       - meteor npm run test:browser:ci
 
 services:
