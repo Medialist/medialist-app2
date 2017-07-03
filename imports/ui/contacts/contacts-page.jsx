@@ -201,6 +201,7 @@ const ContactsPage = withSnackbar(React.createClass({
       contacts,
       term,
       sort,
+      limit,
       campaigns,
       selectedTags,
       importId
@@ -280,7 +281,7 @@ const ContactsPage = withSnackbar(React.createClass({
                 )}
               </div>
             </SearchBox>
-            <ContactsTotal searching={searching} results={contacts} total={resultsTotal} />
+            <ContactsTotal loading={loading} searching={searching} results={contacts} limit={limit} total={resultsTotal} />
           </div>
           <ContactsTable
             contacts={contacts}
@@ -369,9 +370,22 @@ const MasterListsSelectorContainer = createContainer((props) => {
   return { ...props, items, selectedSlug }
 }, MasterListsSelector)
 
-const ContactsTotal = ({ searching, results, total }) => {
-  const num = searching ? results.length : total
-  return <div className='f-xs gray60' style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>{num} contact{num === 1 ? '' : 's'}</div>
+const ContactsTotal = ({ loading, searching, results = [], limit, total }) => {
+  let prefix = ''
+  let num = total
+  if (searching) {
+    prefix = results.length === limit ? 'over' : ''
+    num = results.length
+  }
+  const suffix = `contact${num === 1 ? '' : 's'}`
+  const label = loading ? 'Calculating' : `${prefix} ${num} ${suffix}`
+  return (
+    <div
+      className='f-xs gray60'
+      style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>
+      {label}
+    </div>
+  )
 }
 
 const SearchableContactsPage = createSearchContainer(ContactsPage)
