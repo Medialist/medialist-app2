@@ -139,6 +139,9 @@ const ContactsTable = React.createClass({
                 updatedAt,
                 createdAt
               } = contact
+              const contactRef = campaign ? contact.campaigns[campaign.slug] : null
+              const contextualUpdatedAt = contactRef ? contactRef.updatedAt : (updatedAt || createdAt)
+              const contextualUpdatedBy = updatedBy || createdBy
               return (
                 <SelectableRow data={contact} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id} data-id={`contacts-table-row-${index}`} data-item={_id}>
                   <td className='left-align'>
@@ -168,8 +171,8 @@ const ContactsTable = React.createClass({
                     </td>
                   )}
                   <td className='left-align'>
-                    <TimeFromNow className='semibold f-sm' date={campaign ? contact.campaigns[campaign.slug].updatedAt : (updatedAt || createdAt)} />
-                    <span className='normal f-sm'> by <YouOrName user={updatedBy || createdBy} /></span>
+                    <TimeFromNow className='semibold f-sm' date={contextualUpdatedAt} />
+                    <span className='normal f-sm'> by <YouOrName user={contextualUpdatedBy} /></span>
                   </td>
                 </SelectableRow>
               )
