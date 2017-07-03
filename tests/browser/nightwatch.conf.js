@@ -4,8 +4,12 @@ const seleniumServer = require('selenium-server/package.json')
 
 const configure = (obj) => {
   Object.keys(obj).forEach(key => {
-    if (process.env[key] !== undefined) {
-      obj[key] = process.env[key]
+    let envVar = process.env[key]
+    if (envVar !== undefined) {
+      if (envVar === 'true' || envVar === 'false') {
+        envVar = JSON.parse(envVar)
+      }
+      obj[key] = envVar
     }
   })
 
