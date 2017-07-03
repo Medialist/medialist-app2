@@ -14,7 +14,7 @@ import { CreateContactModal } from '/imports/ui/contacts/edit-contact'
 import ContactListEmpty from '/imports/ui/contacts/contacts-list-empty'
 import { FeedContactIcon } from '/imports/ui/images/icons'
 import createSearchContainer from '/imports/ui/contacts/search-container'
-import AddContactsToCampaign from '/imports/ui/contacts/add-contacts-to-campaign'
+import AddContactsToCampaign from '/imports/ui/contacts/add-to-campaign/add-many-modal'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import CountTag, { AvatarTag } from '/imports/ui/tags/tag'
 import { batchFavouriteContacts } from '/imports/api/contacts/methods'
@@ -309,9 +309,7 @@ const ContactsPage = withSnackbar(React.createClass({
           title='Add these Contacts to a Campaign'
           contacts={this.state.selections}
           onDismiss={() => this.hideModals()}
-          open={this.state.addContactsToCampaignModal}>
-          <AbbreviatedAvatarList items={selections} maxTooltip={12} />
-        </AddContactsToCampaign>
+          open={this.state.addContactsToCampaignModal} />
         <AddTagsModal
           type='Contacts'
           open={this.state.addTagsModal}
