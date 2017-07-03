@@ -5,6 +5,7 @@ pipeline:
       SELENIUM_HOST: selenium
       SELENIUM_LAUNCH_URL: http://test:8080
       METEOR_ALLOW_SUPERUSER: "true"
+      LC_ALL: "POSIX"
     commands:
       - curl -sL https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
       - meteor npm install --quiet
