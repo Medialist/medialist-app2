@@ -19,8 +19,6 @@ pipeline:
       - env
       - curl -sL https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
       - meteor npm install --quiet
-      - meteor npm run build --quiet
-      - meteor npm run test:browser:ci
 
   rebuild-cache:
     image: drillster/drone-volume-cache
