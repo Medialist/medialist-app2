@@ -4,8 +4,11 @@ const app = require('./fixtures/app')
 const mongo = require('./fixtures/mongo')
 const ddp = require('./fixtures/ddp')
 const http = require('http')
-const APP_URL = 'http://localhost:3000'
-const MONGO_URL = 'mongodb://localhost:3001/meteor'
+const url = require('url')
+const APP_URL = process.env.SELENIUM_LAUNCH_URL || 'http://localhost:3000'
+const hostname = url.parse(APP_URL).hostname
+const MONGO_URL = `mongodb://${hostname}:3001/meteor`
+
 let server
 
 module.exports = {
@@ -13,6 +16,7 @@ module.exports = {
   waitForConditionTimeout: 30000,
 
   before: (done) => {
+    console.log('before', process.argv)
     http.get(APP_URL, result => {
       result.resume()
       done()
