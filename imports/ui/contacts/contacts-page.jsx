@@ -14,7 +14,7 @@ import { CreateContactModal } from '/imports/ui/contacts/edit-contact'
 import ContactListEmpty from '/imports/ui/contacts/contacts-list-empty'
 import { FeedContactIcon } from '/imports/ui/images/icons'
 import createSearchContainer from '/imports/ui/contacts/search-container'
-import AddContactsToCampaign from '/imports/ui/contacts/add-contacts-to-campaign'
+import AddContactsToCampaign from '/imports/ui/contacts/add-to-campaign/add-many-modal'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import CountTag, { AvatarTag } from '/imports/ui/tags/tag'
 import { batchFavouriteContacts } from '/imports/api/contacts/methods'
@@ -201,6 +201,7 @@ const ContactsPage = withSnackbar(React.createClass({
       contacts,
       term,
       sort,
+      limit,
       campaigns,
       selectedTags,
       importId
@@ -280,7 +281,7 @@ const ContactsPage = withSnackbar(React.createClass({
                 )}
               </div>
             </SearchBox>
-            <ContactsTotal searching={searching} results={contacts} total={resultsTotal} />
+            <ContactsTotal loading={loading} searching={searching} results={contacts} limit={limit} total={resultsTotal} />
           </div>
           <ContactsTable
             contacts={contacts}
@@ -309,9 +310,7 @@ const ContactsPage = withSnackbar(React.createClass({
           title='Add these Contacts to a Campaign'
           contacts={this.state.selections}
           onDismiss={() => this.hideModals()}
-          open={this.state.addContactsToCampaignModal}>
-          <AbbreviatedAvatarList items={selections} maxTooltip={12} />
-        </AddContactsToCampaign>
+          open={this.state.addContactsToCampaignModal} />
         <AddTagsModal
           type='Contacts'
           open={this.state.addTagsModal}
@@ -371,9 +370,22 @@ const MasterListsSelectorContainer = createContainer((props) => {
   return { ...props, items, selectedSlug }
 }, MasterListsSelector)
 
-const ContactsTotal = ({ searching, results, total }) => {
-  const num = searching ? results.length : total
-  return <div className='f-xs gray60' style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>{num} contact{num === 1 ? '' : 's'}</div>
+const ContactsTotal = ({ loading, searching, results = [], limit, total }) => {
+  let prefix = ''
+  let num = total
+  if (searching) {
+    prefix = results.length === limit ? 'over' : ''
+    num = results.length
+  }
+  const suffix = `contact${num === 1 ? '' : 's'}`
+  const label = loading ? 'Calculating' : `${prefix} ${num} ${suffix}`
+  return (
+    <div
+      className='f-xs gray60'
+      style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>
+      {label}
+    </div>
+  )
 }
 
 const SearchableContactsPage = createSearchContainer(ContactsPage)
