@@ -105,7 +105,7 @@ export const PostBoxButtons = ({focused, disabled, onPost, isEdit, children}) =>
       className={`btn opacity-100 bg-gray80 right active-bg-blue ${disabled ? 'white' : 'active'}`}
       disabled={disabled}
       data-id='create-post-button'>
-      {isEdit ? 'Update' : 'Post'}
+      {isEdit ? 'Save' : 'Post'}
     </button>
     {children}
   </div>
@@ -132,6 +132,7 @@ export class FeedbackInput extends Component {
     const status = contactRef || StatusMap.toContact
 
     this.state = {
+      contact,
       status,
       campaign,
       message: this.props.message || '',
@@ -192,7 +193,7 @@ export class FeedbackInput extends Component {
           isEdit={this.props.isEdit}>
           {this.props.selectableContacts ? (
             <ContactSelector
-              selectedContact={this.props.contact}
+              selectedContact={this.state.contact}
               selectedStatus={this.state.status}
               campaign={this.props.currentCampaign}
               contacts={this.props.selectableContacts}
@@ -209,15 +210,6 @@ export class FeedbackInput extends Component {
               onOpen={this.onOpenDropDown}
               onClose={this.onCloseDropDown} />
           )}
-          <div className='ml1 inline-block'>
-            <StatusSelector
-              buttonStyle={{padding: '6px 15px 7px'}}
-              status={this.state.status}
-              onChange={this.onFieldChange}
-              disabled={!this.state.campaign}
-              onOpen={this.onOpenDropDown}
-              onClose={this.onCloseDropDown} />
-          </div>
         </PostBoxButtons>
       </div>
     )

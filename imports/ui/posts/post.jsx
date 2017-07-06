@@ -157,11 +157,11 @@ class Post extends React.Component {
     })
   }
 
-  updatePost = (_id, { message, status }) => {
+  updatePost = (_id, { message, status, contact, campaign }) => {
     this.setState({
       editOpen: false
     })
-    updatePost.call({ _id, message, status })
+    updatePost.call({ _id, message, status, contact, campaign })
   }
 
   render () {

@@ -45,10 +45,10 @@ const EmptyContactsList = ({onAddContactClick}) => (
 const ContactsList = ({contacts, campaign}) => (
   <div>
     <div className='px4 pb3'>
-      {contacts.map((contact) => (
-        <Link to={`/contact/${contact.slug}`} className='block pt3' key={contact._id}>
+      {contacts.map((contact, i) => (
+        <Link to={`/contact/${contact.slug}`} className='block pt3' key={`${contact._id}-${i}`}>
           <CampaignContact
-            key={contact.slug}
+            key={`${contact.slug}-${i}`}
             contact={contact}
             campaign={campaign}
             statusSelectorDropdown={{

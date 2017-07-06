@@ -10,7 +10,7 @@ const CampaignContacts = ({campaign, contacts, onSelectContact}) => {
 
   return (
     <div>
-      {contacts.map((contact) => {
+      {contacts.map((contact, i) => {
         const { slug } = contact
         const status = campaign.contacts[slug]
         return (
@@ -18,7 +18,7 @@ const CampaignContacts = ({campaign, contacts, onSelectContact}) => {
             className={'flex items-center pointer border-bottom border-top border-transparent hover-border-gray80 pl4 hover-bg-gray90 hover-opacity-trigger active-bg-green-light'}
             style={{height: 75}}
             onClick={() => onSelectContact(contact)}
-            key={slug}
+            key={`${slug}-${i}`}
             data-type='campaign-contact-search-result'
             data-id={`campaign-contact-${contact._id}`} >
             <div className='flex-auto'>

@@ -132,9 +132,19 @@ export const updatePost = new ValidatedMethod({
       type: String,
       allowedValues: StatusValues,
       optional: true
+    },
+    contact: {
+      type: Object,
+      blackbox: true,
+      optional: true
+    },
+    campaign: {
+      type: Object,
+      blackbox: true,
+      optional: true
     }
   }).validator(),
-  run ({ _id, message, status }) {
+  run ({ _id, message, status, contact, campaign }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -173,6 +183,10 @@ export const updatePost = new ValidatedMethod({
       $set.status = status
     }
 
+    if (contact) {
+      $set.contacts = [contact]
+    }
+
     Posts.update({
       _id
     }, {
@@ -203,6 +217,21 @@ export const updatePost = new ValidatedMethod({
             updatedAt
           }
         })
+      })
+    }
+
+    if (contact) {
+      post.contacts.forEach((postContact) => {
+        if (contact._id !== postContact._id) {
+          Contacts.update({
+            _id: {$in: [contact._id, postContact._id]}
+          }, {
+            $set: {
+              updatedBy: userRef,
+              updatedAt
+            }
+          })
+        }
       })
     }
   }

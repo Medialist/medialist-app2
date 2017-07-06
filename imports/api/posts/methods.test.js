@@ -275,7 +275,7 @@ describe('updateFeedbackPost', function () {
     resetDatabase()
 
     users = createTestUsers(2)
-    contacts = createTestContacts(1)
+    contacts = createTestContacts(2)
     campaigns = createTestCampaigns(1)
   })
 
@@ -329,6 +329,31 @@ describe('updateFeedbackPost', function () {
     assert.equal(updatedPost.status, 'Contacted')
     assert.equal(updatedPost.message, 'test update2')
     assert.equal(campaign.contacts[contacts[0].slug], 'Contacted')
+  })
+
+  it('should let users change the contact', function () {
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      contactSlugs: [contacts[0].slug, contacts[1].slug],
+      campaignSlug: campaigns[0].slug
+    })
+
+    const _id = createFeedbackPost.run.call({userId: users[0]._id}, {
+      contactSlug: contacts[0].slug,
+      campaignSlug: campaigns[0].slug,
+      message: 'test'
+    })
+
+    updatePost.run.call({
+      userId: users[0]._id
+    }, {
+      _id,
+      contact: contacts[1]
+    })
+
+    const updatedPost = Posts.findOne({ _id })
+    assert.equal(updatedPost.contacts[0].slug, contacts[1].slug)
   })
 })
 
