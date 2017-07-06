@@ -348,12 +348,13 @@ const FeedbackPostSummary = ({label, campaigns, contacts, status, contact, campa
   )
 }
 
-export const FeedbackPost = ({item, currentUser, contact, campaign, contacts}) => {
+export const FeedbackPost = ({item, currentUser, contact, campaign, contacts, campaigns}) => {
   return (
     <Post
       {...item}
       selectableContacts={contacts}
       currentCampaign={campaign}
+      selectableCampaigns={campaigns}
       currentUser={currentUser}
       icon={<FeedFeedbackIcon className='blue-dark' style={{verticalAlign: -2}} />}
       summary={<FeedbackPostSummary {...item} label='logged feedback' contact={contact} campaign={campaign} />}
@@ -372,9 +373,12 @@ export const FeedbackPost = ({item, currentUser, contact, campaign, contacts}) =
   )
 }
 
-export const CoveragePost = ({item, currentUser, contact, campaign}) => (
+export const CoveragePost = ({item, currentUser, contact, campaign, contacts, campaigns}) => (
   <Post
     {...item}
+    selectableContacts={contacts}
+    currentCampaign={campaign}
+    selectableCampaigns={campaigns}
     currentUser={currentUser}
     icon={<FeedCoverageIcon className='blue' />}
     summary={<FeedbackPostSummary {...item} label='logged coverage' contact={contact} campaign={campaign} />}

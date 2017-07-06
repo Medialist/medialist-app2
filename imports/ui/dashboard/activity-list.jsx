@@ -3,18 +3,19 @@ import PropTypes from 'prop-types'
 import Loading from '/imports/ui/lists/loading'
 import * as PostMap from '/imports/ui/posts/post'
 
-const ActivityList = React.createClass({
-  propTypes: {
+class ActivityList extends React.Component {
+  static propTypes = {
     loading: PropTypes.bool.isRequired,
     currentUser: PropTypes.object,
     items: PropTypes.array.isRequired,
     contact: PropTypes.object,
     campaign: PropTypes.object,
-    contacts: PropTypes.array
-  },
+    contacts: PropTypes.array,
+    campaigns: PropTypes.array
+  }
 
   render () {
-    const { items, currentUser, contact, contacts, campaign, loading } = this.props
+    const { items, loading } = this.props
     if (!loading && !items.length) return <p className='p4 mb2 f-xl semibold center'>No items yet</p>
     return (
       <div style={{paddingBottom: 100}}>
@@ -29,18 +30,14 @@ const ActivityList = React.createClass({
             <Post
               key={item._id}
               item={item}
-              currentUser={currentUser}
-              contact={contact}
-              campaign={campaign}
               editable={editable}
-              contacts={contacts}
-            />
+              {...this.props} />
           )
         })}
         { loading && <div className='center p4'><Loading /></div> }
       </div>
     )
   }
-})
+}
 
 export default ActivityList

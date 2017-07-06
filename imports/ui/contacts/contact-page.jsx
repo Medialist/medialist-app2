@@ -65,7 +65,9 @@ const ContactPage = withSnackbar(React.createClass({
   render () {
     const { contact, campaigns, campaign, user, masterlists, needToKnows, loading } = this.props
     const { editContactModalOpen, addToCampaignOpen } = this.state
+
     if (!contact) return null
+
     return (
       <div>
         <ContactTopbar contact={contact} onAddToCampaignClick={this.toggleAddToCampaign} />
@@ -90,7 +92,7 @@ const ContactPage = withSnackbar(React.createClass({
               onCoverage={this.onCoverage}
               onNeedToKnow={this.onNeedToKnow}
             />
-            <ActivityFeed data-id='contact-activity-feed' contact={contact} />
+            <ActivityFeed data-id='contact-activity-feed' contact={contact} campaigns={campaigns} />
           </div>
           <div data-id='need-to-knows-list' className='flex-none xs-hide sm-hide pl4' style={{width: 323}}>
             <ContactNeedToKnowList items={needToKnows} />

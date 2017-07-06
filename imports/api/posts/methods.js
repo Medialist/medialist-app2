@@ -179,13 +179,9 @@ export const updatePost = new ValidatedMethod({
       $set.embeds = embed ? [embed] : []
     }
 
-    if (status) {
-      $set.status = status
-    }
-
-    if (contact) {
-      $set.contacts = [contact]
-    }
+    $set.status = status || post.status
+    $set.contacts = contact ? [contact] : post.contacts
+    $set.campaigns = campaign ? [campaign] : post.campaigns
 
     Posts.update({
       _id
@@ -193,10 +189,23 @@ export const updatePost = new ValidatedMethod({
       $set: $set
     })
 
+    if (post.type === 'NeedToKnowPost') {
+      post.contacts.forEach((contact) => {
+        Contacts.update({
+          _id: contact._id
+        }, {
+          $set: {
+            updatedBy: userRef,
+            updatedAt
+          }
+        })
+      })
+    }
+
     if (status !== post.status) {
       post.campaigns.forEach((campaign) => {
         Campaigns.update({
-          slug: campaign.slug
+          _id: campaign._id
         }, {
           $set: {
             [`contacts.${post.contacts[0].slug}`]: status,
@@ -207,26 +216,29 @@ export const updatePost = new ValidatedMethod({
       })
     }
 
-    if (post.type === 'NeedToKnowPost') {
-      post.contacts.forEach((contact) => {
-        Contacts.update({
-          slug: contact.slug
-        }, {
-          $set: {
-            updatedBy: userRef,
-            updatedAt
-          }
-        })
-      })
-    }
-
     if (contact) {
       post.contacts.forEach((postContact) => {
-        if (contact._id !== postContact._id) {
+        if (postContact._id !== contact._id) {
           Contacts.update({
             _id: {$in: [contact._id, postContact._id]}
           }, {
             $set: {
+              updatedBy: userRef,
+              updatedAt
+            }
+          })
+        }
+      })
+    }
+
+    if (campaign) {
+      post.campaigns.forEach((postCampaign) => {
+        if (postCampaign._id !== campaign._id) {
+          Campaigns.update({
+            _id: campaign._id
+          }, {
+            $set: {
+              [`contacts.${post.contacts[0].slug}`]: status,
               updatedBy: userRef,
               updatedAt
             }

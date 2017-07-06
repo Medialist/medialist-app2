@@ -10,22 +10,21 @@ import Campaigns from '/imports/api/campaigns/campaigns'
 import NearBottomContainer from '/imports/ui/navigation/near-bottom-container'
 import SubscriptionLimitContainer from '/imports/ui/navigation/subscription-limit-container'
 
-const ActivityFeed = React.createClass({
-  propTypes: {
+class ActivityFeed extends React.Component {
+  static propTypes = {
     campaign: PropTypes.object,
     contact: PropTypes.object,
     'data-id': PropTypes.string,
-    contacts: PropTypes.array
-  },
+    contacts: PropTypes.array,
+    campaigns: PropTypes.array
+  }
 
-  getInitialState () {
-    return {
-      filterType: filterNames[0],
-      filterCampaign: null
-    }
-  },
+  state = {
+    filterType: filterNames[0],
+    filterCampaign: null
+  }
 
-  onFilterChange (filterType) {
+  onFilterChange = (filterType) => {
     this.setState({ filterType })
 
     if (filterType === 'Need-to-knows') {
@@ -33,15 +32,15 @@ const ActivityFeed = React.createClass({
         filterCampaign: null
       })
     }
-  },
+  }
 
-  onCampaignFilterChange (filterCampaign) {
+  onCampaignFilterChange = (filterCampaign) => {
     this.setState({ filterCampaign })
-  },
+  }
 
   render () {
     const { onFilterChange, onCampaignFilterChange } = this
-    const { contact, campaign, contacts } = this.props
+    const { contact, campaign, contacts, campaigns } = this.props
     const { filterType, filterCampaign } = this.state
     return (
       <div data-id={this.props['data-id']}>
@@ -63,7 +62,13 @@ const ActivityFeed = React.createClass({
           {(nearBottom) => (
             <SubscriptionLimitContainer wantMore={nearBottom}>
               {(limit) => (
-                <ActivityListContainer limit={limit} filter={filterType} campaign={filterCampaign || campaign} contact={contact} contacts={contacts} />
+                <ActivityListContainer
+                  limit={limit}
+                  filter={filterType}
+                  campaign={filterCampaign || campaign}
+                  contact={contact}
+                  contacts={contacts}
+                  campaigns={campaigns} />
               )}
             </SubscriptionLimitContainer>
           )}
@@ -71,7 +76,7 @@ const ActivityFeed = React.createClass({
       </div>
     )
   }
-})
+}
 
 const CampaignFilterContainer = createContainer((props) => {
   const sub = Meteor.subscribe('campaign-refs')

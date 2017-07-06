@@ -3,8 +3,6 @@ import PropTypes from 'prop-types'
 import CampaignSelector from '/imports/ui/feedback/campaign-selector'
 import ContactSelector from '/imports/ui/feedback/contact-selector'
 import StatusMap from '/imports/api/contacts/status'
-import StatusLabel from '/imports/ui/feedback/status-label'
-import StatusSelector from '/imports/ui/feedback/status-selector'
 import PostBoxtTextArea from '/imports/ui/feedback/post-box-textarea'
 import immutable from 'object-path-immutable'
 import { FeedbackTab, CoverageTab, NeedToKnowTab, PostBoxTabs } from '/imports/ui/feedback/post-box-nav'
@@ -121,7 +119,8 @@ export class FeedbackInput extends Component {
     message: PropTypes.string,
     isEdit: PropTypes.bool,
     selectableContacts: PropTypes.array,
-    currentCampaign: PropTypes.object
+    currentCampaign: PropTypes.object,
+    selectableCampaigns: PropTypes.array
   }
 
   constructor (props) {
@@ -203,9 +202,11 @@ export class FeedbackInput extends Component {
               onClose={this.onCloseDropDown} />
           ) : (
             <CampaignSelector
+              selectedContact={this.state.contact}
+              selectedStatus={this.state.status}
               contact={this.props.contact}
               onChange={this.onFieldChange}
-              campaigns={this.props.campaigns}
+              campaigns={this.props.selectableCampaigns || []}
               campaign={this.state.campaign}
               onOpen={this.onOpenDropDown}
               onClose={this.onCloseDropDown} />
@@ -225,10 +226,14 @@ export class CoverageInput extends Component {
     focused: PropTypes.bool,
     campaigns: PropTypes.array.isRequired,
     onSubmit: PropTypes.func.isRequired,
-    isEdit: PropTypes.bool
+    isEdit: PropTypes.bool,
+    selectableContacts: PropTypes.array,
+    currentCampaign: PropTypes.object,
+    selectableCampaigns: PropTypes.array
   }
 
   state = {
+    contact: this.props.contact,
     status: StatusMap.completed,
     campaign: this.props.campaign,
     message: this.props.message || '',
@@ -286,24 +291,27 @@ export class CoverageInput extends Component {
           disabled={!this.state.message || this.state.posting || !this.state.campaign}
           onPost={this.onSubmit}
           isEdit={this.props.isEdit} >
-          <CampaignSelector
-            contact={this.props.contact}
-            onChange={this.onFieldChange}
-            campaigns={this.props.campaigns}
-            campaign={this.state.campaign}
-            onOpen={this.onOpenDropDown}
-            onClose={this.onCloseDropDown} />
-          <div className='ml1 inline-block'>
-            <StatusSelector
-              buttonStyle={{padding: '6px 15px 7px'}}
-              status={this.state.status}
-              onChange={this.onFieldChange}
+          {this.props.selectableContacts ? (
+            <ContactSelector
+              selectedContact={this.state.contact}
+              selectedStatus={this.state.status}
+              campaign={this.props.currentCampaign}
+              contacts={this.props.selectableContacts}
+              onContactChange={this.onFieldChange}
+              onStatusChange={this.onFieldChange}
               onOpen={this.onOpenDropDown}
-              onClose={this.onCloseDropDown}
-            >
-              <StatusLabel name={this.state.status} />
-            </StatusSelector>
-          </div>
+              onClose={this.onCloseDropDown} />
+          ) : (
+            <CampaignSelector
+              selectedContact={this.state.contact}
+              selectedStatus={this.state.status}
+              contact={this.props.contact}
+              onChange={this.onFieldChange}
+              campaigns={this.props.selectableCampaigns || []}
+              campaign={this.state.campaign}
+              onOpen={this.onOpenDropDown}
+              onClose={this.onCloseDropDown} />
+          )}
         </PostBoxButtons>
       </div>
     )
