@@ -218,6 +218,47 @@ npm run watch
 }
 ```
 
+### Use real data when developing
+
+Get access to the Mongo Atlas account, or ask a friend for a recent DB snapshot.
+
+In the web ui, choose
+- "Backup"
+- <cluster you want>
+- "Restore or Download"
+- "Backup"
+- Provide your password
+- Download file
+
+Now untar the downloaded file. The dir you are left with isn't a mongodump as you might have been hoping for. It's a snapshop of the db data file, and it's intended for use in a replicaSet, so we've gotta get our local mongo to point at this `dbpath` at startup, and get it to behave like a single node replicaSet, like so:
+
+```sh
+mongod --dbpath <backup dir path here> --replSet ml
+
+# in another shell
+mongo
+# MongoDB shell version v3.4.4
+# connecting to: mongodb://127.0.0.1:27017
+# MongoDB server version: 3.4.4
+# blah blah blah
+
+# Let this mongo knoe it's the primary.
+> rs.initiate({_id: "ml", members: [{_id: 0, host: 'localhost:27017'}]})
+ml:SECONDARY>
+# wait a couple of seconds, while mongo holds an eleection for 1
+ml:PRIMARY> exit
+```
+
+The replicaSet name can be anything you like, just use the same one in both steps.
+
+Now your local mongo is running on a snapshot of the cluster db, with all that good data. Don't share it with other people, it's got real humans contact detail in. If it doesn't work, consult the docs: [restore-replica-set-from-backup]
+
+Start your meteor app with the MONGO_URL var
+
+```sh
+MONGO_URL=mongodb://localhost/next npm run watch
+```
+
 ## Styling
 
 Some [Basscss] plus custom atoms with [postcss] to build it. See `client/main.css`
@@ -345,8 +386,17 @@ npm run test:browser -- --tag contacts
 
 More generally anything after `--` will be passed to the nightwatch executable.
 
+or run a specific file and test case like
+
+```sh
+npm run test:browser -- \
+--test tests/browser/tests/activity.js \
+--testcase "Should prevent multiple postings of the same activity"
+```
+
 [Basscss]: http://www.basscss.com/
 [postcss]: http://postcss.org/
 [postcss-custom-media]: https://github.com/postcss/postcss-custom-media
 [basscss-responsive-padding]: https://github.com/basscss/addons/tree/master/modules/responsive-padding
 [basscss-responsive-margin]: https://github.com/basscss/addons/tree/master/modules/responsive-margin
+[restore-replica-set-from-backup]: https://docs.mongodb.com/manual/tutorial/restore-replica-set-from-backup/#restore-database-into-a-single-node-replica-set

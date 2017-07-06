@@ -254,4 +254,22 @@ Migrations.add({
   }
 })
 
+Migrations.add({
+  version: 8,
+  name: 'Add recent campaign and contact lists to users',
+  up: () => {
+    Meteor.users.find()
+      .forEach(user => {
+        Meteor.users.update({
+          _id: user._id
+        }, {
+          $set: {
+            recentCampaignLists: Array.isArray(user.recentCampaignLists) ? user.recentCampaigns : [],
+            recentContactLists: Array.isArray(user.recentContactLists) ? user.recentContacts : []
+          }
+        })
+      })
+  }
+})
+
 Meteor.startup(() => Migrations.migrateTo('latest'))

@@ -26,7 +26,7 @@
     "watch:server:test": "meteor run --settings settings.test.json --production"
   },
   "dependencies": {
-    "@achingbrain/react-validation": "^2.10.0",
+    "@achingbrain/react-validation": "^2.11.1",
     "async": "^2.1.2",
     "babel-runtime": "^6.23.0",
     "bcrypt": "^1.0.2",
@@ -35,6 +35,7 @@
     "html-metadata": "github:wikimedia/html-metadata",
     "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8",
+    "lodash.difference": "^4.5.0",
     "lodash.escaperegexp": "^4.1.2",
     "lodash.find": "^4.6.0",
     "lodash.findindex": "^4.6.0",
@@ -48,7 +49,7 @@
     "react": "^15.4.2",
     "react-addons-pure-render-mixin": "^15.4.2",
     "react-dom": "^15.3.2",
-    "react-helmet": "^3.1.0",
+    "react-helmet": "^5.1.3",
     "react-redux": "^4.4.5",
     "react-router": "^2.8.1",
     "react-router-redux": "^4.0.6",
@@ -56,6 +57,7 @@
     "rebass": "^0.3.3",
     "redux": "^3.6.0",
     "redux-thunk": "^2.1.0",
+    "to-style": "^1.3.3",
     "twitter": "^1.2.5",
     "twitter-screen-name": "^1.0.0",
     "underscore.string": "^3.3.4",

@@ -107,7 +107,7 @@ class EditTeam extends React.Component {
   render () {
     return (
       <Form data-id='edit-campaign-team-modal' onReset={(event) => this.onReset(event)} onSubmit={(event) => this.onSubmit(event)} ref={(form) => { this.form = form }}>
-        <h1 className='f-xl regular center mt6'>Invite Teammates to this Campaign</h1>
+        <h1 className='f-xl regular center mt6'>Team</h1>
         <AvatarList items={this.state.selectedItems} onRemove={(event) => this.onRemove(event)} className='my4 px4' />
         <div className='py3 pl4 flex border-top border-bottom border-gray80'>
           <SearchBlueIcon className='flex-none' />
@@ -164,7 +164,7 @@ class EditTeam extends React.Component {
             className='btn bg-completed white px3'
             type='submit'
             data-id='edit-campaign-team-submit-button'
-            disabled={false}>Invite Teammates</Button>
+            disabled={false}>Save</Button>
         </div>
       </Form>
     )

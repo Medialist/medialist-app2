@@ -149,7 +149,6 @@ module.exports = (prefix) => ({
 
       return this
     },
-
     assertHasCoveragePostsForCampaign: function (campaign) {
       return this._assertHasPostForCampaign('coverage-post', campaign)
     },
@@ -160,7 +159,6 @@ module.exports = (prefix) => ({
 
       return this
     },
-
     assertHasNoCoveragePostsForCampaign: function (campaign) {
       return this._assertHasNoPostForCampaign('coverage-post', campaign)
     },

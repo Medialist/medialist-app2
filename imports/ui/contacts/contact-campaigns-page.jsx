@@ -178,10 +178,12 @@ class ContactCampaignsPage extends React.Component {
     }
 
     let { campaigns } = this.props
+
     const { loading, sort, term, selectedTags, onTermChange, onSortChange } = this.props
     const { onSelectionsChange, onTagRemove } = this
     const { selections, statusFilter } = this.state
     const statuses = campaigns.map((c) => c.contacts[contact.slug])
+    const total = statusFilter ? statuses.filter((status) => status === statusFilter).length : this.props.campaigns.length
 
     if (statusFilter) {
       campaigns = campaigns.filter((c) => c.contacts[contact.slug] === statusFilter)
@@ -210,7 +212,7 @@ class ContactCampaignsPage extends React.Component {
           onTermChange,
           selectedTags,
           onTagRemove,
-          total: this.props.campaigns.length,
+          total,
           term,
           sort,
           campaigns,
@@ -239,8 +241,7 @@ class ContactCampaignsPage extends React.Component {
           type='Campaigns'
           open={this.state.addTagsToCampaignsModal}
           onDismiss={this.hideModals}
-          onUpdateTags={this.onTagAll}
-          title='Tag these Campaigns'>
+          onUpdateTags={this.onTagAll}>
           <AbbreviatedAvatarList items={this.state.selections} shape='square' />
         </AddTagsModal>
         <AddToMasterListModal
@@ -248,8 +249,7 @@ class ContactCampaignsPage extends React.Component {
           items={this.state.selections}
           open={this.state.addToCampaignListsModal}
           onDismiss={this.hideModals}
-          onSave={this.onAddAllToMasterLists}
-          title='Add to a Campaign List'>
+          onSave={this.onAddAllToMasterLists}>
           <AbbreviatedAvatarList
             items={this.state.selections}
             maxTooltip={12} shape='square' />

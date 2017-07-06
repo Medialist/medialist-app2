@@ -14,7 +14,7 @@ import { CreateContactModal } from '/imports/ui/contacts/edit-contact'
 import ContactListEmpty from '/imports/ui/contacts/contacts-list-empty'
 import { FeedContactIcon } from '/imports/ui/images/icons'
 import createSearchContainer from '/imports/ui/contacts/search-container'
-import AddContactsToCampaign from '/imports/ui/contacts/add-contacts-to-campaign'
+import AddContactsToCampaign from '/imports/ui/contacts/add-to-campaign/add-many-modal'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import CountTag, { AvatarTag } from '/imports/ui/tags/tag'
 import { batchFavouriteContacts } from '/imports/api/contacts/methods'
@@ -28,6 +28,7 @@ import NearBottomContainer from '/imports/ui/navigation/near-bottom-container'
 import SubscriptionLimitContainer from '/imports/ui/navigation/subscription-limit-container'
 import Loading from '/imports/ui/lists/loading'
 import DeleteContactsModal from '/imports/ui/contacts/delete-contacts-modal'
+import { addRecentContactList } from '/imports/api/users/methods'
 
 /*
  * ContactPage and ContactsPageContainer
@@ -51,7 +52,8 @@ const ContactsPage = withSnackbar(React.createClass({
       addContactsToCampaignModal: false,
       addTagsModal: false,
       addToMasterListsModal: false,
-      deleteContactsModal: false
+      deleteContactsModal: false,
+      resultsTotal: 0
     }
   },
 
@@ -68,6 +70,8 @@ const ContactsPage = withSnackbar(React.createClass({
   },
 
   onMasterListChange (selectedMasterListSlug) {
+    addRecentContactList.call({ slug: selectedMasterListSlug })
+
     this.props.setQuery({ selectedMasterListSlug })
   },
 
@@ -183,6 +187,11 @@ const ContactsPage = withSnackbar(React.createClass({
     setQuery({ importId: false })
   },
 
+  setResultsTotal (resultsTotal) {
+    if (!resultsTotal) return
+    this.setState({resultsTotal})
+  },
+
   render () {
     const {
       contactsCount,
@@ -192,6 +201,7 @@ const ContactsPage = withSnackbar(React.createClass({
       contacts,
       term,
       sort,
+      limit,
       campaigns,
       selectedTags,
       importId
@@ -204,11 +214,13 @@ const ContactsPage = withSnackbar(React.createClass({
       onTermChange,
       onCampaignRemove,
       onTagRemove,
-      onImportRemove
+      onImportRemove,
+      setResultsTotal
     } = this
 
     const {
-      selections
+      selections,
+      resultsTotal
     } = this.state
 
     if (!loading && contactsCount === 0) {
@@ -224,7 +236,8 @@ const ContactsPage = withSnackbar(React.createClass({
               userId={this.props.userId}
               allCount={contactsCount}
               selectedMasterListSlug={selectedMasterListSlug}
-              onChange={onMasterListChange} />
+              onChange={onMasterListChange}
+              setResultsTotal={setResultsTotal} />
           </div>
           <div className='flex-none bg-white center px4' style={{width: 240}}>
             <button className='btn bg-completed white mr1' onClick={() => this.showModal('addContactModal')} data-id='new-contact-button'>New Contact</button>
@@ -268,7 +281,7 @@ const ContactsPage = withSnackbar(React.createClass({
                 )}
               </div>
             </SearchBox>
-            <ContactsTotal searching={searching} results={contacts} total={selectedMasterListSlug ? contacts.length : contactsCount} />
+            <ContactsTotal loading={loading} searching={searching} results={contacts} limit={limit} total={resultsTotal} />
           </div>
           <ContactsTable
             contacts={contacts}
@@ -297,15 +310,12 @@ const ContactsPage = withSnackbar(React.createClass({
           title='Add these Contacts to a Campaign'
           contacts={this.state.selections}
           onDismiss={() => this.hideModals()}
-          open={this.state.addContactsToCampaignModal}>
-          <AbbreviatedAvatarList items={selections} maxTooltip={12} />
-        </AddContactsToCampaign>
+          open={this.state.addContactsToCampaignModal} />
         <AddTagsModal
           type='Contacts'
           open={this.state.addTagsModal}
           onDismiss={() => this.hideModals()}
-          onUpdateTags={(tags) => this.onTagAll(tags)}
-          title='Tag these Contacts'>
+          onUpdateTags={(tags) => this.onTagAll(tags)}>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddTagsModal>
         <AddToMasterListModal
@@ -313,8 +323,7 @@ const ContactsPage = withSnackbar(React.createClass({
           items={this.state.selections}
           open={this.state.addToMasterListsModal}
           onDismiss={() => this.hideModals()}
-          onSave={(masterLists) => this.onAddAllToMasterLists(masterLists)}
-          title='Add to a Contact List'>
+          onSave={(masterLists) => this.onAddAllToMasterLists(masterLists)}>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddToMasterListModal>
         <DeleteContactsModal
@@ -330,20 +339,53 @@ const ContactsPage = withSnackbar(React.createClass({
 
 const MasterListsSelectorContainer = createContainer((props) => {
   const { selectedMasterListSlug, userId } = props
-  const lists = MasterLists.find({type: 'Contacts'}).map(({slug, name, items}) => ({
-    slug, name, count: items.length
-  }))
-  const items = [
-    { slug: 'all', name: 'All', count: props.allCount },
-    { slug: 'my', name: 'My Contacts', count: Meteor.user().myContacts.length }
-  ].concat(lists)
+  const user = Meteor.user()
+  const lists = MasterLists
+    .find({
+      type: 'Contacts'
+    }).map(({slug, name, items}) => ({
+      slug, name, count: items.length
+    }))
+  const items = [{
+    slug: 'all',
+    name: 'All',
+    count: props.allCount
+  }, {
+    slug: 'my',
+    name: 'My Contacts',
+    count: user.myContacts.length
+  }]
+    .concat(
+      user.recentContactLists
+        .map(slug => lists.find(list => list.slug === slug))
+        .filter(list => !!list)
+    )
+    .concat(
+      lists.filter(list => !user.recentContactLists
+        .find(slug => list.slug === slug))
+    )
+
   const selectedSlug = userId ? 'my' : selectedMasterListSlug
+
   return { ...props, items, selectedSlug }
 }, MasterListsSelector)
 
-const ContactsTotal = ({ searching, results, total }) => {
-  const num = searching ? results.length : total
-  return <div className='f-xs gray60' style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>{num} contact{num === 1 ? '' : 's'}</div>
+const ContactsTotal = ({ loading, searching, results = [], limit, total }) => {
+  let prefix = ''
+  let num = total
+  if (searching) {
+    prefix = results.length === limit ? 'over' : ''
+    num = results.length
+  }
+  const suffix = `contact${num === 1 ? '' : 's'}`
+  const label = loading ? 'Calculating' : `${prefix} ${num} ${suffix}`
+  return (
+    <div
+      className='f-xs gray60'
+      style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>
+      {label}
+    </div>
+  )
 }
 
 const SearchableContactsPage = createSearchContainer(ContactsPage)

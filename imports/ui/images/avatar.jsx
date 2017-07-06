@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames/dedupe'
 import { CameraIcon } from '/imports/ui/images/icons'
+import Tooltip from '/imports/ui/navigation/tooltip'
 
 const defaultSize = 30
 
@@ -33,44 +34,54 @@ const Avatar = React.createClass({
 
   render () {
     const { imageLoadError } = this.state
-    const { avatar, name, email, size = defaultSize } = this.props
+    const { avatar, name, email, size = defaultSize, showTooltip = false } = this.props
     const className = classNames(this.props.className, 'white semibold')
     const style = avatarStyle(size, this.props.style)
 
-    let tooltip = email
+    let title = email
 
     if (name) {
-      tooltip = name
+      title = name
     }
+
+    let element
 
     if (avatar && !imageLoadError) {
       const src = this.resizeAvatar(avatar, size * 2) // @2x for hdpi
 
-      return (
+      element = (
         <div className={className} style={style}>
-          <img style={{width: '100%', height: '100%'}} src={src} alt={name} title={tooltip} onError={this.onError} />
+          <img style={{width: '100%', height: '100%'}} src={src} alt={name} onError={this.onError} />
         </div>
       )
-    }
-
-    if (name) {
+    } else if (name) {
       const initials = name
         .split(' ')
         .filter((n) => !!n)
         .map((n) => n[0].toUpperCase())
         .join('')
 
-      return (
-        <div style={style} className={classNames(className, 'initials')} title={tooltip}>{initials}</div>
+      element = (
+        <div style={style} className={classNames(className, 'initials')}>{initials}</div>
+      )
+    } else {
+      style.lineHeight = `${this.props.size - 8}px`
+
+      element = (
+        <div style={style} className={className}>
+          <CameraIcon className='svg-icon-xl' style={{width: `${size - 10}px`, height: `${size - 10}px`, lineHeight: `${size - 5}px`}} />
+        </div>
       )
     }
 
-    style.lineHeight = `${this.props.size - 8}px`
+    if (!showTooltip) {
+      return element
+    }
 
     return (
-      <div style={style} className={className}>
-        <CameraIcon className='svg-icon-xl' style={{width: `${size - 10}px`, height: `${size - 10}px`, lineHeight: `${size - 5}px`}} title={tooltip} />
-      </div>
+      <Tooltip title={title}>
+        {element}
+      </Tooltip>
     )
   }
 })

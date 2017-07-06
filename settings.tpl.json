@@ -21,6 +21,9 @@
     "uploadcare": {
       "publicKey": "${UPLOADCARE_PUBLIC_KEY}"
     },
+    "heapanalytics": {
+      "appId": "${HEAPANALYTICS_APP_ID}"
+    },
     "authentication": {
       "emailDomains": ["localhost"],
       "extraEmailDomains": []

@@ -95,6 +95,51 @@ const test = {
     t.end()
   },
 
+  'Should prevent multiple postings of the same activity': function (t) {
+    t.createDomain(['contactList', 'campaign'], (contactList, campaign, done) => {
+      const contactsPage = t.page.contacts()
+        .navigate()
+        .waitForElementVisible('@newContactButton')
+
+      t.perform(function (done) {
+        contactsPage.section.contactTable
+          .selectRow(0)
+          .selectRow(1)
+          .selectRow(2)
+
+        contactsPage.section.toast
+          .openAddContactsToCampaignModal()
+          .waitForElementVisible(`[data-slug=campaign-slug-${campaign.slug}]`)
+          .click(`[data-slug=campaign-slug-${campaign.slug}]`)
+
+        t.page.main().waitForSnackbarMessage('batch-add-contacts-to-campaign-success')
+
+        contactsPage.section.toast
+          .openAddContactsToCampaignModal()
+          .waitForElementVisible(`[data-slug=campaign-slug-${campaign.slug}]`)
+          .click(`[data-slug=campaign-slug-${campaign.slug}]`)
+
+        done()
+      })
+
+      t.perform(function (done) {
+        const campaignPage = t.page.campaign()
+          .navigate(campaign)
+          .waitForElementVisible('[data-id=add-contacts-to-campaign-button]')
+
+        campaignPage.section.activityFeed.assert.elementPresent(`[data-id=add-contacts-to-campaign]:nth-child(1)`)
+        campaignPage.section.activityFeed.assert.elementNotPresent(`[data-id=add-contacts-to-campaign]:nth-child(2)`)
+
+        done()
+      })
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
   'Should display context sensitive feedback posts created on contact page': function (t) {
     t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
       t.perform((done) => {

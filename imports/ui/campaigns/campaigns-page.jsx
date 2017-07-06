@@ -21,6 +21,7 @@ import CampaignLink from '/imports/ui/campaigns/campaign-link'
 import CampaignListLink from '/imports/ui/master-lists/campaign-list-link'
 import TagLink from '/imports/ui/campaigns/tag-link'
 import DeleteCampaignsModal from '/imports/ui/campaigns/delete-campaigns-modal'
+import { addRecentCampaignList } from '/imports/api/users/methods'
 
 const CampaignsPage = withSnackbar(withRouter(React.createClass({
   propTypes: {
@@ -43,7 +44,8 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
       createCampaignModal: false,
       addTagsToCampaignsModal: false,
       addToCampaignListsModal: false,
-      deleteCampaignsModal: false
+      deleteCampaignsModal: false,
+      resultsTotal: 0
     }
   },
 
@@ -59,6 +61,8 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
   },
 
   onMasterListChange (selectedMasterListSlug) {
+    addRecentCampaignList.call({ slug: selectedMasterListSlug })
+
     this.props.setQuery({ selectedMasterListSlug })
   },
 
@@ -159,10 +163,15 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
     })
   },
 
+  setResultsTotal (resultsTotal) {
+    if (!resultsTotal) return
+    this.setState({resultsTotal})
+  },
+
   render () {
     const { campaignCount, campaigns, loading, sort, term, selectedTags, onTermChange, onSortChange, searching } = this.props
     const { onSelectionsChange, onTagRemove } = this
-    const { selections } = this.state
+    const { selections, resultsTotal: total } = this.state
 
     if (!loading && campaignCount === 0) {
       return (<div>
@@ -185,7 +194,8 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
               userId={this.props.userId}
               allCount={this.props.campaignCount}
               selectedMasterListSlug={this.props.selectedMasterListSlug}
-              onChange={this.onMasterListChange} />
+              onChange={this.onMasterListChange}
+              setResultsTotal={this.setResultsTotal} />
           </div>
           <div className='flex-none bg-white center px4'>
             <button className='btn bg-completed white mx4' onClick={() => this.showModal('createCampaignModal')} data-id='create-campaign-button'>New Campaign</button>
@@ -198,7 +208,7 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
           onTermChange,
           selectedTags,
           onTagRemove,
-          total: campaignCount,
+          total,
           term,
           sort,
           campaigns,
@@ -220,8 +230,7 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
           type='Campaigns'
           open={this.state.addTagsToCampaignsModal}
           onDismiss={() => this.hideModals()}
-          onUpdateTags={this.onTagAll}
-          title='Tag these Campaigns'>
+          onUpdateTags={this.onTagAll}>
           <AbbreviatedAvatarList items={this.state.selections} shape='square' />
         </AddTagsModal>
         <AddToMasterListModal
@@ -229,8 +238,7 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
           items={this.state.selections}
           open={this.state.addToCampaignListsModal}
           onDismiss={() => this.hideModals()}
-          onSave={this.onAddAllToMasterLists}
-          title='Add to a Campaign List'>
+          onSave={this.onAddAllToMasterLists}>
           <AbbreviatedAvatarList
             items={this.state.selections}
             maxTooltip={12} shape='square' />
@@ -248,14 +256,35 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
 
 const MasterListsSelectorContainer = createContainer((props) => {
   const { selectedMasterListSlug, userId } = props
-  const lists = MasterLists.find({type: 'Campaigns'}).map(({slug, name, items}) => ({
-    slug, name, count: items.length
-  }))
-  const items = [
-    { slug: 'all', name: 'All', count: props.allCount },
-    { slug: 'my', name: 'My Campaigns', count: Meteor.user().myCampaigns.length }
-  ].concat(lists)
+  const user = Meteor.user()
+  const lists = MasterLists
+    .find({
+      type: 'Campaigns'
+    })
+    .map(({slug, name, items}) => ({
+      slug, name, count: items.length
+    }))
+  const items = [{
+    slug: 'all',
+    name: 'All',
+    count: props.allCount
+  }, {
+    slug: 'my',
+    name: 'My Campaigns',
+    count: user.myCampaigns.length
+  }]
+    .concat(
+      user.recentCampaignLists
+        .map(slug => lists.find(list => list.slug === slug))
+        .filter(list => !!list)
+    )
+    .concat(
+      lists.filter(list => !user.recentCampaignLists
+        .find(slug => list.slug === slug))
+    )
+
   const selectedSlug = userId ? 'my' : selectedMasterListSlug
+
   return { ...props, items, selectedSlug }
 }, MasterListsSelector)
 

@@ -72,7 +72,8 @@ const FeedbackInput = React.createClass({
       message: '',
       contact: null,
       status: null,
-      posting: false
+      posting: false,
+      shouldFocusTextArea: true
     }
   },
   onFieldChange (event) {
@@ -100,6 +101,16 @@ const FeedbackInput = React.createClass({
       }
     })
   },
+  onOpenDropDown () {
+    this.setState({
+      shouldFocusTextArea: false
+    })
+  },
+  onCloseDropDown () {
+    this.setState({
+      shouldFocusTextArea: true
+    })
+  },
   render () {
     const {focused, contacts, campaign} = this.props
     const {message, posting, contact, status} = this.state
@@ -113,6 +124,7 @@ const FeedbackInput = React.createClass({
           disabled={posting}
           onChange={this.onFieldChange}
           data-id='feedback-input'
+          shouldFocus={this.state.shouldFocusTextArea}
         />
         <PostBoxButtons
           focused={focused}
@@ -124,7 +136,9 @@ const FeedbackInput = React.createClass({
             campaign={campaign}
             contacts={contacts}
             onContactChange={this.onFieldChange}
-            onStatusChange={this.onFieldChange} />
+            onStatusChange={this.onFieldChange}
+            onOpen={this.onOpenDropDown}
+            onClose={this.onCloseDropDown} />
         </PostBoxButtons>
       </div>
     )
@@ -142,7 +156,8 @@ const CoverageInput = React.createClass({
       message: '',
       contact: null,
       posting: false,
-      status: null
+      status: null,
+      shouldFocusTextArea: true
     }
   },
   onFieldChange (event) {
@@ -170,6 +185,16 @@ const CoverageInput = React.createClass({
       }
     })
   },
+  onOpenDropDown () {
+    this.setState({
+      shouldFocusTextArea: false
+    })
+  },
+  onCloseDropDown () {
+    this.setState({
+      shouldFocusTextArea: true
+    })
+  },
   render () {
     const {focused, contacts, campaign} = this.props
     const {message, contact, status, posting} = this.state
@@ -182,6 +207,7 @@ const CoverageInput = React.createClass({
           disabled={posting}
           onChange={this.onFieldChange}
           data-id='coverage-input'
+          shouldFocus={this.state.shouldFocusTextArea}
         />
         <PostBoxButtons
           focused={focused}
@@ -194,6 +220,8 @@ const CoverageInput = React.createClass({
             contacts={contacts}
             onContactChange={this.onFieldChange}
             onStatusChange={this.onFieldChange}
+            onOpen={this.onOpenDropDown}
+            onClose={this.onCloseDropDown}
             />
         </PostBoxButtons>
       </div>

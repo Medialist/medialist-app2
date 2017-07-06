@@ -126,7 +126,7 @@ const ContactInfo = withSnackbar(React.createClass({
             <div className='semibold f-xl gray10'>
               {name}
               <Tooltip title={tooltip}>
-                <FavouritesIcon data-id={favouriteButtonId} className='mx1 pointer' onClick={this.onToggleFavourite} style={{width: '18px', height: '18px', fill: isFavourite ? GOLD : GREY60}} />
+                <FavouritesIcon data-id={favouriteButtonId} className='mx1 pointer' onClick={this.onToggleFavourite} style={{width: '18px', height: '18px', fill: isFavourite ? GOLD : GREY60}} svgStyle={{verticalAlign: '-1px'}} />
               </Tooltip>
             </div>
             <div style={{paddingTop: 4}}>
@@ -152,7 +152,7 @@ const ContactInfo = withSnackbar(React.createClass({
                 to={`/campaign/${slug}`}
                 className='mr1 mb1'
               >
-                <SquareAvatar name={name} avatar={avatar} size={38} />
+                <SquareAvatar name={name} avatar={avatar} size={38} showTooltip />
               </Link>
             ))}
             {campaigns.length > 5 && (
@@ -190,13 +190,11 @@ const ContactInfo = withSnackbar(React.createClass({
           onDismiss={dismissAddToMasterList}
           onSave={onAddContactToMasterLists}
           selectedMasterLists={masterLists}
-          type='Contacts'
-          title={`Add ${name} to a Contact List`} />
+          type='Contacts' />
         <AddTagsModal
           type='Contacts'
           open={addTagsOpen}
           onDismiss={dismissAddTags}
-          title={`Tag ${name.split(' ')[0]}`}
           selectedTags={tags}
           onUpdateTags={onUpdateTags} />
       </div>
