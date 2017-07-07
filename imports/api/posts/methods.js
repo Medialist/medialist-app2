@@ -179,9 +179,9 @@ export const updatePost = new ValidatedMethod({
       $set.embeds = embed ? [embed] : []
     }
 
-    $set.status = status || post.status
-    $set.contacts = contact ? [contact] : post.contacts
-    $set.campaigns = campaign ? [campaign] : post.campaigns
+    if (status) $set.status = status
+    if (contact) $set.contacts = [contact]
+    if (campaign) $set.campaigns = [campaign]
 
     Posts.update({
       _id

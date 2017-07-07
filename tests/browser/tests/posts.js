@@ -90,6 +90,39 @@ const test = {
     })
     t.page.main().logout()
     t.end()
+  },
+
+  'Should be able to change the contact on a post': function (t) {
+    t.createDomain(['user', 'campaign', 'campaign', 'contact'], (user1, campaign1, campaign2, contact, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact], campaign1, () => done())
+      })
+
+      t.perform((done) => {
+        t.addContactsToCampaign([contact], campaign2, () => done())
+      })
+
+      t.perform((done) => {
+        t.page.contact()
+          .navigate(contact)
+          .addFeedbackPost()
+          .section.activityFeed.assertHasFeedbackPostWith(contact, campaign2, {campaignName: campaign2.name})
+
+        done()
+      })
+
+      t.perform((done) => {
+        t.page.contact()
+          .editFeedbackPost(campaign1)
+          .section.activityFeed.assertHasFeedbackPostWith(contact, campaign1, {campaignName: campaign1.name})
+
+        done()
+      })
+
+      done()
+    })
+    t.page.main().logout()
+    t.end()
   }
 }
 

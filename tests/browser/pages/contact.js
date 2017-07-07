@@ -36,7 +36,29 @@ module.exports = {
         coverageInput: '[data-id=coverage-input]',
         needToKnowInput: '[data-id=need-to-know-input]',
         createPostButton: '[data-id=create-post-button]',
-        contactStatusSelectorButton: '[data-id=contact-status-selector-button]'
+        contactStatusSelectorButton: '[data-id=contact-status-selector-button]',
+        selectCampaignButton: '[data-id=select-campaign-button]'
+      },
+      sections: {
+        dropdownMenu: {
+          selector: '[data-id=dropdown-menu]',
+          elements: {
+            campaignSearchResult: '[data-type=campaign-search-result]:first-child',
+            searchForCampaignInput: '[data-id=contacts-filterable-list-search-input]'
+          },
+          commands: [
+            {
+              selectCampaign: function (campaign) {
+                const selector = `[data-id=edit-post-modal] [data-id=campaign-${campaign._id}]`
+
+                this
+                  .waitForElementVisible(selector)
+                  .click(selector)
+                return this
+              }
+            }
+          ]
+        }
       }
     },
     activityFeed: activityFeed('contact'),
@@ -56,6 +78,33 @@ module.exports = {
         .waitForElementVisible('@editContactInfoButton')
         .click('@editContactInfoButton')
         .waitForElementVisible(this.section.editContactForm.selector)
+
+      return this
+    },
+    addFeedbackPost: function () {
+      this.section.postBox
+        .postFeedbackMessage('test')
+      return this
+    },
+    editFeedbackPost: function (campaign) {
+      this
+        .waitForElementVisible('@openPostMenuButton')
+        .click('@openPostMenuButton')
+        .waitForElementVisible('@editPostButton')
+        .click('@editPostButton')
+        .waitForElementVisible(this.section.editPostModal.selector)
+
+      this.section.editPostModal
+        .waitForElementVisible('@selectCampaignButton')
+        .click('@selectCampaignButton')
+
+      this.section.editPostModal.section.dropdownMenu
+        .waitForElementVisible('@campaignSearchResult')
+        .selectCampaign(campaign)
+
+      this.section.editPostModal
+        .waitForElementVisible('@createPostButton')
+        .click('@createPostButton')
 
       return this
     },
