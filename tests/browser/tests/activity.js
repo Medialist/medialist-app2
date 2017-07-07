@@ -147,14 +147,14 @@ const test = {
       })
 
       const status = faker.hacker.phrase()
-      const contactStatus = faker.helpers.randomize(['completed', 'hot-lead', 'contacted', 'to-contact', 'not-interested'])
+      const contactStatus = 'to-contact'
 
       t.perform((done) => {
         const contactPage = t.page.contact()
           .navigate(contact)
 
         contactPage.section.postBox
-          .postFeedback(campaign, contact, contactStatus, status)
+          .postFeedbackMessage(status)
 
         done()
       })
