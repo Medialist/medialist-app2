@@ -148,3 +148,24 @@ export const ContactSchema = new SimpleSchema([
     }
   }
 ])
+
+export const updateContactSchema = new SimpleSchema([
+  IdSchema,
+  {
+    name: {
+      type: String,
+      min: 1
+    },
+    slug: {
+      type: String,
+      min: 1
+    },
+    outlets: {
+      type: [LabelValueSchema],
+      defaultValue: []
+    },
+    updatedAt: {
+      type: Date
+    }
+  }
+])

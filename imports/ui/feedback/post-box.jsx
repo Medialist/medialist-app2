@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import CampaignSelector from '/imports/ui/feedback/campaign-selector'
 import ContactSelector from '/imports/ui/feedback/contact-selector'
+import StatusSelector from '/imports/ui/feedback/status-selector'
 import StatusMap from '/imports/api/contacts/status'
 import PostBoxtTextArea from '/imports/ui/feedback/post-box-textarea'
 import immutable from 'object-path-immutable'
@@ -206,10 +207,21 @@ export class FeedbackInput extends Component {
               selectedStatus={this.state.status}
               contact={this.props.contact}
               onChange={this.onFieldChange}
-              campaigns={this.props.selectableCampaigns || []}
+              campaigns={this.props.selectableCampaigns || this.props.campaigns}
               campaign={this.state.campaign}
               onOpen={this.onOpenDropDown}
               onClose={this.onCloseDropDown} />
+          )}
+          {this.props.isEdit ? null : (
+            <div className='ml1 inline-block'>
+              <StatusSelector
+                buttonStyle={{padding: '6px 15px 7px'}}
+                status={this.state.status}
+                onChange={this.onFieldChange}
+                disabled={!this.state.campaign}
+                onOpen={this.onOpenDropDown}
+                onClose={this.onCloseDropDown} />
+            </div>
           )}
         </PostBoxButtons>
       </div>
@@ -307,10 +319,21 @@ export class CoverageInput extends Component {
               selectedStatus={this.state.status}
               contact={this.props.contact}
               onChange={this.onFieldChange}
-              campaigns={this.props.selectableCampaigns || []}
+              campaigns={this.props.selectableCampaigns || this.props.campaigns}
               campaign={this.state.campaign}
               onOpen={this.onOpenDropDown}
               onClose={this.onCloseDropDown} />
+          )}
+          {this.props.isEdit ? null : (
+            <div className='ml1 inline-block'>
+              <StatusSelector
+                buttonStyle={{padding: '6px 15px 7px'}}
+                status={this.state.status}
+                onChange={this.onFieldChange}
+                disabled={!this.state.campaign}
+                onOpen={this.onOpenDropDown}
+                onClose={this.onCloseDropDown} />
+            </div>
           )}
         </PostBoxButtons>
       </div>

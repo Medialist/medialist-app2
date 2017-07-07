@@ -77,3 +77,28 @@ export const CampaignSchema = new SimpleSchema([
     }
   }
 ])
+
+export const updateCampaignSchema = new SimpleSchema([
+  IdSchema,
+  {
+    slug: {
+      type: String,
+      denyUpdate: true
+    },
+    name: {
+      type: String,
+      min: 1
+    },
+    avatar: {
+      type: String,
+      optional: true
+    },
+    clientName: {
+      type: String,
+      optional: true
+    },
+    updatedAt: {
+      type: Date
+    }
+  }
+])

@@ -65,10 +65,12 @@ export const CreatedAtSchema = new SimpleSchema({
       }
 
       return this.value
-    }
+    },
+    optional: true
   },
   createdBy: {
-    type: UserRefSchema
+    type: UserRefSchema,
+    optional: true
   }
 })
 

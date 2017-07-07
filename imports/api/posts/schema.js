@@ -2,9 +2,10 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import values from 'lodash.values'
 import { IdSchema, AuditSchema } from '/imports/lib/schema'
 import Contacts from '/imports/api/contacts/contacts'
-import { CampaignRefSchema } from '/imports/api/campaigns/schema'
-import { ContactRefSchema } from '/imports/api/contacts/schema'
+import { CampaignRefSchema, updateCampaignSchema } from '/imports/api/campaigns/schema'
+import { ContactRefSchema, updateContactSchema } from '/imports/api/contacts/schema'
 import { EmbedRefSchema } from '/imports/api/embeds/schema'
+import { StatusValues } from '/imports/api/contacts/status'
 
 export const PostTypes = [
   'FeedbackPost',
@@ -45,6 +46,29 @@ export const PostSchema = new SimpleSchema([
     type: {
       type: String,
       allowedValues: values(PostTypes)
+    }
+  }
+])
+
+export const updatePostSchema = new SimpleSchema([
+  IdSchema,
+  {
+    message: {
+      type: String,
+      optional: true
+    },
+    status: {
+      type: String,
+      allowedValues: StatusValues,
+      optional: true
+    },
+    contact: {
+      type: updateContactSchema,
+      optional: true
+    },
+    campaign: {
+      type: updateCampaignSchema,
+      optional: true
     }
   }
 ])

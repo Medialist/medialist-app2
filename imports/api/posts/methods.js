@@ -2,9 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { StatusSchema } from '/imports/lib/schema'
-import { StatusValues } from '/imports/api/contacts/status'
-import { ContactRefSchema } from '/imports/api/contacts/schema'
-import { CampaignRefSchema } from '/imports/api/campaigns/schema'
+import { updatePostSchema } from '/imports/api/posts/schema'
 import { checkAllSlugsExist } from '/imports/lib/slug'
 import findUrl from '/imports/lib/find-url'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
@@ -122,28 +120,7 @@ export const createFeedbackPost = new ValidatedMethod({
 
 export const updatePost = new ValidatedMethod({
   name: 'updatePost',
-  validate: new SimpleSchema({
-    _id: {
-      type: String
-    },
-    message: {
-      type: String,
-      optional: true
-    },
-    status: {
-      type: String,
-      allowedValues: StatusValues,
-      optional: true
-    },
-    contact: {
-      type: [ContactRefSchema],
-      optional: true
-    },
-    campaign: {
-      type: [CampaignRefSchema],
-      optional: true
-    }
-  }).validator(),
+  validate: updatePostSchema.validator(),
   run ({ _id, message, status, contact, campaign }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')

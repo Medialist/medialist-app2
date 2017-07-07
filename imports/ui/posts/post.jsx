@@ -161,7 +161,31 @@ class Post extends React.Component {
     this.setState({
       editOpen: false
     })
-    updatePost.call({ _id, message, status, contact, campaign })
+
+    const update = { _id }
+    if (message) update.message = message
+    if (status) update.status = status
+    if (contact) {
+      update.contact = {
+        _id: contact._id,
+        name: contact.name,
+        slug: contact.slug,
+        outlets: contact.outlets,
+        updatedAt: contact.updatedAt
+      }
+    }
+    if (campaign) {
+      update.campaign = {
+        _id: campaign._id,
+        name: campaign.name,
+        slug: campaign.slug,
+        avatar: campaign.avatar,
+        clientName: campaign.clientName,
+        updatedAt: campaign.updatedAt
+      }
+    }
+
+    updatePost.call(update)
   }
 
   render () {
