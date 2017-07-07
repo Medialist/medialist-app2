@@ -3,6 +3,8 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import { SimpleSchema } from 'meteor/aldeed:simple-schema'
 import { StatusSchema } from '/imports/lib/schema'
 import { StatusValues } from '/imports/api/contacts/status'
+import { ContactRefSchema } from '/imports/api/contacts/schema'
+import { CampaignRefSchema } from '/imports/api/campaigns/schema'
 import { checkAllSlugsExist } from '/imports/lib/slug'
 import findUrl from '/imports/lib/find-url'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
@@ -134,13 +136,11 @@ export const updatePost = new ValidatedMethod({
       optional: true
     },
     contact: {
-      type: Object,
-      blackbox: true,
+      type: [ContactRefSchema],
       optional: true
     },
     campaign: {
-      type: Object,
-      blackbox: true,
+      type: [CampaignRefSchema],
       optional: true
     }
   }).validator(),
