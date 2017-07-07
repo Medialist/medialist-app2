@@ -63,7 +63,28 @@ module.exports = {
         coverageInput: '[data-id=coverage-input]',
         needToKnowInput: '[data-id=need-to-know-input]',
         createPostButton: '[data-id=create-post-button]',
-        contactStatusSelectorButton: '[data-id=contact-status-selector-button]'
+        contactStatusSelectorButton: '[data-id=contact-status-selector-button]',
+        selectContactButton: '[data-id=select-contact-button]'
+      },
+      sections: {
+        dropdownMenu: {
+          selector: '[data-id=dropdown-menu]',
+          elements: {
+            campaignContactSearchResult: '[data-type=campaign-contact-search-result]:first-child'
+          },
+          commands: [
+            {
+              selectContact: function (contact) {
+                const selector = `[data-id=edit-post-modal] [data-id=campaign-contact-${contact._id}]`
+
+                this
+                  .waitForElementVisible(selector)
+                  .click(selector)
+                return this
+              }
+            }
+          ]
+        }
       }
     },
     addContactsModal: {
@@ -109,6 +130,33 @@ module.exports = {
           this.waitForElementNotPresent(this.selector)
 
           return this
+        },
+        addFeedbackPost: function () {
+          this.section.postBox
+            .postFeedbackMessage('test')
+          return this
+        },
+        editFeedbackPost: function (contact) {
+          this
+            .waitForElementVisible('@openPostMenuButton')
+            .click('@openPostMenuButton')
+            .waitForElementVisible('@editPostButton')
+            .click('@editPostButton')
+            .waitForElementVisible(this.section.editPostModal.selector)
+
+          this.section.editPostModal
+            .waitForElementVisible('@selectContactButton')
+            .click('@selectContactButton')
+
+          this.section.editPostModal.section.dropdownMenu
+            .waitForElementVisible('@contactSearchResult')
+            .selectContact(contact)
+
+          this.section.editPostModal
+            .waitForElementVisible('@createPostButton')
+            .click('@createPostButton')
+
+          return this
         }
       }]
     },
@@ -120,7 +168,7 @@ module.exports = {
       commands: [{
         updateStatus: function (contact, status) {
           const openStatusDropdownButton = `[data-contact='${contact._id}'] [data-id=contact-status-selector-button]`
-          const statusButton = `[data-contact='${contact._id}'] [data-id=contact-status-${status}]`
+          const statusButton = `[data-contact='${contact._id}'] [data-id=contact-status-${status}]:first-child`
 
           this
             .waitForElementVisible(openStatusDropdownButton)
@@ -250,6 +298,15 @@ module.exports = {
         .click(`[data-id=contact-status-${contactStatus}]`)
         .waitForElementVisible('@feedbackInput')
         .setValue('@feedbackInput', text)
+        .waitForElementVisible('@selectContactButton')
+        .click('@selectContactButton')
+
+      this.section.editPostModal.section.dropdownMenu
+        .waitForElementVisible('@campaignContactSearchResult')
+        .selectContact(contact)
+
+      this.section.editPostModal
+        .waitForElementVisible('@createPostButton')
         .click('@createPostButton')
 
       return this
