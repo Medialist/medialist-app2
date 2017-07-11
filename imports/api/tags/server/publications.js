@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor'
-import { SimpleSchema } from 'meteor/aldeed:simple-schema'
+import SimpleSchema from 'simpl-schema'
 import { TypeSchema } from '/imports/lib/schema'
 import Tags from '/imports/api/tags/tags'
 

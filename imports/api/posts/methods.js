@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
-import { SimpleSchema } from 'meteor/aldeed:simple-schema'
+import SimpleSchema from 'simpl-schema'
 import { StatusSchema } from '/imports/lib/schema'
 import { StatusValues } from '/imports/api/contacts/status'
 import { checkAllSlugsExist } from '/imports/lib/slug'
@@ -81,7 +81,7 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
   return postId
 }
 
-const FeedbackOrCoverageSchema = new SimpleSchema([{
+const FeedbackOrCoverageSchema = new SimpleSchema({
   contactSlug: {
     type: String
   },
@@ -91,10 +91,12 @@ const FeedbackOrCoverageSchema = new SimpleSchema([{
   message: {
     type: String,
     optional: true
+  },
+  status: {
+    type: String,
+    allowedValues: StatusValues
   }
-},
-  StatusSchema
-])
+})
 
 export const createFeedbackPost = new ValidatedMethod({
   name: 'createFeedbackPost',
@@ -260,7 +262,7 @@ export const removePost = new ValidatedMethod({
   name: 'deletePost',
   validate: new SimpleSchema({
     _ids: {
-      type: [String],
+      type: Array,
       regEx: SimpleSchema.RegEx.Id
     }
   }).validator(),

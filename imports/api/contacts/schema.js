@@ -1,31 +1,66 @@
-import { SimpleSchema } from 'meteor/aldeed:simple-schema'
+import SimpleSchema from 'simpl-schema'
 import { MasterListRefSchema } from '/imports/api/master-lists/schema'
 import { TagRefSchema } from '/imports/api/tags/schema'
-import { IdSchema, LabelValueSchema, AuditSchema } from '/imports/lib/schema'
+import { IdSchema, LabelValueSchema, AuditSchema, CreatedAtSchema } from '/imports/lib/schema'
 import { check } from 'meteor/check'
 
-export const ContactRefSchema = new SimpleSchema([
-  IdSchema, {
-    slug: {
-      type: String
-    },
-    name: {
-      type: String
-    },
-    avatar: {
-      type: String,
-      regEx: SimpleSchema.RegEx.Url,
-      optional: true
-    },
-    outlets: {
-      type: [LabelValueSchema],
-      defaultValue: null
-    },
-    updatedAt: {
-      type: Date
-    }
+export const ContactRefSchema = new SimpleSchema({
+  slug: {
+    type: String
+  },
+  name: {
+    type: String
+  },
+  avatar: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Url,
+    optional: true
+  },
+  outlets: {
+    type: Array,
+    defaultValue: null
+  },
+  'outlets.$': {
+    type: LabelValueSchema
+  },
+  updatedAt: {
+    type: Date
   }
-])
+})
+ContactRefSchema.extend(IdSchema)
+
+export const SocialSchema = new SimpleSchema({
+  label: {
+    type: String
+  },
+  value: {
+    type: String,
+    optional: true
+  },
+  twitterId: {
+    type: String,
+    optional: true
+  }
+})
+
+export const AddressSchema = new SimpleSchema({
+  street: {
+    type: String,
+    optional: true
+  },
+  city: {
+    type: String,
+    optional: true
+  },
+  postcode: {
+    type: String,
+    optional: true
+  },
+  country: {
+    type: String,
+    optional: true
+  }
+})
 
 export const ContactCreateSchema = new SimpleSchema({
   name: {
@@ -38,16 +73,25 @@ export const ContactCreateSchema = new SimpleSchema({
     optional: true
   },
   outlets: {
-    type: [LabelValueSchema],
+    type: Array,
     defaultValue: []
+  },
+  'outlets.$': {
+    type: LabelValueSchema
   },
   emails: {
-    type: [LabelValueSchema],
+    type: Array,
     defaultValue: []
   },
+  'emails.$': {
+    type: LabelValueSchema
+  },
   phones: {
-    type: [LabelValueSchema],
+    type: Array,
     defaultValue: []
+  },
+  'phones.$': {
+    type: LabelValueSchema
   },
   bio: {
     type: String,
@@ -55,22 +99,14 @@ export const ContactCreateSchema = new SimpleSchema({
   },
   // TODO: Refactor the socials schema to allow for twitterId or other properties
   socials: {
-    type: [Object],
+    type: Array,
     defaultValue: []
   },
-  'socials.$.label': {
-    type: String
-  },
-  'socials.$.value': {
-    type: String,
-    optional: true
-  },
-  'socials.$.twitterId': {
-    type: String,
-    optional: true
+  'socials.$': {
+    type: SocialSchema
   },
   addresses: {
-    type: [Object],
+    type: Array,
     autoValue: function () {
       if (!this.value) {
         return []
@@ -89,21 +125,8 @@ export const ContactCreateSchema = new SimpleSchema({
       })
     }
   },
-  'addresses.$.street': {
-    type: String,
-    optional: true
-  },
-  'addresses.$.city': {
-    type: String,
-    optional: true
-  },
-  'addresses.$.postcode': {
-    type: String,
-    optional: true
-  },
-  'addresses.$.country': {
-    type: String,
-    optional: true
+  'addresses.$': {
+    type: AddressSchema
   }
 })
 
@@ -113,38 +136,44 @@ export const ContactCampaignSchema = new SimpleSchema({
   }
 })
 
-export const ContactSchema = new SimpleSchema([
-  IdSchema,
-  AuditSchema,
-  ContactCreateSchema, {
-    slug: {
-      type: String,
-      min: 1
-    },
-    // References to other collections
-    campaigns: {
-      type: Object,
-      defaultValue: {},
-      blackbox: true,
-      custom: function () {
-        // ugh https://github.com/aldeed/meteor-simple-schema/issues/244
-        Object.keys(this.value).forEach(key => {
-          check(this.value[key], ContactCampaignSchema)
-        })
-      }
-    },
-    masterLists: {
-      type: [MasterListRefSchema],
-      defaultValue: []
-    },
-    tags: {
-      type: [TagRefSchema],
-      defaultValue: []
-    },
-    imports: {
-      type: [String],
-      regEx: SimpleSchema.RegEx.Id,
-      defaultValue: []
+export const ContactSchema = new SimpleSchema({
+  slug: {
+    type: String,
+    min: 1
+  },
+  // References to other collections
+  campaigns: {
+    type: Object,
+    defaultValue: {},
+    blackbox: true,
+    custom: function () {
+      // ugh https://github.com/aldeed/meteor-simple-schema/issues/244
+      Object.keys(this.value).forEach(key => {
+        check(this.value[key], ContactCampaignSchema)
+      })
     }
+  },
+  masterLists: {
+    type: Array,
+    defaultValue: []
+  },
+  'masterLists.$': {
+    type: MasterListRefSchema
+  },
+  tags: {
+    type: Array,
+    defaultValue: []
+  },
+  'tags.$': {
+    type: TagRefSchema
+  },
+  imports: {
+    type: Array,
+    regEx: SimpleSchema.RegEx.Id,
+    defaultValue: []
   }
-])
+})
+ContactSchema.extend(IdSchema)
+ContactSchema.extend(AuditSchema)
+ContactSchema.extend(CreatedAtSchema)
+ContactSchema.extend(ContactCreateSchema)

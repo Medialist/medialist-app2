@@ -27,7 +27,7 @@ describe('createEmbed', function () {
   })
 
   it('should validate the parameters', function () {
-    assert.throws(() => createEmbed.validate({url: 1}), /Url must be a string/)
+    assert.throws(() => createEmbed.validate({url: 1}), /Url must be of type String/)
     assert.throws(() => createEmbed.validate({url: 'goober://fools.gold'}), /Url/)
     assert.doesNotThrow(() => createEmbed.validate({url: 'https://wizard.cool'}))
   })

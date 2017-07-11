@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
-import { SimpleSchema } from 'meteor/aldeed:simple-schema'
+import SimpleSchema from 'simpl-schema'
 import { TypeSchema } from '/imports/lib/schema'
 import Tags from '/imports/api/tags/tags'
 import Contacts from '/imports/api/contacts/contacts'
@@ -156,24 +156,28 @@ const setTaggedItems = (userId, _id, tags, Collection, countField) => {
 export const batchAddTags = new ValidatedMethod({
   name: 'Tags/batchAddTags',
 
-  validate: new SimpleSchema([
-    TypeSchema, {
-      type: {
-        type: String,
-        allowedValues: ['Contacts', 'Campaigns']
-      },
-      // Contact or Campaign slugs depending on type.
-      slugs: {
-        type: [String],
-        min: 1
-      },
-      // Tag names, may be new or existing
-      names: {
-        type: [String],
-        min: 1
-      }
+  validate: new SimpleSchema({
+    type: {
+      type: String,
+      allowedValues: ['Contacts', 'Campaigns']
+    },
+    // Contact or Campaign slugs depending on type.
+    slugs: {
+      type: Array,
+      min: 1
+    },
+    'slugs.$': {
+      type: String
+    },
+    // Tag names, may be new or existing
+    names: {
+      type: Array,
+      min: 1
+    },
+    'names.$': {
+      type: String
     }
-  ]).validator(),
+  }).validator(),
 
   run ({ type, slugs, names }) {
     if (!this.userId) {
@@ -195,24 +199,25 @@ export const batchAddTags = new ValidatedMethod({
 export const setTags = new ValidatedMethod({
   name: 'Tags/set',
 
-  validate: new SimpleSchema([
-    TypeSchema, {
-      type: {
-        type: String,
-        allowedValues: ['Contacts', 'Campaigns']
-      },
-      // Contact or Campaign slugs depending on type.
-      _id: {
-        type: String,
-        regEx: SimpleSchema.RegEx.Id
-      },
-      // Tag names, may be new or existing
-      tags: {
-        type: [String],
-        min: 1
-      }
+  validate: new SimpleSchema({
+    type: {
+      type: String,
+      allowedValues: ['Contacts', 'Campaigns']
+    },
+    // Contact or Campaign slugs depending on type.
+    _id: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    },
+    // Tag names, may be new or existing
+    tags: {
+      type: Array,
+      min: 1
+    },
+    'tags.$': {
+      type: String
     }
-  ]).validator(),
+  }).validator(),
 
   run ({ type, _id, tags }) {
     if (!this.userId) {

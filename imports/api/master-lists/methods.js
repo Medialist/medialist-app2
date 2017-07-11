@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
-import { SimpleSchema } from 'meteor/aldeed:simple-schema'
+import SimpleSchema from 'simpl-schema'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import findUniqueSlug from '/imports/lib/slug'
-import { TypeSchema } from '/imports/lib/schema'
 import { findOneUserRef } from '/imports/api/users/users'
 
 /*
@@ -14,18 +13,27 @@ import { findOneUserRef } from '/imports/api/users/users'
  */
 export const batchAddToMasterLists = new ValidatedMethod({
   name: 'batchAddToMasterLists',
-  validate: new SimpleSchema([
-    TypeSchema, {
-      slugs: {
-        type: [String],
-        defaultValue: []
-      },
-      masterListIds: {
-        type: [String],
-        regEx: SimpleSchema.RegEx.Id,
-        defaultValue: []
-      }
-    }]).validator(),
+  validate: new SimpleSchema({
+    slugs: {
+      type: Array,
+      defaultValue: []
+    },
+    'slugs.$': {
+      type: String
+    },
+    masterListIds: {
+      type: Array,
+      regEx: SimpleSchema.RegEx.Id,
+      defaultValue: []
+    },
+    'slugs.$': {
+      type: String
+    },
+    type: {
+      type: String,
+      allowedValues: ['Contacts', 'Campaigns']
+    }
+  }).validator(),
 
   run ({type, slugs = [], masterListIds = []}) {
     if (!this.userId) {
@@ -94,15 +102,16 @@ export const batchAddToMasterLists = new ValidatedMethod({
 
 export const createMasterList = new ValidatedMethod({
   name: 'MasterLists/create',
-  validate: new SimpleSchema([
-    TypeSchema,
-    {
-      name: {
-        type: String,
-        min: 1
-      }
+  validate: new SimpleSchema({
+    name: {
+      type: String,
+      min: 1
+    },
+    type: {
+      type: String,
+      allowedValues: ['Contacts', 'Campaigns']
     }
-  ]).validator(),
+  }).validator(),
   run ({ type, name }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
@@ -133,7 +142,7 @@ export const removeMasterList = new ValidatedMethod({
   name: 'MasterLists/delete',
   validate: new SimpleSchema({
     _ids: {
-      type: [String],
+      type: Array,
       regEx: SimpleSchema.RegEx.Id
     }
   }).validator(),
@@ -215,20 +224,21 @@ export const updateMasterList = new ValidatedMethod({
 
 export const setMasterLists = new ValidatedMethod({
   name: 'MasterLists/setMasterLists',
-  validate: new SimpleSchema([
-    TypeSchema,
-    {
-      item: {
-        type: String,
-        regEx: SimpleSchema.RegEx.Id
-      },
-      masterLists: {
-        type: [String],
-        regEx: SimpleSchema.RegEx.Id,
-        defaultValue: []
-      }
+  validate: new SimpleSchema({
+    item: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    },
+    masterLists: {
+      type: Array,
+      regEx: SimpleSchema.RegEx.Id,
+      defaultValue: []
+    },
+    type: {
+      type: String,
+      allowedValues: ['Contacts', 'Campaigns']
     }
-  ]).validator(),
+  }).validator(),
   run ({type, item, masterLists = []}) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')

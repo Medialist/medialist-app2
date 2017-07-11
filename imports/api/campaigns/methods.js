@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor'
-import { SimpleSchema } from 'meteor/aldeed:simple-schema'
+import SimpleSchema from 'simpl-schema'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import escapeRegExp from 'lodash.escaperegexp'
 import createUniqueSlug, { checkAllSlugsExist } from '/imports/lib/slug'
@@ -52,8 +52,11 @@ export const batchFavouriteCampaigns = new ValidatedMethod({
 
   validate: new SimpleSchema({
     campaignSlugs: {
-      type: [String],
+      type: Array,
       defaultValue: []
+    },
+    'campaignSlugs.$': {
+      type: String
     }
   }).validator(),
 
@@ -91,8 +94,11 @@ export const updateCampaign = new ValidatedMethod({
       optional: true
     },
     links: {
-      type: [LinkSchema],
+      type: Array,
       defaultValue: []
+    },
+    'links.$': {
+      type: LinkSchema
     },
     avatar: {
       type: String,
@@ -187,8 +193,11 @@ export const createCampaign = new ValidatedMethod({
       optional: true
     },
     links: {
-      type: [LinkSchema],
+      type: Array,
       defaultValue: []
+    },
+    'links.$': {
+      type: LinkSchema
     },
     avatar: {
       type: String,
@@ -258,7 +267,7 @@ export const removeCampaign = new ValidatedMethod({
   name: 'Campaigns/remove',
   validate: new SimpleSchema({
     _ids: {
-      type: [String],
+      type: Array,
       regEx: SimpleSchema.RegEx.Id
     }
   }).validator(),
@@ -365,12 +374,12 @@ export const setTeamMates = new ValidatedMethod({
       regEx: SimpleSchema.RegEx.Id
     },
     userIds: {
-      type: [String],
+      type: Array,
       regEx: SimpleSchema.RegEx.Id,
       defaultValue: []
     },
     emails: {
-      type: [String],
+      type: Array,
       regEx: SimpleSchema.RegEx.Email,
       defaultValue: []
     }

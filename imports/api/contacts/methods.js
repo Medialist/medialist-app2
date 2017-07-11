@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
-import { SimpleSchema } from 'meteor/aldeed:simple-schema'
+import SimpleSchema from 'simpl-schema'
 import escapeRegExp from 'lodash.escaperegexp'
 import difference from 'lodash.difference'
 import slugify, { checkAllSlugsExist } from '/imports/lib/slug'
@@ -9,7 +9,7 @@ import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
 import Contacts from '/imports/api/contacts/contacts'
 import { ContactCreateSchema } from '/imports/api/contacts/schema'
-import { StatusSchema } from '/imports/lib/schema'
+import { StatusValues } from '/imports/api/contacts/status'
 import MasterLists from '/imports/api/master-lists/master-lists'
 
 /*
@@ -24,8 +24,15 @@ export const addContactsToCampaign = new ValidatedMethod({
   name: 'addContactsToCampaign',
 
   validate: new SimpleSchema({
-    contactSlugs: { type: [String] },
-    campaignSlug: { type: String }
+    contactSlugs: {
+      type: Array
+    },
+    'contactSlugs.$': {
+      type: String
+    },
+    campaignSlug: {
+      type: String
+    }
   }).validator(),
 
   run ({ contactSlugs, campaignSlug }) {
@@ -115,12 +122,18 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
 
   validate: new SimpleSchema({
     contactSlugs: {
-      type: [String],
+      type: Array,
       min: 1
     },
+    'contactSlugs.$': {
+      type: String
+    },
     campaignSlugs: {
-      type: [String],
+      type: Array,
       min: 1
+    },
+    'campaignSlugs.$': {
+      type: String
     }
   }).validator(),
 
@@ -181,7 +194,13 @@ export const batchFavouriteContacts = new ValidatedMethod({
   name: 'batchFavouriteContacts',
 
   validate: new SimpleSchema({
-    contactSlugs: { type: [String] }
+    contactSlugs: {
+      type: Array,
+      defaultValue: []
+    },
+    'contactSlugs.$': {
+      type: String
+    }
   }).validator(),
 
   run ({ contactSlugs }) {
@@ -201,7 +220,10 @@ export const batchRemoveContacts = new ValidatedMethod({
   name: 'batchRemoveContacts',
 
   validate: new SimpleSchema({
-    _ids: { type: [String] }
+    _ids: {
+      type: Array,
+      regEx: SimpleSchema.RegEx.Id
+    }
   }).validator(),
 
   run ({ _ids }) {
@@ -293,7 +315,9 @@ export const createContact = new ValidatedMethod({
   name: 'createContact',
 
   validate: new SimpleSchema({
-    details: { type: ContactCreateSchema }
+    details: {
+      type: ContactCreateSchema
+    }
   }).validator(),
 
   run ({details}) {
@@ -344,8 +368,13 @@ export const updateContact = new ValidatedMethod({
   name: 'updateContact',
 
   validate: new SimpleSchema({
-    contactId: { type: String, regEx: SimpleSchema.RegEx.Id },
-    details: { type: ContactCreateSchema }
+    contactId: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    },
+    details: {
+      type: ContactCreateSchema
+    }
   }).validator(),
 
   run ({contactId, details}) {
@@ -399,8 +428,12 @@ export const searchOutlets = new ValidatedMethod({
   name: 'searchOutlets',
 
   validate: new SimpleSchema({
-    term: { type: String },
-    field: { type: String }
+    term: {
+      type: String
+    },
+    field: {
+      type: String
+    }
   }).validator(),
 
   run ({term, field}) {
@@ -427,15 +460,23 @@ export const searchOutlets = new ValidatedMethod({
 export const batchUpdateStatus = new ValidatedMethod({
   name: 'batchUpdateStatus',
 
-  validate: new SimpleSchema([{
+  validate: new SimpleSchema({
     _id: {
       type: String,
       regEx: SimpleSchema.RegEx.Id
     },
     contacts: {
-      type: [String]
+      type: Array,
+      defaultValue: []
+    },
+    'contacts.$': {
+      type: String
+    },
+    status: {
+      type: String,
+      allowedValues: StatusValues
     }
-  }, StatusSchema]).validator(),
+  }).validator(),
 
   run ({_id, contacts, status}) {
     if (!this.userId) {
