@@ -19,6 +19,10 @@ export const MasterListSchema = new SimpleSchema({
   },
   items: {
     type: Array,
+    defaultValue: []
+  },
+  'items.$': {
+    type: String,
     regEx: SimpleSchema.RegEx.Id
   },
   order: {

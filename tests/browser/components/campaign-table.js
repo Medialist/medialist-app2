@@ -34,6 +34,7 @@ module.exports = {
       const checkboxSelector = `[data-id=campaigns-table-row-${index}-checkbox-label]`
 
       this
+        .waitForElementVisible(rowSelector)
         .moveToElement(rowSelector, 10, 10)
         .waitForElementVisible(checkboxSelector)
         .click(checkboxSelector)
@@ -66,6 +67,7 @@ module.exports = {
     assertInSearchResults: function (campaign) {
       const selector = `[data-item='${campaign._id}']`
 
+      this.waitForElementVisible(selector)
       this.assert.visible(selector)
 
       return this
@@ -78,6 +80,7 @@ module.exports = {
       return this
     },
     assertNoResults: function () {
+      this.waitForElementVisible('@noResults')
       this.assert.visible('@noResults')
 
       return this

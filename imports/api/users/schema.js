@@ -14,11 +14,6 @@ export const UserProfileSchema = new SimpleSchema({
   }
 })
 
-export const RecentListSchema = new SimpleSchema({
-  type: String,
-  regEx: SimpleSchema.RegEx.Id
-})
-
 export const UserSchema = new SimpleSchema({
   username: {
     type: String,
@@ -95,14 +90,14 @@ export const UserSchema = new SimpleSchema({
     defaultValue: []
   },
   'recentCampaignLists.$': {
-    type: RecentListSchema
+    type: String
   },
   recentContactLists: {
     type: Array,
     defaultValue: []
   },
   'recentContactLists.$': {
-    type: RecentListSchema
+    type: String
   }
 })
 UserSchema.extend(IdSchema)

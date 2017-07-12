@@ -26,7 +26,7 @@ describe('Campaigns/batchFavouriteCampaigns', function () {
 
   it('should validated the parameters', function () {
     assert.throws(() => batchFavouriteCampaigns.validate({}), /Campaign slugs is required/)
-    assert.throws(() => batchFavouriteCampaigns.validate({campaignSlugs: [1]}), /must be a string/)
+    assert.throws(() => batchFavouriteCampaigns.validate({campaignSlugs: [1]}), /must be of type String/)
     assert.doesNotThrow(() => batchFavouriteCampaigns.validate({campaignSlugs: ['a']}))
   })
 
@@ -161,7 +161,7 @@ describe('Campaign create method', function () {
 
   it('should throw if required fields are missing', function () {
     assert.throws(() => createCampaign.validate({ clientName: 'foo' }), /campaign name is required/)
-    assert.throws(() => createCampaign.validate({ name: 123, clientName: 'boz' }), /campaign name must be a string/)
+    assert.throws(() => createCampaign.validate({ name: 123, clientName: 'boz' }), /campaign name must be of type String/)
   })
 
   it('should create a campaign', function () {
@@ -335,7 +335,7 @@ describe('Campaign remove method', function () {
 
   it('should validate the parameters', function () {
     assert.throws(() => removeCampaign.validate({}), /Ids is required/)
-    assert.throws(() => removeCampaign.validate({ _ids: 'foo' }), /must be an array/)
+    assert.throws(() => removeCampaign.validate({ _ids: 'foo' }), /must be of type Array/)
     assert.doesNotThrow(() => removeCampaign.validate({ _ids: ['kKz46qgWmbGHrznJC'] }))
   })
 

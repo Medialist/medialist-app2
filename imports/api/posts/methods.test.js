@@ -32,7 +32,7 @@ describe('createFeedbackPost', function () {
   it('should validate the parameters', function () {
     assert.throws(() => createFeedbackPost.validate({contactSlug: contacts[0].slug}), /Campaign slug is required/)
     assert.throws(() => createFeedbackPost.validate({campaignSlug: campaigns[0].slug}), /Contact slug is required/)
-    assert.throws(() => createFeedbackPost.validate({contactSlug: [contacts[0].slug], campaignSlug: campaigns[0].slug}), /must be a string/)
+    assert.throws(() => createFeedbackPost.validate({contactSlug: [contacts[0].slug], campaignSlug: campaigns[0].slug}), /must be of type String/)
     assert.throws(() => createFeedbackPost.validate({
       contactSlug: contacts[0].slug,
       campaignSlug: campaigns[0].slug,
@@ -138,7 +138,7 @@ describe('createCoveragePost', function () {
   it('should validate the parameters', function () {
     assert.throws(() => createCoveragePost.validate({contactSlug: contacts[0].slug}), /Campaign slug is required/)
     assert.throws(() => createCoveragePost.validate({campaignSlug: campaigns[0].slug}), /Contact slug is required/)
-    assert.throws(() => createCoveragePost.validate({contactSlug: [contacts[0].slug], campaignSlug: campaigns[0].slug}), /must be a string/)
+    assert.throws(() => createCoveragePost.validate({contactSlug: [contacts[0].slug], campaignSlug: campaigns[0].slug}), /must be of type String/)
     assert.throws(() => createCoveragePost.validate({
       contactSlug: contacts[0].slug,
       campaignSlug: campaigns[0].slug,
@@ -221,7 +221,7 @@ describe('createNeedToKnowPost', function () {
 
   it('should validate the parameters', function () {
     assert.throws(() => createNeedToKnowPost.validate({}), /Contact slug is required/)
-    assert.throws(() => createNeedToKnowPost.validate({contactSlug: ['a']}), /must be a string/)
+    assert.throws(() => createNeedToKnowPost.validate({contactSlug: ['a']}), /must be of type String/)
     assert.throws(() => createNeedToKnowPost.validate({
       campaignSlug: 'nope',
       contactSlug: 'a',

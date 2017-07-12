@@ -28,11 +28,9 @@ const validate = (name, collection, schema) => {
     const context = schema.newContext()
     context.validate(doc)
 
-    const keys = context.invalidKeys()
-
-    if (keys.length) {
+    if (!context.isValid()) {
       docs.invalid++
-      console.warn(`${name} ${doc._id} had invalid keys: ${JSON.stringify(keys, null, 2)}`)
+      console.warn(`${name} ${doc._id} had validation errors: ${JSON.stringify(context.validationErrors(), null, 2)}`)
     } else {
       docs.valid++
     }

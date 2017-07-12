@@ -42,7 +42,7 @@ describe('addContactsToCampaign', function () {
   it('should validate the parameters', function () {
     assert.throws(() => addContactsToCampaign.validate({contactSlugs: ['a']}), /Campaign slug is required/)
     assert.throws(() => addContactsToCampaign.validate({campaignSlug: 'a'}), /Contact slugs is required/)
-    assert.throws(() => addContactsToCampaign.validate({contactSlugs: [1], campaignSlug: 1}), /must be a string/)
+    assert.throws(() => addContactsToCampaign.validate({contactSlugs: [1], campaignSlug: 1}), /must be of type String/)
     assert.doesNotThrow(() => addContactsToCampaign.validate({contactSlugs: ['a'], campaignSlug: 'a'}))
   })
 
@@ -131,8 +131,8 @@ describe('removeContactsFromCampaigns', function () {
 
   it('should validate the parameters', function () {
     assert.throws(() => removeContactsFromCampaigns.validate({}), /Contact slugs is required/)
-    assert.throws(() => removeContactsFromCampaigns.validate({ contactSlugs: 'foo' }), /must be an array/)
-    assert.throws(() => removeContactsFromCampaigns.validate({ contactSlugs: ['foo'], campaignSlugs: 'cam' }), /must be an array/)
+    assert.throws(() => removeContactsFromCampaigns.validate({ contactSlugs: 'foo' }), /must be of type Array/)
+    assert.throws(() => removeContactsFromCampaigns.validate({ contactSlugs: ['foo'], campaignSlugs: 'cam' }), /must be of type Array/)
     assert.doesNotThrow(() => removeContactsFromCampaigns.validate({ contactSlugs: ['foo'], campaignSlugs: ['cam'] }))
   })
 
@@ -191,7 +191,7 @@ describe('batchFavouriteContacts', function () {
 
   it('should validate the parameters', function () {
     assert.throws(() => batchFavouriteContacts.validate({}), /Contact slugs is required/)
-    assert.throws(() => batchFavouriteContacts.validate({contactSlugs: [1]}), /must be a string/)
+    assert.throws(() => batchFavouriteContacts.validate({contactSlugs: [1]}), /must be of type String/)
     assert.doesNotThrow(() => batchFavouriteContacts.validate({contactSlugs: ['a']}))
   })
 
@@ -241,7 +241,7 @@ describe('batchRemoveContacts', function () {
 
   it('should validate the parameters', function () {
     assert.throws(() => batchRemoveContacts.validate({}), /Ids is required/)
-    assert.throws(() => batchRemoveContacts.validate({ _ids: 'foo' }), /must be an array/)
+    assert.throws(() => batchRemoveContacts.validate({ _ids: 'foo' }), /must be of type Array/)
     assert.doesNotThrow(() => batchRemoveContacts.validate({ _ids: ['kKz46qgWmbGHrznJC'] }))
   })
 
@@ -383,7 +383,7 @@ describe('createContact', function () {
     assert.throws(() => createContact.validate({}), /Details is required/)
     assert.throws(() => createContact.validate({ details: {
       name: 0
-    }}), /must be a string/)
+    }}), /must be of type String/)
     assert.doesNotThrow(() => createContact.validate({ details: {
       name: 'Journaldo',
       avatar: 'https://laser.cat/lrg.png',

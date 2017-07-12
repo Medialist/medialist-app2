@@ -23,11 +23,11 @@ export const batchAddToMasterLists = new ValidatedMethod({
     },
     masterListIds: {
       type: Array,
-      regEx: SimpleSchema.RegEx.Id,
       defaultValue: []
     },
-    'slugs.$': {
-      type: String
+    'masterListIds.$': {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
     },
     type: {
       type: String,
@@ -143,6 +143,10 @@ export const removeMasterList = new ValidatedMethod({
   validate: new SimpleSchema({
     _ids: {
       type: Array,
+      defaultValue: []
+    },
+    '_ids.$': {
+      type: String,
       regEx: SimpleSchema.RegEx.Id
     }
   }).validator(),
@@ -231,8 +235,11 @@ export const setMasterLists = new ValidatedMethod({
     },
     masterLists: {
       type: Array,
-      regEx: SimpleSchema.RegEx.Id,
       defaultValue: []
+    },
+    'masterLists.$': {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
     },
     type: {
       type: String,

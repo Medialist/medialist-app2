@@ -222,6 +222,10 @@ export const batchRemoveContacts = new ValidatedMethod({
   validate: new SimpleSchema({
     _ids: {
       type: Array,
+      defaultValue: []
+    },
+    '_ids.$': {
+      type: String,
       regEx: SimpleSchema.RegEx.Id
     }
   }).validator(),

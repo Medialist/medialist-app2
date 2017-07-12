@@ -1,6 +1,31 @@
 import SimpleSchema from 'simpl-schema'
 import { IdSchema, CreatedAtSchema } from '/imports/lib/schema'
 
+const ImageSchema = new SimpleSchema({
+  url: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Url,
+    optional: true
+  },
+  width: {
+    type: Number,
+    optional: true
+  },
+  height: {
+    type: Number,
+    optional: true
+  }
+})
+
+const ScrapedBySchema = new SimpleSchema({
+  name: {
+    type: String
+  },
+  version: {
+    type: String
+  }
+})
+
 export const EmbedSchema = new SimpleSchema({
   url: {
     type: String,
@@ -8,6 +33,10 @@ export const EmbedSchema = new SimpleSchema({
   },
   urls: {
     type: Array,
+    defaultValue: []
+  },
+  'urls.$': {
+    type: String,
     regEx: SimpleSchema.RegEx.Url
   },
   headline: {
@@ -18,28 +47,17 @@ export const EmbedSchema = new SimpleSchema({
     type: String,
     optional: true
   },
-  'image.url': {
-    type: String,
-    regEx: SimpleSchema.RegEx.Url,
-    optional: true
-  },
-  'image.width': {
-    type: Number,
-    optional: true
-  },
-  'image.height': {
-    type: Number,
+  image: {
+    type: ImageSchema,
     optional: true
   },
   datePublished: {
     type: Date,
     optional: true
   },
-  'scrapedBy.name': {
-    type: String
-  },
-  'scrapedBy.version': {
-    type: String
+  scrapedBy: {
+    type: ScrapedBySchema,
+    optional: true
   }
 })
 EmbedSchema.extend(IdSchema)
@@ -58,17 +76,8 @@ export const EmbedRefSchema = new SimpleSchema({
     type: String,
     optional: true
   },
-  'image.url': {
-    type: String,
-    regEx: SimpleSchema.RegEx.Url,
-    optional: true
-  },
-  'image.width': {
-    type: Number,
-    optional: true
-  },
-  'image.height': {
-    type: Number,
+  image: {
+    type: ImageSchema,
     optional: true
   },
   datePublished: {

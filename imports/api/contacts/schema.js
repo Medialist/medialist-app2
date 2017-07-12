@@ -2,7 +2,6 @@ import SimpleSchema from 'simpl-schema'
 import { MasterListRefSchema } from '/imports/api/master-lists/schema'
 import { TagRefSchema } from '/imports/api/tags/schema'
 import { IdSchema, LabelValueSchema, AuditSchema, CreatedAtSchema } from '/imports/lib/schema'
-import { check } from 'meteor/check'
 
 export const ContactRefSchema = new SimpleSchema({
   slug: {
@@ -18,7 +17,7 @@ export const ContactRefSchema = new SimpleSchema({
   },
   outlets: {
     type: Array,
-    defaultValue: null
+    defaultValue: []
   },
   'outlets.$': {
     type: LabelValueSchema
@@ -149,7 +148,12 @@ export const ContactSchema = new SimpleSchema({
     custom: function () {
       // ugh https://github.com/aldeed/meteor-simple-schema/issues/244
       Object.keys(this.value).forEach(key => {
-        check(this.value[key], ContactCampaignSchema)
+        const context = ContactCampaignSchema.newContext()
+        context.validate(this.value[key])
+
+        if (!context.isValid()) {
+          throw context.validationErrors().pop()
+        }
       })
     }
   },
@@ -169,8 +173,11 @@ export const ContactSchema = new SimpleSchema({
   },
   imports: {
     type: Array,
-    regEx: SimpleSchema.RegEx.Id,
     defaultValue: []
+  },
+  'imports.$': {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id
   }
 })
 ContactSchema.extend(IdSchema)

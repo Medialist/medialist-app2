@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import SimpleSchema from 'simpl-schema'
-import { StatusSchema } from '/imports/lib/schema'
 import { StatusValues } from '/imports/api/contacts/status'
 import { checkAllSlugsExist } from '/imports/lib/slug'
 import findUrl from '/imports/lib/find-url'
@@ -263,6 +262,10 @@ export const removePost = new ValidatedMethod({
   validate: new SimpleSchema({
     _ids: {
       type: Array,
+      defaultValue: []
+    },
+    '_ids.$': {
+      type: String,
       regEx: SimpleSchema.RegEx.Id
     }
   }).validator(),

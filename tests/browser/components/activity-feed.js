@@ -81,6 +81,7 @@ module.exports = (prefix) => ({
       }
 
       if (data.embed) {
+        this.waitForElementPresent(selector)
         this.assert.elementPresent(`${selector} [href='${data.embed}'][data-id=link-preview]`)
       }
 
@@ -138,6 +139,7 @@ module.exports = (prefix) => ({
     assertHasPostsForCampaign: function (campaign) {
       const selector = `[data-campaign~='${campaign._id}']`
 
+      this.waitForElementPresent(selector)
       this.assert.elementPresent(selector)
 
       return this
@@ -155,6 +157,7 @@ module.exports = (prefix) => ({
     _assertHasPostForCampaign: function (type, campaign) {
       const selector = `[data-id='${type}'][data-campaign~='${campaign._id}']`
 
+      this.waitForElementPresent(selector)
       this.assert.elementPresent(selector)
 
       return this
@@ -176,6 +179,7 @@ module.exports = (prefix) => ({
     _assertHasPostForContact: function (type, contact) {
       const selector = `[data-id='${type}'][data-contact~='${contact._id}']`
 
+      this.waitForElementPresent(selector)
       this.assert.elementPresent(selector)
 
       return this

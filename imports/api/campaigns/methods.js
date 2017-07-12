@@ -268,6 +268,10 @@ export const removeCampaign = new ValidatedMethod({
   validate: new SimpleSchema({
     _ids: {
       type: Array,
+      defaultValue: []
+    },
+    '_ids.$': {
+      type: String,
       regEx: SimpleSchema.RegEx.Id
     }
   }).validator(),
@@ -375,13 +379,19 @@ export const setTeamMates = new ValidatedMethod({
     },
     userIds: {
       type: Array,
-      regEx: SimpleSchema.RegEx.Id,
       defaultValue: []
+    },
+    'userIds.$': {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
     },
     emails: {
       type: Array,
-      regEx: SimpleSchema.RegEx.Email,
       defaultValue: []
+    },
+    'emails.$': {
+      type: String,
+      regEx: SimpleSchema.RegEx.Email
     }
   }).validator(),
   run ({ _id, userIds = [], emails = [] }) {

@@ -7,13 +7,19 @@ import { ContactCreateSchema } from '/imports/api/contacts/schema'
 const ResultSchema = new SimpleSchema({
   created: {
     type: Array,
-    regEx: SimpleSchema.RegEx.Id,
     defaultValue: []
+  },
+  'created.$': {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id
   },
   updated: {
     type: Array,
-    regEx: SimpleSchema.RegEx.Id,
     defaultValue: []
+  },
+  'updated.$': {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id
   },
   failed: {
     type: Array,

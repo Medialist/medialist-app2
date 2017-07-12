@@ -25,6 +25,17 @@ export const CampaignRefSchema = new SimpleSchema({
 })
 CampaignRefSchema.extend(IdSchema)
 
+const ClientSchema = new SimpleSchema({
+  _id: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id
+  },
+  name: {
+    type: String,
+    optional: true
+  }
+})
+
 export const CampaignSchema = new SimpleSchema({
   name: {
     type: String,
@@ -48,12 +59,8 @@ export const CampaignSchema = new SimpleSchema({
     blackbox: true,
     defaultValue: {}
   },
-  'client._id': {
-    type: String,
-    regEx: SimpleSchema.RegEx.Id
-  },
-  'client.name': {
-    type: String,
+  client: {
+    type: ClientSchema,
     optional: true
   },
   masterLists: {
