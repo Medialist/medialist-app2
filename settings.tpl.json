@@ -30,6 +30,7 @@
     },
     "attachSchemasToDatabase": true
   },
+  "attachSchemasToDatabase": true,
   "validateDatabaseOnStartup": true,
   "updateContactsFromTwitter": true
 }

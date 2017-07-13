@@ -27,6 +27,7 @@
     },
     "attachSchemasToDatabase": true
   },
+  "attachSchemasToDatabase": true,
   "validateDatabaseOnStartup": false,
   "updateContactsFromTwitter": false
 }
