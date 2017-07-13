@@ -192,7 +192,7 @@ export const createCampaign = new ValidatedMethod({
     },
     links: {
       type: Array,
-      defaultValue: []
+      optional: true
     },
     'links.$': {
       type: LinkSchema
@@ -202,7 +202,7 @@ export const createCampaign = new ValidatedMethod({
       optional: true
     }
   }).validator(),
-  run ({ name, clientName, avatar, purpose, links }) {
+  run ({ name, clientName, avatar, purpose, links = [] }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
