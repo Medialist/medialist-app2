@@ -417,7 +417,7 @@ export const searchOutlets = new ValidatedMethod({
       )
       .map((contact) => contact.outlets)
       .reduce((res, arr) => res.concat(arr), [])
-      .map((outlet) => outlet[field])
+      .map((outlet) => outlet[field] || '')
       .filter((s) => s.match(termRegExp))
 
     return suggestions
