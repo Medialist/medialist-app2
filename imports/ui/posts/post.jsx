@@ -269,8 +269,8 @@ const ContactLink = ({contact, showOutlet = true, ...props}) => {
 }
 
 const ContactName = ({contacts, contact, onContactPage}) => {
-  if (onContactPage) {
-    return <span data-id='contact-name'>{firstName(contacts[0])}</span>
+  if (onContactPage && contact) {
+    return <span data-id='contact-name'>{firstName(contact)}</span>
   }
 
   if (contacts.length > 1) {
