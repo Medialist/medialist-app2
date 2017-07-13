@@ -1,5 +1,6 @@
 'use strict'
 
+const masterListsSelector = require('../components/masterlists-selector')
 const editCampaignForm = require('../components/edit-campaign-form')
 const campaignTable = require('../components/campaign-table')
 const addtoListsModal = require('../components/add-to-lists-modal')
@@ -14,6 +15,7 @@ module.exports = {
     myCampaignsButton: '[data-slug=my]'
   },
   sections: {
+    masterListsSelector: masterListsSelector,
     editCampaignForm: editCampaignForm,
     campaignTable: campaignTable,
     toast: {
