@@ -5,21 +5,15 @@ import Embeds from '/imports/api/embeds/embeds'
 import {
   createEmbed
 } from '/imports/api/embeds/server/methods'
+import { createTestUsers } from '/tests/fixtures/server-domain'
 
 describe('createEmbed', function () {
-  let user
+  let users
 
   beforeEach(function () {
     resetDatabase()
 
-    user = {
-      _id: Random.id(),
-      profile: { name: 'Alfonze' },
-      myContacts: [],
-      myCampaigns: []
-    }
-
-    Meteor.users.insert(user)
+    users = createTestUsers(1)
   })
 
   it('should require the user to be logged in', function () {
@@ -42,7 +36,7 @@ describe('createEmbed', function () {
     this.timeout(60000)
 
     const url = 'http://www.theguardian.com/world/2017/mar/06/why-do-sheep-get-horny-in-winter-because-the-light-is-baaad-says-study'
-    const res = createEmbed.run.call({userId: user._id}, {url})
+    const res = createEmbed.run.call({userId: users[0]._id}, {url})
     assert.ok(res)
 
     const embeds = Embeds.find({}).fetch()
@@ -62,7 +56,7 @@ describe('createEmbed', function () {
     this.timeout(60000)
 
     const url = 'https://t.co/f7WPyaasSx'
-    const res = createEmbed.run.call({userId: user._id}, {url})
+    const res = createEmbed.run.call({userId: users[0]._id}, {url})
     assert.ok(res)
 
     const embeds = Embeds.find({}).fetch()
@@ -83,14 +77,14 @@ describe('createEmbed', function () {
 
     const url1 = 'https://techcrunch.com/2017/04/13/lucid-tests-a-high-speed-prototype-version-of-its-air-electric-car/'
     assert.ok(createEmbed.run.call({
-      userId: user._id
+      userId: users[0]._id
     }, {
       url: url1
     }))
 
     const url2 = 'https://techcrunch.com/2017/04/13/lucid-tests-a-high-speed-prototype-version-of-its-air-electric-car'
     assert.ok(createEmbed.run.call({
-      userId: user._id
+      userId: users[0]._id
     }, {
       url: url2
     }))

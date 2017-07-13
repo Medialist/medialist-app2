@@ -25,7 +25,8 @@ const createTagsWhereNecessary = (userId, names, type) => {
       Object.assign(tag, {
         contactsCount: 0,
         campaignsCount: 0,
-        createdBy: findOneUserRef(userId)
+        createdBy: findOneUserRef(userId),
+        createdAt: new Date()
       })
     ))
     .map((tag) => Tags.insert(tag))

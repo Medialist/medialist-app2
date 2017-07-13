@@ -11,7 +11,6 @@ import MasterLists from '/imports/api/master-lists/master-lists'
 import Posts from '/imports/api/posts/posts'
 import toUserRef from '/imports/lib/to-user-ref'
 import { campaign, user } from '/tests/browser/fixtures/domain'
-import { createUser } from '/imports/api/users/publications'
 import { findOneUserRef } from '/imports/api/users/users'
 import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists } from '/tests/fixtures/server-domain'
 
@@ -61,7 +60,7 @@ describe('Campaign update method', function () {
   })
 
   it('should not allow update if not logged in', function () {
-    const userId = Meteor.users.insert(user())
+    const userId = createTestUsers(1)[0]._id
     const slug = createCampaign.run.call({ userId }, campaign())
 
     assert.throws(() => {
@@ -75,7 +74,7 @@ describe('Campaign update method', function () {
   })
 
   it('should throw if no fields to update', function () {
-    const userId = Meteor.users.insert(user())
+    const userId = createTestUsers(1)[0]._id
     const slug = createCampaign.run.call({ userId }, campaign())
 
     assert.throws(() => {
@@ -88,7 +87,7 @@ describe('Campaign update method', function () {
   })
 
   it('should update avatar', function () {
-    const userId = Meteor.users.insert(user())
+    const userId = createTestUsers(1)[0]._id
     const slug = createCampaign.run.call({ userId }, campaign())
     const _id = Campaigns.findOne({ slug })._id
     const updatedAvatarUrl = 'http://example.org/new_image.jpg'
@@ -105,8 +104,8 @@ describe('Campaign update method', function () {
   })
 
   it('should add a campaign to the myCampaigns list for the user', function () {
-    const userId = Meteor.users.insert(user())
-    const otherUserId = Meteor.users.insert(user())
+    const userId = createTestUsers(1)[0]._id
+    const otherUserId = createTestUsers(1)[0]._id
     const slug = createCampaign.run.call({ userId: otherUserId }, campaign())
     const _id = Campaigns.findOne({ slug })._id
 
@@ -124,8 +123,8 @@ describe('Campaign update method', function () {
   })
 
   it('should not duplicate campaigns in the myCampaigns list for the user', function () {
-    const userId = Meteor.users.insert(user())
-    const otherUserId = Meteor.users.insert(user())
+    const userId = createTestUsers(1)[0]._id
+    const otherUserId = createTestUsers(1)[0]._id
     const slug = createCampaign.run.call({ userId: otherUserId }, campaign())
     const _id = Campaigns.findOne({ slug })._id
 
@@ -145,7 +144,7 @@ describe('Campaign create method', function () {
   })
 
   it('should not allow create if not logged in', function () {
-    const userId = Meteor.users.insert(user())
+    const userId = createTestUsers(1)[0]._id
     const slug = createCampaign.run.call({ userId }, campaign())
     const _id = Campaigns.findOne({ slug })._id
 
@@ -165,7 +164,7 @@ describe('Campaign create method', function () {
   })
 
   it('should create a campaign', function () {
-    const userId = createUser(user())
+    const userId = createTestUsers(1)[0]._id
     const payload = { name: 'Foo' }
     const slug = createCampaign.run.call({ userId }, payload)
     const doc = Campaigns.findOne({ slug })
@@ -182,7 +181,7 @@ describe('Campaign create method', function () {
   })
 
   it('should create a campaign and client', function () {
-    const userId = createUser(user())
+    const userId = createTestUsers(1)[0]._id
     const payload = { name: 'Foo', clientName: 'Bar', purpose: 'Better!' }
     const slug = createCampaign.run.call({ userId }, payload)
     const doc = Campaigns.findOne({ slug })
@@ -192,7 +191,7 @@ describe('Campaign create method', function () {
   })
 
   it('should create a campaign and re-use existing client info', function () {
-    const userId = createUser(user())
+    const userId = createTestUsers(1)[0]._id
     const clientName = 'Marmite'
     Clients.insert({name: clientName})
     const payload = { name: 'Foo', purpose: 'Better!', clientName: 'marmite'}
@@ -205,7 +204,7 @@ describe('Campaign create method', function () {
   })
 
   it('should update the myCampaigns', function () {
-    const userId = createUser(user())
+    const userId = createTestUsers(1)[0]._id
     const payload = { name: 'Foo', clientName: 'Bar', purpose: 'Better!'}
     const slug = createCampaign.run.call({ userId }, payload)
     const doc = Campaigns.findOne({ slug })
@@ -224,7 +223,7 @@ describe('Campaign add team members method', function () {
   })
 
   it('should not allow addition of team members if not logged in', function () {
-    const userId = Meteor.users.insert(user())
+    const userId = createTestUsers(1)[0]._id
     const slug = createCampaign.run.call({ userId }, campaign())
     const _id = Campaigns.findOne({ slug })._id
 
@@ -237,7 +236,7 @@ describe('Campaign add team members method', function () {
   })
 
   it('should not add a non-existent user to a team', function () {
-    const userId = Meteor.users.insert(user())
+    const userId = createTestUsers(1)[0]._id
     const slug = createCampaign.run.call({ userId }, campaign())
     const _id = Campaigns.findOne({ slug })._id
     const payload = { _id, userIds: ['foobar'], emails: [] }
@@ -248,8 +247,8 @@ describe('Campaign add team members method', function () {
   })
 
   it('should allow the addition of multiple team members if logged in', function () {
-    const userId = Meteor.users.insert(user())
-    const userIds = [Meteor.users.insert(user()), Meteor.users.insert(user())]
+    const userId = createTestUsers(1)[0]._id
+    const userIds = [createTestUsers(1)[0]._id, createTestUsers(1)[0]._id]
     const slug = createCampaign.run.call({ userId }, campaign())
     const _id = Campaigns.findOne({ slug })._id
     const payload = { _id: _id, userIds, emails: [] }
@@ -260,8 +259,8 @@ describe('Campaign add team members method', function () {
   })
 
   it('should not duplicate team members', function () {
-    const userId = Meteor.users.insert(user())
-    const userIds = [userId, userId, Meteor.users.insert(user()), Meteor.users.insert(user())]
+    const userId = createTestUsers(1)[0]._id
+    const userIds = [userId, userId, createTestUsers(1)[0]._id, createTestUsers(1)[0]._id]
     const slug = createCampaign.run.call({ userId }, campaign())
     const _id = Campaigns.findOne({ slug })._id
     const payload = { _id: _id, userIds, emails: [] }
@@ -272,13 +271,23 @@ describe('Campaign add team members method', function () {
   })
 
   it('should update team member campaign counts', function () {
-    const users = Array(3).fill(0).map(() => user())
+    const users = createTestUsers(3)
 
     users[0].onCampaigns = 1
     users[1].onCampaigns = 1
     users[2].onCampaigns = 0
 
-    const userIds = users.map((user) => Meteor.users.insert(user))
+    users.forEach(user => {
+      Meteor.users.update({
+        _id: user._id
+      }, {
+        $set: {
+          onCampaigns: user.onCampaigns
+        }
+      })
+    })
+
+    const userIds = users.map((user) => user._id)
     const slug = createCampaign.run.call({ userId: userIds[0] }, campaign())
 
     assert.equal(Meteor.users.findOne(userIds[0]).onCampaigns, 2) // added, was 1
@@ -307,7 +316,7 @@ describe('Campaign add team members method', function () {
       defaultFrom: 'foo@bar.com'
     }
 
-    const userId = Meteor.users.insert(user())
+    const userId = createTestUsers(1)[0]._id
     const slug = createCampaign.run.call({ userId }, campaign())
     const _id = Campaigns.findOne({ slug })._id
 
@@ -359,6 +368,7 @@ describe('Campaign remove method', function () {
 
     MasterLists.insert({
       createdBy: toUserRef(users[0]),
+      createdAt: new Date(),
       type: 'Campaigns',
       name: 'A master list',
       slug: faker.lorem.slug(),
@@ -372,34 +382,45 @@ describe('Campaign remove method', function () {
 
     const aPostWithCampaign0 = Posts.insert({
       createdBy: toUserRef(users[0]),
+      createdAt: new Date(),
       type: 'FeedbackPost',
       campaigns: [
         Campaigns.toRef(campaigns[0])
-      ]
+      ],
+      contacts: [],
+      embeds: []
     })
     const aPostWithCampaign1 = Posts.insert({
       createdBy: toUserRef(users[0]),
+      createdAt: new Date(),
       type: 'FeedbackPost',
       campaigns: [
         Campaigns.toRef(campaigns[1])
-      ]
+      ],
+      contacts: [],
+      embeds: []
     })
     const aPostWithCampaigns01And2 = Posts.insert({
       createdBy: toUserRef(users[0]),
+      createdAt: new Date(),
       type: 'CoveragePost',
       campaigns: [
         Campaigns.toRef(campaigns[0]),
         Campaigns.toRef(campaigns[1]),
         Campaigns.toRef(campaigns[2])
-      ]
+      ],
+      contacts: [],
+      embeds: []
     })
     const anUnrelatedPost = Posts.insert({
       createdBy: toUserRef(users[0]),
+      createdAt: new Date(),
       type: 'NeedToKnowPost',
       contacts: [
         Contacts.toRef(contacts[0])
       ],
-      campaigns: []
+      campaigns: [],
+      embeds: []
     })
 
     removeCampaign.run.call({

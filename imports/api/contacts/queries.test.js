@@ -10,6 +10,7 @@ import { createContact, addContactsToCampaign, batchFavouriteContacts } from '/i
 import { createCampaign } from '/imports/api/campaigns/methods'
 import { batchAddToMasterLists, createMasterList } from '/imports/api/master-lists/methods'
 import MasterLists from '/imports/api/master-lists/master-lists'
+import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists } from '/tests/fixtures/server-domain'
 
 describe('searchContacts', function () {
   let users
@@ -20,29 +21,20 @@ describe('searchContacts', function () {
   beforeEach(function () {
     resetDatabase()
 
-    users = Array(2).fill(0)
-      .map(() => Meteor.users.insert(user()))
-      .map((_id) => Meteor.users.findOne(_id))
+    users = createTestUsers(2)
+    campaigns = createTestCampaigns(3)
+    contacts = createTestContacts(3)
+    masterLists = createTestContactLists(2)
 
-    campaigns = Array(3).fill(0)
-      .map(() => createCampaign.run.call({ userId: users[0]._id }, campaign()))
-      .map((slug) => Campaigns.findOne({slug}))
-
-    contacts = Array(3).fill(0)
-      .map(() => {
-        const details = contact()
-        details.name += ' name'
-
-        return createContact.run.call({ userId: users[0]._id }, { details })
+    contacts.forEach(contact => {
+      Contacts.update({
+        _id: contact._id
+      }, {
+        $set: {
+          name: contact.name + ' name'
+        }
       })
-      .map((slug) => Contacts.findOne({slug}))
-
-    masterLists = Array(2).fill(0)
-      .map(() => createMasterList.run.call({ userId: users[0]._id }, {
-        type: 'Contacts',
-        name: faker.lorem.word()
-      }))
-      .map((_id) => MasterLists.findOne({_id}))
+    })
 
     addContactsToCampaign.run.call({ userId: users[0]._id }, {
       contactSlugs: [contacts[1].slug],

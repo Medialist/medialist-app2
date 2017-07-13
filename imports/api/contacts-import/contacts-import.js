@@ -6,24 +6,21 @@ import { ContactCreateSchema } from '/imports/api/contacts/schema'
 
 const ResultSchema = new SimpleSchema({
   created: {
-    type: Array,
-    defaultValue: []
+    type: Array
   },
   'created.$': {
     type: String,
     regEx: SimpleSchema.RegEx.Id
   },
   updated: {
-    type: Array,
-    defaultValue: []
+    type: Array
   },
   'updated.$': {
     type: String,
     regEx: SimpleSchema.RegEx.Id
   },
   failed: {
-    type: Array,
-    defaultValue: []
+    type: Array
   },
   'failed.$': {
     type: ContactCreateSchema

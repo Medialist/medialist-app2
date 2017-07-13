@@ -18,8 +18,7 @@ export const MasterListSchema = new SimpleSchema({
     min: 1
   },
   items: {
-    type: Array,
-    defaultValue: []
+    type: Array
   },
   'items.$': {
     type: String,

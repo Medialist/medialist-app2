@@ -40,13 +40,17 @@ const validate = (name, collection, schema) => {
 }
 
 Meteor.startup(() => {
-  validate('campaigns', Campaigns, CampaignSchema)
-  validate('contacts', Contacts, ContactSchema)
-  validate('clients', Clients, ClientSchema)
-  validate('embeds', Embeds, EmbedSchema)
-  validate('master lists', MasterLists, MasterListSchema)
-  validate('orgs', Orgs, OrgSchema)
-  validate('posts', Posts, PostSchema)
-  validate('tags', Tags, TagSchema)
-  validate('users', Meteor.users, UserSchema)
+  if (Meteor.settings.validateDatabaseOnStartup) {
+    validate('campaigns', Campaigns, CampaignSchema)
+    validate('contacts', Contacts, ContactSchema)
+    validate('clients', Clients, ClientSchema)
+    validate('embeds', Embeds, EmbedSchema)
+    validate('master lists', MasterLists, MasterListSchema)
+    validate('orgs', Orgs, OrgSchema)
+    validate('posts', Posts, PostSchema)
+    validate('tags', Tags, TagSchema)
+    validate('users', Meteor.users, UserSchema)
+  } else {
+    console.info('Not validating database docs')
+  }
 })

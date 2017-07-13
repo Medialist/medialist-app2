@@ -55,14 +55,7 @@ UserRefSchema.extend(IdSchema)
 export const CreatedAtSchema = new SimpleSchema({
   createdAt: {
     type: Date,
-    denyUpdate: true,
-    autoValue: function () {
-      if (!this.isSet && this.isInsert) {
-        return new Date()
-      }
-
-      return this.value
-    }
+    denyUpdate: true
   },
   createdBy: {
     type: UserRefSchema

@@ -12,13 +12,11 @@ export const TagSchema = new SimpleSchema({
   },
   contactsCount: {
     type: Number,
-    min: 0,
-    defaultValue: 0
+    min: 0
   },
   campaignsCount: {
     type: Number,
-    min: 0,
-    defaultValue: 0
+    min: 0
   }
 })
 TagSchema.extend(IdSchema)

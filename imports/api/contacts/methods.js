@@ -195,8 +195,7 @@ export const batchFavouriteContacts = new ValidatedMethod({
 
   validate: new SimpleSchema({
     contactSlugs: {
-      type: Array,
-      defaultValue: []
+      type: Array
     },
     'contactSlugs.$': {
       type: String
@@ -221,8 +220,7 @@ export const batchRemoveContacts = new ValidatedMethod({
 
   validate: new SimpleSchema({
     _ids: {
-      type: Array,
-      defaultValue: []
+      type: Array
     },
     '_ids.$': {
       type: String,
@@ -352,6 +350,19 @@ export const createContact = new ValidatedMethod({
       updatedAt: createdAt
     })
 
+    // filter any empty addresses
+    contact.addresses = (contact.addresses || []).filter(address => {
+      let allEmpty = true
+
+      for (var key in address) {
+        if (address[key]) {
+          allEmpty = false
+        }
+      }
+
+      return !allEmpty
+    })
+
     // Save the contact
     Contacts.insert(contact)
 
@@ -470,8 +481,7 @@ export const batchUpdateStatus = new ValidatedMethod({
       regEx: SimpleSchema.RegEx.Id
     },
     contacts: {
-      type: Array,
-      defaultValue: []
+      type: Array
     },
     'contacts.$': {
       type: String

@@ -139,7 +139,7 @@ describe('removeContactsFromCampaigns', function () {
   // TODO: it should use a deleted flag
   // TODO: it should it remove them from plenty other places too.
   it('should remove the contacts from the campaign', function () {
-    const testUser = Meteor.users.findOne(Meteor.users.insert(user()))
+    const testUser = createTestUsers(1)[0]
 
     const contacts = Array(3)
       .fill(0)
@@ -196,8 +196,8 @@ describe('batchFavouriteContacts', function () {
   })
 
   it('should add all contacts to favourites', function () {
-    const testUser = Meteor.users.findOne(Meteor.users.insert(user()))
-    const otherUser = Meteor.users.findOne(Meteor.users.insert(user()))
+    const testUser = createTestUsers(1)[0]
+    const otherUser = createTestUsers(1)[0]
 
     const contacts = Array(4)
       .fill(0)
@@ -400,10 +400,7 @@ describe('createContact', function () {
   })
 
   it('should add a doc to Contacts and the current user\'s myContacts array', function () {
-    const users = Array(1)
-      .fill(0)
-      .map(() => Meteor.users.insert(user()))
-      .map((_id) => Meteor.users.findOne(_id))
+    const users = createTestUsers(1)
 
     const details = contact()
     const userId = user._id

@@ -44,14 +44,7 @@ export const UserSchema = new SimpleSchema({
   },
   createdAt: {
     type: Date,
-    denyUpdate: true,
-    autoValue: function () {
-      if (this.isInsert) {
-        return new Date()
-      }
-
-      this.unset()
-    }
+    denyUpdate: true
   },
   profile: {
     type: UserProfileSchema,
@@ -68,14 +61,14 @@ export const UserSchema = new SimpleSchema({
   },
   myContacts: {
     type: Array,
-    defaultValue: []
+    optional: true
   },
   'myContacts.$': {
     type: ContactRefSchema
   },
   myCampaigns: {
     type: Array,
-    defaultValue: []
+    optional: true
   },
   'myCampaigns.$': {
     type: CampaignRefSchema
@@ -83,18 +76,18 @@ export const UserSchema = new SimpleSchema({
   onCampaigns: {
     type: Number,
     min: 0,
-    defaultValue: 0
+    optional: true
   },
   recentCampaignLists: {
     type: Array,
-    defaultValue: []
+    optional: true
   },
   'recentCampaignLists.$': {
     type: String
   },
   recentContactLists: {
     type: Array,
-    defaultValue: []
+    optional: true
   },
   'recentContactLists.$': {
     type: String

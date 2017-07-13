@@ -27,6 +27,9 @@
     "authentication": {
       "emailDomains": ["localhost"],
       "extraEmailDomains": []
-    }
-  }
+    },
+    "attachSchemasToDatabase": true
+  },
+  "validateDatabaseOnStartup": true,
+  "updateContactsFromTwitter": true
 }

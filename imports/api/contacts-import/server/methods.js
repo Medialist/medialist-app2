@@ -12,8 +12,7 @@ export const importContacts = new ValidatedMethod({
 
   validate: new SimpleSchema({
     data: {
-      type: Array,
-      defaultValue: []
+      type: Array
     },
     'data.$': {
       type: ContactCreateSchema
@@ -33,7 +32,8 @@ export const importContacts = new ValidatedMethod({
         updated: [],
         failed: []
       },
-      createdBy
+      createdBy,
+      createdAt: new Date()
     }
 
     const _id = ContactsImport.insert(doc)
@@ -79,6 +79,7 @@ function createContact (data, createdBy, importId) {
   data.tags = []
   data.imports = [importId]
   data.createdBy = createdBy
+  data.createdAt = new Date()
 
   const id = Contacts.insert(data)
 

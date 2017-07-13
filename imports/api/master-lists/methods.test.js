@@ -94,7 +94,7 @@ describe('master-lists-create', function () {
   beforeEach(function () {
     resetDatabase()
 
-    userId = Meteor.users.insert(user())
+    userId = createTestUsers(1)[0]._id
   })
 
   it('should fail if type or name is missing', function () {

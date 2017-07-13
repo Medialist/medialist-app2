@@ -80,7 +80,8 @@ export const createEmbed = new ValidatedMethod({
         datePublished: doc.datePublished,
         urls: urls,
         scrapedBy: doc.agent,
-        createdBy: findOneUserRef(this.userId)
+        createdBy: findOneUserRef(this.userId),
+        createdAt: new Date()
       }
 
       embed._id = Embeds.insert(embed)

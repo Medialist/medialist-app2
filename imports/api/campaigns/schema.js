@@ -56,37 +56,32 @@ export const CampaignSchema = new SimpleSchema({
   },
   contacts: {
     type: Object,
-    blackbox: true,
-    defaultValue: {}
+    blackbox: true
   },
   client: {
     type: ClientSchema,
     optional: true
   },
   masterLists: {
-    type: Array,
-    defaultValue: []
+    type: Array
   },
   'masterLists.$': {
     type: MasterListRefSchema
   },
   tags: {
-    type: Array,
-    defaultValue: []
+    type: Array
   },
   'tags.$': {
     type: TagRefSchema
   },
   team: {
-    type: Array,
-    defaultValue: []
+    type: Array
   },
   'team.$': {
     type: UserRefSchema
   },
   links: {
-    type: Array,
-    defaultValue: []
+    type: Array
   },
   'links.$': {
     type: LinkSchema

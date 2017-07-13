@@ -24,6 +24,9 @@
     "authentication": {
       "emailDomains": ["test.medialist.io"],
       "extraEmailDomains": []
-    }
-  }
+    },
+    "attachSchemasToDatabase": true
+  },
+  "validateDatabaseOnStartup": false,
+  "updateContactsFromTwitter": false
 }

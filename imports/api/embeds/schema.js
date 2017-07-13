@@ -32,8 +32,7 @@ export const EmbedSchema = new SimpleSchema({
     regEx: SimpleSchema.RegEx.Url
   },
   urls: {
-    type: Array,
-    defaultValue: []
+    type: Array
   },
   'urls.$': {
     type: String,

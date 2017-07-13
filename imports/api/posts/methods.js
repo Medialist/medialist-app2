@@ -261,8 +261,7 @@ export const removePost = new ValidatedMethod({
   name: 'deletePost',
   validate: new SimpleSchema({
     _ids: {
-      type: Array,
-      defaultValue: []
+      type: Array
     },
     '_ids.$': {
       type: String,

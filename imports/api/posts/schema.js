@@ -18,24 +18,21 @@ export const PostTypes = [
 export const PostSchema = new SimpleSchema({
   contacts: {
     type: Array,
-    minCount: 0,
-    defaultValue: []
+    minCount: 0
   },
   'contacts.$': {
     type: ContactRefSchema
   },
   campaigns: {
     type: Array,
-    minCount: 0,
-    defaultValue: []
+    minCount: 0
   },
   'campaigns.$': {
     type: CampaignRefSchema
   },
   embeds: {
     type: Array,
-    minCount: 0,
-    defaultValue: []
+    minCount: 0
   },
   'embeds.$': {
     type: EmbedRefSchema

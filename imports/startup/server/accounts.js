@@ -17,7 +17,10 @@ Accounts.onCreateUser((options, user) => {
   user.profile = options.profile || {}
   user.myCampaigns = []
   user.myContacts = []
+  user.recentCampaignLists = []
+  user.recentContactLists = []
   user.onCampaigns = 0
+  user.createdAt = new Date()
 
   return user
 })

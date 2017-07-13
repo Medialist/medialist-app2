@@ -15,15 +15,13 @@ export const batchAddToMasterLists = new ValidatedMethod({
   name: 'batchAddToMasterLists',
   validate: new SimpleSchema({
     slugs: {
-      type: Array,
-      defaultValue: []
+      type: Array
     },
     'slugs.$': {
       type: String
     },
     masterListIds: {
-      type: Array,
-      defaultValue: []
+      type: Array
     },
     'masterListIds.$': {
       type: String,
@@ -133,6 +131,7 @@ export const createMasterList = new ValidatedMethod({
     const doc = {type, name, order, items: []}
     doc.slug = findUniqueSlug(doc.name, MasterLists)
     doc.createdBy = findOneUserRef(this.userId)
+    doc.createdAt = new Date()
 
     return MasterLists.insert(doc)
   }
@@ -142,8 +141,7 @@ export const removeMasterList = new ValidatedMethod({
   name: 'MasterLists/delete',
   validate: new SimpleSchema({
     _ids: {
-      type: Array,
-      defaultValue: []
+      type: Array
     },
     '_ids.$': {
       type: String,
@@ -234,8 +232,7 @@ export const setMasterLists = new ValidatedMethod({
       regEx: SimpleSchema.RegEx.Id
     },
     masterLists: {
-      type: Array,
-      defaultValue: []
+      type: Array
     },
     'masterLists.$': {
       type: String,

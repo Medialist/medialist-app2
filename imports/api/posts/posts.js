@@ -23,7 +23,8 @@ Posts.create = ({type, contactSlugs = [], campaignSlugs = [], message, status, e
     message,
     status,
     embeds,
-    createdBy
+    createdBy,
+    createdAt: new Date()
   }
 
   return Posts.insert(post)

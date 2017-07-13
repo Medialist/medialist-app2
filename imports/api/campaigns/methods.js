@@ -52,8 +52,7 @@ export const batchFavouriteCampaigns = new ValidatedMethod({
 
   validate: new SimpleSchema({
     campaignSlugs: {
-      type: Array,
-      defaultValue: []
+      type: Array
     },
     'campaignSlugs.$': {
       type: String
@@ -94,8 +93,7 @@ export const updateCampaign = new ValidatedMethod({
       optional: true
     },
     links: {
-      type: Array,
-      defaultValue: []
+      type: Array
     },
     'links.$': {
       type: LinkSchema
@@ -267,8 +265,7 @@ export const removeCampaign = new ValidatedMethod({
   name: 'Campaigns/remove',
   validate: new SimpleSchema({
     _ids: {
-      type: Array,
-      defaultValue: []
+      type: Array
     },
     '_ids.$': {
       type: String,
@@ -378,16 +375,14 @@ export const setTeamMates = new ValidatedMethod({
       regEx: SimpleSchema.RegEx.Id
     },
     userIds: {
-      type: Array,
-      defaultValue: []
+      type: Array
     },
     'userIds.$': {
       type: String,
       regEx: SimpleSchema.RegEx.Id
     },
     emails: {
-      type: Array,
-      defaultValue: []
+      type: Array
     },
     'emails.$': {
       type: String,

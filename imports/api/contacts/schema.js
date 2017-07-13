@@ -16,8 +16,7 @@ export const ContactRefSchema = new SimpleSchema({
     optional: true
   },
   outlets: {
-    type: Array,
-    defaultValue: []
+    type: Array
   },
   'outlets.$': {
     type: LabelValueSchema
@@ -72,22 +71,19 @@ export const ContactCreateSchema = new SimpleSchema({
     optional: true
   },
   outlets: {
-    type: Array,
-    defaultValue: []
+    type: Array
   },
   'outlets.$': {
     type: LabelValueSchema
   },
   emails: {
-    type: Array,
-    defaultValue: []
+    type: Array
   },
   'emails.$': {
     type: LabelValueSchema
   },
   phones: {
-    type: Array,
-    defaultValue: []
+    type: Array
   },
   'phones.$': {
     type: LabelValueSchema
@@ -98,31 +94,13 @@ export const ContactCreateSchema = new SimpleSchema({
   },
   // TODO: Refactor the socials schema to allow for twitterId or other properties
   socials: {
-    type: Array,
-    defaultValue: []
+    type: Array
   },
   'socials.$': {
     type: SocialSchema
   },
   addresses: {
-    type: Array,
-    autoValue: function () {
-      if (!this.value) {
-        return []
-      }
-
-      return this.value.filter(address => {
-        let allEmpty = true
-
-        for (var key in address) {
-          if (address[key]) {
-            allEmpty = false
-          }
-        }
-
-        return !allEmpty
-      })
-    }
+    type: Array
   },
   'addresses.$': {
     type: AddressSchema
@@ -143,7 +121,6 @@ export const ContactSchema = new SimpleSchema({
   // References to other collections
   campaigns: {
     type: Object,
-    defaultValue: {},
     blackbox: true,
     custom: function () {
       // ugh https://github.com/aldeed/meteor-simple-schema/issues/244
@@ -158,22 +135,19 @@ export const ContactSchema = new SimpleSchema({
     }
   },
   masterLists: {
-    type: Array,
-    defaultValue: []
+    type: Array
   },
   'masterLists.$': {
     type: MasterListRefSchema
   },
   tags: {
-    type: Array,
-    defaultValue: []
+    type: Array
   },
   'tags.$': {
     type: TagRefSchema
   },
   imports: {
-    type: Array,
-    defaultValue: []
+    type: Array
   },
   'imports.$': {
     type: String,
