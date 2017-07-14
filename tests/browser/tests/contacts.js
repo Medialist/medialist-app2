@@ -3,6 +3,7 @@
 const faker = require('faker')
 const tmp = require('tmp')
 const fs = require('fs')
+const async = require('async')
 const domain = require('../fixtures/domain')
 const assertions = require('../fixtures/assertions')
 
@@ -234,6 +235,62 @@ ${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email
       contactsPage.section.contactTable
         .assertNoResults()
         .assertNotInSearchResults(contact)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should filter contacts by master list': function (t) {
+    const domainArgs = Array(5).fill('contact').concat(Array(5).fill('contactList'))
+
+    t.createDomain(domainArgs, function () {
+      const args = Array.from(arguments)
+      const contacts = args.slice(0, 5)
+      const masterLists = args.slice(5, 10)
+      const done = args[10]
+
+      t.perform((done) => {
+        const tasks = contacts.map((c, i) => {
+          return (cb) => t.addContactsToContactLists([c], [masterLists[i]], cb)
+        })
+        async.parallel(tasks, done)
+      })
+
+      const contactsPage = t.page.contacts()
+        .navigate()
+
+      const masterListsSelector = contactsPage.section.masterListsSelector
+      const contactTable = contactsPage.section.contactTable
+
+      // Assert each campaign present/absent in each master list
+      masterLists.forEach((masterList, i) => {
+        masterListsSelector.clickMasterListBySlug(masterList.slug)
+
+        const assertResult = (resultCampaign) => {
+          contacts.forEach((campaign, i) => {
+            const selector = `[data-item='${campaign._id}']`
+            if (campaign === resultCampaign) {
+              contactTable.waitForElementPresent(selector)
+            } else {
+              contactTable.waitForElementNotPresent(selector)
+            }
+          })
+        }
+
+        assertResult(contacts[i])
+      })
+
+      // Ensure we can click all/my and that they become selected
+      masterListsSelector
+        .assert.elementPresent('@all')
+        .clickMasterListBySlug('all')
+        .waitForElementPresent('@allSelected')
+        .assert.elementPresent('@my')
+        .clickMasterListBySlug('my')
+        .waitForElementPresent('@mySelected')
 
       done()
     })

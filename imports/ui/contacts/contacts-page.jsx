@@ -70,7 +70,10 @@ const ContactsPage = withSnackbar(React.createClass({
   },
 
   onMasterListChange (selectedMasterListSlug) {
-    addRecentContactList.call({ slug: selectedMasterListSlug })
+    // Only if not pseudo lists
+    if (!['all', 'my'].includes(selectedMasterListSlug)) {
+      addRecentContactList.call({ slug: selectedMasterListSlug })
+    }
 
     this.props.setQuery({ selectedMasterListSlug })
   },
