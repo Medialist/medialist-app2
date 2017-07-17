@@ -177,7 +177,7 @@ class CampaignContactsPage extends React.Component {
         <CampaignSummary campaign={campaign} statusFilter={statusFilter} onStatusClick={(statusFilter) => this.setState({statusFilter})} />
         <div className='bg-white shadow-2 m4' data-id='contacts-table'>
           <div className='pt4 pl4 pr4 pb1 items-center'>
-            <SearchBox onTermChange={this.onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' style={{zIndex: 1}} />
+            <SearchBox initialTerm={term} onTermChange={this.onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' style={{zIndex: 1}} />
             <ContactsTotal searching={Boolean(term)} results={contacts} total={contactsTotal} />
           </div>
           <ContactsTableContainer

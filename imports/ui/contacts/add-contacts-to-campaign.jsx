@@ -54,6 +54,7 @@ const AddContactsToCampaigns = createSearchContainer(React.createClass({
         <div className='f-xl regular center mt6'>{title}</div>
         <div className='mb6'>{children}</div>
         <SearchBox
+          initialTerm={term}
           onTermChange={this.onTermChange}
           onKeyDown={this.onKeyPress}
           placeholder='Search campaigns'
