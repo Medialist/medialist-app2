@@ -256,8 +256,8 @@ const ContactLink = ({contact, showOutlet = true, ...props}) => {
 
   let outlet = null
 
-  if (showOutlet && contact.outlets && contact.outlets.length && contact.outlets[0].value) {
-    outlet = <span className='gray10' data-id='contact-outlet'> ({contact.outlets[0].value})</span>
+  if (showOutlet && contact.outlets && contact.outlets.length && contact.outlets[0].label) {
+    outlet = <span className='gray10' data-id='contact-outlet'> ({contact.outlets[0].label})</span>
   }
 
   return (
