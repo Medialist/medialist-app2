@@ -13,6 +13,7 @@ const PostBoxTextArea = React.createClass({
     placeholder: PropTypes.string.isRequired,
     value: PropTypes.string,
     focused: PropTypes.bool,
+    shouldFocus: PropTypes.bool,
     disabled: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     'data-id': PropTypes.string.isRequired
@@ -52,12 +53,21 @@ const PostBoxTextArea = React.createClass({
     }
   },
 
-  componentWillReceiveProps ({value}) {
-    if (value === this.props.value) {
+  componentWillMount () {
+    this.didFocus = false
+  },
+
+  componentWillReceiveProps (nextProps) {
+    // If shouldFocus becomes true, then focus the textarea after update
+    if (nextProps.shouldFocus && !this.props.shouldFocus) {
+      this.didFocus = false
+    }
+
+    if (nextProps.value === this.props.value) {
       return
     }
 
-    const url = findUrl(value)
+    const url = findUrl(nextProps.value)
 
     if (!url) {
       return this.setState({
@@ -82,6 +92,23 @@ const PostBoxTextArea = React.createClass({
     })
   },
 
+  focusTextArea () {
+    // If we have a textarea ref, and should focus it, and did not focus it yet...
+    if (this.textArea && this.props.shouldFocus && !this.didFocus) {
+      this.textArea.focus()
+      this.didFocus = true
+    }
+  },
+
+  onTextAreaRef (ref) {
+    this.textArea = ref
+    this.focusTextArea()
+  },
+
+  componentDidUpdate () {
+    this.focusTextArea()
+  },
+
   render () {
     return (
       <div>
@@ -94,7 +121,7 @@ const PostBoxTextArea = React.createClass({
           value={this.props.value}
           disabled={this.props.disabled}
           data-id={this.props['data-id']}
-          ref={(textarea) => this.props.shouldFocus && textarea && textarea.focus()} />
+          ref={this.onTextAreaRef} />
         {this.state.embed || this.state.embedLoading ? (
           <div className='mb3'>
             <LinkPreview {...this.state.embed} loading={this.state.embedLoading} />
