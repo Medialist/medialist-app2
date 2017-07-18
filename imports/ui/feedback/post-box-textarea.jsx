@@ -53,21 +53,12 @@ const PostBoxTextArea = React.createClass({
     }
   },
 
-  componentWillMount () {
-    this.didFocus = false
-  },
-
-  componentWillReceiveProps (nextProps) {
-    // If shouldFocus becomes true, then focus the textarea after update
-    if (nextProps.shouldFocus && !this.props.shouldFocus) {
-      this.didFocus = false
-    }
-
-    if (nextProps.value === this.props.value) {
+  componentWillReceiveProps ({value}) {
+    if (value === this.props.value) {
       return
     }
 
-    const url = findUrl(nextProps.value)
+    const url = findUrl(value)
 
     if (!url) {
       return this.setState({
@@ -92,21 +83,10 @@ const PostBoxTextArea = React.createClass({
     })
   },
 
-  focusTextArea () {
-    // If we have a textarea ref, and should focus it, and did not focus it yet...
-    if (this.textArea && this.props.shouldFocus && !this.didFocus) {
-      this.textArea.focus()
-      this.didFocus = true
-    }
-  },
-
   onTextAreaRef (ref) {
-    this.textArea = ref
-    this.focusTextArea()
-  },
-
-  componentDidUpdate () {
-    this.focusTextArea()
+    if (ref && this.props.shouldFocus) {
+      ref.focus()
+    }
   },
 
   render () {
