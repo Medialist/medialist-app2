@@ -1,9 +1,12 @@
-import React from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import moment from 'moment'
 
 // format a moment as "time from now", but shorter.
 // e.g [Just now, 2 h, 19 Jan, 20 Feb 2016]
 export function timeFromNowShortFormat (then) {
+  then = moment(then)
+
   const now = moment()
   const secondsAgo = now.diff(then, 'seconds')
 
@@ -33,20 +36,50 @@ export function timeFromNowShortFormat (then) {
 }
 
 // Format a JS Date in our custom `timeFromNowShortFormat` style
-// Date is converted to a moment, and passed to chidren as a fn, so you can
-// pick a different format. See `TimeFromNow` below.
-const Time = ({ date, children, ...props }) => {
-  const then = moment(date)
-  const isoStyle = then.format()
-  const longStyle = then.format('ddd, MMM Do YYYY, h:mm a')
-  const label = children && children(then) || timeFromNowShortFormat(then)
-  return <time {...props} dateTime={isoStyle} title={longStyle}>{label}</time>
+// Keeps the formatted label up to date periodically
+class Time extends Component {
+  static propTypes = {
+    date: PropTypes.instanceOf(Date).isRequired,
+    format: PropTypes.func
+  }
+
+  static defaultProps = {
+    format: timeFromNowShortFormat
+  }
+
+  constructor (props) {
+    super(props)
+    this.state = { formattedTime: props.format(props.date) }
+    this.intervalId = setInterval(() => this.setFormattedTime(this.props), 1000)
+  }
+
+  componentWillReceiveProps (nextProps) {
+    this.setFormattedTime(nextProps)
+  }
+
+  componentWillUnmount () {
+    clearInterval(this.intervalId)
+  }
+
+  setFormattedTime = ({ format, date }) => {
+    const formattedTime = format(date)
+    if (formattedTime !== this.state.formattedTime) {
+      this.setState({ formattedTime })
+    }
+  }
+
+  render () {
+    const { date, format, ...props } = this.props // eslint-disable-line no-unused-vars
+    const { formattedTime } = this.state
+    const then = moment(date)
+    const isoStyle = then.format()
+    const longStyle = then.format('ddd, MMM Do YYYY, h:mm a')
+    return <time {...props} dateTime={isoStyle} title={longStyle}>{formattedTime}</time>
+  }
 }
 
 export default Time
 
 export const TimeFromNow = (props) => (
-  <Time {...props}>
-    { (then) => then.fromNow() }
-  </Time>
+  <Time {...props} format={(date) => moment(date).fromNow()} />
 )
