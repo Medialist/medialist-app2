@@ -2,6 +2,7 @@ import SimpleSchema from 'simpl-schema'
 import { MasterListRefSchema } from '/imports/api/master-lists/schema'
 import { TagRefSchema } from '/imports/api/tags/schema'
 import { IdSchema, AuditSchema, CreatedAtSchema, UserRefSchema, LinkSchema } from '/imports/lib/schema'
+import { ClientSchema } from '/imports/api/clients/schema'
 
 export const CampaignRefSchema = new SimpleSchema({
   slug: {
@@ -24,17 +25,6 @@ export const CampaignRefSchema = new SimpleSchema({
   }
 })
 CampaignRefSchema.extend(IdSchema)
-
-const ClientSchema = new SimpleSchema({
-  _id: {
-    type: String,
-    regEx: SimpleSchema.RegEx.Id
-  },
-  name: {
-    type: String,
-    optional: true
-  }
-})
 
 export const CampaignSchema = new SimpleSchema({
   name: {
