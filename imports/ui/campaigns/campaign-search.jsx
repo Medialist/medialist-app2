@@ -28,7 +28,7 @@ const CampaignSearch = ({
   <div>
     <div className='bg-white shadow-2 m4' data-id='campaigns-table'>
       <div className='pt4 pl4 pr4 pb1 items-center'>
-        <SearchBox onTermChange={onTermChange} placeholder='Search campaigns...' data-id='search-campaigns-input' style={{zIndex: 1}}>
+        <SearchBox initialTerm={term} onTermChange={onTermChange} placeholder='Search campaigns...' data-id='search-campaigns-input' style={{zIndex: 1}}>
           {selectedTags && selectedTags.map((t) => (
             <CountTag
               style={{marginBottom: 0}}

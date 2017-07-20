@@ -17,7 +17,7 @@ const CampaignsFilterableList = React.createClass({
     hideAllFilter: PropTypes.bool
   },
   getInitialState () {
-    return { filteredCampaigns: this.props.campaigns || [] }
+    return { filteredCampaigns: this.props.campaigns || [], term: '' }
   },
   componentWillReceiveProps (props) {
     this.setState({ filteredCampaigns: props.campaigns })
@@ -29,11 +29,11 @@ const CampaignsFilterableList = React.createClass({
       if (!itemMatch && c.client && c.client.name) itemMatch = itemMatchesTerm(c.client.name, term)
       return itemMatch
     })
-    this.setState({ filteredCampaigns })
+    this.setState({ filteredCampaigns, term })
   },
   render () {
     const { onFilter, contact, onClearFilter, hideAllFilter } = this.props
-    const { filteredCampaigns } = this.state
+    const { filteredCampaigns, term } = this.state
     const allCampaignCount = this.props.campaigns.length
     const styleOverrides = {
       backgroundColor: 'white',
@@ -44,6 +44,7 @@ const CampaignsFilterableList = React.createClass({
     return (
       <nav>
         <SearchBox
+          initialTerm={term}
           onTermChange={this.onTermChange}
           placeholder='Search campaigns'
           style={styleOverrides}

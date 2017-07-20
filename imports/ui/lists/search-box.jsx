@@ -6,6 +6,7 @@ import debounce from 'lodash.debounce'
 const SearchBox = React.createClass({
   propTypes: {
     placeholder: PropTypes.string,
+    initialTerm: PropTypes.string,
     onTermChange: PropTypes.func.isRequired,
     onKeyDown: PropTypes.func,
     children: PropTypes.node,
@@ -14,11 +15,11 @@ const SearchBox = React.createClass({
   },
 
   getDefaultProps () {
-    return { placeholder: 'Search...' }
+    return { initialTerm: '', placeholder: 'Search...' }
   },
 
   getInitialState () {
-    return { term: '', isFocused: false }
+    return { term: this.props.initialTerm, isFocused: false }
   },
 
   onChange (e) {

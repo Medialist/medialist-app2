@@ -22,7 +22,7 @@ export default React.createClass({
     return (
       <div>
         <SearchBox
-          term={term}
+          initialTerm={term}
           onTermChange={onTermChange}
           style={styleOverrides}
           placeholder='Search contacts'

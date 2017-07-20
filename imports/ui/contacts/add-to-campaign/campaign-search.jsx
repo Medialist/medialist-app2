@@ -46,6 +46,7 @@ class CampaignSearch extends React.Component {
     return (
       <div>
         <SearchBox
+          initialTerm={term}
           onTermChange={onTermChange}
           onKeyDown={this.onKeyPress}
           placeholder='Search campaigns'
