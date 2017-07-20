@@ -1,5 +1,5 @@
 import React from 'react'
-import { TimeFromNow } from '/imports/ui/time/time'
+import { TimeAgo } from '/imports/ui/time/time'
 import { SquareAvatar } from '/imports/ui/images/avatar'
 
 const CampaignPreview = ({ name, avatar, client, clientName, contacts, updatedAt }) => {
@@ -26,7 +26,7 @@ const CampaignPreview = ({ name, avatar, client, clientName, contacts, updatedAt
         <div className='f-sm normal gray20 truncate'>
           {clientDisplay}
           {hyphen}
-          {updatedAt && <span className='gray40'>{clientDisplay ? 'u' : 'U'}pdated <TimeFromNow date={updatedAt} /></span>}
+          {updatedAt && <span className='gray40'>{clientDisplay ? 'u' : 'U'}pdated <TimeAgo date={updatedAt} /></span>}
         </div>
       </div>
     </div>

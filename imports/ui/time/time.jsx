@@ -36,32 +36,55 @@ export function timeFromNowShortFormat (then) {
 }
 
 // Format a JS Date in our custom `timeFromNowShortFormat` style
-// Keeps the formatted label up to date periodically
+// Keeps the formatted label up to date if < 24 hours young/old
 class Time extends Component {
   static propTypes = {
     date: PropTypes.instanceOf(Date).isRequired,
-    format: PropTypes.func
+    format: PropTypes.func,
+    isRecent: PropTypes.func
   }
 
   static defaultProps = {
-    format: timeFromNowShortFormat
+    format: timeFromNowShortFormat,
+    isRecent (date) {
+      const isRecentPast = moment().subtract(1, 'day').isBefore(date)
+      const isRecentFuture = moment().add(1, 'day').isAfter(date)
+      return isRecentPast || isRecentFuture
+    }
   }
 
   constructor (props) {
     super(props)
     this.state = { formattedTime: props.format(props.date) }
-    this.intervalId = setInterval(() => this.setFormattedTime(this.props), 1000)
+    this.setInterval(this.props)
   }
 
   componentWillReceiveProps (nextProps) {
     this.setFormattedTime(nextProps)
+    this.setInterval(nextProps)
   }
 
   componentWillUnmount () {
     clearInterval(this.intervalId)
   }
 
-  setFormattedTime = ({ format, date }) => {
+  setInterval ({ date, isRecent }) {
+    clearInterval(this.intervalId)
+
+    if (isRecent(date)) {
+      this.intervalId = setInterval(this.onInterval, 1000)
+    }
+  }
+
+  onInterval = () => {
+    this.setFormattedTime(this.props)
+
+    if (!this.props.isRecent(this.props.date)) {
+      clearInterval(this.intervalId)
+    }
+  }
+
+  setFormattedTime ({ format, date }) {
     const formattedTime = format(date)
     if (formattedTime !== this.state.formattedTime) {
       this.setState({ formattedTime })
@@ -80,6 +103,19 @@ class Time extends Component {
 
 export default Time
 
+function formatTimeFromNow (date) {
+  return moment(date).fromNow()
+}
+
 export const TimeFromNow = (props) => (
-  <Time {...props} format={(date) => moment(date).fromNow()} />
+  <Time {...props} format={formatTimeFromNow} />
+)
+
+function formatTimeAgo (date) {
+  // Round future dates down to now
+  return moment(Math.min(Date.now(), date.getTime())).fromNow()
+}
+
+export const TimeAgo = (props) => (
+  <Time {...props} format={formatTimeAgo} />
 )
