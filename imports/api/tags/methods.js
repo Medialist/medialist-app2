@@ -88,8 +88,7 @@ const setTaggedItems = (userId, _id, tags, Collection, countField) => {
     _id: _id
   }, {
     $set: {
-      tags: tags,
-      updatedAt: new Date()
+      tags: tags
     }
   })
 
@@ -227,7 +226,6 @@ export const setTags = new ValidatedMethod({
     const countField = `${type.toLowerCase()}Count`
     const Collection = type === 'Contacts' ? Contacts : Campaigns
 
-    setTaggedItems(this.userId, _id, createTagsWhereNecessary(this.userId, tags, type), Collection, countField
-    )
+    setTaggedItems(this.userId, _id, createTagsWhereNecessary(this.userId, tags, type), Collection, countField)
   }
 })

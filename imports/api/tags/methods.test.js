@@ -100,6 +100,22 @@ describe('Tags/batchAddTags', function () {
       })
     })
   })
+
+  it('should not change updatedAt when batch tagging a contact', function () {
+    const updatedAt = contacts[0].updatedAt
+
+    batchAddTags.run.call({
+      userId: users[0]._id
+    }, {
+      type: 'Contacts',
+      slugs: [contacts[0].slug],
+      names: [faker.lorem.word()]
+    })
+
+    const contact = Contacts.findOne({_id: contacts[0]._id})
+
+    assert.equal(updatedAt.getTime(), contact.updatedAt.getTime())
+  })
 })
 
 describe('Tags/set', function () {
@@ -278,5 +294,21 @@ describe('Tags/set', function () {
     // tags on contacts should have been updated
     assert.equal(Contacts.findOne({_id: contacts[0]._id}).tags.find(t => t.slug === 'hot').count, 2)
     assert.equal(Contacts.findOne({_id: contacts[1]._id}).tags.find(t => t.slug === 'hot').count, 2)
+  })
+
+  it('should not change updatedAt when tagging a contact', function () {
+    const updatedAt = contacts[0].updatedAt
+
+    setTags.run.call({
+      userId: users[0]._id
+    }, {
+      type: 'Contacts',
+      _id: contacts[0]._id,
+      tags: [faker.lorem.word()]
+    })
+
+    const contact = Contacts.findOne({_id: contacts[0]._id})
+
+    assert.equal(updatedAt.getTime(), contact.updatedAt.getTime())
   })
 })
