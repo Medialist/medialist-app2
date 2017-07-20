@@ -42,7 +42,7 @@ describe('addContactsToCampaign', function () {
   it('should validate the parameters', function () {
     assert.throws(() => addContactsToCampaign.validate({contactSlugs: ['a']}), /Campaign slug is required/)
     assert.throws(() => addContactsToCampaign.validate({campaignSlug: 'a'}), /Contact slugs is required/)
-    assert.throws(() => addContactsToCampaign.validate({contactSlugs: [1], campaignSlug: 1}), /must be a string/)
+    assert.throws(() => addContactsToCampaign.validate({contactSlugs: [1], campaignSlug: 1}), /must be of type String/)
     assert.doesNotThrow(() => addContactsToCampaign.validate({contactSlugs: ['a'], campaignSlug: 'a'}))
   })
 
@@ -131,15 +131,15 @@ describe('removeContactsFromCampaigns', function () {
 
   it('should validate the parameters', function () {
     assert.throws(() => removeContactsFromCampaigns.validate({}), /Contact slugs is required/)
-    assert.throws(() => removeContactsFromCampaigns.validate({ contactSlugs: 'foo' }), /must be an array/)
-    assert.throws(() => removeContactsFromCampaigns.validate({ contactSlugs: ['foo'], campaignSlugs: 'cam' }), /must be an array/)
+    assert.throws(() => removeContactsFromCampaigns.validate({ contactSlugs: 'foo' }), /must be of type Array/)
+    assert.throws(() => removeContactsFromCampaigns.validate({ contactSlugs: ['foo'], campaignSlugs: 'cam' }), /must be of type Array/)
     assert.doesNotThrow(() => removeContactsFromCampaigns.validate({ contactSlugs: ['foo'], campaignSlugs: ['cam'] }))
   })
 
   // TODO: it should use a deleted flag
   // TODO: it should it remove them from plenty other places too.
   it('should remove the contacts from the campaign', function () {
-    const testUser = Meteor.users.findOne(Meteor.users.insert(user()))
+    const testUser = createTestUsers(1)[0]
 
     const contacts = Array(3)
       .fill(0)
@@ -191,13 +191,13 @@ describe('batchFavouriteContacts', function () {
 
   it('should validate the parameters', function () {
     assert.throws(() => batchFavouriteContacts.validate({}), /Contact slugs is required/)
-    assert.throws(() => batchFavouriteContacts.validate({contactSlugs: [1]}), /must be a string/)
+    assert.throws(() => batchFavouriteContacts.validate({contactSlugs: [1]}), /must be of type String/)
     assert.doesNotThrow(() => batchFavouriteContacts.validate({contactSlugs: ['a']}))
   })
 
   it('should add all contacts to favourites', function () {
-    const testUser = Meteor.users.findOne(Meteor.users.insert(user()))
-    const otherUser = Meteor.users.findOne(Meteor.users.insert(user()))
+    const testUser = createTestUsers(1)[0]
+    const otherUser = createTestUsers(1)[0]
 
     const contacts = Array(4)
       .fill(0)
@@ -241,7 +241,7 @@ describe('batchRemoveContacts', function () {
 
   it('should validate the parameters', function () {
     assert.throws(() => batchRemoveContacts.validate({}), /Ids is required/)
-    assert.throws(() => batchRemoveContacts.validate({ _ids: 'foo' }), /must be an array/)
+    assert.throws(() => batchRemoveContacts.validate({ _ids: 'foo' }), /must be of type Array/)
     assert.doesNotThrow(() => batchRemoveContacts.validate({ _ids: ['kKz46qgWmbGHrznJC'] }))
   })
 
@@ -383,7 +383,7 @@ describe('createContact', function () {
     assert.throws(() => createContact.validate({}), /Details is required/)
     assert.throws(() => createContact.validate({ details: {
       name: 0
-    }}), /must be a string/)
+    }}), /must be of type String/)
     assert.doesNotThrow(() => createContact.validate({ details: {
       name: 'Journaldo',
       avatar: 'https://laser.cat/lrg.png',
@@ -400,10 +400,7 @@ describe('createContact', function () {
   })
 
   it('should add a doc to Contacts and the current user\'s myContacts array', function () {
-    const users = Array(1)
-      .fill(0)
-      .map(() => Meteor.users.insert(user()))
-      .map((_id) => Meteor.users.findOne(_id))
+    const users = createTestUsers(1)
 
     const details = contact()
     const userId = user._id

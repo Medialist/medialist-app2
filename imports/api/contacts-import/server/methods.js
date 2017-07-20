@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
-import { SimpleSchema } from 'meteor/aldeed:simple-schema'
+import SimpleSchema from 'simpl-schema'
 import slugify from '/imports/lib/slug'
 import { findOneUserRef } from '/imports/api/users/users'
 import Contacts from '/imports/api/contacts/contacts'
@@ -12,7 +12,10 @@ export const importContacts = new ValidatedMethod({
 
   validate: new SimpleSchema({
     data: {
-      type: [ContactCreateSchema]
+      type: Array
+    },
+    'data.$': {
+      type: ContactCreateSchema
     }
   }).validator(),
 
@@ -29,7 +32,8 @@ export const importContacts = new ValidatedMethod({
         updated: [],
         failed: []
       },
-      createdBy
+      createdBy,
+      createdAt: new Date()
     }
 
     const _id = ContactsImport.insert(doc)
@@ -75,6 +79,7 @@ function createContact (data, createdBy, importId) {
   data.tags = []
   data.imports = [importId]
   data.createdBy = createdBy
+  data.createdAt = new Date()
 
   const id = Contacts.insert(data)
 

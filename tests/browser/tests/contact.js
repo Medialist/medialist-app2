@@ -22,9 +22,7 @@ const test = {
 
       t.perform((done) => {
         t.db.findUser({
-          profile: {
-            name: this.user.name
-          }
+          'profile.name': this.user.name
         })
         .then((doc) => {
           t.assert.ok(doc.myContacts.find(c => c._id === contact._id))
@@ -39,9 +37,7 @@ const test = {
 
       t.perform((done) => {
         t.db.findUser({
-          profile: {
-            name: this.user.name
-          }
+          'profile.name': this.user.name
         })
         .then((doc) => {
           t.assert.ok(!doc.myContacts.find(c => c._id === contact._id))

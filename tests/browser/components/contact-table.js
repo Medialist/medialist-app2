@@ -34,6 +34,7 @@ module.exports = {
       const checkboxSelector = `[data-id=contacts-table-row-${index}-checkbox-label]`
 
       this
+        .waitForElementVisible(rowSelector)
         .moveToElement(rowSelector, 10, 10)
         .waitForElementVisible(checkboxSelector)
         .click(checkboxSelector)
@@ -64,7 +65,9 @@ module.exports = {
       return this
     },
     isInResults: function (contact) {
-      this.assert.elementPresent(`[data-id=contact-link][data-contact='${contact._id}']`)
+      const selector = `[data-id=contact-link][data-contact='${contact._id}']`
+      this.waitForElementPresent(selector)
+      this.assert.elementPresent(selector)
     },
     isNotInResults: function (contact) {
       this.assert.elementNotPresent(`[data-id=contact-link][data-contact='${contact._id}']`)
@@ -72,6 +75,7 @@ module.exports = {
     assertInSearchResults: function (contact) {
       const selector = `[data-item='${contact._id}']`
 
+      this.waitForElementVisible(selector)
       this.assert.visible(selector)
 
       return this
@@ -84,6 +88,7 @@ module.exports = {
       return this
     },
     assertNoResults: function () {
+      this.waitForElementVisible('@noResults')
       this.assert.visible('@noResults')
 
       return this
@@ -91,6 +96,7 @@ module.exports = {
     assertInPosition: function (contact, index) {
       const selector = `[data-id=contacts-table-row-${index}][data-item='${contact._id}']`
 
+      this.waitForElementVisible(selector)
       this.assert.visible(selector)
 
       return this
