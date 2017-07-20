@@ -461,6 +461,14 @@ export const setTeamMates = new ValidatedMethod({
       campaignSlugs: [campaign.slug]
     })
 
+    userIds.forEach(userId => {
+      // Add this campaign to the teammember's favourites if required
+      addToMyFavourites({
+        userId: userId,
+        campaignSlugs: [campaign.slug]
+      })
+    })
+
     if (!this.isSimulation) {
       Meteor.defer(() => {
         const ids = newUserIds

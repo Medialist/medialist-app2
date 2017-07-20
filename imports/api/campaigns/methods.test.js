@@ -331,6 +331,46 @@ describe('Campaign add team members method', function () {
     const updatedCampaign = Campaigns.findOne(_id)
     assert.equal(updatedCampaign.team.length, 2)
   })
+
+  it('should add campaign to invited users favourites', function () {
+    Meteor.settings.public.authentication = {
+      emailDomains: [
+        'example.com', 'example.net', 'example.org'
+      ]
+    }
+    Meteor.settings.email = {
+      defaultFrom: 'foo@bar.com'
+    }
+
+    const users = createTestUsers(2)
+    const campaigns = createTestCampaigns(1)
+    const email = faker.internet.exampleEmail()
+
+    // current user
+    assert.equal(Meteor.users.findOne({_id: users[0]._id}).myCampaigns.find(ref => ref._id === campaigns[0]._id), undefined)
+
+    // existing user
+    assert.equal(Meteor.users.findOne({_id: users[1]._id}).myCampaigns.find(ref => ref._id === campaigns[0]._id), undefined)
+
+    const payload = {
+      _id: campaigns[0]._id,
+      userIds: [users[1]._id],
+      emails: [email]
+    }
+
+    setTeamMates.run.call({
+      userId: users[0]._id
+    }, payload)
+
+    // current user
+    assert.ok(Meteor.users.findOne({_id: users[0]._id}).myCampaigns.find(ref => ref._id === campaigns[0]._id))
+
+    // existing user
+    assert.ok(Meteor.users.findOne({_id: users[1]._id}).myCampaigns.find(ref => ref._id === campaigns[0]._id))
+
+    // invited-by-email user
+    assert.ok(Meteor.users.findOne({'emails.address': email}).myCampaigns.find(ref => ref._id === campaigns[0]._id))
+  })
 })
 
 describe('Campaign remove method', function () {

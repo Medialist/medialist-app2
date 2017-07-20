@@ -5,7 +5,7 @@ import Tags from '/imports/api/tags/tags'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import { checkAllSlugsExist, cleanSlug } from '/imports/lib/slug'
-import { findOneUserRef } from '/imports/api/users/users'
+import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 
 const createTagsWhereNecessary = (userId, names, type) => {
   const tags = names.map((n) => ({
@@ -75,17 +75,11 @@ const updateTaggedItems = (userId, Collection, countField, slugs, tag) => {
   })
 }
 
-const setTaggedItems = (userId, _id, tags, Collection, countField) => {
-  const item = Collection.findOne({_id: _id}, {tags: 1})
-
-  if (!item) {
-    return
-  }
-
+const setTaggedItems = (userId, item, tags, Collection, countField) => {
   const existingTags = item.tags
 
   Collection.update({
-    _id: _id
+    _id: item._id
   }, {
     $set: {
       tags: tags
@@ -192,6 +186,12 @@ export const batchAddTags = new ValidatedMethod({
 
     tags
       .forEach((tag) => updateTaggedItems(this.userId, Collection, countField, slugs, tag))
+
+    addToMyFavourites({
+      userId: this.userId,
+      campaignSlugs: type === 'Campaigns' ? slugs : [],
+      contactSlugs: type === 'Contacts' ? slugs : []
+    })
   }
 })
 
@@ -226,6 +226,18 @@ export const setTags = new ValidatedMethod({
     const countField = `${type.toLowerCase()}Count`
     const Collection = type === 'Contacts' ? Contacts : Campaigns
 
-    setTaggedItems(this.userId, _id, createTagsWhereNecessary(this.userId, tags, type), Collection, countField)
+    const item = Collection.findOne({_id: _id}, {tags: 1})
+
+    if (!item) {
+      return
+    }
+
+    setTaggedItems(this.userId, item, createTagsWhereNecessary(this.userId, tags, type), Collection, countField)
+
+    addToMyFavourites({
+      userId: this.userId,
+      campaignSlugs: type === 'Campaigns' ? [item.slug] : [],
+      contactSlugs: type === 'Contacts' ? [item.slug] : []
+    })
   }
 })

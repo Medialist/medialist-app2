@@ -5,7 +5,7 @@ import MasterLists from '/imports/api/master-lists/master-lists'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import findUniqueSlug from '/imports/lib/slug'
-import { findOneUserRef } from '/imports/api/users/users'
+import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 
 /*
  * Add an array of Campaigns/Contacts to an array of master lists.
@@ -94,6 +94,12 @@ export const batchAddToMasterLists = new ValidatedMethod({
       }
     }, {
       multi: true
+    })
+
+    addToMyFavourites({
+      userId: this.userId,
+      campaignSlugs: type === 'Campaigns' ? slugs : [],
+      contactSlugs: type === 'Contacts' ? slugs : []
     })
   }
 })
@@ -303,6 +309,12 @@ export const setMasterLists = new ValidatedMethod({
       $set: {
         masterLists: masterListRefs
       }
+    })
+
+    addToMyFavourites({
+      userId: this.userId,
+      campaignSlugs: type === 'Campaigns' ? [itemDocument.slug] : [],
+      contactSlugs: type === 'Contacts' ? [itemDocument.slug] : []
     })
   }
 })

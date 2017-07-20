@@ -116,6 +116,22 @@ describe('Tags/batchAddTags', function () {
 
     assert.equal(updatedAt.getTime(), contact.updatedAt.getTime())
   })
+
+  it('should favourite a contact when batch tagging', function () {
+    assert.equal(users[0].myContacts.find(ref => ref.slug === contacts[0].slug), undefined)
+
+    batchAddTags.run.call({
+      userId: users[0]._id
+    }, {
+      type: 'Contacts',
+      slugs: [contacts[0].slug],
+      names: [faker.lorem.word()]
+    })
+
+    const user = Meteor.users.findOne({_id: users[0]._id})
+
+    assert.ok(user.myContacts.find(ref => ref.slug === contacts[0].slug))
+  })
 })
 
 describe('Tags/set', function () {
@@ -310,5 +326,21 @@ describe('Tags/set', function () {
     const contact = Contacts.findOne({_id: contacts[0]._id})
 
     assert.equal(updatedAt.getTime(), contact.updatedAt.getTime())
+  })
+
+  it('should favourite a contact when tagging', function () {
+    assert.equal(users[0].myContacts.find(ref => ref.slug === contacts[0].slug), undefined)
+
+    setTags.run.call({
+      userId: users[0]._id
+    }, {
+      type: 'Contacts',
+      _id: contacts[0]._id,
+      tags: [faker.lorem.word()]
+    })
+
+    const user = Meteor.users.findOne({_id: users[0]._id})
+
+    assert.ok(user.myContacts.find(ref => ref.slug === contacts[0].slug))
   })
 })

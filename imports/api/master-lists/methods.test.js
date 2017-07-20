@@ -23,8 +23,16 @@ import { createCampaign } from '/imports/api/campaigns/methods'
 import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists } from '/tests/fixtures/server-domain'
 
 describe('batchAddToMasterLists', function () {
+  let users
+  let contacts
+  let contactLists
+
   beforeEach(function () {
     resetDatabase()
+
+    users = createTestUsers(2)
+    contacts = createTestContacts(3)
+    contactLists = createTestContactLists(2)
   })
 
   it('should validate the parameters', function () {
@@ -43,10 +51,6 @@ describe('batchAddToMasterLists', function () {
   })
 
   it('should add all contacts to all Contact Lists', function () {
-    const users = createTestUsers(2)
-    const contacts = createTestContacts(3)
-    const contactLists = createTestContactLists(2)
-
     batchAddToMasterLists.run.call({
       userId: 'alf'
     }, {
@@ -85,6 +89,22 @@ describe('batchAddToMasterLists', function () {
       assert.ok(c.items.find(_id => _id === contacts[0]._id))
       assert.ok(c.items.find(_id => _id === contacts[1]._id))
     })
+  })
+
+  it('should favourite a contact when batch adding to master lists', function () {
+    assert.equal(users[0].myContacts.find(ref => ref.slug === contacts[0].slug), undefined)
+
+    batchAddToMasterLists.run.call({
+      userId: users[0]._id
+    }, {
+      type: 'Contacts',
+      slugs: [contacts[0].slug],
+      masterListIds: [contactLists[0]._id]
+    })
+
+    const user = Meteor.users.findOne({_id: users[0]._id})
+
+    assert.ok(user.myContacts.find(ref => ref.slug === contacts[0].slug))
   })
 })
 
@@ -281,5 +301,21 @@ describe('master-lists-set-masterlists', function () {
 
     const addedMasterList = MasterLists.findOne({_id: masterLists[2]._id})
     assert.equal(addedMasterList.items[0], campaignId, 'item has been added successfully')
+  })
+
+  it('should favourite a campaign when setting master lists', function () {
+    assert.equal(users[0].myCampaigns.find(ref => ref.slug === campaigns[0].slug), undefined)
+
+    setMasterLists.run.call({
+      userId: users[0]._id
+    }, {
+      type: 'Campaigns',
+      item: campaigns[0]._id,
+      masterLists: [masterLists[0]._id]
+    })
+
+    const user = Meteor.users.findOne({_id: users[0]._id})
+
+    assert.ok(user.myCampaigns.find(ref => ref.slug === campaigns[0].slug))
   })
 })
