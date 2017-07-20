@@ -4,7 +4,7 @@ import { Link } from 'react-router'
 import SortableHeader from '/imports/ui/tables/sortable-header'
 import SelectableRow from '/imports/ui/tables/selectable-row'
 import Checkbox from '/imports/ui/tables/checkbox'
-import { TimeFromNow } from '/imports/ui/time/time'
+import { TimeAgo } from '/imports/ui/time/time'
 import YouOrName from '/imports/ui/users/you-or-name'
 import { SquareAvatar } from '/imports/ui/images/avatar'
 import isSameItems from '/imports/ui/lists/is-same-items'
@@ -138,7 +138,7 @@ const CampaignsTable = React.createClass({
                   </td>
                 )}
                 <td className='left-align'>
-                  <span className='semibold'><TimeFromNow date={updatedAt || createdAt} /></span>
+                  <span className='semibold'><TimeAgo date={updatedAt || createdAt} /></span>
                   <span> by <YouOrName user={updatedBy || createdBy} /></span>
                 </td>
               </SelectableRow>
