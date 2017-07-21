@@ -38,7 +38,7 @@ class OutletAutocomplete extends Component {
 
       if (err) {
         this.setState({ suggestions: [] })
-        return console.error('Failed to update suggestions')
+        return console.error('Failed to update suggestions', err)
       }
 
       this.setState({ suggestions })
