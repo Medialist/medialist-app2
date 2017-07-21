@@ -297,6 +297,89 @@ ${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email
 
     t.page.main().logout()
     t.end()
+  },
+
+  'Should suggest job title and company': function (t) {
+    t.createDomain(['contact'], (contact, done) => {
+      const contactsPage = t.page.main()
+        .navigateToContacts(t)
+
+      contactsPage
+        .waitForElementVisible('@newContactButton')
+        .click('@newContactButton')
+        .waitForElementVisible(contactsPage.section.editContactForm.selector)
+
+      const jobTitle = contact.outlets[0].value
+      const jobCompany = contact.outlets[0].label
+
+      contactsPage.section.editContactForm
+        .populateJobTitle(0, jobTitle)
+        .assertJobTitleSuggestion(0, jobTitle)
+
+      contactsPage.section.editContactForm
+        .populateJobCompany(0, jobCompany)
+        .assertJobCompanySuggestion(0, jobCompany)
+
+      // Dismiss the modal
+      t.keys(t.Keys.ENTER)
+      contactsPage.section.editContactForm.cancel()
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should not suggest the same job title/company multiple times': function (t) {
+    t.createDomain(['contact'], (contact1, done) => {
+      const contactsPage = t.page.main()
+        .navigateToContacts(t)
+
+      contactsPage
+        .waitForElementVisible('@newContactButton')
+        .click('@newContactButton')
+        .waitForElementVisible(contactsPage.section.editContactForm.selector)
+
+      const contact2 = domain.contact()
+
+      // Add a new contact with the same first outlet as contact1
+      contact2.outlets = contact1.outlets.slice(0, 1)
+
+      contactsPage.section.editContactForm
+        .populate(contact2)
+        .submit()
+
+      t.page.main().waitForSnackbarMessage('contact-create-success')
+      t.page.main().navigateToContacts(t)
+
+      contactsPage
+        .waitForElementVisible('@newContactButton')
+        .click('@newContactButton')
+        .waitForElementVisible(contactsPage.section.editContactForm.selector)
+
+      const jobTitle = contact1.outlets[0].value
+      const jobCompany = contact1.outlets[0].label
+
+      contactsPage.section.editContactForm
+        .populateJobTitle(0, jobTitle)
+        // (checks the value isn't seen twice in the list)
+        .assertJobTitleSuggestion(0, jobTitle)
+
+      contactsPage.section.editContactForm
+        .populateJobCompany(0, jobCompany)
+        // (checks the value isn't seen twice in the list)
+        .assertJobCompanySuggestion(0, jobCompany)
+
+      // Dismiss the modal
+      t.keys(t.Keys.ENTER)
+      contactsPage.section.editContactForm.cancel()
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   }
 }
 
