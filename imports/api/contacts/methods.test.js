@@ -21,6 +21,8 @@ import {
   batchUpdateStatus
 } from './methods'
 import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists } from '/tests/fixtures/server-domain'
+import toUserRef from '/imports/lib/to-user-ref'
+import StatusMap from '/imports/api/contacts/status'
 
 describe('addContactsToCampaign', function () {
   let users
@@ -49,74 +51,92 @@ describe('addContactsToCampaign', function () {
   it('should add all contacts to the campaign', function () {
     const contactSlugs = [contacts[0].slug, contacts[1].slug]
     const campaignSlug = campaigns[1].slug
-    addContactsToCampaign.run.call({ userId: users[0]._id }, {
+
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
       contactSlugs,
       campaignSlug
     })
 
-    Campaigns.find({
+    const campaign = Campaigns.findOne({
       slug: campaignSlug
-    }).forEach((c) => {
-      assert.deepEqual(c.contacts, {
-        [contacts[0].slug]: 'To Contact',
-        [contacts[1].slug]: 'To Contact'
-      }, 'Campaigns contain contacts')
     })
 
-    Contacts.find({
-      slug: {
-        $in: contactSlugs
-      }
-    }).forEach((c) => {
-      assert.deepEqual(c.campaigns, {
-        [campaignSlug]: {
-          updatedAt: c.campaigns[campaignSlug].updatedAt
-        }
-      }, 'Contacts are in campaigns')
+    assert.equal(Object.keys(campaign.contacts).length, 2)
+    assert.equal(campaign.contacts[contactSlugs[0]].status, 'To Contact')
+    assert.equal(campaign.contacts[contactSlugs[1]].status, 'To Contact')
+
+    const contact0 = Contacts.findOne({
+      slug: contactSlugs[0]
     })
+
+    assert.equal(contact0.campaigns.length, 1)
+    assert.equal(contact0.campaigns[0], campaign.slug)
+
+    const contact1 = Contacts.findOne({
+      slug: contactSlugs[0]
+    })
+
+    assert.equal(contact1.campaigns.length, 1)
+    assert.equal(contact1.campaigns[0], campaign.slug)
   })
 
   it('should merge contacts with existing ones', function () {
+    const users = createTestUsers(1)
+
     Campaigns.update({
       _id: campaigns[2]._id
     }, {
       $set: {
         contacts: {
-          [contacts[0].slug]: 'Hot!'
-        }
-      }
-    })
-    Contacts.update({
-      _id: contacts[0]._id
-    }, {
-      $set: {
-        campaigns: {
-          [campaigns[2].slug]: {
-            updatedAt: new Date()
+          [contacts[0].slug]: {
+            status: StatusMap.hotLead,
+            updatedAt: new Date(),
+            updatedBy: toUserRef(users[0])
           }
         }
       }
     })
+
+    Contacts.update({
+      _id: contacts[0]._id
+    }, {
+      $set: {
+        campaigns: [campaigns[2].slug]
+      }
+    })
+
     const contactSlugs = [contacts[0].slug, contacts[1].slug]
     const campaignSlug = campaigns[2].slug
-    addContactsToCampaign.run.call({ userId: users[0]._id }, {contactSlugs, campaignSlug})
 
-    const campaign = Campaigns.findOne({_id: campaigns[2]._id})
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      contactSlugs,
+      campaignSlug
+    })
 
-    assert.deepEqual(campaign.contacts, {
-      [contacts[0].slug]: 'Hot!',
-      [contacts[1].slug]: 'To Contact'
-    }, 'Campaigns contain merged contacts')
+    const campaign = Campaigns.findOne({
+      _id: campaigns[2]._id
+    })
 
-    assert.deepEqual(Campaigns.findOne({_id: campaigns[0]._id}).contacts, {}, 'Other campaigns are unharmed')
+    assert.equal(campaign.contacts[contacts[0].slug].status, StatusMap.hotLead)
+    assert.equal(campaign.contacts[contacts[1].slug].status, StatusMap.toContact)
+
+    assert.deepEqual(Campaigns.findOne({
+      _id: campaigns[0]._id
+    }).contacts, {}, 'Other campaigns are unharmed')
 
     Contacts.find({_id: {$in: contactSlugs}}).forEach((c) => {
       assert.equal(Object.keys(c.campaigns).length, 1, 'Contacts are in campaigns')
-      assert.ok(c.campaigns[campaigns[1].slug])
-      assert.ok(c.campaigns[campaigns[2].slug])
+      assert.ok(c.campaigns.find(s => s === campaigns[1].slug))
+      assert.ok(c.campaigns.find(s => s === campaigns[2].slug))
     })
 
-    assert.deepEqual(Contacts.findOne({_id: contacts[2]._id}).campaigns, [], 'Other contacts are unharmed')
+    assert.deepEqual(Contacts.findOne({
+      _id: contacts[2]._id
+    }).campaigns, [], 'Other contacts are unharmed')
   })
 })
 
@@ -174,9 +194,7 @@ describe('removeContactsFromCampaigns', function () {
     })
 
     assert.equal(Object.keys(testCampaign.contacts).length, 1)
-    assert.deepEqual(testCampaign.contacts, {
-      [contacts[0].slug]: 'To Contact'
-    })
+    assert.equal(testCampaign.contacts[contacts[0].slug].status, 'To Contact')
   })
 })
 
@@ -356,9 +374,7 @@ describe('batchRemoveContacts', function () {
 
     const campaign0 = Campaigns.findOne({_id: campaigns[0]._id})
     assert.equal(Object.keys(campaign0.contacts).length, 1)
-    assert.deepEqual(campaign0.contacts, {
-      [contacts[1].slug]: 'To Contact'
-    })
+    assert.equal(campaign0.contacts[contacts[1].slug].status, 'To Contact')
 
     assert.equal(Posts.findOne({_id: aPostWithContact0Id}), null)
     assert.ok(Posts.findOne({_id: aPostWithContact1Id}))
@@ -366,7 +382,7 @@ describe('batchRemoveContacts', function () {
 
     const postWithAllContacts = Posts.findOne({_id: aPostWithContact01And2Id})
     assert.equal(postWithAllContacts.contacts.length, 1)
-    assert.deepEqual(postWithAllContacts.contacts, Contacts.findRefs({contactSlugs: [contacts[1].slug]}))
+    assert.equal(postWithAllContacts.contacts[0].slug, contacts[1].slug)
   })
 })
 
@@ -459,12 +475,12 @@ describe('batchUpdateStatus', function () {
     contacts = createTestContacts(3)
     campaigns = createTestCampaigns(1)
 
-    const contactsStatus = contacts
-      .reduce((o, contact) => {
-        o[contact.slug] = 'To Contact'
-        return o
-      }, {})
-    Campaigns.update({_id: campaigns[0]._id}, {$set: {contacts: contactsStatus, updatedAt: new Date()}}, {multi: true})
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      campaignSlug: campaigns[0].slug,
+      contactSlugs: contacts.map(contact => contact.slug)
+    })
   })
 
   it('Should be able to batch update campaign contacts status', function () {
@@ -472,11 +488,17 @@ describe('batchUpdateStatus', function () {
     const contactsSlugs = Object.keys(campaign.contacts)
     const _id = campaign._id
 
-    batchUpdateStatus.run.call({userId: users[0]._id}, { _id, contacts: contactsSlugs, status: 'Completed' })
+    batchUpdateStatus.run.call({
+      userId: users[0]._id
+    }, {
+      _id,
+      contacts: contactsSlugs,
+      status: 'Completed'
+    })
 
     const updatedCampaign = Campaigns.findOne({ _id })
 
-    assert.ok(Object.keys(updatedCampaign.contacts).every((slug) => updatedCampaign.contacts[slug] === 'Completed'))
+    assert.ok(Object.keys(updatedCampaign.contacts).every((slug) => updatedCampaign.contacts[slug].status === 'Completed'))
     assert.ok(moment(campaign.updatedAt).isBefore(updatedCampaign.updatedAt))
     assert.equal(updatedCampaign.updatedBy._id, users[0]._id)
   })
@@ -486,11 +508,17 @@ describe('batchUpdateStatus', function () {
     const contactsSlugs = Object.keys(campaign.contacts)
     const _id = campaign._id
 
-    batchUpdateStatus.run.call({userId: users[0]._id}, { _id, contacts: contactsSlugs, status: 'Completed' })
+    batchUpdateStatus.run.call({
+      userId: users[0]._id
+    }, {
+      _id,
+      contacts: contactsSlugs,
+      status: 'Completed'
+    })
 
     const post = Posts.findOne({type: 'StatusUpdate'})
     assert.equal(post.status, 'Completed')
-    assert.equal(post.contacts.length, Object.keys(contacts).length)
+    assert.equal(post.contacts.length, contactsSlugs.length)
   })
 
   it('Should not over write other campaign contacts status', function () {
@@ -498,15 +526,18 @@ describe('batchUpdateStatus', function () {
     const contactsSlugs = [contacts[0].slug, contacts[1].slug]
     const _id = campaign._id
 
-    batchUpdateStatus.run.call({userId: users[0]._id}, { _id, contacts: contactsSlugs, status: 'Completed' })
-
-    Campaigns.find({ _id })
-      .forEach((c) => {
-      assert.deepEqual(c.contacts, {
-        [contacts[0].slug]: 'Completed',
-        [contacts[1].slug]: 'Completed',
-        [contacts[2].slug]: 'To Contact'
-      })
+    batchUpdateStatus.run.call({
+      userId: users[0]._id
+    }, {
+      _id,
+      contacts: contactsSlugs,
+      status: 'Completed'
     })
+
+    const updatedCampaign = Campaigns.findOne({ _id })
+
+    assert.equal(updatedCampaign.contacts[contacts[0].slug].status, 'Completed')
+    assert.equal(updatedCampaign.contacts[contacts[1].slug].status, 'Completed')
+    assert.equal(updatedCampaign.contacts[contacts[2].slug].status, 'To Contact')
   })
 })

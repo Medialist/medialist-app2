@@ -28,7 +28,7 @@ class StatusSelectorContainer extends React.Component {
 
   render () {
     const { contactSlug, campaign, children, compact, ...props } = this.props
-    const status = campaign.contacts[contactSlug]
+    const status = campaign.contacts[contactSlug].status
     return (
       <StatusSelector
         {...props}

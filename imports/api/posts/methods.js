@@ -23,12 +23,13 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
       slug: campaignSlug
     })
 
-    if (campaign.contacts[contactSlug] && campaign.contacts[contactSlug] === status && !message) {
+    if (campaign.contacts[contactSlug] && campaign.contacts[contactSlug].status === status && !message) {
       return
     }
   }
 
   const createdBy = findOneUserRef(userId)
+  const createdAt = new Date()
   const embed = createEmbed.run.call({
     userId
   }, {
@@ -43,12 +44,13 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
     embeds: embed ? [embed] : [],
     status,
     message,
-    createdBy
+    createdBy,
+    createdAt
   })
 
   const contactUpdates = {
     updatedBy: createdBy,
-    updatedAt: new Date()
+    updatedAt: createdAt
   }
 
   if (campaignSlug) {
@@ -56,13 +58,13 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
       slug: campaignSlug
     }, {
       $set: {
-        [`contacts.${contactSlug}`]: status,
+        [`contacts.${contactSlug}.status`]: status,
+        [`contacts.${contactSlug}.updatedAt`]: createdAt,
+        [`contacts.${contactSlug}.updatedBy`]: createdBy,
         updatedBy: createdBy,
-        updatedAt: new Date()
+        updatedAt: createdAt
       }
     })
-
-    contactUpdates[`campaigns.${campaignSlug}.updatedAt`] = new Date()
   }
 
   Contacts.update({
@@ -186,7 +188,9 @@ export const updatePost = new ValidatedMethod({
           slug: campaign.slug
         }, {
           $set: {
-            [`contacts.${post.contacts[0].slug}`]: status,
+            [`contacts.${post.contacts[0].slug}.status`]: status,
+            [`contacts.${post.contacts[0].slug}.updatedAt`]: updatedAt,
+            [`contacts.${post.contacts[0].slug}.updatedBy`]: userRef,
             updatedBy: userRef,
             updatedAt
           }

@@ -166,7 +166,7 @@ class CampaignContactsPage extends React.Component {
     let contactsTotal
 
     if (statusFilter) {
-      contactsTotal = Object.keys(campaign.contacts).filter((slug) => campaign.contacts[slug] === statusFilter).length
+      contactsTotal = Object.keys(campaign.contacts).filter((slug) => campaign.contacts[slug].status === statusFilter).length
     } else {
       contactsTotal = Object.keys(campaign.contacts).length
     }
@@ -263,26 +263,28 @@ const ContactsTotal = ({ searching, results, total }) => {
 
 // dir is -1 or 1. Returns a sort functon.
 const contactStatusSort = ({contacts}, dir) => (a, b) => {
-  const statusA = contacts[a.slug]
-  const statusB = contacts[b.slug]
+  const statusA = contacts[a.slug].status
+  const statusB = contacts[b.slug].status
+
   return (StatusIndex[statusA] - StatusIndex[statusB]) * dir
 }
 
 const ContactsTableContainer = createContainer((props) => {
   const { campaign, term, sort, statusFilter } = props
-  const contactIds = campaign.contacts ? Object.keys(campaign.contacts) : []
+  const contactSlugs = campaign.contacts ? Object.keys(campaign.contacts) : []
   let query = {
     slug: {
-      $in: contactIds
+      $in: contactSlugs
     }
   }
 
   if (term) {
     const filterRegExp = new RegExp(escapeRegExp(term), 'gi')
+
     query = {
       $and: [{
         slug: {
-          $in: contactIds
+          $in: contactSlugs
         }
       }, {
         $or: [{
@@ -301,7 +303,7 @@ const ContactsTableContainer = createContainer((props) => {
   }).fetch()
 
   if (statusFilter) {
-    contacts = contacts.filter((c) => campaign.contacts[c.slug] === statusFilter)
+    contacts = contacts.filter((c) => campaign.contacts[c.slug].status === statusFilter)
   }
 
   if (sort.status) {
@@ -324,8 +326,16 @@ export default createContainer((props) => {
   return {
     ...props,
     loading,
-    campaign: Campaigns.findOne({ slug: campaignSlug }),
-    contacts: Contacts.find({campaigns: campaignSlug}, {sort: {updatedAt: -1}}).fetch(),
+    campaign: Campaigns.findOne({
+      slug: campaignSlug
+    }),
+    contacts: Contacts.find({
+      campaigns: campaignSlug
+    }, {
+      sort: {
+        updatedAt: -1
+      }
+    }).fetch(),
     contactsAllCount: Contacts.allContactsCount(),
     user: Meteor.user()
   }

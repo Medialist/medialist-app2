@@ -9,7 +9,7 @@ import Posts from '/imports/api/posts/posts'
 import Embeds from '/imports/api/embeds/embeds'
 import { createFeedbackPost, createCoveragePost, createNeedToKnowPost, updatePost } from '/imports/api/posts/methods'
 import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists, createTestEmbeds } from '/tests/fixtures/server-domain'
-import { addContactsToCampaign } from '/imports/api/contacts/methods'
+import { addContactsToCampaign, batchUpdateStatus } from '/imports/api/contacts/methods'
 import toUserRef from '/imports/lib/to-user-ref'
 
 describe('createFeedbackPost', function () {
@@ -54,7 +54,16 @@ describe('createFeedbackPost', function () {
     const status = 'Hot Lead'
     const user = Meteor.users.findOne()
 
-    const postId = createFeedbackPost.run.call({userId: users[0]._id}, {
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      campaignSlug,
+      contactSlugs: [contactSlug]
+    })
+
+    const postId = createFeedbackPost.run.call({
+      userId: users[0]._id
+    }, {
       contactSlug, campaignSlug, message, status
     })
 
@@ -64,34 +73,34 @@ describe('createFeedbackPost', function () {
       _id: postId
     }, {
       fields: {
-        _id: 0,
-        createdAt: 0
+        _id: 0
       }
     })
     assert.deepEqual(post, {
       type: 'FeedbackPost',
       status,
       message,
-      campaigns: [Campaigns.toRef(campaigns[1])],
-      contacts: [Contacts.toRef(contacts[0])],
+      campaigns: [
+        Campaigns.findOneRef(campaigns[1]._id)
+      ],
+      contacts: [
+        Contacts.findOneRef(contacts[0]._id)
+      ],
       embeds: [],
-      createdBy: userRef
+      createdBy: userRef,
+      createdAt: post.createdAt
     })
 
     const campaign = Campaigns.findOne({slug: campaignSlug})
     assert.deepEqual(campaign.updatedBy, userRef)
-    assert.deepEqual(campaign.contacts, {
-      [contactSlug]: status
-    })
+    assert.equal(campaign.contacts[contactSlug].status, status)
+    assert.equal(campaign.contacts[contactSlug].updatedAt.getTime(), post.createdAt.getTime())
+    assert.deepEqual(campaign.contacts[contactSlug].updatedBy, userRef)
 
     const contact = Contacts.findOne({slug: contactSlug})
     assert.deepEqual(contact.updatedBy, userRef)
-    assert.deepEqual(contact.campaigns, {
-      [campaignSlug]: {
-        updatedAt: contact.campaigns[campaignSlug].updatedAt
-      }
-    })
-    assert.ok(contact.campaigns[campaignSlug].updatedAt)
+    assert.equal(contact.campaigns.length, 1)
+    assert.equal(contact.campaigns[0], campaignSlug)
   })
 
   it('should not create a feedback post when there is no message and the contact already has the passed status', function () {
@@ -100,21 +109,30 @@ describe('createFeedbackPost', function () {
     const status = 'Hot Lead'
     const user = Meteor.users.findOne()
 
-    const campaign = Campaigns.update({slug: campaignSlug}, {
-      $set: {
-        contacts: {
-          [contactSlug]: status
-        }
-      }
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      campaignSlug,
+      contactSlugs: [contactSlug]
     })
 
-    assert.equal(Posts.find({}).count(), 3)
+    batchUpdateStatus.run.call({
+      userId: users[0]._id
+    }, {
+      _id: campaigns[1]._id,
+      contacts: [contactSlug],
+      status: status
+    })
 
-    createFeedbackPost.run.call({userId: user._id}, {
+    assert.equal(Posts.find({}).count(), 5)
+
+    createFeedbackPost.run.call({
+      userId: user._id
+    }, {
       contactSlug, campaignSlug, status
     })
 
-    assert.equal(Posts.find({}).count(), 3)
+    assert.equal(Posts.find({}).count(), 5)
   })
 })
 
@@ -159,6 +177,13 @@ describe('createCoveragePost', function () {
     const message = 'Tip top'
     const status = 'Hot Lead'
 
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      campaignSlug,
+      contactSlugs: [contactSlug]
+    })
+
     const postId = createCoveragePost.run.call({
       userId: users[0]._id
     }, {
@@ -171,34 +196,34 @@ describe('createCoveragePost', function () {
       _id: postId
     }, {
       fields: {
-        _id: 0,
-        createdAt: 0
+        _id: 0
       }
     })
     assert.deepEqual(post, {
       type: 'CoveragePost',
       status,
       message,
-      campaigns: [Campaigns.toRef(campaigns[1])],
-      contacts: [Contacts.toRef(contacts[0])],
+      campaigns: [
+        Campaigns.findOneRef(campaigns[1]._id)
+      ],
+      contacts: [
+        Contacts.findOneRef(contacts[0]._id)
+      ],
       embeds: [],
-      createdBy: userRef
+      createdBy: userRef,
+      createdAt: post.createdAt
     })
 
     const campaign = Campaigns.findOne({slug: campaignSlug})
     assert.deepEqual(campaign.updatedBy, userRef)
-    assert.deepEqual(campaign.contacts, {
-      [contactSlug]: status
-    })
+    assert.equal(campaign.contacts[contactSlug].status, status)
+    assert.equal(campaign.contacts[contactSlug].updatedAt.getTime(), post.createdAt.getTime())
+    assert.deepEqual(campaign.contacts[contactSlug].updatedBy, userRef)
 
     const contact = Contacts.findOne({slug: contactSlug})
     assert.deepEqual(contact.updatedBy, userRef)
-    assert.deepEqual(contact.campaigns, {
-      [campaignSlug]: {
-        updatedAt: contact.campaigns[campaignSlug].updatedAt
-      }
-    })
-    assert.ok(contact.campaigns[campaignSlug].updatedAt)
+    assert.equal(contact.campaigns.length, 1)
+    assert.equal(contact.campaigns[0], campaignSlug)
   })
 })
 
@@ -257,7 +282,9 @@ describe('createNeedToKnowPost', function () {
       message,
       campaigns: [],
       embeds: [],
-      contacts: [Contacts.toRef(contacts[0])],
+      contacts: [
+        Contacts.findOneRef(contacts[0]._id)
+      ],
       createdBy: userRef
     })
 
@@ -328,7 +355,7 @@ describe('updateFeedbackPost', function () {
 
     assert.equal(updatedPost.status, 'Contacted')
     assert.equal(updatedPost.message, 'test update2')
-    assert.equal(campaign.contacts[contacts[0].slug], 'Contacted')
+    assert.equal(campaign.contacts[contacts[0].slug].status, 'Contacted')
   })
 })
 

@@ -31,8 +31,8 @@ const test = {
         })
         .then((doc) => {
           t.assert.equal(Object.keys(doc.contacts).length, 2)
-          t.assert.equal(doc.contacts[contact1.slug], 'To Contact')
-          t.assert.equal(doc.contacts[contact2.slug], 'To Contact')
+          t.assert.equal(doc.contacts[contact1.slug].status, 'To Contact')
+          t.assert.equal(doc.contacts[contact2.slug].status, 'To Contact')
 
           done()
         })
@@ -64,7 +64,7 @@ const test = {
             _id: campaign._id
           })
           .then((doc) => {
-            t.assert.equal(doc.contacts[contact1.slug], 'Hot Lead')
+            t.assert.equal(doc.contacts[contact1.slug].status, 'Hot Lead')
 
             done()
           })
@@ -303,9 +303,7 @@ const test = {
 
         t.perform((done) => {
           t.db.findContacts({
-            [`campaigns.${campaign.slug}`]: {
-              $exists: true
-            }
+            campaigns: campaign.slug
           })
           .then((docs) => {
             t.assert.equal(docs.length, 1)
@@ -361,8 +359,8 @@ const test = {
           })
           .then((doc) => {
             t.assert.equal(Object.keys(doc.contacts).length, 2)
-            t.assert.equal(doc.contacts[contact1.slug], 'To Contact')
-            t.assert.equal(doc.contacts[contact2.slug], 'To Contact')
+            t.assert.equal(doc.contacts[contact1.slug].status, 'To Contact')
+            t.assert.equal(doc.contacts[contact2.slug].status, 'To Contact')
 
             done()
           })

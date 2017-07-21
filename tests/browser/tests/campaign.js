@@ -134,34 +134,6 @@ const test = {
     t.end()
   },
 
-  'Should add contact to campaign from contact page': function (t) {
-    t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
-      const contactPage = t.page.contact()
-        .navigate(contact)
-
-      contactPage.section.info
-        .waitForElementVisible('@editContactCampaignsButton')
-        .click('@editContactCampaignsButton')
-
-      const campaignSelectorModal = contactPage.section.campaignSelectorModal
-
-      contactPage.waitForElementVisible(campaignSelectorModal.selector)
-
-      campaignSelectorModal
-        .searchForCampaign(campaign)
-        .selectSearchResult(campaign)
-
-      t.page.main().waitForSnackbarMessage('batch-add-contacts-to-campaign-success')
-
-      contactPage.section.info.assert.attributeContains('[data-id=contact-campaigns-list] a', 'href', `/campaign/${campaign.slug}`)
-
-      done()
-    })
-
-    t.page.main().logout()
-    t.end()
-  },
-
   'Should add campaign to campaign list from campaign page': function (t) {
     t.createDomain(['campaign', 'campaignList'], (campaign, campaignList, done) => {
       const campaignPage = t.page.campaign()
@@ -397,9 +369,6 @@ const test = {
           // should have updated the contact updatedAt
           t.assert.ok(updatedContact.updatedAt.getTime() > originalContact.updatedAt.getTime())
 
-          // and the link to the campaign
-          t.assert.ok(updatedContact.campaigns[campaign.slug].updatedAt.getTime() > originalContact.campaigns[campaign.slug].updatedAt.getTime())
-
           done()
         })
       })
@@ -408,9 +377,15 @@ const test = {
         t.db.findCampaign({
           name: campaign.name
         })
-        .then((doc) => {
+        .then((updatedCampaign) => {
           // should have updated the updatedAt value for the contact on the campaign
-          t.assert.equal(doc.contacts[contact1.slug].toLowerCase().replace(/\s+/g, '-'), newStatus)
+          t.assert.equal(updatedCampaign.contacts[contact1.slug].status.toLowerCase().replace(/\s+/g, '-'), newStatus)
+
+          // should have updated the campaign updatedAt
+          t.assert.ok(updatedCampaign.updatedAt.getTime() > originalCampaign.updatedAt.getTime())
+
+          // and the link to the contact
+          t.assert.ok(updatedCampaign.contacts[contact1.slug].updatedAt.getTime() > originalCampaign.contacts[contact1.slug].updatedAt.getTime())
 
           done()
         })

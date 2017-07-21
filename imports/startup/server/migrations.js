@@ -272,4 +272,53 @@ Migrations.add({
   }
 })
 
+Migrations.add({
+  version: 9,
+  name: 'Make campaign contacts store the updated date and contact campaigns a lists of campaign slugs',
+  up: () => {
+    Campaigns.find()
+      .fetch()
+      .forEach(campaign => {
+        const contacts = {}
+
+        Object.keys(campaign.contacts).forEach(slug => {
+          const contact = Contacts.findOne({
+            slug: slug
+          })
+
+          if (!contact) {
+            console.warn(`Could not find contact for slug ${slug}`)
+            return
+          }
+
+          contacts[slug] = {
+            status: campaign.contacts[slug],
+            updatedAt: contact.campaigns[campaign.slug] ? contact.campaigns[campaign.slug].updatedAt : campaign.updatedAt,
+            updatedBy: campaign.updatedBy
+          }
+        })
+
+        Campaigns.update({
+          _id: campaign._id
+        }, {
+          $set: {
+            contacts: contacts
+          }
+        })
+      })
+
+    Contacts.find()
+      .fetch()
+      .forEach(contact => {
+        Contacts.update({
+          _id: contact._id
+        }, {
+          $set: {
+            campaigns: Object.keys(contact.campaigns)
+          }
+        })
+      })
+  }
+})
+
 Meteor.startup(() => Migrations.migrateTo('latest'))

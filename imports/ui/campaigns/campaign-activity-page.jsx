@@ -117,7 +117,9 @@ const CampaignActivityPage = React.createClass({
       contactPrefillData
     } = this.state
 
-    if (!campaign) return null
+    if (!campaign) {
+      return null
+    }
 
     return (
       <div>
@@ -186,18 +188,14 @@ export default createContainer((props) => {
     loading,
     campaign,
     contacts: Contacts.find({
-      [`campaigns.${campaignSlug}`]: {
-        $exists: true
-      }
+      campaigns: campaignSlug
     }, {
       sort: {
         [`campaigns.${campaignSlug}.updatedAt`]: -1
       }
     }).fetch(),
     contactsCount: Contacts.find({
-      [`campaigns.${campaignSlug}`]: {
-        $exists: true
-      }
+      campaigns: campaignSlug
     }).count(),
     contactsAllCount: Contacts.allContactsCount(),
     teamMates: campaign && campaign.team,

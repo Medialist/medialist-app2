@@ -7,7 +7,7 @@ import { updateCampaign } from '/imports/api/campaigns/methods'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import StatusStats from '/imports/ui/contacts/status-stats'
 
-const CamapignSummary = withSnackbar(React.createClass({
+const CampaignSummary = withSnackbar(React.createClass({
   propTypes: {
     snackbar: PropTypes.object,
     campaign: PropTypes.object,
@@ -31,7 +31,7 @@ const CamapignSummary = withSnackbar(React.createClass({
     const { onAvatarError, onAvatarChange } = this
     const { campaign, statusFilter, onStatusClick } = this.props
     const { contacts, name, avatar, client } = campaign
-    const statuses = values(contacts || [])
+    const statuses = values(Object.keys(contacts).map(slug => contacts[slug].status) || [])
     return (
       <div className='flex items-center pt4 pb2 pr2 pl6'>
         <div className='flex-auto'>
@@ -51,4 +51,4 @@ const CamapignSummary = withSnackbar(React.createClass({
   }
 }))
 
-export default CamapignSummary
+export default CampaignSummary

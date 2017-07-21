@@ -46,10 +46,11 @@ export const addContactsToCampaign = new ValidatedMethod({
     const updatedBy = findOneUserRef(this.userId)
     const updatedAt = new Date()
 
-    const campaign = Campaigns.findOne(
-      { slug: campaignSlug },
-      { contacts: 1 }
-    )
+    const campaign = Campaigns.findOne({
+      slug: campaignSlug
+    }, {
+      contacts: 1
+    })
 
     // Add the things to the users my<Contact|Campaigns> list
     addToMyFavourites({
@@ -65,9 +66,14 @@ export const addContactsToCampaign = new ValidatedMethod({
       return
     }
 
-    const newContactRefs = newContactSlugs.reduce((ref, slug) => {
-      ref[slug] = Contacts.status.toContact
-      return ref
+    const newContactRefs = newContactSlugs.reduce((refs, slug) => {
+      refs[slug] = {
+        status: Contacts.status.toContact,
+        updatedAt: updatedAt,
+        updatedBy: updatedBy
+      }
+
+      return refs
     }, {})
 
     // Merge incoming contacts with existing.
@@ -88,10 +94,10 @@ export const addContactsToCampaign = new ValidatedMethod({
         $in: newContactSlugs
       }
     }, {
+      $addToSet: {
+        campaigns: campaignSlug
+      },
       $set: {
-        [`campaigns.${campaignSlug}`]: {
-          updatedAt
-        },
         updatedBy,
         updatedAt
       }
@@ -148,18 +154,16 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
     const updatedBy = findOneUserRef(this.userId)
     const updatedAt = new Date()
 
-    // a map of contacts.<slug> properties to delete from the campaign
-    const $unset = contactSlugs.reduce(($unset, slug) => {
-      $unset[`contacts.${slug}`] = ''
-      return $unset
-    }, {})
-
     Campaigns.update({
       slug: {
         $in: campaignSlugs
       }
     }, {
-      $unset,
+      $unset: contactSlugs.reduce(($unset, slug) => {
+        $unset[`contacts.${slug}`] = ''
+
+        return $unset
+      }, {}),
       $set: {
         updatedBy,
         updatedAt
@@ -174,8 +178,8 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
           $in: contactSlugs
         }
       }, {
-        $unset: {
-          [`campaigns.${campaignSlug}`]: ''
+        $pull: {
+          campaigns: campaignSlug
         },
         $set: {
           updatedBy,
@@ -340,7 +344,7 @@ export const createContact = new ValidatedMethod({
     // Merge the provided details with any missing values
     const contact = Object.assign({}, details, {
       slug,
-      campaigns: {},
+      campaigns: [],
       masterLists: [],
       tags: [],
       imports: [],
@@ -505,27 +509,57 @@ export const batchUpdateStatus = new ValidatedMethod({
 
     checkAllSlugsExist(contacts, Contacts)
 
+    // only keep contacts that are on the campaign
+    contacts = contacts.filter(slug => !!campaign.contacts[slug])
+
+    if (!contacts.length) {
+      return
+    }
+
+    const updatedBy = findOneUserRef(this.userId)
+    const updatedAt = new Date()
+
     const campaignContactsStatus = contacts.reduce((o, slug) => {
-      o[slug] = status
+      o[slug] = {
+        status,
+        updatedAt,
+        updatedBy
+      }
+
       return o
     }, {})
 
-    const update = {
+    // update campaign contact updatedAt/updatedBy
+    Campaigns.update({
+      _id
+    }, {
       $set: {
         contacts: Object.assign({}, campaign.contacts, campaignContactsStatus),
-        updatedBy: findOneUserRef(this.userId),
-        updatedAt: new Date()
+        updatedBy,
+        updatedAt
       }
-    }
+    })
 
-    Campaigns.update({ _id }, update)
+    // update contact updatedAt/updatedBy
+    Contacts.update({
+      slug: {
+        $in: contacts
+      }
+    }, {
+      $set: {
+        updatedBy,
+        updatedAt
+      }
+    }, {
+      multi: true
+    })
 
     Posts.create({
       type: 'StatusUpdate',
       contactSlugs: contacts,
       campaignSlugs: [campaign.slug],
       status: status,
-      createdBy: findOneUserRef(this.userId)
+      createdBy: updatedBy
     })
   }
 })

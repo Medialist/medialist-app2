@@ -15,7 +15,7 @@ const StatusStats = ({statuses, active, onStatusClick, ...props}) => {
         return (
           <div
             key={status}
-            onClick={() => onStatusClick(isActive ? false : status)}
+            onClick={() => onStatusClick(isActive ? null : status)}
             className={`inline-block pointer px3 border-left hover-color-trigger ${i > 0 ? 'border-gray80' : 'border-transparent'}`}>
             <div className={`${isActive ? 'blue' : 'gray20'} hover-blue normal center pb1`} style={{fontSize: 20}}>
               {counts[status] || 0}

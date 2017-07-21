@@ -68,9 +68,9 @@ module.exports = (prefix) => ({
 
         // Often hidden in ellipsis - workaround get via textContent instead getText
         // https://github.com/seleniumhq/selenium-google-code-issue-archive/issues/5773
-        this.getAttribute(outletSelector, 'textContent', ({ value }) => {
+        this.getAttribute(outletSelector, 'textContent', (content) => {
           this.assert.ok(
-            (value || '').indexOf(data.contactOutlet) > -1,
+            (content.value || '').indexOf(data.contactOutlet) > -1,
             `Testing if element <${outletSelector}> contains text: "${data.contactOutlet}".`
           )
         })

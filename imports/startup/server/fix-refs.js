@@ -15,7 +15,7 @@ Meteor.startup(() => {
   })
 
   Contacts.find().fetch().forEach(contact => {
-    validateHashOfSlugs(contact, 'campaigns', Contacts, Campaigns, 'contact', 'campaign')
+    validateListOfSlugs(contact, 'campaigns', Contacts, Campaigns, 'contact', 'campaign')
     validateListOfRefs(contact, 'masterLists', Contacts, MasterLists, 'contact', 'masterList')
     validateListOfRefs(contact, 'tags', Contacts, Tags, 'contact', 'tag')
   })
@@ -126,6 +126,26 @@ const validateHashOfSlugs = (doc, hash, docCollection, refCollection, docType, r
       }, {
         $unset: {
           [`${hash}.${slug}`]: ''
+        }
+      })
+
+      return
+    }
+  })
+}
+
+const validateListOfSlugs = (doc, list, docCollection, refCollection, docType, refType) => {
+  doc[list].forEach(slug => {
+    const ref = refCollection.findOne({slug: slug})
+
+    if (!ref) {
+      console.warn(`${docType} ${doc._id} has non-existent ${refType} with slug ${slug}`)
+
+      docCollection.update({
+        _id: doc._id
+      }, {
+        $pull: {
+          [list]: slug
         }
       })
 

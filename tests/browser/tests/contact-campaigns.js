@@ -194,9 +194,7 @@ const test = {
 
       t.perform((done) => {
         t.db.findContacts({
-          campaigns: {
-            $in: [campaign.slug]
-          }
+          campaigns: campaign.slug
         })
         .then((docs) => {
           t.assert.equal(docs.length, 0)
@@ -242,7 +240,7 @@ const test = {
             _id: campaign._id
           })
           .then((doc) => {
-            t.assert.equal(doc.contacts[contact.slug], 'Hot Lead')
+            t.assert.equal(doc.contacts[contact.slug].status, 'Hot Lead')
 
             done()
           })

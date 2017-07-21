@@ -41,9 +41,7 @@ Meteor.publish('contact-page', function (slug) {
       }
     }),
     Campaigns.find({
-      [`contact.${slug}`]: {
-        $exists: true
-      }
+      'contacts.slug': slug
     })
   ]
 })
@@ -57,7 +55,7 @@ Meteor.publish('contacts-by-campaign', function (campaignSlug, limit) {
 
   const opts = {
     sort: {
-      [`campaigns.${campaignSlug}.updatedAt`]: -1
+      'campaigns.updatedAt': -1
     },
     fields: {
       importedData: 0
@@ -70,8 +68,6 @@ Meteor.publish('contacts-by-campaign', function (campaignSlug, limit) {
   }
 
   return Contacts.find({
-    [`campaigns.${campaignSlug}`]: {
-      $exists: true
-    }
+    campaigns: campaignSlug
   }, opts)
 })

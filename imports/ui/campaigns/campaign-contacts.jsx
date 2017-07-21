@@ -12,7 +12,7 @@ const CampaignContacts = ({campaign, contacts, onSelectContact}) => {
     <div>
       {contacts.map((contact) => {
         const { slug } = contact
-        const status = campaign.contacts[slug]
+        const status = campaign.contacts[slug].status
         return (
           <div
             className={'flex items-center pointer border-bottom border-top border-transparent hover-border-gray80 pl4 hover-bg-gray90 hover-opacity-trigger active-bg-green-light'}

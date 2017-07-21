@@ -107,12 +107,6 @@ export const ContactCreateSchema = new SimpleSchema({
   }
 })
 
-export const ContactCampaignSchema = new SimpleSchema({
-  updatedAt: {
-    type: Date
-  }
-})
-
 export const ContactSchema = new SimpleSchema({
   slug: {
     type: String,
@@ -120,19 +114,10 @@ export const ContactSchema = new SimpleSchema({
   },
   // References to other collections
   campaigns: {
-    type: Object,
-    blackbox: true,
-    custom: function () {
-      // ugh https://github.com/aldeed/meteor-simple-schema/issues/244
-      Object.keys(this.value).forEach(key => {
-        const context = ContactCampaignSchema.newContext()
-        context.validate(this.value[key])
-
-        if (!context.isValid()) {
-          throw context.validationErrors().pop()
-        }
-      })
-    }
+    type: Array
+  },
+  'campaigns.$': {
+    type: String
   },
   masterLists: {
     type: Array
