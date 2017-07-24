@@ -3,6 +3,7 @@ import { check } from 'meteor/check'
 import { Counter } from 'meteor/natestrauser:publish-performant-counts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/server/contacts'
+import CampaignContacts from '/imports/api/campaign-contacts/campaign-contacts'
 import { publishAllForLoggedInUser } from '/imports/lib/publish-all'
 import * as Queries from '/imports/api/contacts/queries'
 
@@ -55,10 +56,7 @@ Meteor.publish('contacts-by-campaign', function (campaignSlug, limit) {
 
   const opts = {
     sort: {
-      'campaigns.updatedAt': -1
-    },
-    fields: {
-      importedData: 0
+      'updatedAt': -1
     }
   }
 
@@ -67,7 +65,7 @@ Meteor.publish('contacts-by-campaign', function (campaignSlug, limit) {
     opts.limit = limit
   }
 
-  return Contacts.find({
-    campaigns: campaignSlug
+  return CampaignContacts.find({
+    campaign: campaignSlug
   }, opts)
 })

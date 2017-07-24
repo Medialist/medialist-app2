@@ -5,7 +5,7 @@ import { createFeedbackPost } from '/imports/api/posts/methods'
 
 class StatusSelectorContainer extends React.Component {
   static propTypes = {
-    contactSlug: PropTypes.string.isRequired,
+    contact: PropTypes.object.isRequired,
     campaign: PropTypes.object.isRequired,
     children: PropTypes.func.isRequired,
     compact: PropTypes.bool,
@@ -20,21 +20,21 @@ class StatusSelectorContainer extends React.Component {
 
   onStatusChange = (event) => {
     createFeedbackPost.call({
-      contactSlug: this.props.contactSlug,
+      contactSlug: this.props.contact.slug,
       campaignSlug: this.props.campaign.slug,
       status: event.target.value
     })
   }
 
   render () {
-    const { contactSlug, campaign, children, compact, ...props } = this.props
-    const status = campaign.contacts[contactSlug].status
+    const { contact, children, compact, ...props } = this.props
+
     return (
       <StatusSelector
         {...props}
-        status={status}
+        status={contact.status}
         onChange={this.onStatusChange}
-        children={children(status)}
+        children={children(contact.status)}
         compact={compact}
         dropdown={this.props.dropdown}
       />

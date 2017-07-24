@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Modal from '/imports/ui/navigation/modal'
-import { removeContactsFromCampaigns } from '/imports/api/contacts/methods'
+import { removeContactsFromCampaigns } from '/imports/api/campaign-contacts/methods'
 import AvatarList from '/imports/ui/lists/avatar-list'
 
 class RemoveContact extends React.Component {

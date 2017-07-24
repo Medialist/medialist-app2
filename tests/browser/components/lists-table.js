@@ -23,7 +23,7 @@ module.exports = (dataId) => ({
       return this
     },
     updateListName: function (list, name) {
-      const selector = `[data-item='${list._id}']`
+      const selector = `[data-item='${list.slug}']`
 
       this
         .waitForElementVisible(`${selector} [data-id=edit-list-button]`)
@@ -37,7 +37,7 @@ module.exports = (dataId) => ({
       return this
     },
     openDeleteListsModal: function (list) {
-      const selector = `[data-item='${list._id}']`
+      const selector = `[data-item='${list.slug}']`
 
       this
         .waitForElementVisible(`${selector} [data-id=delete-list-button]`)
@@ -46,7 +46,7 @@ module.exports = (dataId) => ({
       return this
     },
     assertNotInList: function (list) {
-      const selector = `[data-item='${list._id}']`
+      const selector = `[data-item='${list.slug}']`
 
       this.assert.elementNotPresent(selector)
 

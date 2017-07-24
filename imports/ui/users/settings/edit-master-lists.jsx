@@ -199,13 +199,13 @@ const EmptyMasterLists = ({type, creating, onCreate, showCreateMasterListInput})
 
 const MasterListsItem = (props) => {
   const {masterlist, isEditing, onDeleteMasterList, onUpdate, onChange, editing, state, type} = props
-  const { _id, items } = masterlist
+  const { _id, slug, items } = masterlist
   const triggerUpdate = (_id, key) => { key === 'Enter' || key === 'Tab' ? onUpdate(_id) : null }
   const disabled = _id !== editing
   const Icon = type === 'Campaigns' ? MenuCampaignIcon : MenuContactIcon
 
   return (
-    <div className='flex justify-start items-center p2 my1 border border-gray80 bg-gray90 gray60' data-item={_id}>
+    <div className='flex justify-start items-center p2 my1 border border-gray80 bg-gray90 gray60' data-item={slug}>
       <input
         ref={(input) => input && editing === _id && input.focus()}
         className='input placeholder-gray60 max-width-sm ml2'

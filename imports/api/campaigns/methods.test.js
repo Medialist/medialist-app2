@@ -13,7 +13,7 @@ import toUserRef from '/imports/lib/to-user-ref'
 import { campaign, user } from '/tests/browser/fixtures/domain'
 import { findOneUserRef } from '/imports/api/users/users'
 import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists } from '/tests/fixtures/server-domain'
-import { addContactsToCampaign } from '/imports/api/contacts/methods'
+import { addContactsToCampaign } from '/imports/api/campaign-contacts/methods'
 
 describe('Campaigns/batchFavouriteCampaigns', function () {
   beforeEach(function () {

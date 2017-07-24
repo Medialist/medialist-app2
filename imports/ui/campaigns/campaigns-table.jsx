@@ -28,7 +28,9 @@ const CampaignsTable = React.createClass({
     // returns true while subscriptionts are still syncing data.
     loading: PropTypes.bool,
     // true if we are searching
-    searching: PropTypes.bool
+    searching: PropTypes.bool,
+    // If this is a contact campaigns table
+    contact: PropTypes.object
   },
 
   onSelectAllChange () {
@@ -58,7 +60,7 @@ const CampaignsTable = React.createClass({
   },
 
   render () {
-    const { sort, onSortChange, campaigns, selections, loading, contactSlug } = this.props
+    const { sort, onSortChange, campaigns, selections, loading, contact } = this.props
 
     if (!loading && !campaigns.length) {
       return <p className='p4 mb2 f-xl semibold center' data-id='campaign-table-empty'>No campaigns found</p>
@@ -92,7 +94,7 @@ const CampaignsTable = React.createClass({
               Client
             </SortableHeader>
             <th className='left-align' style={{width: '40%'}}>Key Message</th>
-            {contactSlug && (
+            {contact && (
               <SortableHeader
                 className='left-align'
                 sortDirection={sort['status']}
@@ -113,7 +115,7 @@ const CampaignsTable = React.createClass({
             const { _id, slug, name, avatar, client, purpose, updatedAt, updatedBy, createdAt, createdBy } = campaign
             const clientName = client && client.name
             return (
-              <SelectableRow data={campaign} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id} data-id={`campaigns-table-row-${index}`} data-item={_id}>
+              <SelectableRow data={campaign} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id} data-id={`campaigns-table-row-${index}`} data-item={slug}>
                 <td className='left-align'>
                   <Link to={`/campaign/${slug}`} className='nowrap' data-id='campaign-link'>
                     <SquareAvatar avatar={avatar} name={name} />
@@ -126,12 +128,12 @@ const CampaignsTable = React.createClass({
                 <td className='left-align truncate'>
                   {purpose || <span className='gray60'>No key message</span>}
                 </td>
-                {contactSlug && (
+                {contact && (
                   <td className='left-align' style={{overflow: 'visible'}}>
                     <StatusSelectorContainer
                       buttonClassName='btn btn-no-border bg-transparent'
                       buttonStyle={{marginLeft: 0}}
-                      contactSlug={contactSlug}
+                      contact={contact}
                       campaign={campaign}
                       children={(status) => <StatusLabel name={status} />}
                     />

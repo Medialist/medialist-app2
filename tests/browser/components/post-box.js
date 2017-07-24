@@ -39,16 +39,16 @@ module.exports = {
           .click('@selectCampaignButton')
           .waitForElementVisible('@searchForCampaignInput')
           .setValue('@searchForCampaignInput', campaign.name)
-          .waitForElementVisible(`[data-type=campaign-search-result][data-id=campaign-${campaign._id}]`)
-          .click(`[data-id=campaign-${campaign._id}]`)
+          .waitForElementVisible(`[data-type=campaign-search-result][data-id=campaign-${campaign.slug}]`)
+          .click(`[data-id=campaign-${campaign.slug}]`)
       } else {
         this
           .waitForElementVisible('@selectContactButton')
           .click('@selectContactButton')
           .waitForElementVisible('@searchForContactInput')
           .setValue('@searchForContactInput', contact.name)
-          .waitForElementVisible(`[data-type=campaign-contact-search-result][data-id=campaign-contact-${contact._id}]`)
-          .click(`[data-id=campaign-contact-${contact._id}]`)
+          .waitForElementVisible(`[data-type=campaign-contact-search-result][data-id=campaign-contact-${contact.slug}]`)
+          .click(`[data-id=campaign-contact-${contact.slug}]`)
       }
 
       this
@@ -91,16 +91,16 @@ module.exports = {
           .click('@selectCampaignButton')
           .waitForElementVisible('@searchForCampaignInput')
           .setValue('@searchForCampaignInput', campaign.name)
-          .waitForElementVisible(`[data-id=campaign-${campaign._id}]`)
-          .click(`[data-id=campaign-${campaign._id}]`)
+          .waitForElementVisible(`[data-id=campaign-${campaign.slug}]`)
+          .click(`[data-id=campaign-${campaign.slug}]`)
       } else {
         this
           .waitForElementVisible('@selectContactButton')
           .click('@selectContactButton')
           .waitForElementVisible('@searchForContactInput')
           .setValue('@searchForContactInput', contact.name)
-          .waitForElementVisible(`[data-id=campaign-contact-${contact._id}]`)
-          .click(`[data-id=campaign-contact-${contact._id}]`)
+          .waitForElementVisible(`[data-id=campaign-contact-${contact.slug}]`)
+          .click(`[data-id=campaign-contact-${contact.slug}]`)
       }
 
       this

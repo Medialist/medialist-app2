@@ -271,7 +271,7 @@ ${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email
 
         const assertResult = (resultCampaign) => {
           contacts.forEach((campaign, i) => {
-            const selector = `[data-item='${campaign._id}']`
+            const selector = `[data-item='${campaign.slug}']`
             if (campaign === resultCampaign) {
               contactTable.waitForElementPresent(selector)
             } else {

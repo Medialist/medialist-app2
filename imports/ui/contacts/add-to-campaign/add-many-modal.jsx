@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router'
 import Modal from '/imports/ui/navigation/modal'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
-import { addContactsToCampaign } from '/imports/api/contacts/methods'
+import { addContactsToCampaign } from '/imports/api/campaign-contacts/methods'
 import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
 import CampaignSearch from '/imports/ui/contacts/add-to-campaign/campaign-search'
 
@@ -88,4 +88,3 @@ class AddManyContactsToCampaignContainer extends React.Component {
 export default withSnackbar(Modal(AddManyContactsToCampaignContainer, {
   'data-id': 'campaign-selector-modal'
 }))
-

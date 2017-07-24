@@ -3,8 +3,7 @@ import CampaignPreview from '/imports/ui/campaigns/campaign-preview'
 import StatusLabel from '/imports/ui/feedback/status-label'
 
 export default ({campaign, contact}) => {
-  const slug = contact ? contact.slug : null
-  const status = slug && campaign.contacts ? campaign.contacts[slug].status : null
+  const status = contact ? contact.status : null
 
   return (
     <div className='flex items-center'>

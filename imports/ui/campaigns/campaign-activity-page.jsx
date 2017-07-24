@@ -17,6 +17,7 @@ import { createFeedbackPost, createCoveragePost } from '/imports/api/posts/metho
 import { CreateContactModal } from '/imports/ui/contacts/edit-contact'
 import AddContact from '/imports/ui/campaigns/add-contact'
 import EditTeam from '/imports/ui/campaigns/edit-team'
+import CampaignContacts from '/imports/api/campaign-contacts/campaign-contacts'
 
 const CampaignActivityPage = React.createClass({
   propTypes: {
@@ -187,15 +188,15 @@ export default createContainer((props) => {
     ...props,
     loading,
     campaign,
-    contacts: Contacts.find({
-      campaigns: campaignSlug
+    contacts: CampaignContacts.find({
+      campaign: campaignSlug
     }, {
       sort: {
-        [`campaigns.${campaignSlug}.updatedAt`]: -1
+        updatedAt: -1
       }
     }).fetch(),
-    contactsCount: Contacts.find({
-      campaigns: campaignSlug
+    contactsCount: CampaignContacts.find({
+      campaign: campaignSlug
     }).count(),
     contactsAllCount: Contacts.allContactsCount(),
     teamMates: campaign && campaign.team,

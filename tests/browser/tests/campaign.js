@@ -297,6 +297,7 @@ const test = {
   'Should update the status of a contact and change their last updated time': function (t) {
     let originalContact
     let originalCampaign
+    let originalCampaignContact
     let newStatus
 
     t.createDomain(['campaign', 'contact', 'contact'], (campaign, contact1, contact2, done) => {
@@ -346,6 +347,18 @@ const test = {
         })
       })
 
+      t.perform((done) => {
+        t.db.findCampaignContact({
+          campaign: campaign.slug,
+          slug: contact1.slug
+        })
+        .then((doc) => {
+          originalCampaignContact = doc
+
+          done()
+        })
+      })
+
       // make sure updateAt timestamps are different
       t.pause(1000)
 
@@ -353,8 +366,8 @@ const test = {
         const campaignPage = t.page.campaign()
           .navigate(campaign)
 
-        newStatus = domain.status(originalCampaign.contacts[contact1.slug].status)
-        t.assert.notEqual(originalCampaign.contacts[contact1.slug].status, newStatus)
+        newStatus = domain.status(originalCampaignContact.status)
+        t.assert.notEqual(originalCampaignContact.status, newStatus)
 
         campaignPage.section.campaignContacts.updateStatus(contact1, newStatus)
 
@@ -378,14 +391,24 @@ const test = {
           name: campaign.name
         })
         .then((updatedCampaign) => {
-          // should have updated the updatedAt value for the contact on the campaign
-          t.assert.equal(updatedCampaign.contacts[contact1.slug].status.toLowerCase().replace(/\s+/g, '-'), newStatus)
-
           // should have updated the campaign updatedAt
           t.assert.ok(updatedCampaign.updatedAt.getTime() > originalCampaign.updatedAt.getTime())
 
-          // and the link to the contact
-          t.assert.ok(updatedCampaign.contacts[contact1.slug].updatedAt.getTime() > originalCampaign.contacts[contact1.slug].updatedAt.getTime())
+          done()
+        })
+      })
+
+      t.perform((done) => {
+        t.db.findCampaignContact({
+          campaign: campaign.slug,
+          slug: contact1.slug
+        })
+        .then((updatedCampaignContact) => {
+          // should have updated the the status for the contact on the campaign
+          t.assert.equal(updatedCampaignContact.status.toLowerCase().replace(/\s+/g, '-'), newStatus)
+
+          // should have updated the updatedAt value for the contact on the campaign
+          t.assert.ok(updatedCampaignContact.updatedAt.getTime() > originalCampaignContact.updatedAt.getTime())
 
           done()
         })

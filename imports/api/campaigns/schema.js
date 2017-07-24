@@ -3,7 +3,6 @@ import { MasterListRefSchema } from '/imports/api/master-lists/schema'
 import { TagRefSchema } from '/imports/api/tags/schema'
 import { IdSchema, AuditSchema, CreatedAtSchema, UserRefSchema, LinkSchema } from '/imports/lib/schema'
 import { ClientSchema } from '/imports/api/clients/schema'
-import { StatusValues } from '/imports/api/contacts/status'
 
 export const CampaignRefSchema = new SimpleSchema({
   slug: {
@@ -27,14 +26,6 @@ export const CampaignRefSchema = new SimpleSchema({
 })
 CampaignRefSchema.extend(IdSchema)
 
-const CampaignContactRefSchema = new SimpleSchema({
-  status: {
-    type: String,
-    allowedValues: StatusValues
-  }
-})
-CampaignContactRefSchema.extend(AuditSchema)
-
 export const CampaignSchema = new SimpleSchema({
   name: {
     type: String,
@@ -54,15 +45,10 @@ export const CampaignSchema = new SimpleSchema({
     denyUpdate: true
   },
   contacts: {
-    type: Object,
-    blackbox: true,
-    custom: function () {
-      // ugh https://github.com/aldeed/meteor-simple-schema/issues/244
-      Object.keys(this.value).forEach(key => CampaignContactRefSchema.validate(this.value[key]))
-    }
+    type: Array
   },
   'contacts.$': {
-    type: CampaignContactRefSchema
+    type: String
   },
   client: {
     type: ClientSchema,

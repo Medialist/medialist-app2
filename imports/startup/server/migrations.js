@@ -5,6 +5,7 @@ import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
 import Tags from '/imports/api/tags/tags'
 import { EmbedSchema } from '/imports/api/embeds/schema'
+import CampaignContacts from '/imports/api/campaign-contacts/campaign-contacts'
 
 Migrations.add({
   version: 1,
@@ -279,30 +280,33 @@ Migrations.add({
     Campaigns.find()
       .fetch()
       .forEach(campaign => {
-        const contacts = {}
-
         Object.keys(campaign.contacts).forEach(slug => {
           const contact = Contacts.findOne({
             slug: slug
           })
 
           if (!contact) {
-            console.warn(`Could not find contact for slug ${slug}`)
+            console.warn(`Could not find contact with slug ${slug}`)
+
             return
           }
 
-          contacts[slug] = {
-            status: campaign.contacts[slug],
-            updatedAt: contact.campaigns[campaign.slug] ? contact.campaigns[campaign.slug].updatedAt : campaign.updatedAt,
-            updatedBy: campaign.updatedBy
-          }
+          const ref = Contacts.toRef(contact)
+          ref.campaign = campaign.slug
+          ref.status = campaign.contacts[slug]
+          ref.updatedAt = contact.campaigns[campaign.slug] ? contact.campaigns[campaign.slug].updatedAt : campaign.updatedAt
+          ref.updatedBy = campaign.updatedBy
+
+          delete ref._id
+
+          CampaignContacts.insert(ref)
         })
 
         Campaigns.update({
           _id: campaign._id
         }, {
           $set: {
-            contacts: contacts
+            contacts: Object.keys(campaign.contacts)
           }
         })
       })

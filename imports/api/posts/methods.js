@@ -8,6 +8,7 @@ import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
+import CampaignContacts from '/imports/api/campaign-contacts/campaign-contacts'
 
 let createEmbed = {
   run: () => {}
@@ -18,12 +19,21 @@ if (Meteor.isServer) {
 }
 
 function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, message, status}) {
+  checkAllSlugsExist([contactSlug], Contacts)
+
   if (campaignSlug) {
-    const campaign = Campaigns.findOne({
-      slug: campaignSlug
+    checkAllSlugsExist([campaignSlug], Campaigns)
+
+    const campaignContact = CampaignContacts.findOne({
+      campaign: campaignSlug,
+      slug: contactSlug
     })
 
-    if (campaign.contacts[contactSlug] && campaign.contacts[contactSlug].status === status && !message) {
+    if (!campaignContact) {
+      return
+    }
+
+    if (campaignContact.status === status && !message) {
       return
     }
   }
@@ -63,6 +73,17 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
         [`contacts.${contactSlug}.updatedBy`]: createdBy,
         updatedBy: createdBy,
         updatedAt: createdAt
+      }
+    })
+
+    CampaignContacts.update({
+      campaign: campaignSlug,
+      slug: contactSlug
+    }, {
+      $set: {
+        status,
+        updatedAt: createdAt,
+        updatedBy: createdBy
       }
     })
   }
@@ -106,9 +127,6 @@ export const createFeedbackPost = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
-
-    checkAllSlugsExist([contactSlug], Contacts)
-    checkAllSlugsExist([campaignSlug], Campaigns)
 
     return postFeedbackOrCoverage({
       type: 'FeedbackPost',
@@ -188,11 +206,19 @@ export const updatePost = new ValidatedMethod({
           slug: campaign.slug
         }, {
           $set: {
-            [`contacts.${post.contacts[0].slug}.status`]: status,
-            [`contacts.${post.contacts[0].slug}.updatedAt`]: updatedAt,
-            [`contacts.${post.contacts[0].slug}.updatedBy`]: userRef,
             updatedBy: userRef,
             updatedAt
+          }
+        })
+
+        CampaignContacts.update({
+          campaign: campaign.slug,
+          slug: post.contacts[0].slug
+        }, {
+          $set: {
+            status,
+            updatedAt,
+            updatedBy: userRef
           }
         })
       })
@@ -221,9 +247,6 @@ export const createCoveragePost = new ValidatedMethod({
       throw new Meteor.Error('You must be logged in')
     }
 
-    checkAllSlugsExist([contactSlug], Contacts)
-    checkAllSlugsExist([campaignSlug], Campaigns)
-
     return postFeedbackOrCoverage({
       type: 'CoveragePost',
       userId: this.userId,
@@ -249,8 +272,6 @@ export const createNeedToKnowPost = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
-
-    checkAllSlugsExist([contactSlug], Contacts)
 
     return postFeedbackOrCoverage({
       type: 'NeedToKnowPost',

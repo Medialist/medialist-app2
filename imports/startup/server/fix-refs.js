@@ -5,10 +5,16 @@ import Embeds from '/imports/api/embeds/embeds'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import Posts from '/imports/api/posts/posts'
 import Tags from '/imports/api/tags/tags'
+import CampaignContacts from '/imports/api/campaign-contacts/campaign-contacts'
 
 Meteor.startup(() => {
+  CampaignContacts.find().fetch().forEach(campaignContact => {
+    validateSlug(campaignContact, 'campaign', CampaignContacts, Campaigns, 'campaign-contact', 'campaign')
+    validateSlug(campaignContact, 'slug', CampaignContacts, Contacts, 'campaign-contact', 'contact')
+  })
+
   Campaigns.find().fetch().forEach(campaign => {
-    validateHashOfSlugs(campaign, 'contacts', Campaigns, Contacts, 'campaign', 'contact')
+    validateListOfSlugs(campaign, 'contacts', Campaigns, Contacts, 'campaign', 'contact')
     validateListOfRefs(campaign, 'team', Campaigns, Meteor.users, 'campaign', 'teammate')
     validateListOfRefs(campaign, 'masterLists', Campaigns, MasterLists, 'campaign', 'masterList')
     validateListOfRefs(campaign, 'tags', Campaigns, Tags, 'campaign', 'tag')
@@ -114,26 +120,6 @@ const validateListOfRefs = (doc, list, docCollection, refCollection, docType, re
   })
 }
 
-const validateHashOfSlugs = (doc, hash, docCollection, refCollection, docType, refType) => {
-  Object.keys(doc[hash]).forEach(slug => {
-    const ref = refCollection.findOne({slug: slug})
-
-    if (!ref) {
-      console.warn(`${docType} ${doc._id} has non-existent ${refType} with slug ${slug}`)
-
-      docCollection.update({
-        _id: doc._id
-      }, {
-        $unset: {
-          [`${hash}.${slug}`]: ''
-        }
-      })
-
-      return
-    }
-  })
-}
-
 const validateListOfSlugs = (doc, list, docCollection, refCollection, docType, refType) => {
   doc[list].forEach(slug => {
     const ref = refCollection.findOne({slug: slug})
@@ -170,6 +156,18 @@ const validateListOfIds = (doc, list, docCollection, refCollection, docType, ref
       })
     }
   })
+}
+
+const validateSlug = (doc, prop, docCollection, refCollection, docType, refType) => {
+  const ref = refCollection.findOne({slug: doc[prop]})
+
+  if (!ref) {
+    console.warn(`${docType} ${doc._id} has non-existent ${refType} with slug ${doc[prop]}`)
+
+    docCollection.remove({
+      _id: doc._id
+    })
+  }
 }
 
 const enforceFieldMinimumValue = (doc, property, collection, min, docType) => {

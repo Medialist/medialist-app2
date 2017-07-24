@@ -1,9 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Meteor } from 'meteor/meteor'
-import escapeRegExp from 'lodash.escaperegexp'
 import { createContainer } from 'meteor/react-meteor-data'
-import { StatusIndex } from '/imports/api/contacts/status'
 import ContactsTable from '/imports/ui/contacts/contacts-table'
 import SearchBox from '/imports/ui/lists/search-box'
 import ContactsActionsToast from '/imports/ui/contacts/contacts-actions-toast'
@@ -20,9 +18,25 @@ import AddToMasterListModal from '/imports/ui/master-lists/add-to-master-list-mo
 import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import { batchAddTags } from '/imports/api/tags/methods'
-import { batchFavouriteContacts, batchUpdateStatus } from '/imports/api/contacts/methods'
+import { batchFavouriteContacts } from '/imports/api/contacts/methods'
+import { batchUpdateStatus } from '/imports/api/campaign-contacts/methods'
+import NearBottomContainer from '/imports/ui/navigation/near-bottom-container'
+import SubscriptionLimitContainer from '/imports/ui/navigation/subscription-limit-container'
+import Loading from '/imports/ui/lists/loading'
+import { searchCampaignContacts } from '/imports/api/campaign-contacts/queries'
+import querystring from 'querystring'
 
 class CampaignContactsPage extends React.Component {
+  static propTypes = {
+    campaign: PropTypes.object.isRequired,
+    contacts: PropTypes.array.isRequired,
+    contactsCount: PropTypes.number.isRequired,
+    loaded: PropTypes.bool.isRequired,
+    searching: PropTypes.bool.isRequired,
+    term: PropTypes.string,
+    setQuery: PropTypes.func.isRequired,
+    status: PropTypes.string
+  }
 
   state = {
     selections: [],
@@ -32,10 +46,7 @@ class CampaignContactsPage extends React.Component {
     addContactsToCampaignModal: false,
     addTagsModal: false,
     addToMasterListsModal: false,
-    removeContactsModal: false,
-    sort: { updatedAt: -1 },
-    term: '',
-    statusFilter: ''
+    removeContactsModal: false
   }
 
   onAddContactClick = () => {
@@ -88,7 +99,11 @@ class CampaignContactsPage extends React.Component {
 
   onBatchUpdateStatus = (contacts, status) => {
     const contactSlugs = contacts.map((c) => c.slug)
-    batchUpdateStatus.call({_id: this.props.campaign._id, contacts: contactSlugs, status}, (error) => {
+    batchUpdateStatus.call({
+      campaignSlug: this.props.campaign.slug,
+      contactSlugs: contactSlugs,
+      status
+    }, (error) => {
       if (error) {
         console.error(error)
         return this.context.snackbar.error('batch-update-status-failure')
@@ -107,11 +122,15 @@ class CampaignContactsPage extends React.Component {
   }
 
   onSortChange = (sort) => {
-    this.setState({ sort })
+    this.props.setQuery({ sort })
   }
 
   onTermChange = (term) => {
-    this.setState({ term })
+    this.props.setQuery({ term })
+  }
+
+  onStatusFilterChange = (status) => {
+    this.props.setQuery({ status })
   }
 
   onSelectionsChange = (selections) => {
@@ -157,35 +176,32 @@ class CampaignContactsPage extends React.Component {
 
     const {
       contactPrefillData,
-      sort,
-      term,
-      selections,
-      statusFilter
+      selections
     } = this.state
 
-    let contactsTotal
-
-    if (statusFilter) {
-      contactsTotal = Object.keys(campaign.contacts).filter((slug) => campaign.contacts[slug].status === statusFilter).length
-    } else {
-      contactsTotal = Object.keys(campaign.contacts).length
-    }
+    let {
+      contactsTotal,
+      sort,
+      term,
+      status
+    } = this.props
 
     return (
       <div>
         <CampaignTopbar campaign={campaign} onAddContactClick={this.onAddContactClick} />
-        <CampaignSummary campaign={campaign} statusFilter={statusFilter} onStatusClick={(statusFilter) => this.setState({statusFilter})} />
+        <CampaignSummary campaign={campaign} contacts={contacts} statusFilter={status} onStatusClick={this.onStatusFilterChange} />
         <div className='bg-white shadow-2 m4' data-id='contacts-table'>
           <div className='pt4 pl4 pr4 pb1 items-center'>
             <SearchBox initialTerm={term} onTermChange={this.onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' style={{zIndex: 1}} />
-            <ContactsTotal searching={Boolean(term)} results={contacts} total={contactsTotal} />
+            <div className='f-xs gray60' style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>{contactsTotal} contact{contactsTotal === 1 ? '' : 's'}</div>
           </div>
-          <ContactsTableContainer
+          <ContactsTable
             sort={sort}
             term={term}
             campaign={campaign}
+            contacts={contacts}
             selections={selections}
-            statusFilter={statusFilter}
+            statusFilter={status}
             onSortChange={this.onSortChange}
             onSelectionsChange={this.onSelectionsChange}
             searching={Boolean(term)}
@@ -256,66 +272,77 @@ CampaignContactsPage.contextTypes = {
   snackbar: PropTypes.object
 }
 
-const ContactsTotal = ({ searching, results, total }) => {
-  const num = searching ? results.length : total
-  return <div className='f-xs gray60' style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>{num} contact{num === 1 ? '' : 's'}</div>
+// I decode and encode the search options from the query string
+// and set up the subscriptions and collecton queries from those options.
+const CampaignContactsPageContainer = (props, context) => {
+  if (props.loading) {
+    return <Loading />
+  }
+
+  // API is like setState...
+  // Pass an obj with the new params you want to set on the query string.
+  // has to be in a container because createComponent does not give you access to context
+  const setQuery = (opts) => {
+    const { location } = props
+    const { router } = context
+    const newQuery = {}
+
+    if (opts.sort) {
+      try {
+        newQuery.sort = JSON.stringify(opts.sort)
+      } catch (error) {
+        console.warn(error)
+      }
+    }
+
+    if (opts.hasOwnProperty('term')) {
+      newQuery.q = opts.term
+    }
+
+    if (opts.hasOwnProperty('status')) {
+      newQuery.status = opts.status
+    }
+
+    const query = Object.assign({}, location.query, newQuery)
+
+    if (query.q === '') {
+      delete query.q
+    }
+
+    if (opts.status === null) {
+      delete query.status
+    }
+
+    const qs = querystring.stringify(query)
+
+    if (!qs) {
+      return router.replace(`/campaign/${props.campaign.slug}/contacts`)
+    }
+
+    router.replace(`/campaign/${props.campaign.slug}/contacts?${qs}`)
+  }
+
+  return (
+    <NearBottomContainer>
+      {(nearBottom) => (
+        <SubscriptionLimitContainer wantMore={nearBottom}>
+          {(limit) => (
+            <CampaignContactsPage
+              limit={limit}
+              {...props}
+              setQuery={setQuery} />
+          )}
+        </SubscriptionLimitContainer>
+      )}
+    </NearBottomContainer>
+  )
+}
+CampaignContactsPageContainer.contextTypes = {
+  router: PropTypes.object
 }
 
-// dir is -1 or 1. Returns a sort functon.
-const contactStatusSort = ({contacts}, dir) => (a, b) => {
-  const statusA = contacts[a.slug].status
-  const statusB = contacts[b.slug].status
-
-  return (StatusIndex[statusA] - StatusIndex[statusB]) * dir
-}
-
-const ContactsTableContainer = createContainer((props) => {
-  const { campaign, term, sort, statusFilter } = props
-  const contactSlugs = campaign.contacts ? Object.keys(campaign.contacts) : []
-  let query = {
-    slug: {
-      $in: contactSlugs
-    }
-  }
-
-  if (term) {
-    const filterRegExp = new RegExp(escapeRegExp(term), 'gi')
-
-    query = {
-      $and: [{
-        slug: {
-          $in: contactSlugs
-        }
-      }, {
-        $or: [{
-          name: filterRegExp
-        }, {
-          'outlets.value': filterRegExp
-        }, {
-          'outlets.label': filterRegExp
-        }]
-      }]
-    }
-  }
-
-  let contacts = Contacts.find(query, {
-    sort
-  }).fetch()
-
-  if (statusFilter) {
-    contacts = contacts.filter((c) => campaign.contacts[c.slug].status === statusFilter)
-  }
-
-  if (sort.status) {
-    contacts.sort(contactStatusSort(campaign, sort.status))
-  }
-
-  return { ...props, contacts }
-}, ContactsTable)
-
-export default createContainer((props) => {
+const CampaignContactsPageContainerContainer = createContainer((props) => {
   const { campaignSlug } = props.params
-
   const subs = [
     Meteor.subscribe('campaign', campaignSlug),
     Meteor.subscribe('contacts-by-campaign', campaignSlug),
@@ -323,20 +350,56 @@ export default createContainer((props) => {
   ]
   const loading = subs.some((s) => !s.ready())
 
+  if (loading) {
+    return {
+      loading: true
+    }
+  }
+
+  const parseQuery = ({ query }) => {
+    let sort = {
+      updatedAt: -1
+    }
+
+    if (query.sort) {
+      try {
+        sort = JSON.parse(query.sort)
+      } catch (error) {
+        console.warn(error)
+      }
+    }
+
+    const term = (query.q || '').trim()
+    const status = (query.status || '').trim()
+
+    return {
+      sort,
+      term,
+      status
+    }
+  }
+
+  const opts = parseQuery(props.location)
+  opts.campaignSlug = campaignSlug
+
+  const cursor = searchCampaignContacts(opts)
+  const contacts = cursor.fetch()
+  const contactsCount = cursor.count()
+
   return {
     ...props,
     loading,
     campaign: Campaigns.findOne({
       slug: campaignSlug
     }),
-    contacts: Contacts.find({
-      campaigns: campaignSlug
-    }, {
-      sort: {
-        updatedAt: -1
-      }
-    }).fetch(),
+    contacts: contacts,
+    contactsTotal: contactsCount,
     contactsAllCount: Contacts.allContactsCount(),
-    user: Meteor.user()
+    user: Meteor.user(),
+    sort: opts.sort,
+    term: opts.term,
+    status: opts.status
   }
-}, CampaignContactsPage)
+}, CampaignContactsPageContainer)
+
+export default CampaignContactsPageContainerContainer

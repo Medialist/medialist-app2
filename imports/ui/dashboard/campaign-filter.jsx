@@ -35,7 +35,7 @@ const CampaignFilter = React.createClass({
   },
   onFilter (campaign) {
     const { contact } = this.props
-    const status = contact ? campaign.contacts[contact.slug].status : null
+    const status = contact ? contact.status : null
     this.props.onCampaignFilter(campaign)
     this.setState({
       open: false,

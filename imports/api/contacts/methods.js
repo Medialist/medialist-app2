@@ -2,195 +2,14 @@ import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import SimpleSchema from 'simpl-schema'
 import escapeRegExp from 'lodash.escaperegexp'
-import difference from 'lodash.difference'
 import slugify, { checkAllSlugsExist } from '/imports/lib/slug'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
 import Contacts from '/imports/api/contacts/contacts'
 import { ContactCreateSchema } from '/imports/api/contacts/schema'
-import { StatusValues } from '/imports/api/contacts/status'
 import MasterLists from '/imports/api/master-lists/master-lists'
-
-/*
- * Add mulitple Contacts to 1 Campaign
- * - Push all the contacts to the Campaign.contacts map
- * - Push the campaign to all the Contact.campigns arrays
- * - Update updatedAt on the Campaign and all contacts
- * - Create a Post about it.
- * - Add Campaigns and Contacts to users favourites
- */
-export const addContactsToCampaign = new ValidatedMethod({
-  name: 'addContactsToCampaign',
-
-  validate: new SimpleSchema({
-    contactSlugs: {
-      type: Array
-    },
-    'contactSlugs.$': {
-      type: String
-    },
-    campaignSlug: {
-      type: String
-    }
-  }).validator(),
-
-  run ({ contactSlugs, campaignSlug }) {
-    if (!this.userId) {
-      throw new Meteor.Error('You must be logged in')
-    }
-
-    checkAllSlugsExist(contactSlugs, Contacts)
-    checkAllSlugsExist([campaignSlug], Campaigns)
-
-    const updatedBy = findOneUserRef(this.userId)
-    const updatedAt = new Date()
-
-    const campaign = Campaigns.findOne({
-      slug: campaignSlug
-    }, {
-      contacts: 1
-    })
-
-    // Add the things to the users my<Contact|Campaigns> list
-    addToMyFavourites({
-      userId: this.userId,
-      contactSlugs,
-      campaignSlugs: [campaignSlug]
-    })
-
-    const newContactSlugs = difference(contactSlugs, Object.keys(campaign.contacts))
-
-    if (newContactSlugs.length === 0) {
-      // User hasn't changed anything, so we're done.
-      return
-    }
-
-    const newContactRefs = newContactSlugs.reduce((refs, slug) => {
-      refs[slug] = {
-        status: Contacts.status.toContact,
-        updatedAt: updatedAt,
-        updatedBy: updatedBy
-      }
-
-      return refs
-    }, {})
-
-    // Merge incoming contacts with existing.
-    // If a contact is already part of the campaign, it's status is preserved.
-    Campaigns.update({
-      slug: campaignSlug
-    }, {
-      $set: {
-        contacts: Object.assign({}, newContactRefs, campaign.contacts),
-        updatedBy,
-        updatedAt
-      }
-    })
-
-    // Add campaign to contacts that were added
-    Contacts.update({
-      slug: {
-        $in: newContactSlugs
-      }
-    }, {
-      $addToSet: {
-        campaigns: campaignSlug
-      },
-      $set: {
-        updatedBy,
-        updatedAt
-      }
-    }, {
-      multi: true
-    })
-
-    // Add an entry to the activity feed
-    Posts.create({
-      type: 'AddContactsToCampaign',
-      contactSlugs: newContactSlugs,
-      campaignSlugs: [campaignSlug],
-      createdBy: updatedBy
-    })
-  }
-})
-
-/*
- * Remove Contacts from Campaigns
- * - Pull all the contacts from the Campaign.contacts map
- * - Pull all campaign from all the Contact.campaigns array
- * - Update updatedAt on Campaign but not Contacts.
- * - Create a Post about it.
- * - Add nothing to users favorites.
- */
-export const removeContactsFromCampaigns = new ValidatedMethod({
-  name: 'removeContactsFromCampaign',
-
-  validate: new SimpleSchema({
-    contactSlugs: {
-      type: Array,
-      min: 1
-    },
-    'contactSlugs.$': {
-      type: String
-    },
-    campaignSlugs: {
-      type: Array,
-      min: 1
-    },
-    'campaignSlugs.$': {
-      type: String
-    }
-  }).validator(),
-
-  run ({ contactSlugs, campaignSlugs }) {
-    if (!this.userId) {
-      throw new Meteor.Error('You must be logged in')
-    }
-
-    checkAllSlugsExist(contactSlugs, Contacts)
-    checkAllSlugsExist(campaignSlugs, Campaigns)
-
-    const updatedBy = findOneUserRef(this.userId)
-    const updatedAt = new Date()
-
-    Campaigns.update({
-      slug: {
-        $in: campaignSlugs
-      }
-    }, {
-      $unset: contactSlugs.reduce(($unset, slug) => {
-        $unset[`contacts.${slug}`] = ''
-
-        return $unset
-      }, {}),
-      $set: {
-        updatedBy,
-        updatedAt
-      }
-    }, {
-      multi: true
-    })
-
-    campaignSlugs.forEach(campaignSlug => {
-      Contacts.update({
-        slug: {
-          $in: contactSlugs
-        }
-      }, {
-        $pull: {
-          campaigns: campaignSlug
-        },
-        $set: {
-          updatedBy,
-          updatedAt
-        }
-      }, {
-        multi: true
-      })
-    })
-  }
-})
+import CampaignContacts from '/imports/api/campaign-contacts/campaign-contacts'
 
 // Add all contacts to myContacts.
 // Update existing favs with new updatedAt
@@ -279,11 +98,16 @@ export const batchRemoveContacts = new ValidatedMethod({
 
       // Remove contacts from campaigns
       Campaigns.update({}, {
-        $unset: {
-          [`contacts.${slug}`]: ''
+        $pull: {
+          contacts: slug
         }
       }, {
         multi: true
+      })
+
+      // Remove contacts from campaigns
+      CampaignContacts.remove({
+        slug: slug
       })
 
       // remove contact from all posts
@@ -473,93 +297,5 @@ export const searchOutlets = new ValidatedMethod({
       .filter((s) => s.match(termRegExp))
 
     return suggestions
-  }
-})
-
-export const batchUpdateStatus = new ValidatedMethod({
-  name: 'batchUpdateStatus',
-
-  validate: new SimpleSchema({
-    _id: {
-      type: String,
-      regEx: SimpleSchema.RegEx.Id
-    },
-    contacts: {
-      type: Array
-    },
-    'contacts.$': {
-      type: String
-    },
-    status: {
-      type: String,
-      allowedValues: StatusValues
-    }
-  }).validator(),
-
-  run ({_id, contacts, status}) {
-    if (!this.userId) {
-      throw new Meteor.Error('You must be logged in')
-    }
-
-    const campaign = Campaigns.findOne({ _id })
-
-    if (!campaign) {
-      throw new Meteor.Error('Can\'t find campaign')
-    }
-
-    checkAllSlugsExist(contacts, Contacts)
-
-    // only keep contacts that are on the campaign
-    contacts = contacts.filter(slug => !!campaign.contacts[slug])
-
-    if (!contacts.length) {
-      return
-    }
-
-    const updatedBy = findOneUserRef(this.userId)
-    const updatedAt = new Date()
-
-    const campaignContactsStatus = contacts.reduce((o, slug) => {
-      o[slug] = {
-        status,
-        updatedAt,
-        updatedBy
-      }
-
-      return o
-    }, {})
-
-    // update campaign contact updatedAt/updatedBy
-    Campaigns.update({
-      _id
-    }, {
-      $set: {
-        contacts: Object.assign({}, campaign.contacts, campaignContactsStatus),
-        updatedBy,
-        updatedAt
-      }
-    })
-
-    // update contact updatedAt/updatedBy
-    Contacts.update({
-      slug: {
-        $in: contacts
-      }
-    }, {
-      $set: {
-        updatedBy,
-        updatedAt
-      }
-    }, {
-      multi: true
-    })
-
-    Posts.create({
-      type: 'StatusUpdate',
-      contactSlugs: contacts,
-      campaignSlugs: [campaign.slug],
-      status: status,
-      createdBy: updatedBy
-    })
   }
 })

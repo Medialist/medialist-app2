@@ -219,7 +219,7 @@ export const createCampaign = new ValidatedMethod({
       avatar,
       purpose,
       links,
-      contacts: {},
+      contacts: [],
       team: [createdBy],
       masterLists: [],
       tags: [],

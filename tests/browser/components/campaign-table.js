@@ -52,8 +52,8 @@ module.exports = {
       return this
     },
     updateStatus: function (campaign, status) {
-      const buttonSelector = `[data-item='${campaign._id}'] [data-id=contact-status-selector-button]`
-      const statusSelector = `[data-item='${campaign._id}'] [data-id=contact-status-${status}]`
+      const buttonSelector = `[data-item='${campaign.slug}'] [data-id=contact-status-selector-button]`
+      const statusSelector = `[data-item='${campaign.slug}'] [data-id=contact-status-${status}]`
 
       this
         .waitForElementVisible(buttonSelector)
@@ -65,7 +65,7 @@ module.exports = {
       return this
     },
     assertInSearchResults: function (campaign) {
-      const selector = `[data-item='${campaign._id}']`
+      const selector = `[data-item='${campaign.slug}']`
 
       this.waitForElementVisible(selector)
       this.assert.visible(selector)
@@ -73,7 +73,7 @@ module.exports = {
       return this
     },
     assertNotInSearchResults: function (campaign) {
-      const selector = `[data-item='${campaign._id}']`
+      const selector = `[data-item='${campaign.slug}']`
 
       this.assert.elementNotPresent(selector)
 

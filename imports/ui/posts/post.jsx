@@ -166,8 +166,8 @@ class Post extends React.Component {
 
   render () {
     const data = {
-      'data-contact': this.props.contacts.map(contact => contact._id).join(' '),
-      'data-campaign': this.props.campaigns.map(campaigns => campaigns._id).join(' ')
+      'data-contact': this.props.contacts.map(contact => contact.slug).join(' '),
+      'data-campaign': this.props.campaigns.map(campaign => campaign.slug).join(' ')
     }
     const postTypeLabels = {
       'FeedbackPost': 'Feedback',

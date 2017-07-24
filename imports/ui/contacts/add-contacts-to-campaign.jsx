@@ -6,7 +6,7 @@ import { AddIcon, SelectedIcon } from '/imports/ui/images/icons'
 import CampaignPreview from '/imports/ui/campaigns/campaign-preview'
 import createSearchContainer from '/imports/ui/campaigns/campaign-search-container'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
-import { addContactsToCampaign } from '/imports/api/contacts/methods'
+import { addContactsToCampaign } from '/imports/api/campaign-contacts/methods'
 import { BLUE } from '/imports/ui/colours'
 import SearchBox from '/imports/ui/lists/search-box'
 

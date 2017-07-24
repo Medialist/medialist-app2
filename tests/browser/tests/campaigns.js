@@ -261,7 +261,7 @@ const test = {
 
         const assertResult = (resultCampaign) => {
           campaigns.forEach((campaign, i) => {
-            const selector = `[data-item='${campaign._id}']`
+            const selector = `[data-item='${campaign.slug}']`
             if (campaign === resultCampaign) {
               campaignTable.waitForElementPresent(selector)
             } else {

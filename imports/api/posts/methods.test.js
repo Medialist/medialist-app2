@@ -9,8 +9,10 @@ import Posts from '/imports/api/posts/posts'
 import Embeds from '/imports/api/embeds/embeds'
 import { createFeedbackPost, createCoveragePost, createNeedToKnowPost, updatePost } from '/imports/api/posts/methods'
 import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists, createTestEmbeds } from '/tests/fixtures/server-domain'
-import { addContactsToCampaign, batchUpdateStatus } from '/imports/api/contacts/methods'
+import { batchUpdateStatus, addContactsToCampaign } from '/imports/api/campaign-contacts/methods'
 import toUserRef from '/imports/lib/to-user-ref'
+import CampaignContacts from '/imports/api/campaign-contacts/campaign-contacts'
+import StatusMap from '/imports/api/contacts/status'
 
 describe('createFeedbackPost', function () {
   let users
@@ -93,14 +95,19 @@ describe('createFeedbackPost', function () {
 
     const campaign = Campaigns.findOne({slug: campaignSlug})
     assert.deepEqual(campaign.updatedBy, userRef)
-    assert.equal(campaign.contacts[contactSlug].status, status)
-    assert.equal(campaign.contacts[contactSlug].updatedAt.getTime(), post.createdAt.getTime())
-    assert.deepEqual(campaign.contacts[contactSlug].updatedBy, userRef)
 
     const contact = Contacts.findOne({slug: contactSlug})
     assert.deepEqual(contact.updatedBy, userRef)
     assert.equal(contact.campaigns.length, 1)
     assert.equal(contact.campaigns[0], campaignSlug)
+
+    const campaignContact = CampaignContacts.findOne({
+      campaign: campaignSlug,
+      slug: contactSlug
+    })
+    assert.equal(campaignContact.status, status)
+    assert.equal(campaignContact.updatedAt.getTime(), post.createdAt.getTime())
+    assert.deepEqual(campaignContact.updatedBy, userRef)
   })
 
   it('should not create a feedback post when there is no message and the contact already has the passed status', function () {
@@ -119,8 +126,8 @@ describe('createFeedbackPost', function () {
     batchUpdateStatus.run.call({
       userId: users[0]._id
     }, {
-      _id: campaigns[1]._id,
-      contacts: [contactSlug],
+      campaignSlug: campaigns[1].slug,
+      contactSlugs: [contactSlug],
       status: status
     })
 
@@ -216,14 +223,19 @@ describe('createCoveragePost', function () {
 
     const campaign = Campaigns.findOne({slug: campaignSlug})
     assert.deepEqual(campaign.updatedBy, userRef)
-    assert.equal(campaign.contacts[contactSlug].status, status)
-    assert.equal(campaign.contacts[contactSlug].updatedAt.getTime(), post.createdAt.getTime())
-    assert.deepEqual(campaign.contacts[contactSlug].updatedBy, userRef)
 
     const contact = Contacts.findOne({slug: contactSlug})
     assert.deepEqual(contact.updatedBy, userRef)
     assert.equal(contact.campaigns.length, 1)
     assert.equal(contact.campaigns[0], campaignSlug)
+
+    const campaignContact = CampaignContacts.findOne({
+      campaign: campaignSlug,
+      slug: contactSlug
+    })
+    assert.equal(campaignContact.status, status)
+    assert.equal(campaignContact.updatedAt.getTime(), post.createdAt.getTime())
+    assert.deepEqual(campaignContact.updatedBy, userRef)
   })
 })
 
@@ -347,15 +359,22 @@ describe('updateFeedbackPost', function () {
     }, {
       _id,
       message: 'test update2',
-      status: 'Contacted'
+      status: StatusMap.contacted
     })
 
     const updatedPost = Posts.findOne({ _id })
     const campaign = Campaigns.findOne({slug: campaigns[0].slug})
 
-    assert.equal(updatedPost.status, 'Contacted')
+    assert.equal(updatedPost.status, StatusMap.contacted)
     assert.equal(updatedPost.message, 'test update2')
-    assert.equal(campaign.contacts[contacts[0].slug].status, 'Contacted')
+
+    const campaignContact = CampaignContacts.findOne({
+      campaign: campaign.slug,
+      slug: contacts[0].slug
+    })
+    assert.equal(campaignContact.status, StatusMap.contacted)
+    assert.equal(campaignContact.updatedAt.getTime(), updatedPost.updatedAt.getTime())
+    assert.deepEqual(campaignContact.updatedBy, toUserRef(users[0]))
   })
 })
 
@@ -382,13 +401,20 @@ describe('updateCoveragePost', function () {
 
     this.timeout(60000)
 
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      contactSlugs: [contacts[0].slug],
+      campaignSlug: campaigns[0].slug
+    })
+
     const _id = createCoveragePost.run.call({
       userId: users[0]._id
     }, {
       contactSlug: contacts[0].slug,
       campaignSlug: campaigns[0].slug,
       message: faker.lorem.paragraph() + ' https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-      status: 'Hot Lead'
+      status: StatusMap.hotLead
     })
 
     const createdPost = Posts.findOne({
