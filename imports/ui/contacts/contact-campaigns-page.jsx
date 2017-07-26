@@ -23,6 +23,8 @@ import CampaignListLink from '/imports/ui/master-lists/campaign-list-link'
 import TagLink from '/imports/ui/campaigns/tag-link'
 import RemoveContactModal from '/imports/ui/campaigns/remove-contact'
 
+const ContactCampaignStatuses = new Mongo.Collection('contact-campaign-statuses-client')
+
 class ContactCampaignsPage extends React.Component {
   static contextTypes = {
     snackbar: PropTypes.shape({
@@ -39,7 +41,8 @@ class ContactCampaignsPage extends React.Component {
     loading: PropTypes.bool.isRequired,
     selectedTags: PropTypes.array.isRequired,
     onTermChange: PropTypes.func.isRequired,
-    onSortChange: PropTypes.func.isRequired
+    onSortChange: PropTypes.func.isRequired,
+    statusCounts: PropTypes.object.isRequired
   }
 
   state = {
@@ -177,17 +180,24 @@ class ContactCampaignsPage extends React.Component {
       return null
     }
 
-    let { campaigns } = this.props
-
-    const { loading, sort, term, selectedTags, onTermChange, onSortChange } = this.props
-    const { onSelectionsChange, onTagRemove } = this
-    const { selections, statusFilter } = this.state
-    const statuses = campaigns.map((c) => c.contacts[contact.slug])
-    const total = statusFilter ? statuses.filter((status) => status === statusFilter).length : this.props.campaigns.length
-
-    if (statusFilter) {
-      campaigns = campaigns.filter((c) => c.contacts[contact.slug] === statusFilter)
-    }
+    const {
+      loading,
+      sort,
+      term,
+      selectedTags,
+      onTermChange,
+      onSortChange,
+      statusCounts,
+      campaigns
+    } = this.props
+    const {
+      onSelectionsChange,
+      onTagRemove
+    } = this
+    const {
+      selections,
+      statusFilter
+    } = this.state
 
     return (
       <div>
@@ -206,7 +216,7 @@ class ContactCampaignsPage extends React.Component {
               </div>
             </div>
           </div>
-          <StatusStats className='flex-none' statuses={statuses} active={statusFilter} onStatusClick={(status) => this.setState({statusFilter: status})} />
+          <StatusStats className='flex-none' statuses={statusCounts} active={statusFilter} onStatusClick={(status) => this.setState({statusFilter: status})} />
         </div>
         <CampaignSearch {...{
           onTermChange,
@@ -268,7 +278,24 @@ class ContactCampaignsPage extends React.Component {
 }
 
 export default createContainer(({params: { contactSlug }}) => {
-  Meteor.subscribe('contact-page', contactSlug)
+  const subs = [
+    Meteor.subscribe('contact-page', contactSlug),
+    Meteor.subscribe('contact-campaign-statuses', contactSlug)
+  ]
+  const loading = subs.some((s) => !s.ready())
+
+  if (loading) {
+    return {
+      loading: true
+    }
+  }
+
   const contact = Contacts.findOne({ slug: contactSlug })
-  return { contact, contactSlug }
+  const statusCounts = ContactCampaignStatuses.find().fetch().pop()
+
+  return {
+    contact,
+    contactSlug,
+    statusCounts
+  }
 }, campaignSearchQueryContainer(ContactCampaignsPage))

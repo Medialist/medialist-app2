@@ -290,3 +290,43 @@ export const batchUpdateStatus = new ValidatedMethod({
     })
   }
 })
+
+export const getCampaignContactStatuses = new ValidatedMethod({
+  name: 'getCampaignContactStatuses',
+
+  validate: new SimpleSchema({
+    campaignSlug: {
+      type: String
+    }
+  }).validator(),
+
+  run ({campaignSlug}) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    if (this.isSimulation) {
+      return {}
+    }
+
+    console.info('erm')
+
+    return {
+      'foo': 'bar'
+    }
+
+    return CampaignContacts.aggregate(StatusValues.map(value => ({
+      $group: {
+        _id: {
+          campaign: campaignSlug,
+          status: value
+        },
+        count: {
+          $sum: 1
+        }
+      }
+    }))).reduce((statuses, result) => {
+      statuses[result._id.status] = result.count
+    }, {})
+  }
+})

@@ -4,7 +4,7 @@ import nothing from '/imports/lib/nothing'
 import { StatusValues } from '/imports/api/contacts/status'
 import Contacts from '/imports/api/contacts/contacts'
 
-const CampaignContacts = new Mongo.Collection('campaign-contacts')
+const CampaignContacts = new Mongo.Collection('campaign_contacts')
 CampaignContacts.allow(nothing)
 
 if (Meteor.isServer) {

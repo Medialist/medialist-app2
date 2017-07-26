@@ -1,5 +1,6 @@
 import '/imports/methods/shared'
 import '/imports/api/contacts-import/server/methods'
+import '/imports/api/campaign-contacts/server/publications'
 import '/imports/api/contacts-import/server/publications'
 import '/imports/api/contacts/server/publications'
 import '/imports/api/campaigns/server/publications'

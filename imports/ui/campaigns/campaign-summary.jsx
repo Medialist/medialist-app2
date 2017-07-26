@@ -13,7 +13,8 @@ const CampaignSummary = withSnackbar(React.createClass({
     campaign: PropTypes.object,
     contacts: PropTypes.array,
     statusFilter: PropTypes.string,
-    onStatusClick: PropTypes.func
+    onStatusClick: PropTypes.func,
+    statusCounts: PropTypes.object
   },
   onAvatarChange (e) {
     const { _id } = this.props.campaign
@@ -30,9 +31,9 @@ const CampaignSummary = withSnackbar(React.createClass({
   },
   render () {
     const { onAvatarError, onAvatarChange } = this
-    const { campaign, contacts, statusFilter, onStatusClick } = this.props
+    const { campaign, contacts, statusFilter, onStatusClick, statusCounts } = this.props
     const { name, avatar, client } = campaign
-    const statuses = values(contacts.map(contact => contact.status) || [])
+
     return (
       <div className='flex items-center pt4 pb2 pr2 pl6'>
         <div className='flex-auto'>
@@ -46,7 +47,7 @@ const CampaignSummary = withSnackbar(React.createClass({
             </div>
           </div>
         </div>
-        <StatusStats className='flex-none' statuses={statuses} active={statusFilter} onStatusClick={(status) => onStatusClick(status)} />
+        <StatusStats className='flex-none' statuses={statusCounts} active={statusFilter} onStatusClick={(status) => onStatusClick(status)} />
       </div>
     )
   }

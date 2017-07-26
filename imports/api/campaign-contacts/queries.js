@@ -1,7 +1,9 @@
 import { check } from 'meteor/check'
 import escapeRegExp from 'lodash.escaperegexp'
 import CampaignContacts from '/imports/api/campaign-contacts/campaign-contacts'
-import { StatusIndex } from '/imports/api/contacts/status'
+import { StatusIndex, StatusValues } from '/imports/api/contacts/status'
+import { ValidatedMethod } from 'meteor/mdg:validated-method'
+import SimpleSchema from 'simpl-schema'
 
 /**
  * Find contacts that match a search term and other criteria.

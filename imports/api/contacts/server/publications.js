@@ -42,7 +42,10 @@ Meteor.publish('contact-page', function (slug) {
       }
     }),
     Campaigns.find({
-      'contacts.slug': slug
+      contacts: slug
+    }),
+    CampaignContacts.find({
+      slug
     })
   ]
 })

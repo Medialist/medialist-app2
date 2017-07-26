@@ -19,12 +19,15 @@ import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import { batchAddTags } from '/imports/api/tags/methods'
 import { batchFavouriteContacts } from '/imports/api/contacts/methods'
-import { batchUpdateStatus } from '/imports/api/campaign-contacts/methods'
+import { batchUpdateStatus, getCampaignContactStatuses } from '/imports/api/campaign-contacts/methods'
 import NearBottomContainer from '/imports/ui/navigation/near-bottom-container'
 import SubscriptionLimitContainer from '/imports/ui/navigation/subscription-limit-container'
 import Loading from '/imports/ui/lists/loading'
 import { searchCampaignContacts } from '/imports/api/campaign-contacts/queries'
 import querystring from 'querystring'
+import { Mongo } from 'meteor/mongo'
+
+const CampaignContactStatuses = new Mongo.Collection('campaign-contact-statuses-client')
 
 class CampaignContactsPage extends React.Component {
   static propTypes = {
@@ -35,7 +38,8 @@ class CampaignContactsPage extends React.Component {
     searching: PropTypes.bool.isRequired,
     term: PropTypes.string,
     setQuery: PropTypes.func.isRequired,
-    status: PropTypes.string
+    status: PropTypes.string,
+    statusCounts: PropTypes.object.isRequired
   }
 
   state = {
@@ -183,13 +187,14 @@ class CampaignContactsPage extends React.Component {
       contactsTotal,
       sort,
       term,
-      status
+      status,
+      statusCounts
     } = this.props
 
     return (
       <div>
         <CampaignTopbar campaign={campaign} onAddContactClick={this.onAddContactClick} />
-        <CampaignSummary campaign={campaign} contacts={contacts} statusFilter={status} onStatusClick={this.onStatusFilterChange} />
+        <CampaignSummary campaign={campaign} contacts={contacts} statusFilter={status} onStatusClick={this.onStatusFilterChange} statusCounts={statusCounts} />
         <div className='bg-white shadow-2 m4' data-id='contacts-table'>
           <div className='pt4 pl4 pr4 pb1 items-center'>
             <SearchBox initialTerm={term} onTermChange={this.onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' style={{zIndex: 1}} />
@@ -344,9 +349,10 @@ CampaignContactsPageContainer.contextTypes = {
 const CampaignContactsPageContainerContainer = createContainer((props) => {
   const { campaignSlug } = props.params
   const subs = [
+    Meteor.subscribe('contactCount'),
     Meteor.subscribe('campaign', campaignSlug),
     Meteor.subscribe('contacts-by-campaign', campaignSlug),
-    Meteor.subscribe('contactCount')
+    Meteor.subscribe('campaign-contact-statuses', campaignSlug)
   ]
   const loading = subs.some((s) => !s.ready())
 
@@ -385,6 +391,7 @@ const CampaignContactsPageContainerContainer = createContainer((props) => {
   const cursor = searchCampaignContacts(opts)
   const contacts = cursor.fetch()
   const contactsCount = cursor.count()
+  const statusCounts = CampaignContactStatuses.find().fetch().pop()
 
   return {
     ...props,
@@ -398,7 +405,8 @@ const CampaignContactsPageContainerContainer = createContainer((props) => {
     user: Meteor.user(),
     sort: opts.sort,
     term: opts.term,
-    status: opts.status
+    status: opts.status,
+    statusCounts
   }
 }, CampaignContactsPageContainer)
 
