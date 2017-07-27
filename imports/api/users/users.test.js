@@ -9,7 +9,7 @@ import Posts from '/imports/api/posts/posts'
 import Embeds from '/imports/api/embeds/embeds'
 import { createFeedbackPost, createCoveragePost, createNeedToKnowPost, updatePost } from '/imports/api/posts/methods'
 import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists, createTestEmbeds } from '/tests/fixtures/server-domain'
-import { addContactsToCampaign } from '/imports/api/campaign-contacts/methods'
+import { addContactsToCampaign } from '/imports/api/contacts/methods'
 import { addToMyFavourites } from '/imports/api/users/users'
 
 describe('users', function () {

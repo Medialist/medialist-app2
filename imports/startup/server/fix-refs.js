@@ -5,16 +5,10 @@ import Embeds from '/imports/api/embeds/embeds'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import Posts from '/imports/api/posts/posts'
 import Tags from '/imports/api/tags/tags'
-import CampaignContacts from '/imports/api/campaign-contacts/campaign-contacts'
 
 Meteor.startup(() => {
-  CampaignContacts.find().fetch().forEach(campaignContact => {
-    validateSlug(campaignContact, 'campaign', CampaignContacts, Campaigns, 'campaign-contact', 'campaign')
-    validateSlug(campaignContact, 'slug', CampaignContacts, Contacts, 'campaign-contact', 'contact')
-  })
-
   Campaigns.find().fetch().forEach(campaign => {
-    validateListOfSlugs(campaign, 'contacts', Campaigns, Contacts, 'campaign', 'contact')
+    validateListOfRefs(campaign, 'contacts', Campaigns, Contacts, 'campaign', 'contact')
     validateListOfRefs(campaign, 'team', Campaigns, Meteor.users, 'campaign', 'teammate')
     validateListOfRefs(campaign, 'masterLists', Campaigns, MasterLists, 'campaign', 'masterList')
     validateListOfRefs(campaign, 'tags', Campaigns, Tags, 'campaign', 'tag')
@@ -84,38 +78,36 @@ Meteor.startup(() => {
 
 const validateListOfRefs = (doc, list, docCollection, refCollection, docType, refType) => {
   doc[list].forEach(ref => {
-    const refOf = refCollection.findOne(ref._id)
+    let refOf
 
-    if (refOf) {
-      return
-    }
+    if (ref._id) {
+      refOf = refCollection.findOne(ref._id)
 
-    console.warn(`${docType} ${doc._id} has non-existent ${refType} with id ${ref._id}`)
+      if (!refOf) {
+        console.warn(`${docType} ${doc._id} has non-existent ${refType} with id ${ref._id}`)
 
-    let t
-
-    if (ref.slug) {
-      console.warn(`Searching for ${refType} with slug ${ref.slug}`)
-
-      t = refCollection.findOne({slug: ref.slug})
-    }
-
-    docCollection.update({
-      _id: doc._id
-    }, {
-      $pull: {
-        [`${list}._id`]: ref._id
+        docCollection.update({
+          _id: doc._id
+        }, {
+          $pull: {
+            [`${list}._id`]: ref._id
+          }
+        })
       }
-    })
+    } else if (ref.slug) {
+      refOf = refCollection.findOne({slug: ref.slug})
 
-    if (t) {
-      docCollection.update({
-        _id: doc._id
-      }, {
-        $push: {
-          [list]: t
-        }
-      })
+      if (!refOf) {
+        console.warn(`${docType} ${doc._id} has non-existent ${refType} with slug ${ref.slug}`)
+
+        docCollection.update({
+          _id: doc._id
+        }, {
+          $pull: {
+            [`${list}.slug`]: ref.slug
+          }
+        })
+      }
     }
   })
 }
@@ -156,18 +148,6 @@ const validateListOfIds = (doc, list, docCollection, refCollection, docType, ref
       })
     }
   })
-}
-
-const validateSlug = (doc, prop, docCollection, refCollection, docType, refType) => {
-  const ref = refCollection.findOne({slug: doc[prop]})
-
-  if (!ref) {
-    console.warn(`${docType} ${doc._id} has non-existent ${refType} with slug ${doc[prop]}`)
-
-    docCollection.remove({
-      _id: doc._id
-    })
-  }
 }
 
 const enforceFieldMinimumValue = (doc, property, collection, min, docType) => {

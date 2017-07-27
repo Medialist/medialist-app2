@@ -3,6 +3,7 @@ import { MasterListRefSchema } from '/imports/api/master-lists/schema'
 import { TagRefSchema } from '/imports/api/tags/schema'
 import { IdSchema, AuditSchema, CreatedAtSchema, UserRefSchema, LinkSchema } from '/imports/lib/schema'
 import { ClientSchema } from '/imports/api/clients/schema'
+import { StatusValues } from '/imports/api/contacts/status'
 
 export const CampaignRefSchema = new SimpleSchema({
   slug: {
@@ -26,6 +27,17 @@ export const CampaignRefSchema = new SimpleSchema({
 })
 CampaignRefSchema.extend(IdSchema)
 
+export const CampaignContactRefSchema = new SimpleSchema({
+  slug: {
+    type: String
+  },
+  status: {
+    type: String,
+    allowedValues: StatusValues
+  }
+})
+CampaignContactRefSchema.extend(AuditSchema)
+
 export const CampaignSchema = new SimpleSchema({
   name: {
     type: String,
@@ -48,7 +60,7 @@ export const CampaignSchema = new SimpleSchema({
     type: Array
   },
   'contacts.$': {
-    type: String
+    type: CampaignContactRefSchema
   },
   client: {
     type: ClientSchema,

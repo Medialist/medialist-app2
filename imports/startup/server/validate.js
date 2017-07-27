@@ -16,8 +16,6 @@ import { PostSchema } from '/imports/api/posts/schema'
 import Tags from '/imports/api/tags/tags'
 import { TagSchema } from '/imports/api/tags/schema'
 import { UserSchema } from '/imports/api/users/schema'
-import CampaignContacts from '/imports/api/campaign-contacts/campaign-contacts'
-import { CampaignContactSchema } from '/imports/api/campaign-contacts/schema'
 
 const validate = (name, collection, schema) => {
   const docs = {
@@ -44,7 +42,6 @@ const validate = (name, collection, schema) => {
 
 Meteor.startup(() => {
   if (Meteor.settings.validateDatabaseOnStartup) {
-    validate('campaign-contacts', CampaignContacts, CampaignContactSchema)
     validate('campaigns', Campaigns, CampaignSchema)
     validate('contacts', Contacts, ContactSchema)
     validate('clients', Clients, ClientSchema)

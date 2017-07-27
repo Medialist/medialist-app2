@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import values from 'lodash.values'
 import { SquareAvatar } from '/imports/ui/images/avatar'
 import EditableAvatar from '/imports/ui/images/editable-avatar'
 import { updateCampaign } from '/imports/api/campaigns/methods'
@@ -31,7 +30,7 @@ const CampaignSummary = withSnackbar(React.createClass({
   },
   render () {
     const { onAvatarError, onAvatarChange } = this
-    const { campaign, contacts, statusFilter, onStatusClick, statusCounts } = this.props
+    const { campaign, statusFilter, onStatusClick, statusCounts } = this.props
     const { name, avatar, client } = campaign
 
     return (

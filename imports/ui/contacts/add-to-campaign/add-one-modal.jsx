@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router'
 import Modal from '/imports/ui/navigation/modal'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
-import { addContactsToCampaign } from '/imports/api/campaign-contacts/methods'
+import { addContactsToCampaign } from '/imports/api/contacts/methods'
 import { CanJoinCampaignResult, CanNotJoinCampaignResult } from '/imports/ui/contacts/add-to-campaign/campaign-result'
 import CampaignSearch from '/imports/ui/contacts/add-to-campaign/campaign-search'
 

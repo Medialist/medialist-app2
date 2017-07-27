@@ -8,7 +8,6 @@ import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
-import CampaignContacts from '/imports/api/campaign-contacts/campaign-contacts'
 
 let createEmbed = {
   run: () => {}
@@ -21,19 +20,23 @@ if (Meteor.isServer) {
 function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, message, status}) {
   checkAllSlugsExist([contactSlug], Contacts)
 
+  let campaign
+
   if (campaignSlug) {
     checkAllSlugsExist([campaignSlug], Campaigns)
 
-    const campaignContact = CampaignContacts.findOne({
-      campaign: campaignSlug,
-      slug: contactSlug
+    campaign = Campaigns.findOne({
+      slug: campaignSlug,
+      'contacts.slug': contactSlug
     })
 
-    if (!campaignContact) {
+    if (!campaign) {
       return
     }
 
-    if (campaignContact.status === status && !message) {
+    const contact = campaign.contacts.find((c) => c.slug === contactSlug)
+
+    if (contact.status === status && !message) {
       return
     }
   }
@@ -65,25 +68,15 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
 
   if (campaignSlug) {
     Campaigns.update({
-      slug: campaignSlug
+      slug: campaignSlug,
+      'contacts.slug': contactSlug
     }, {
       $set: {
-        [`contacts.${contactSlug}.status`]: status,
-        [`contacts.${contactSlug}.updatedAt`]: createdAt,
-        [`contacts.${contactSlug}.updatedBy`]: createdBy,
+        [`contacts.$.status`]: status,
+        [`contacts.$.updatedAt`]: createdAt,
+        [`contacts.$.updatedBy`]: createdBy,
         updatedBy: createdBy,
         updatedAt: createdAt
-      }
-    })
-
-    CampaignContacts.update({
-      campaign: campaignSlug,
-      slug: contactSlug
-    }, {
-      $set: {
-        status,
-        updatedAt: createdAt,
-        updatedBy: createdBy
       }
     })
   }
@@ -203,22 +196,17 @@ export const updatePost = new ValidatedMethod({
     if (status !== post.status) {
       post.campaigns.forEach((campaign) => {
         Campaigns.update({
-          slug: campaign.slug
+          slug: campaign.slug,
+          'contacts.slug': {
+            $in: post.contacts.map(c => c.slug)
+          }
         }, {
           $set: {
+            'contacts.$.status': status,
+            'contacts.$.updatedAt': updatedAt,
+            'contacts.$.updatedBy': userRef,
             updatedBy: userRef,
             updatedAt
-          }
-        })
-
-        CampaignContacts.update({
-          campaign: campaign.slug,
-          slug: post.contacts[0].slug
-        }, {
-          $set: {
-            status,
-            updatedAt,
-            updatedBy: userRef
           }
         })
       })

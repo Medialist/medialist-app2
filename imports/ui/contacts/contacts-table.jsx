@@ -145,7 +145,7 @@ const ContactsTable = React.createClass({
               const contextualUpdatedBy = contactRef ? contactRef.updatedBy : (updatedBy || createdBy)
 
               return (
-                <SelectableRow data={contact} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id} data-id={`contacts-table-row-${index}`} data-item={slug}>
+                <SelectableRow data={contact} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={slug} data-id={`contacts-table-row-${index}`} data-item={slug}>
                   <td className='left-align'>
                     <ContactLink contact={contact} campaign={campaign} />
                   </td>

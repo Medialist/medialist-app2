@@ -16,11 +16,8 @@ import { PostSchema } from '/imports/api/posts/schema'
 import Tags from '/imports/api/tags/tags'
 import { TagSchema } from '/imports/api/tags/schema'
 import { UserSchema } from '/imports/api/users/schema'
-import CampaignContacts from '/imports/api/campaign-contacts/campaign-contacts'
-import { CampaignContactSchema } from '/imports/api/campaign-contacts/schema'
 
 export default function () {
-  CampaignContacts.attachSchema(CampaignContactSchema)
   Campaigns.attachSchema(CampaignSchema)
   Clients.attachSchema(ClientSchema)
   Contacts.attachSchema(ContactSchema)

@@ -17,7 +17,7 @@ import { createFeedbackPost, createCoveragePost } from '/imports/api/posts/metho
 import { CreateContactModal } from '/imports/ui/contacts/edit-contact'
 import AddContact from '/imports/ui/campaigns/add-contact'
 import EditTeam from '/imports/ui/campaigns/edit-team'
-import CampaignContacts from '/imports/api/campaign-contacts/campaign-contacts'
+import { CampaignContacts } from '/imports/ui/campaigns/collections'
 
 const CampaignActivityPage = React.createClass({
   propTypes: {
@@ -175,7 +175,7 @@ export default createContainer((props) => {
 
   const subs = [
     Meteor.subscribe('campaign', campaignSlug),
-    Meteor.subscribe('contacts-by-campaign', campaignSlug),
+    Meteor.subscribe('campaign-contacts', campaignSlug),
     Meteor.subscribe('contactCount'),
     Meteor.subscribe('clients')
   ]
@@ -184,20 +184,20 @@ export default createContainer((props) => {
     slug: campaignSlug
   })
 
+  const cursor = CampaignContacts.find({
+    campaign: campaignSlug
+  }, {
+    sort: {
+      updatedAt: -1
+    }
+  })
+
   return {
     ...props,
     loading,
     campaign,
-    contacts: CampaignContacts.find({
-      campaign: campaignSlug
-    }, {
-      sort: {
-        updatedAt: -1
-      }
-    }).fetch(),
-    contactsCount: CampaignContacts.find({
-      campaign: campaignSlug
-    }).count(),
+    contacts: cursor.fetch(),
+    contactsCount: cursor.count(),
     contactsAllCount: Contacts.allContactsCount(),
     teamMates: campaign && campaign.team,
     user: Meteor.user(),

@@ -18,28 +18,26 @@ import AddToMasterListModal from '/imports/ui/master-lists/add-to-master-list-mo
 import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import { batchAddTags } from '/imports/api/tags/methods'
-import { batchFavouriteContacts } from '/imports/api/contacts/methods'
-import { batchUpdateStatus, getCampaignContactStatuses } from '/imports/api/campaign-contacts/methods'
+import { batchFavouriteContacts, batchUpdateStatus } from '/imports/api/contacts/methods'
 import NearBottomContainer from '/imports/ui/navigation/near-bottom-container'
 import SubscriptionLimitContainer from '/imports/ui/navigation/subscription-limit-container'
 import Loading from '/imports/ui/lists/loading'
-import { searchCampaignContacts } from '/imports/api/campaign-contacts/queries'
 import querystring from 'querystring'
-import { Mongo } from 'meteor/mongo'
+import { StatusIndex } from '/imports/api/contacts/status'
+import escapeRegExp from 'lodash.escaperegexp'
+import { CampaignContacts, CampaignContactStatuses } from '/imports/ui/campaigns/collections'
 
-const CampaignContactStatuses = new Mongo.Collection('campaign-contact-statuses-client')
+const minSearchLength = 3
 
 class CampaignContactsPage extends React.Component {
   static propTypes = {
     campaign: PropTypes.object.isRequired,
     contacts: PropTypes.array.isRequired,
     contactsCount: PropTypes.number.isRequired,
-    loaded: PropTypes.bool.isRequired,
-    searching: PropTypes.bool.isRequired,
     term: PropTypes.string,
     setQuery: PropTypes.func.isRequired,
     status: PropTypes.string,
-    statusCounts: PropTypes.object.isRequired
+    statusCounts: PropTypes.object
   }
 
   state = {
@@ -346,13 +344,35 @@ CampaignContactsPageContainer.contextTypes = {
   router: PropTypes.object
 }
 
-const CampaignContactsPageContainerContainer = createContainer((props) => {
-  const { campaignSlug } = props.params
+const parseQuery = ({ query }) => {
+  let sort = {
+    updatedAt: -1
+  }
+
+  if (query.sort) {
+    try {
+      sort = JSON.parse(query.sort)
+    } catch (error) {
+      console.warn(error)
+    }
+  }
+
+  const term = (query.q || '').trim()
+  const status = (query.status || '').trim()
+
+  return {
+    sort,
+    term,
+    status
+  }
+}
+
+export default createContainer(({location, params: { campaignSlug }}) => {
   const subs = [
-    Meteor.subscribe('contactCount'),
     Meteor.subscribe('campaign', campaignSlug),
-    Meteor.subscribe('contacts-by-campaign', campaignSlug),
-    Meteor.subscribe('campaign-contact-statuses', campaignSlug)
+    Meteor.subscribe('campaign-contacts', campaignSlug),
+    Meteor.subscribe('campaign-contact-statuses', campaignSlug),
+    Meteor.subscribe('contactCount')
   ]
   const loading = subs.some((s) => !s.ready())
 
@@ -362,52 +382,51 @@ const CampaignContactsPageContainerContainer = createContainer((props) => {
     }
   }
 
-  const parseQuery = ({ query }) => {
-    let sort = {
-      updatedAt: -1
-    }
+  const {
+    sort,
+    term,
+    status
+  } = parseQuery(location)
 
-    if (query.sort) {
-      try {
-        sort = JSON.parse(query.sort)
-      } catch (error) {
-        console.warn(error)
-      }
-    }
-
-    const term = (query.q || '').trim()
-    const status = (query.status || '').trim()
-
-    return {
-      sort,
-      term,
-      status
-    }
+  const query = {
+    campaign: campaignSlug
   }
 
-  const opts = parseQuery(props.location)
-  opts.campaignSlug = campaignSlug
+  if (status && StatusIndex[status] > -1) {
+    query.status = status
+  }
 
-  const cursor = searchCampaignContacts(opts)
+  if (term && term.length >= minSearchLength) {
+    const termRegExp = new RegExp(escapeRegExp(term), 'gi')
+
+    query.$or = [{
+      name: termRegExp
+    }, {
+      'outlets.value': termRegExp
+    }, {
+      'outlets.label': termRegExp
+    }]
+  }
+
+  const cursor = CampaignContacts.find(query, {
+    sort
+  })
   const contacts = cursor.fetch()
   const contactsCount = cursor.count()
   const statusCounts = CampaignContactStatuses.find().fetch().pop()
+  const campaign = Campaigns.findOne({
+    slug: campaignSlug
+  })
 
   return {
-    ...props,
     loading,
-    campaign: Campaigns.findOne({
-      slug: campaignSlug
-    }),
+    campaign,
     contacts: contacts,
     contactsTotal: contactsCount,
     contactsAllCount: Contacts.allContactsCount(),
-    user: Meteor.user(),
-    sort: opts.sort,
-    term: opts.term,
-    status: opts.status,
+    sort,
+    term,
+    status,
     statusCounts
   }
 }, CampaignContactsPageContainer)
-
-export default CampaignContactsPageContainerContainer

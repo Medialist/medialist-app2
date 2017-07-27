@@ -40,8 +40,6 @@ module.exports = (url) => {
     connection: db,
     findCampaign: findOne.bind(null, db, 'campaigns'),
     findCampaigns: findMany.bind(null, db, 'campaigns'),
-    findCampaignContact: findOne.bind(null, db, 'campaign-contacts'),
-    findCampaignContacts: findMany.bind(null, db, 'campaign-contacts'),
     findUser: findOne.bind(null, db, 'users'),
     findUsers: findMany.bind(null, db, 'users'),
     findContact: findOne.bind(null, db, 'contacts'),

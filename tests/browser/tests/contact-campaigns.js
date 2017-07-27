@@ -236,12 +236,11 @@ const test = {
           .updateStatus(campaign, 'hot-lead')
 
         t.perform((done) => {
-          t.db.findCampaignContact({
-            campaign: campaign.slug,
-            slug: contact.slug
+          t.db.findCampaign({
+            slug: campaign.slug
           })
           .then((doc) => {
-            t.assert.equal(doc.status, 'Hot Lead')
+            t.assert.equal(doc.contacts.find(c => c.slug === contact.slug).status, 'Hot Lead')
 
             done()
           })

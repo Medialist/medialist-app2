@@ -125,8 +125,9 @@ npm run watch
 		"_id" : "iYurjZ3HbvmMbuRYr"
 	},
 	"purpose" : "Amazon is good for the UK",
-	"contacts" : {
-		"EleanorHarding": {
+	"contacts" : [
+		{
+			"slug": "eleanor-harding",
 			"status": "To Contact",
 			"updatedAt": ISODate("2016-02-24T22:26:39.782Z"),
 			"updatedBy": {
@@ -135,7 +136,7 @@ npm run watch
 				"avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
 			}
 		}
-	},
+	],
 	"tags": [
 		{ "_id": "xyz", "slug": "nice", "name": "Nice", "count": 9 }
 	],

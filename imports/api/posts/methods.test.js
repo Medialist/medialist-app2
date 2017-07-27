@@ -9,9 +9,8 @@ import Posts from '/imports/api/posts/posts'
 import Embeds from '/imports/api/embeds/embeds'
 import { createFeedbackPost, createCoveragePost, createNeedToKnowPost, updatePost } from '/imports/api/posts/methods'
 import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists, createTestEmbeds } from '/tests/fixtures/server-domain'
-import { batchUpdateStatus, addContactsToCampaign } from '/imports/api/campaign-contacts/methods'
+import { batchUpdateStatus, addContactsToCampaign } from '/imports/api/contacts/methods'
 import toUserRef from '/imports/lib/to-user-ref'
-import CampaignContacts from '/imports/api/campaign-contacts/campaign-contacts'
 import StatusMap from '/imports/api/contacts/status'
 
 describe('createFeedbackPost', function () {
@@ -53,14 +52,14 @@ describe('createFeedbackPost', function () {
     const campaignSlug = campaigns[1].slug
     const contactSlug = contacts[0].slug
     const message = 'Tip top'
-    const status = 'Hot Lead'
+    const status = StatusMap.hotLead
     const user = Meteor.users.findOne()
 
     addContactsToCampaign.run.call({
       userId: users[0]._id
     }, {
       campaignSlug,
-      contactSlugs: [contactSlug]
+      contactSlugs: [contactSlug, contacts[1].slug]
     })
 
     const postId = createFeedbackPost.run.call({
@@ -95,19 +94,17 @@ describe('createFeedbackPost', function () {
 
     const campaign = Campaigns.findOne({slug: campaignSlug})
     assert.deepEqual(campaign.updatedBy, userRef)
+    assert.equal(campaign.contacts.find((c) => c.slug === contactSlug).status, status)
+    assert.equal(campaign.contacts.find((c) => c.slug === contactSlug).updatedAt.getTime(), post.createdAt.getTime())
+    assert.deepEqual(campaign.contacts.find((c) => c.slug === contactSlug).updatedBy, userRef)
+
+    // should remain unchanged
+    assert.equal(campaign.contacts.find((c) => c.slug === contacts[1].slug).status, StatusMap.toContact)
 
     const contact = Contacts.findOne({slug: contactSlug})
     assert.deepEqual(contact.updatedBy, userRef)
     assert.equal(contact.campaigns.length, 1)
     assert.equal(contact.campaigns[0], campaignSlug)
-
-    const campaignContact = CampaignContacts.findOne({
-      campaign: campaignSlug,
-      slug: contactSlug
-    })
-    assert.equal(campaignContact.status, status)
-    assert.equal(campaignContact.updatedAt.getTime(), post.createdAt.getTime())
-    assert.deepEqual(campaignContact.updatedBy, userRef)
   })
 
   it('should not create a feedback post when there is no message and the contact already has the passed status', function () {
@@ -223,19 +220,14 @@ describe('createCoveragePost', function () {
 
     const campaign = Campaigns.findOne({slug: campaignSlug})
     assert.deepEqual(campaign.updatedBy, userRef)
+    assert.equal(campaign.contacts.find((c) => c.slug === contactSlug).status, status)
+    assert.equal(campaign.contacts.find((c) => c.slug === contactSlug).updatedAt.getTime(), post.createdAt.getTime())
+    assert.deepEqual(campaign.contacts.find((c) => c.slug === contactSlug).updatedBy, userRef)
 
     const contact = Contacts.findOne({slug: contactSlug})
     assert.deepEqual(contact.updatedBy, userRef)
     assert.equal(contact.campaigns.length, 1)
     assert.equal(contact.campaigns[0], campaignSlug)
-
-    const campaignContact = CampaignContacts.findOne({
-      campaign: campaignSlug,
-      slug: contactSlug
-    })
-    assert.equal(campaignContact.status, status)
-    assert.equal(campaignContact.updatedAt.getTime(), post.createdAt.getTime())
-    assert.deepEqual(campaignContact.updatedBy, userRef)
   })
 })
 
@@ -314,7 +306,7 @@ describe('updateFeedbackPost', function () {
     resetDatabase()
 
     users = createTestUsers(2)
-    contacts = createTestContacts(1)
+    contacts = createTestContacts(2)
     campaigns = createTestCampaigns(1)
   })
 
@@ -342,7 +334,7 @@ describe('updateFeedbackPost', function () {
     addContactsToCampaign.run.call({
       userId: users[0]._id
     }, {
-      contactSlugs: [contacts[0].slug],
+      contactSlugs: [contacts[0].slug, contacts[1].slug],
       campaignSlug: campaigns[0].slug
     })
 
@@ -364,17 +356,15 @@ describe('updateFeedbackPost', function () {
 
     const updatedPost = Posts.findOne({ _id })
     const campaign = Campaigns.findOne({slug: campaigns[0].slug})
+    assert.equal(campaign.contacts.find((c) => c.slug === contacts[0].slug).status, StatusMap.contacted)
+    assert.equal(campaign.contacts.find((c) => c.slug === contacts[0].slug).updatedAt.getTime(), updatedPost.updatedAt.getTime())
+    assert.deepEqual(campaign.contacts.find((c) => c.slug === contacts[0].slug).updatedBy, toUserRef(users[0]))
+
+    // not in post, should remain unchanged
+    assert.equal(campaign.contacts.find((c) => c.slug === contacts[1].slug).status, StatusMap.toContact)
 
     assert.equal(updatedPost.status, StatusMap.contacted)
     assert.equal(updatedPost.message, 'test update2')
-
-    const campaignContact = CampaignContacts.findOne({
-      campaign: campaign.slug,
-      slug: contacts[0].slug
-    })
-    assert.equal(campaignContact.status, StatusMap.contacted)
-    assert.equal(campaignContact.updatedAt.getTime(), updatedPost.updatedAt.getTime())
-    assert.deepEqual(campaignContact.updatedBy, toUserRef(users[0]))
   })
 })
 
