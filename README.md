@@ -234,22 +234,21 @@ Now untar the downloaded file. The dir you are left with isn't a mongodump as yo
 
 ```sh
 mongod --dbpath <backup dir path here> --replSet ml
+```
 
-# in another shell
+Then, in another shell, configure your local mongod to be the primary node.
+
+```sh
 mongo
-# MongoDB shell version v3.4.4
-# connecting to: mongodb://127.0.0.1:27017
-# MongoDB server version: 3.4.4
-# blah blah blah
 
-# Let this mongo knoe it's the primary.
 > rs.initiate({_id: "ml", members: [{_id: 0, host: 'localhost:27017'}]})
 ml:SECONDARY>
+
 # wait a couple of seconds, while mongo holds an eleection for 1
 ml:PRIMARY> exit
 ```
 
-The replicaSet name can be anything you like, just use the same one in both steps.
+The `replSet` name can be anything you like, just use the same one in both steps.
 
 Now your local mongo is running on a snapshot of the cluster db, with all that good data. Don't share it with other people, it's got real humans contact detail in. If it doesn't work, consult the docs: [restore-replica-set-from-backup]
 
