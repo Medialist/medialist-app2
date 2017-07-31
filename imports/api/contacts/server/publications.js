@@ -70,7 +70,7 @@ Meteor.publish('contact-campaigns', function (contactSlug) {
       campaigns: 1
     }
   }, {
-    // one document per campain
+    // one document per campaign
     $unwind: '$campaigns'
   }, {
     // look up campaign details

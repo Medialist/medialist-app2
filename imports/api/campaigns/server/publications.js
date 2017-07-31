@@ -113,7 +113,7 @@ Meteor.publish('campaign-contacts', function (campaignSlug) {
   })
 })
 
-// Returns a status counts for all contacts on a campaign
+// Returns status counts for all contacts on a campaign
 Meteor.publish('campaign-contact-statuses', function (campaignSlug) {
   if (!this.userId) {
     return this.ready()
