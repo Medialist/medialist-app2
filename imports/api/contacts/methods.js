@@ -464,19 +464,21 @@ export const searchOutlets = new ValidatedMethod({
       throw new Meteor.Error('You must be logged in')
     }
 
-    const termRegExp = new RegExp('^' + escapeRegExp(term), 'i')
+    if (Meteor.isServer) {
+      const termRegExp = new RegExp('^' + escapeRegExp(term), 'i')
 
-    const suggestions = Contacts
-      .find(
-        {[`outlets.${field}`]: termRegExp},
-        {fields: {outlets: 1}, limit: 10}
-      )
-      .map((contact) => contact.outlets)
-      .reduce((res, arr) => res.concat(arr), [])
-      .map((outlet) => outlet[field] || '')
-      .filter((s) => s.match(termRegExp))
+      const suggestions = Contacts.aggregate([
+        { $match: { [`outlets.${field}`]: termRegExp } },
+        { $unwind: '$outlets' },
+        { $match: { [`outlets.${field}`]: termRegExp } },
+        { $group: { _id: `$outlets.${field}` } },
+        { $limit: 10 }
+      ])
 
-    return suggestions
+      return suggestions.map(({ _id }) => _id)
+    }
+
+    return []
   }
 })
 
