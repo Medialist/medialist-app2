@@ -11,7 +11,12 @@ const findMany = (db, collection, query) => {
 }
 
 const find = (db, collection, method, query) => {
-  return retry((retry, number) => {
+  return retry({
+    retries: 5,
+    factor: 1,
+    minTimeout: 1000,
+    maxTimeout: 1000
+  }, (retry, number) => {
     return new Promise((resolve, reject) => {
       db.collection(collection)[method](query, (error, doc) => {
         if (!error && !doc) {

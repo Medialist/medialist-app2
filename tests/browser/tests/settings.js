@@ -39,6 +39,9 @@ const test = {
 
         done()
       })
+      .catch(error => {
+        throw error
+      })
     })
 
     t.page.main().logout()
@@ -65,6 +68,9 @@ const test = {
 
         done()
       })
+      .catch(error => {
+        throw error
+      })
     })
 
     t.page.main().logout()
@@ -85,12 +91,15 @@ const test = {
 
       t.perform(function (done) {
         t.db.findCampaignList({
-          name: newName
+          _id: campaignList._id
         })
         .then(function (doc) {
           t.assert.equal(doc.name, newName)
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -144,6 +153,9 @@ const test = {
 
         done()
       })
+      .catch(error => {
+        throw error
+      })
     })
 
     t.page.main().logout()
@@ -164,12 +176,15 @@ const test = {
 
       t.perform(function (done) {
         t.db.findContactList({
-          name: newName
+          _id: contactList._id
         })
         .then(function (doc) {
           t.assert.equal(doc.name, newName)
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 

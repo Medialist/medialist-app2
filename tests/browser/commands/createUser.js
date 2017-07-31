@@ -12,6 +12,9 @@ function findUser (email, callback) {
 
     callback(null, doc)
   })
+  .catch(error => {
+    callback(error)
+  })
 }
 
 exports.command = function createCampaign (callback) {

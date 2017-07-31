@@ -55,6 +55,9 @@ const test = {
 
         done()
       })
+      .catch(error => {
+        throw error
+      })
     })
 
     t.page.main().logout()

@@ -36,6 +36,9 @@ const test = {
 
           done()
         })
+        .catch(error => {
+          throw error
+        })
       })
 
       done()
@@ -67,6 +70,9 @@ const test = {
             t.assert.equal(doc.contacts.find(c => c.slug === contact1.slug).status, 'Hot Lead')
 
             done()
+          })
+          .catch(error => {
+            throw error
           })
         })
 
@@ -310,6 +316,9 @@ const test = {
 
             done()
           })
+          .catch(error => {
+            throw error
+          })
         })
 
         done()
@@ -324,6 +333,9 @@ const test = {
           t.assert.equal(doc.contacts[contact2._id], undefined)
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -363,6 +375,9 @@ const test = {
             t.assert.equal(doc.contacts.find((c) => c.slug === contact2.slug).status, 'To Contact')
 
             done()
+          })
+          .catch(error => {
+            throw error
           })
         })
 

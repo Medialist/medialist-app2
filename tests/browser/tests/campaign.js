@@ -29,6 +29,9 @@ const test = {
 
           done()
         })
+        .catch(error => {
+          throw error
+        })
       })
 
       campaignPage.unFavouriteCampaign()
@@ -43,6 +46,9 @@ const test = {
           t.assert.ok(!doc.myCampaigns.find(c => c._id === campaign._id))
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -76,6 +82,9 @@ const test = {
           assertions.campaignsAreEqual(t, doc, updated)
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -333,6 +342,9 @@ const test = {
 
           done()
         })
+        .catch(error => {
+          throw error
+        })
       })
 
       t.perform((done) => {
@@ -343,6 +355,9 @@ const test = {
           originalCampaign = doc
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -371,6 +386,9 @@ const test = {
 
           done()
         })
+        .catch(error => {
+          throw error
+        })
       })
 
       t.perform((done) => {
@@ -388,6 +406,9 @@ const test = {
           t.assert.ok(updatedCampaign.contacts.find(c => c.slug === contact1.slug).updatedAt.getTime() > originalCampaign.contacts.find(c => c.slug === contact1.slug).updatedAt.getTime())
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 

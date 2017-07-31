@@ -201,6 +201,9 @@ const test = {
 
           done()
         })
+        .catch(error => {
+          throw error
+        })
       })
 
       t.perform((done) => {
@@ -211,6 +214,9 @@ const test = {
           t.assert.equal(doc.contacts[contact._id], undefined)
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -243,6 +249,9 @@ const test = {
             t.assert.equal(doc.contacts.find(c => c.slug === contact.slug).status, 'Hot Lead')
 
             done()
+          })
+          .catch(error => {
+            throw error
           })
         })
 

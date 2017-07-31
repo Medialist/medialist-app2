@@ -74,6 +74,9 @@ ${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email
 
         done()
       })
+      .catch(error => {
+        throw error
+      })
     })
 
     t.page.main().logout()
