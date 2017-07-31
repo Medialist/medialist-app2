@@ -91,7 +91,7 @@ const test = {
 
       t.perform(function (done) {
         t.db.findCampaignList({
-          _id: campaignList._id
+          name: newName
         })
         .then(function (doc) {
           t.assert.equal(doc.name, newName)
@@ -176,7 +176,7 @@ const test = {
 
       t.perform(function (done) {
         t.db.findContactList({
-          _id: contactList._id
+          name: newName
         })
         .then(function (doc) {
           t.assert.equal(doc.name, newName)
