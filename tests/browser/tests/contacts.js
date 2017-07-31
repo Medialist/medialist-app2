@@ -299,6 +299,27 @@ ${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email
     t.end()
   },
 
+  'Should retain search query in search box after page refresh': function (t) {
+    t.createDomain(['contact'], (contact, done) => {
+      const contactsPage = t.page.main()
+        .navigateToContacts(t)
+
+      contactsPage.section.contactTable
+        .searchFor(contact.name)
+
+      t.refresh()
+
+      contactsPage.section.contactTable
+        .waitForElementVisible('@searchInput')
+        .assert.value('@searchInput', contact.name)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
   'Should suggest job title and company': function (t) {
     t.createDomain(['contact'], (contact, done) => {
       const contactsPage = t.page.main()

@@ -287,6 +287,27 @@ const test = {
 
     t.page.main().logout()
     t.end()
+  },
+
+  'Should retain search query in search box after page refresh': function (t) {
+    t.createDomain(['campaign'], (campaign, done) => {
+      const campaignsPage = t.page.main()
+        .navigateToCampaigns(t)
+
+      campaignsPage.section.campaignTable
+        .searchFor(campaign.name)
+
+      t.refresh()
+
+      campaignsPage.section.campaignTable
+        .waitForElementVisible('@searchInput')
+        .assert.value('@searchInput', campaign.name)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   }
 }
 
