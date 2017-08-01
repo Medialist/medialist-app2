@@ -97,7 +97,7 @@ class Time extends Component {
     const then = moment(date)
     const isoStyle = then.format()
     const longStyle = then.format('ddd, MMM Do YYYY, h:mm a')
-    return <time {...props} dateTime={isoStyle} title={longStyle}>{formattedTime}</time>
+    return <time dateTime={isoStyle} title={longStyle}>{formattedTime}</time>
   }
 }
 
