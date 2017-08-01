@@ -13,6 +13,8 @@ const PostBoxTextArea = React.createClass({
     placeholder: PropTypes.string.isRequired,
     value: PropTypes.string,
     focused: PropTypes.bool,
+    // TODO: Refactor `focused` and `shouldFocus`. https://github.com/Medialist/medialist-app2/issues/645
+    shouldFocus: PropTypes.bool,
     disabled: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     'data-id': PropTypes.string.isRequired
@@ -82,6 +84,12 @@ const PostBoxTextArea = React.createClass({
     })
   },
 
+  onTextAreaRef (ref) {
+    if (ref && this.props.focused && this.props.shouldFocus) {
+      ref.focus()
+    }
+  },
+
   render () {
     return (
       <div>
@@ -94,7 +102,7 @@ const PostBoxTextArea = React.createClass({
           value={this.props.value}
           disabled={this.props.disabled}
           data-id={this.props['data-id']}
-          ref={(textarea) => this.props.shouldFocus && textarea && textarea.focus()} />
+          ref={this.onTextAreaRef} />
         {this.state.embed || this.state.embedLoading ? (
           <div className='mb3'>
             <LinkPreview {...this.state.embed} loading={this.state.embedLoading} />

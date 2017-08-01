@@ -68,6 +68,9 @@ module.exports = {
       this
         .waitForElementVisible('@createPostButton')
         .click('@createPostButton')
+        // The post box should now "close"
+        .waitForElementNotVisible(campaign ? '@selectCampaignButton' : '@selectContactButton')
+        .waitForElementNotVisible('@createPostButton')
 
       return this
     },
@@ -122,6 +125,9 @@ module.exports = {
       this
         .waitForElementVisible('@createPostButton')
         .click('@createPostButton')
+        // The post box should now "close"
+        .waitForElementNotVisible(campaign ? '@selectCampaignButton' : '@selectContactButton')
+        .waitForElementNotVisible('@createPostButton')
 
       return this
     },
@@ -142,6 +148,8 @@ module.exports = {
       this
         .waitForElementVisible('@createPostButton')
         .click('@createPostButton')
+        // The post box should now "close"
+        .waitForElementNotVisible('@createPostButton')
 
       return this
     }
