@@ -19,7 +19,7 @@ const CampaignSearch = ({
   sort,
   campaigns,
   selections,
-  contactSlug,
+  contact,
   onSortChange,
   onSelectionsChange,
   loading,
@@ -46,7 +46,7 @@ const CampaignSearch = ({
         sort={sort}
         campaigns={campaigns}
         selections={selections}
-        contactSlug={contactSlug}
+        contact={contact}
         onSortChange={onSortChange}
         onSelectionsChange={onSelectionsChange}
         searching={Boolean(term)} />
@@ -64,7 +64,7 @@ CampaignSearch.propTypes = {
   sort: PropTypes.object,
   campaigns: PropTypes.array.isRequired,
   selections: PropTypes.array,
-  contactSlug: PropTypes.string,
+  contact: PropTypes.object,
   onSortChange: PropTypes.func.isRequired,
   onSelectionsChange: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,

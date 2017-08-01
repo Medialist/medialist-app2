@@ -61,7 +61,7 @@ const CampaignsFilterableList = React.createClass({
               className={`px3 py2 pointer hover-bg-gray90 hover-box-shadow-x-gray80`}
               onClick={() => onFilter(item)}
               data-type='campaign-search-result'
-              data-id={`campaign-${item._id}`}>
+              data-id={`campaign-${item.slug}`}>
               <Campaign campaign={item} contact={contact} />
             </div>
           ))}

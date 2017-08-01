@@ -88,4 +88,3 @@ class AddManyContactsToCampaignContainer extends React.Component {
 export default withSnackbar(Modal(AddManyContactsToCampaignContainer, {
   'data-id': 'campaign-selector-modal'
 }))
-

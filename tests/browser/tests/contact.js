@@ -29,6 +29,9 @@ const test = {
 
           done()
         })
+        .catch(error => {
+          throw error
+        })
       })
 
       contactPage.unFavouriteContact()
@@ -43,6 +46,9 @@ const test = {
           t.assert.ok(!doc.myContacts.find(c => c._id === contact._id))
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -76,6 +82,9 @@ const test = {
           assertions.contactsAreEqual(t, updated, doc)
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -139,6 +148,9 @@ const test = {
           assertions.contactsAreEqual(t, updated, doc)
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 

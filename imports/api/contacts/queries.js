@@ -29,11 +29,9 @@ export const searchContacts = ({
   const query = {}
 
   if (campaignSlugs && campaignSlugs.length) {
-    campaignSlugs.forEach(slug => {
-      query[`campaigns.${slug}`] = {
-        $exists: true
-      }
-    })
+    query.campaigns = {
+      $in: campaignSlugs
+    }
   }
 
   if (tagSlugs && tagSlugs.length) {

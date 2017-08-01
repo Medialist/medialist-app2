@@ -16,7 +16,7 @@ const campaignStatusSort = (contactSlug, dir) => (a, b) => {
 
 /**
 * CampaignSearchContainer
-* Find campaings by a search term and other criteria.
+* Find campaigns by a search term and other criteria.
 *
 * You can pass in:
 * - `term` - The Search term

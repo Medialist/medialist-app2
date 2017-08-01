@@ -114,7 +114,7 @@ const MasterListBtn = ({item, type, selected, onSelect, onDeselect}) => {
             style={{height: '100%'}}
             onClick={() => selected ? onDeselect(item) : onSelect(item)}
             data-id='master-list-button'
-            data-item={item._id}>
+            data-item={item.slug}>
             <label className='block mb1 pointer nowrap truncate'>{name}</label>
             <label style={{textTransform: 'lowercase'}} className={`display-none f-xxs pointer ${!selected && 'blue'} hover-display-block`}>
               {`${items.length} ${items.length === 1 ? type.substring(0, type.length - 1) : type}`}
