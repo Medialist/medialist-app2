@@ -13,6 +13,7 @@ const PostBoxTextArea = React.createClass({
     placeholder: PropTypes.string.isRequired,
     value: PropTypes.string,
     focused: PropTypes.bool,
+    // TODO: Refactor `focused` and `shouldFocus`. https://github.com/Medialist/medialist-app2/issues/645
     shouldFocus: PropTypes.bool,
     disabled: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
@@ -84,7 +85,7 @@ const PostBoxTextArea = React.createClass({
   },
 
   onTextAreaRef (ref) {
-    if (ref && this.props.shouldFocus) {
+    if (ref && this.props.focused && this.props.shouldFocus) {
       ref.focus()
     }
   },
