@@ -115,7 +115,7 @@ Meteor.publish('contact-campaigns', function (contactSlug) {
       slug: '$remote_campaign.slug',
       name: '$remote_campaign.name',
       avatar: '$remote_campaign.avatar',
-      clientName: '$remote_campaign.client.name',
+      client: { name: '$remote_campaign.client.name' },
       purpose: '$remote_campaign.purpose',
       status: '$remote_campaign_contact.status',
       updatedAt: '$remote_campaign_contact.updatedAt',
