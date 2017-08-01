@@ -13,6 +13,7 @@ import toUserRef from '/imports/lib/to-user-ref'
 import { campaign, user } from '/tests/browser/fixtures/domain'
 import { findOneUserRef } from '/imports/api/users/users'
 import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists } from '/tests/fixtures/server-domain'
+import { addContactsToCampaign } from '/imports/api/contacts/methods'
 
 describe('Campaigns/batchFavouriteCampaigns', function () {
   beforeEach(function () {
@@ -23,7 +24,7 @@ describe('Campaigns/batchFavouriteCampaigns', function () {
     assert.throws(() => batchFavouriteCampaigns.run.call({}, {}), /You must be logged in/)
   })
 
-  it('should validated the parameters', function () {
+  it('should validate the parameters', function () {
     assert.throws(() => batchFavouriteCampaigns.validate({}), /Campaign slugs is required/)
     assert.throws(() => batchFavouriteCampaigns.validate({campaignSlugs: [1]}), /must be of type String/)
     assert.doesNotThrow(() => batchFavouriteCampaigns.validate({campaignSlugs: ['a']}))
@@ -135,6 +136,37 @@ describe('Campaign update method', function () {
 
     assert.equal(updatedUser.myCampaigns.length, 1)
     assert.equal(updatedUser.myCampaigns[0]._id, _id)
+  })
+
+  it('should update campaign refs when updating campaign details', function () {
+    const users = createTestUsers(1)
+    const contacts = createTestContacts(1)
+
+    const slug = createCampaign.run.call({
+      userId: users[0]._id
+    }, campaign())
+    const _id = Campaigns.findOne({ slug })._id
+
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      campaignSlug: slug,
+      contactSlugs: contacts.map(contact => contact.slug)
+    })
+
+    const newName = faker.lorem.words(2)
+
+    updateCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      _id, name: newName
+    })
+
+    // updated favourite campaign refs
+    const updatedUser = Meteor.users.findOne({ _id: users[0]._id })
+    assert.equal(updatedUser.myCampaigns.length, 1)
+    assert.equal(updatedUser.myCampaigns[0]._id, _id)
+    assert.equal(updatedUser.myCampaigns[0].name, newName)
   })
 })
 
@@ -393,17 +425,30 @@ describe('Campaign remove method', function () {
     const campaigns = createTestCampaigns(3)
     const contacts = createTestContacts(1)
 
-    setTeamMates.run.call({ userId: users[0]._id }, {
+    setTeamMates.run.call({
+      userId: users[0]._id
+    }, {
       _id: campaigns[0]._id,
       userIds: [users[0]._id, users[1]._id]
     })
-    setTeamMates.run.call({ userId: users[0]._id }, {
+    setTeamMates.run.call({
+      userId: users[0]._id
+    }, {
       _id: campaigns[1]._id,
       userIds: [users[0]._id]
     })
-    setTeamMates.run.call({ userId: users[0]._id }, {
+    setTeamMates.run.call({
+      userId: users[0]._id
+    }, {
       _id: campaigns[2]._id,
       userIds: [users[1]._id]
+    })
+
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      campaignSlug: campaigns[0].slug,
+      contactSlugs: [contacts[0].slug]
     })
 
     MasterLists.insert({
@@ -483,6 +528,11 @@ describe('Campaign remove method', function () {
     const list = MasterLists.findOne({name: 'A master list'})
     assert.equal(list.items.length, 1)
     assert.deepEqual(list.items, [campaigns[1]._id])
+
+    const contact = Contacts.findOne({
+      _id: contacts[0]._id
+    })
+    assert.equal(contact.campaigns.length, 0)
 
     assert.equal(Campaigns.findOne({_id: campaigns[0]._id}), null)
     assert.ok(Campaigns.findOne({_id: campaigns[1]._id}))

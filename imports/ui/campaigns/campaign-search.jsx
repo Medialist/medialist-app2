@@ -19,7 +19,7 @@ const CampaignSearch = ({
   sort,
   campaigns,
   selections,
-  contactSlug,
+  contact,
   onSortChange,
   onSelectionsChange,
   loading,
@@ -28,7 +28,7 @@ const CampaignSearch = ({
   <div>
     <div className='bg-white shadow-2 m4' data-id='campaigns-table'>
       <div className='pt4 pl4 pr4 pb1 items-center'>
-        <SearchBox onTermChange={onTermChange} placeholder='Search campaigns...' data-id='search-campaigns-input' style={{zIndex: 1}}>
+        <SearchBox initialTerm={term} onTermChange={onTermChange} placeholder='Search campaigns...' data-id='search-campaigns-input' style={{zIndex: 1}}>
           {selectedTags && selectedTags.map((t) => (
             <CountTag
               style={{marginBottom: 0}}
@@ -46,7 +46,7 @@ const CampaignSearch = ({
         sort={sort}
         campaigns={campaigns}
         selections={selections}
-        contactSlug={contactSlug}
+        contact={contact}
         onSortChange={onSortChange}
         onSelectionsChange={onSelectionsChange}
         searching={Boolean(term)} />
@@ -64,7 +64,7 @@ CampaignSearch.propTypes = {
   sort: PropTypes.object,
   campaigns: PropTypes.array.isRequired,
   selections: PropTypes.array,
-  contactSlug: PropTypes.string,
+  contact: PropTypes.object,
   onSortChange: PropTypes.func.isRequired,
   onSelectionsChange: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,

@@ -55,6 +55,9 @@ const test = {
 
         done()
       })
+      .catch(error => {
+        throw error
+      })
     })
 
     t.page.main().logout()
@@ -261,7 +264,7 @@ const test = {
 
         const assertResult = (resultCampaign) => {
           campaigns.forEach((campaign, i) => {
-            const selector = `[data-item='${campaign._id}']`
+            const selector = `[data-item='${campaign.slug}']`
             if (campaign === resultCampaign) {
               campaignTable.waitForElementPresent(selector)
             } else {
@@ -281,6 +284,27 @@ const test = {
         .assert.elementPresent('@my')
         .clickMasterListBySlug('my')
         .waitForElementPresent('@mySelected')
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should retain search query in search box after page refresh': function (t) {
+    t.createDomain(['campaign'], (campaign, done) => {
+      const campaignsPage = t.page.main()
+        .navigateToCampaigns(t)
+
+      campaignsPage.section.campaignTable
+        .searchFor(campaign.name)
+
+      t.refresh()
+
+      campaignsPage.section.campaignTable
+        .waitForElementVisible('@searchInput')
+        .assert.value('@searchInput', campaign.name)
 
       done()
     })

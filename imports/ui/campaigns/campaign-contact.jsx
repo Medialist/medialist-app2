@@ -6,7 +6,7 @@ import StatusDot from '/imports/ui/feedback/status-dot'
 
 const CampaignContact = ({ contact, campaign, style, highlighted, statusSelectorDropdown, ...props }) => {
   return (
-    <div className='flex' style={{lineHeight: 1.3, ...style}} {...props} data-contact={contact._id}>
+    <div className='flex' style={{lineHeight: 1.3, ...style}} {...props} data-contact={contact.slug}>
       <CircleAvatar className='inline-block flex-none' size={38} avatar={contact.avatar} name={contact.name} />
       <div className='inline-block align-top pl3 flex-auto'>
         <div>
@@ -14,7 +14,7 @@ const CampaignContact = ({ contact, campaign, style, highlighted, statusSelector
           {campaign && (
             <StatusSelectorContainer
               buttonClassName='btn btn-no-border bg-transparent'
-              contactSlug={contact.slug}
+              contact={contact}
               campaign={campaign}
               style={{marginLeft: 7}}
               children={(status) => <StatusDot size={10} name={status} />}

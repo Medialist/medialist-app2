@@ -86,14 +86,9 @@ npm run watch
 		{ "label" : "Mobile", "value" : "+44 (0)7980 327 310" }
 	],
 	"address" : "53 Athenlay Road, London, SE15 3EN, United Kingdom",
-	"campaigns" : {
-		"campaign-slug-1": {
-			"updatedAt" : ISODate("2016-02-26T13:12:53.456Z")
-		},
-		"campaign-slug-2": {
-			"updatedAt" : ISODate("2016-02-26T13:12:53.456Z")
-		}
-	},
+	"campaigns" : [
+		"campaign-slug-1", "campaign-slug-2"
+	],
 	"tags": [
 		{ "_id": "xyz", "slug": "nice", "name": "Nice", "count": 9 }
 	],
@@ -130,13 +125,18 @@ npm run watch
 		"_id" : "iYurjZ3HbvmMbuRYr"
 	},
 	"purpose" : "Amazon is good for the UK",
-	"contacts" : {
-		"EleanorHarding" : "To Contact",
-		"SeanWilliams" : "To Contact",
-		"NicPaton" : "To Contact",
-		"RogerBaird" : "To Contact",
-		"GeoffFoster" : "Hot Lead"
-	},
+	"contacts" : [
+		{
+			"slug": "eleanor-harding",
+			"status": "To Contact",
+			"updatedAt": ISODate("2016-02-24T22:26:39.782Z"),
+			"updatedBy": {
+				"_id" : "hNc2ArK9TcAWyEXqQ",
+				"name" : "Olly Gilbert",
+				"avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
+			}
+		}
+	],
 	"tags": [
 		{ "_id": "xyz", "slug": "nice", "name": "Nice", "count": 9 }
 	],
@@ -234,22 +234,21 @@ Now untar the downloaded file. The dir you are left with isn't a mongodump as yo
 
 ```sh
 mongod --dbpath <backup dir path here> --replSet ml
+```
 
-# in another shell
+Then, in another shell, configure your local mongod to be the primary node.
+
+```sh
 mongo
-# MongoDB shell version v3.4.4
-# connecting to: mongodb://127.0.0.1:27017
-# MongoDB server version: 3.4.4
-# blah blah blah
 
-# Let this mongo knoe it's the primary.
 > rs.initiate({_id: "ml", members: [{_id: 0, host: 'localhost:27017'}]})
 ml:SECONDARY>
+
 # wait a couple of seconds, while mongo holds an eleection for 1
 ml:PRIMARY> exit
 ```
 
-The replicaSet name can be anything you like, just use the same one in both steps.
+The `replSet` name can be anything you like, just use the same one in both steps.
 
 Now your local mongo is running on a snapshot of the cluster db, with all that good data. Don't share it with other people, it's got real humans contact detail in. If it doesn't work, consult the docs: [restore-replica-set-from-backup]
 

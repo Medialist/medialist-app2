@@ -74,7 +74,7 @@ function createContact (data, createdBy, importId) {
   data.slug = slugify(data.name, Contacts)
   data.socials = data.socials || []
   data.phones = data.phones || []
-  data.campaigns = {}
+  data.campaigns = []
   data.masterLists = []
   data.tags = []
   data.imports = [importId]

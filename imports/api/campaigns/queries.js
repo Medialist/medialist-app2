@@ -47,9 +47,7 @@ export const searchCampaigns = ({
   }
 
   if (contactSlug) {
-    query[`contacts.${contactSlug}`] = {
-      $exists: true
-    }
+    query.contacts = contactSlug
   }
 
   if (term && term.length >= minSearchLength) {

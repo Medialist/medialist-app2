@@ -14,7 +14,7 @@ import { searchContacts } from '/imports/api/contacts/queries'
 * - `term` - The Search term
 * - `sort` - A mongo sort sort specifier
 * - `limit` - Maximum number of docs to fetch.
-* - `campaingSlugs` - Array of campaigns ot search in.
+* - `campaignSlugs` - Array of campaigns ot search in.
 * - `masterListSlug` - To search a in a specific list
 * - `userId` to search in the `myContacts` for a given user
 *

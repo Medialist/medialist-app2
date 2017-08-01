@@ -126,7 +126,7 @@ export class FeedbackInput extends Component {
 
     const { contact, campaign } = this.props
     const contactRef = campaign && campaign.contacts[contact.slug]
-    const status = contactRef || StatusMap.toContact
+    const status = contactRef && contactRef.status || StatusMap.toContact
 
     this.state = {
       status,

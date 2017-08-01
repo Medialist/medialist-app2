@@ -261,7 +261,7 @@ const ContactsPage = withSnackbar(React.createClass({
         </div>
         <div className='bg-white shadow-2 m4 mt8' data-id='contacts-table'>
           <div className='pt4 pl4 pr4 pb1 items-center'>
-            <SearchBox onTermChange={onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' style={{zIndex: 1}}>
+            <SearchBox initialTerm={term} onTermChange={onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' style={{zIndex: 1}}>
               <div style={{margin: '1px 4px -4px 6px'}} >
                 {campaigns && campaigns.map((c) => (
                   <AvatarTag

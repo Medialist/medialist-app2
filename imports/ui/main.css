@@ -706,14 +706,14 @@ button {
 }
 
 .snackbar-appear {
-  transform: translateX(100%)
+  transform: translateX(-100%)
 }
 .snackbar-appear.snackbar-appear-active {
   transform: translateX(0);
   transition: transform 300ms ease-in-out;
 }
 .snackbar-enter {
-  transform: translateX(100%)
+  transform: translateX(-100%)
 }
 .snackbar-enter.snackbar-enter-active {
   transform: translateX(0);

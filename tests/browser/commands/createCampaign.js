@@ -16,6 +16,9 @@ exports.command = function createCampaign (callback) {
         callback(doc)
         done()
       })
+      .catch(error => {
+        throw error
+      })
     })
   })
 

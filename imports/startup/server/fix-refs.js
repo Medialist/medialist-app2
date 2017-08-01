@@ -8,14 +8,14 @@ import Tags from '/imports/api/tags/tags'
 
 Meteor.startup(() => {
   Campaigns.find().fetch().forEach(campaign => {
-    validateHashOfSlugs(campaign, 'contacts', Campaigns, Contacts, 'campaign', 'contact')
+    validateListOfRefs(campaign, 'contacts', Campaigns, Contacts, 'campaign', 'contact')
     validateListOfRefs(campaign, 'team', Campaigns, Meteor.users, 'campaign', 'teammate')
     validateListOfRefs(campaign, 'masterLists', Campaigns, MasterLists, 'campaign', 'masterList')
     validateListOfRefs(campaign, 'tags', Campaigns, Tags, 'campaign', 'tag')
   })
 
   Contacts.find().fetch().forEach(contact => {
-    validateHashOfSlugs(contact, 'campaigns', Contacts, Campaigns, 'contact', 'campaign')
+    validateListOfSlugs(contact, 'campaigns', Contacts, Campaigns, 'contact', 'campaign')
     validateListOfRefs(contact, 'masterLists', Contacts, MasterLists, 'contact', 'masterList')
     validateListOfRefs(contact, 'tags', Contacts, Tags, 'contact', 'tag')
   })
@@ -78,44 +78,42 @@ Meteor.startup(() => {
 
 const validateListOfRefs = (doc, list, docCollection, refCollection, docType, refType) => {
   doc[list].forEach(ref => {
-    const refOf = refCollection.findOne(ref._id)
+    let refOf
 
-    if (refOf) {
-      return
-    }
+    if (ref._id) {
+      refOf = refCollection.findOne(ref._id)
 
-    console.warn(`${docType} ${doc._id} has non-existent ${refType} with id ${ref._id}`)
+      if (!refOf) {
+        console.warn(`${docType} ${doc._id} has non-existent ${refType} with id ${ref._id}`)
 
-    let t
-
-    if (ref.slug) {
-      console.warn(`Searching for ${refType} with slug ${ref.slug}`)
-
-      t = refCollection.findOne({slug: ref.slug})
-    }
-
-    docCollection.update({
-      _id: doc._id
-    }, {
-      $pull: {
-        [`${list}._id`]: ref._id
+        docCollection.update({
+          _id: doc._id
+        }, {
+          $pull: {
+            [`${list}._id`]: ref._id
+          }
+        })
       }
-    })
+    } else if (ref.slug) {
+      refOf = refCollection.findOne({slug: ref.slug})
 
-    if (t) {
-      docCollection.update({
-        _id: doc._id
-      }, {
-        $push: {
-          [list]: t
-        }
-      })
+      if (!refOf) {
+        console.warn(`${docType} ${doc._id} has non-existent ${refType} with slug ${ref.slug}`)
+
+        docCollection.update({
+          _id: doc._id
+        }, {
+          $pull: {
+            [`${list}.slug`]: ref.slug
+          }
+        })
+      }
     }
   })
 }
 
-const validateHashOfSlugs = (doc, hash, docCollection, refCollection, docType, refType) => {
-  Object.keys(doc[hash]).forEach(slug => {
+const validateListOfSlugs = (doc, list, docCollection, refCollection, docType, refType) => {
+  doc[list].forEach(slug => {
     const ref = refCollection.findOne({slug: slug})
 
     if (!ref) {
@@ -124,8 +122,8 @@ const validateHashOfSlugs = (doc, hash, docCollection, refCollection, docType, r
       docCollection.update({
         _id: doc._id
       }, {
-        $unset: {
-          [`${hash}.${slug}`]: ''
+        $pull: {
+          [list]: slug
         }
       })
 
