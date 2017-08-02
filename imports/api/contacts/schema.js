@@ -154,8 +154,10 @@ export const updateContactSchema = new SimpleSchema({
     min: 1
   },
   outlets: {
-    type: [LabelValueSchema],
-    defaultValue: []
+    type: Array
+  },
+  'outlets.$': {
+    type: LabelValueSchema
   },
   updatedAt: {
     type: Date
