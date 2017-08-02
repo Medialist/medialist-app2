@@ -95,7 +95,7 @@ describe('searchContacts', function () {
   it('should search for contacts by either campaign slugs', function () {
     const termAndCampaignSearch1Res = searchContacts({campaignSlugs: [campaigns[0].slug, campaigns[1].slug], sort: {name: -1}}).fetch()
     assert.equal(termAndCampaignSearch1Res.length, 2)
-    assert.equal(termAndCampaignSearch1Res[0]._id, contacts[1]._id)
-    assert.equal(termAndCampaignSearch1Res[1]._id, contacts[3]._id)
+    assert.ok(termAndCampaignSearch1Res.find(c => c._id === contacts[1]._id))
+    assert.ok(termAndCampaignSearch1Res.find(c => c._id === contacts[3]._id))
   })
 })
