@@ -55,7 +55,8 @@ class PostBoxTextArea extends React.Component {
     embed: null
   }
 
-  componentDidMount () {
+  componentWillMount () {
+    if (!this.props.value) return
     const url = findUrl(this.props.value)
     if (!url) return
     this.createEmbed(url)
