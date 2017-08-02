@@ -20,7 +20,7 @@ const PostBoxTextArea = React.createClass({
     'data-id': PropTypes.string.isRequired
   },
 
-  getInitialState () {
+  componentWillMount () {
     this.createEmbed = debounce((url) => {
       this.setState({
         embedLoading: true
@@ -47,18 +47,25 @@ const PostBoxTextArea = React.createClass({
         })
       })
     }, EMBED_CREATION_WAIT)
+  },
 
+  getInitialState () {
     return {
       embedLoading: false,
       embed: null
     }
   },
 
+  componentDidMount () {
+    const url = findUrl(this.props.value)
+    if (!url) return
+    this.createEmbed(url)
+  },
+
   componentWillReceiveProps ({value}) {
     if (value === this.props.value) {
       return
     }
-
     const url = findUrl(value)
 
     if (!url) {
