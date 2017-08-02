@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor'
-import { SimpleSchema } from 'meteor/aldeed:simple-schema'
+import SimpleSchema from 'simpl-schema'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import escapeRegExp from 'lodash.escaperegexp'
 import createUniqueSlug, { checkAllSlugsExist } from '/imports/lib/slug'
@@ -52,8 +52,10 @@ export const batchFavouriteCampaigns = new ValidatedMethod({
 
   validate: new SimpleSchema({
     campaignSlugs: {
-      type: [String],
-      defaultValue: []
+      type: Array
+    },
+    'campaignSlugs.$': {
+      type: String
     }
   }).validator(),
 
@@ -91,8 +93,10 @@ export const updateCampaign = new ValidatedMethod({
       optional: true
     },
     links: {
-      type: [LinkSchema],
-      defaultValue: []
+      type: Array
+    },
+    'links.$': {
+      type: LinkSchema
     },
     avatar: {
       type: String,
@@ -187,15 +191,18 @@ export const createCampaign = new ValidatedMethod({
       optional: true
     },
     links: {
-      type: [LinkSchema],
-      defaultValue: []
+      type: Array,
+      optional: true
+    },
+    'links.$': {
+      type: LinkSchema
     },
     avatar: {
       type: String,
       optional: true
     }
   }).validator(),
-  run ({ name, clientName, avatar, purpose, links }) {
+  run ({ name, clientName, avatar, purpose, links = [] }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -212,7 +219,7 @@ export const createCampaign = new ValidatedMethod({
       avatar,
       purpose,
       links,
-      contacts: {},
+      contacts: [],
       team: [createdBy],
       masterLists: [],
       tags: [],
@@ -258,7 +265,10 @@ export const removeCampaign = new ValidatedMethod({
   name: 'Campaigns/remove',
   validate: new SimpleSchema({
     _ids: {
-      type: [String],
+      type: Array
+    },
+    '_ids.$': {
+      type: String,
       regEx: SimpleSchema.RegEx.Id
     }
   }).validator(),
@@ -323,8 +333,8 @@ export const removeCampaign = new ValidatedMethod({
 
       // Remove campaigns from contacts
       Contacts.update({}, {
-        $unset: {
-          [`campaigns.${slug}`]: true
+        $pull: {
+          campaigns: slug
         }
       }, {
         multi: true
@@ -365,14 +375,18 @@ export const setTeamMates = new ValidatedMethod({
       regEx: SimpleSchema.RegEx.Id
     },
     userIds: {
-      type: [String],
-      regEx: SimpleSchema.RegEx.Id,
-      defaultValue: []
+      type: Array
+    },
+    'userIds.$': {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
     },
     emails: {
-      type: [String],
-      regEx: SimpleSchema.RegEx.Email,
-      defaultValue: []
+      type: Array
+    },
+    'emails.$': {
+      type: String,
+      regEx: SimpleSchema.RegEx.Email
     }
   }).validator(),
   run ({ _id, userIds = [], emails = [] }) {
@@ -445,6 +459,14 @@ export const setTeamMates = new ValidatedMethod({
     addToMyFavourites({
       userId: this.userId,
       campaignSlugs: [campaign.slug]
+    })
+
+    userIds.forEach(userId => {
+      // Add this campaign to the teammember's favourites if required
+      addToMyFavourites({
+        userId: userId,
+        campaignSlugs: [campaign.slug]
+      })
     })
 
     if (!this.isSimulation) {

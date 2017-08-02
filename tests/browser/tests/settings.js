@@ -39,6 +39,9 @@ const test = {
 
         done()
       })
+      .catch(error => {
+        throw error
+      })
     })
 
     t.page.main().logout()
@@ -64,6 +67,9 @@ const test = {
         t.assert.equal(doc.name, name)
 
         done()
+      })
+      .catch(error => {
+        throw error
       })
     })
 
@@ -91,6 +97,9 @@ const test = {
           t.assert.equal(doc.name, newName)
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -144,6 +153,9 @@ const test = {
 
         done()
       })
+      .catch(error => {
+        throw error
+      })
     })
 
     t.page.main().logout()
@@ -170,6 +182,9 @@ const test = {
           t.assert.equal(doc.name, newName)
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 

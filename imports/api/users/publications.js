@@ -95,7 +95,3 @@ Meteor.publish('users-by-id', function (opts = {}) {
   }
   return Meteor.users.find(query, options)
 })
-
-export const createUser = (details) => {
-  return Meteor.users.insert(details)
-}

@@ -22,14 +22,15 @@ const test = {
 
       t.perform((done) => {
         t.db.findUser({
-          profile: {
-            name: this.user.name
-          }
+          'profile.name': this.user.name
         })
         .then((doc) => {
           t.assert.ok(doc.myCampaigns.find(c => c._id === campaign._id))
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -39,14 +40,15 @@ const test = {
 
       t.perform((done) => {
         t.db.findUser({
-          profile: {
-            name: this.user.name
-          }
+          'profile.name': this.user.name
         })
         .then((doc) => {
           t.assert.ok(!doc.myCampaigns.find(c => c._id === campaign._id))
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -80,6 +82,9 @@ const test = {
           assertions.campaignsAreEqual(t, doc, updated)
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -130,34 +135,6 @@ const test = {
 
       campaignPage.section.editCampaignForm
         .cancel()
-
-      done()
-    })
-
-    t.page.main().logout()
-    t.end()
-  },
-
-  'Should add contact to campaign from contact page': function (t) {
-    t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
-      const contactPage = t.page.contact()
-        .navigate(contact)
-
-      contactPage.section.info
-        .waitForElementVisible('@editContactCampaignsButton')
-        .click('@editContactCampaignsButton')
-
-      const campaignSelectorModal = contactPage.section.campaignSelectorModal
-
-      contactPage.waitForElementVisible(campaignSelectorModal.selector)
-
-      campaignSelectorModal
-        .searchForCampaign(campaign)
-        .selectSearchResult(campaign)
-
-      t.page.main().waitForSnackbarMessage('batch-add-contacts-to-campaign-success')
-
-      contactPage.section.info.assert.attributeContains('[data-id=contact-campaigns-list] a', 'href', `/campaign/${campaign.slug}`)
 
       done()
     })
@@ -365,6 +342,9 @@ const test = {
 
           done()
         })
+        .catch(error => {
+          throw error
+        })
       })
 
       t.perform((done) => {
@@ -376,6 +356,9 @@ const test = {
 
           done()
         })
+        .catch(error => {
+          throw error
+        })
       })
 
       // make sure updateAt timestamps are different
@@ -383,10 +366,10 @@ const test = {
 
       t.perform((done) => {
         const campaignPage = t.page.campaign()
-          .navigate(campaign)
+          .navigate(originalCampaign)
 
-        newStatus = domain.status(originalCampaign.contacts[contact1.slug].status)
-        t.assert.notEqual(originalCampaign.contacts[contact1.slug].status, newStatus)
+        newStatus = domain.status(originalCampaign.contacts.find(c => c.slug === contact1.slug).status)
+        t.assert.notEqual(originalCampaign.contacts.find(c => c.slug === contact1.slug).status, newStatus)
 
         campaignPage.section.campaignContacts.updateStatus(contact1, newStatus)
 
@@ -401,10 +384,10 @@ const test = {
           // should have updated the contact updatedAt
           t.assert.ok(updatedContact.updatedAt.getTime() > originalContact.updatedAt.getTime())
 
-          // and the link to the campaign
-          t.assert.ok(updatedContact.campaigns[campaign.slug].updatedAt.getTime() > originalContact.campaigns[campaign.slug].updatedAt.getTime())
-
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -412,11 +395,20 @@ const test = {
         t.db.findCampaign({
           name: campaign.name
         })
-        .then((doc) => {
+        .then((updatedCampaign) => {
+          // should have updated the campaign updatedAt
+          t.assert.ok(updatedCampaign.updatedAt.getTime() > originalCampaign.updatedAt.getTime())
+
+          // should have updated the the status for the contact on the campaign
+          t.assert.equal(updatedCampaign.contacts.find(c => c.slug === contact1.slug).status.toLowerCase().replace(/\s+/g, '-'), newStatus)
+
           // should have updated the updatedAt value for the contact on the campaign
-          t.assert.equal(doc.contacts[contact1.slug].toLowerCase().replace(/\s+/g, '-'), newStatus)
+          t.assert.ok(updatedCampaign.contacts.find(c => c.slug === contact1.slug).updatedAt.getTime() > originalCampaign.contacts.find(c => c.slug === contact1.slug).updatedAt.getTime())
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 

@@ -1,10 +1,10 @@
 import SimpleSchema from 'simpl-schema'
 import { IdSchema } from '/imports/lib/schema'
 
-export const OrgSchema = new SimpleSchema({
+export const ClientSchema = new SimpleSchema({
   name: {
     type: String,
     min: 1
   }
 })
-OrgSchema.extend(IdSchema)
+ClientSchema.extend(IdSchema)

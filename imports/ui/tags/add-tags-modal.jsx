@@ -74,6 +74,7 @@ const TagSelector = React.createClass({
           <SearchBox
             ref={(searchBox) => { this.searchBox = searchBox }}
             style={{borderLeft: '0 none', borderRight: '0 none'}}
+            initialTerm={this.state.searchTerm}
             onTermChange={(searchTerm) => this.setState({searchTerm})}
             onKeyDown={this.onKeyDown}
             placeholder={this.state.selectedTags.length ? '' : 'Search or create a new tag'}

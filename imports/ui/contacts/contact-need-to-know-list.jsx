@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { CircleAvatar } from '/imports/ui/images/avatar'
-import { TimeFromNow } from '/imports/ui/time/time'
+import { TimeAgo } from '/imports/ui/time/time'
 
 const ContactNeedToKnowList = React.createClass({
   propTypes: {
@@ -53,7 +53,7 @@ const NeedToKnowItem = ({ item }) => {
         </div>
         <div className='flex-auto'>
           <div className='gray10' style={{overflowX: 'hidden'}}>{message}</div>
-          <TimeFromNow className='gray10 f-sm' style={{opacity: 0.25}} date={updatedAt || createdAt} />
+          <TimeAgo className='gray10 f-sm' style={{opacity: 0.25}} date={updatedAt || createdAt} />
         </div>
       </div>
     </li>

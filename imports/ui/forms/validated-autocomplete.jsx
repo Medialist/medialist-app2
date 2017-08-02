@@ -221,7 +221,8 @@ export default React.createClass({
                 className={`block px3 py2 pointer left-align f-sm normal gray20 ${activeClass}`}
                 onMouseOver={() => onActivate(index)}
                 onMouseOut={() => onActivate(0)}
-                onMouseDown={() => onClick(suggestion)}>
+                onMouseDown={() => onClick(suggestion)}
+                data-id={`${this.props['data-id']}-suggestion-${index}`}>
                 {suggestion}
               </li>
             )

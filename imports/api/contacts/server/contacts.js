@@ -1,14 +1,19 @@
+import { Meteor } from 'meteor/meteor'
 import Contacts from '/imports/api/contacts/contacts'
 import TwitterClient from '/imports/api/twitter-users/server/twitter-client'
 
-Contacts.find({}).observeChanges({
-  changed (id, fields) {
-    checkScreenNameUpdate(id, fields)
-  },
-  added (id, fields) {
-    checkScreenNameUpdate(id, fields)
-  }
-})
+if (Meteor.settings.updateContactsFromTwitter) {
+  Contacts.find({}).observeChanges({
+    changed (id, fields) {
+      checkScreenNameUpdate(id, fields)
+    },
+    added (id, fields) {
+      checkScreenNameUpdate(id, fields)
+    }
+  })
+} else {
+  console.info('Not watching twitter accounts of contacts for changes')
+}
 
 function checkScreenNameUpdate (id, fields) {
   var social = fields.socials && fields.socials[0]

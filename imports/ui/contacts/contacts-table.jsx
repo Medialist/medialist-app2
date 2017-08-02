@@ -4,7 +4,7 @@ import { Link } from 'react-router'
 import SortableHeader from '/imports/ui/tables/sortable-header'
 import SelectableRow from '/imports/ui/tables/selectable-row'
 import Checkbox from '/imports/ui/tables/checkbox'
-import { TimeFromNow } from '/imports/ui/time/time'
+import { TimeAgo } from '/imports/ui/time/time'
 import YouOrName from '/imports/ui/users/you-or-name'
 import { CircleAvatar } from '/imports/ui/images/avatar'
 import isSameItems from '/imports/ui/lists/is-same-items'
@@ -15,7 +15,7 @@ const ContactLink = ({contact, campaign}) => {
   const {slug, name, avatar} = contact
 
   return (
-    <Link to={`/contact/${slug}`} className='nowrap' data-id='contact-link' data-contact={contact._id}>
+    <Link to={`/contact/${slug}`} className='nowrap' data-id='contact-link' data-contact={contact.slug}>
       <CircleAvatar avatar={avatar} name={name} />
       <span className='ml3 semibold'>{name}</span>
     </Link>
@@ -131,6 +131,7 @@ const ContactsTable = React.createClass({
             {contacts.map((contact, index) => {
               const {
                 _id,
+                slug,
                 emails,
                 outlets,
                 phones,
@@ -139,11 +140,12 @@ const ContactsTable = React.createClass({
                 updatedAt,
                 createdAt
               } = contact
-              const contactRef = campaign ? contact.campaigns[campaign.slug] : null
+              const contactRef = campaign ? campaign.contacts[campaign.slug] : null
               const contextualUpdatedAt = contactRef ? contactRef.updatedAt : (updatedAt || createdAt)
-              const contextualUpdatedBy = updatedBy || createdBy
+              const contextualUpdatedBy = contactRef ? contactRef.updatedBy : (updatedBy || createdBy)
+
               return (
-                <SelectableRow data={contact} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id} data-id={`contacts-table-row-${index}`} data-item={_id}>
+                <SelectableRow data={contact} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={slug} data-id={`contacts-table-row-${index}`} data-item={slug}>
                   <td className='left-align'>
                     <ContactLink contact={contact} campaign={campaign} />
                   </td>
@@ -164,14 +166,14 @@ const ContactsTable = React.createClass({
                       <StatusSelectorContainer
                         buttonClassName='btn btn-no-border bg-transparent'
                         buttonStyle={{marginLeft: 0}}
-                        contactSlug={contact.slug}
+                        contact={contact}
                         campaign={campaign}
                         children={(status) => <StatusLabel name={status} />}
                       />
                     </td>
                   )}
                   <td className='left-align'>
-                    <TimeFromNow className='semibold f-sm' date={contextualUpdatedAt} />
+                    <TimeAgo className='semibold f-sm' date={contextualUpdatedAt} />
                     <span className='normal f-sm'> by <YouOrName user={contextualUpdatedBy} /></span>
                   </td>
                 </SelectableRow>

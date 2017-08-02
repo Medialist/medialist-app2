@@ -34,6 +34,7 @@ module.exports = {
       const checkboxSelector = `[data-id=campaigns-table-row-${index}-checkbox-label]`
 
       this
+        .waitForElementVisible(rowSelector)
         .moveToElement(rowSelector, 10, 10)
         .waitForElementVisible(checkboxSelector)
         .click(checkboxSelector)
@@ -51,8 +52,8 @@ module.exports = {
       return this
     },
     updateStatus: function (campaign, status) {
-      const buttonSelector = `[data-item='${campaign._id}'] [data-id=contact-status-selector-button]`
-      const statusSelector = `[data-item='${campaign._id}'] [data-id=contact-status-${status}]`
+      const buttonSelector = `[data-item='${campaign.slug}'] [data-id=contact-status-selector-button]`
+      const statusSelector = `[data-item='${campaign.slug}'] [data-id=contact-status-${status}]`
 
       this
         .waitForElementVisible(buttonSelector)
@@ -64,20 +65,22 @@ module.exports = {
       return this
     },
     assertInSearchResults: function (campaign) {
-      const selector = `[data-item='${campaign._id}']`
+      const selector = `[data-item='${campaign.slug}']`
 
+      this.waitForElementVisible(selector)
       this.assert.visible(selector)
 
       return this
     },
     assertNotInSearchResults: function (campaign) {
-      const selector = `[data-item='${campaign._id}']`
+      const selector = `[data-item='${campaign.slug}']`
 
       this.assert.elementNotPresent(selector)
 
       return this
     },
     assertNoResults: function () {
+      this.waitForElementVisible('@noResults')
       this.assert.visible('@noResults')
 
       return this

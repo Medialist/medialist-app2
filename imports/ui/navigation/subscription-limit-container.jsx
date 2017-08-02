@@ -20,7 +20,10 @@ const SubscriptionLimitContainer = React.createClass({
     }
   },
   componentWillReceiveProps (nextProps) {
-    if (!nextProps.wantMore) return
+    if (!nextProps.wantMore) {
+      return
+    }
+
     this.setState((s) => ({limit: s.limit + this.props.incrementBy}))
   },
   render () {

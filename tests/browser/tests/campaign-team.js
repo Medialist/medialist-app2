@@ -34,6 +34,9 @@ const test = {
 
           done()
         })
+        .catch(error => {
+          throw error
+        })
       })
 
       done()
@@ -63,6 +66,9 @@ const test = {
           t.assert.equal(doc.team.length, 2)
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -127,6 +133,9 @@ const test = {
 
           done()
         })
+        .catch(error => {
+          throw error
+        })
       })
 
       done()
@@ -161,6 +170,9 @@ const test = {
           t.assert.equal(doc.team.find(member => member._id === user2._id)._id, user2._id)
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 

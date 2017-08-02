@@ -61,7 +61,10 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
   },
 
   onMasterListChange (selectedMasterListSlug) {
-    addRecentCampaignList.call({ slug: selectedMasterListSlug })
+    // Only if not pseudo lists
+    if (!['all', 'my'].includes(selectedMasterListSlug)) {
+      addRecentCampaignList.call({ slug: selectedMasterListSlug })
+    }
 
     this.props.setQuery({ selectedMasterListSlug })
   },

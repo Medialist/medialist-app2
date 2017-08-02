@@ -9,7 +9,7 @@ module.exports = (dataId) => ({
   },
   commands: [{
     selectList: function (list) {
-      const selector = `[data-id=master-list-button][data-item='${list._id}']`
+      const selector = `[data-id=master-list-button][data-item='${list.slug}']`
 
       this
         .waitForElementVisible(selector)
@@ -18,7 +18,7 @@ module.exports = (dataId) => ({
       return this
     },
     deselectList: function (list) {
-      const selector = `[data-id=master-list-button][data-item='${list._id}']`
+      const selector = `[data-id=master-list-button][data-item='${list.slug}']`
 
       this
         .waitForElementVisible(selector)

@@ -4,11 +4,11 @@ const createPostSelector = (type, contact, campaign) => {
   let postSelector = `[data-id='${type}']`
 
   if (contact) {
-    postSelector += `[data-contact~='${contact._id}']`
+    postSelector += `[data-contact~='${contact.slug}']`
   }
 
   if (campaign) {
-    postSelector += `[data-campaign~='${campaign._id}']`
+    postSelector += `[data-campaign~='${campaign.slug}']`
   }
 
   return postSelector
@@ -42,11 +42,11 @@ module.exports = (prefix) => ({
       let selector = `[data-id='${type}']`
 
       if (contact) {
-        selector += `[data-contact~='${contact._id}']`
+        selector += `[data-contact~='${contact.slug}']`
       }
 
       if (campaign) {
-        selector += `[data-campaign~='${campaign._id}']`
+        selector += `[data-campaign~='${campaign.slug}']`
       }
 
       this.waitForElementPresent(selector)
@@ -64,8 +64,16 @@ module.exports = (prefix) => ({
       }
 
       if (data.contactOutlet) {
-        // For some reason this does not pass reliably
-        // this.assert.containsText(`${selector} [data-id=contact-outlet]`, data.contactOutlet)
+        const outletSelector = `${selector} [data-id=contact-outlet]`
+
+        // Often hidden in ellipsis - workaround get via textContent instead getText
+        // https://github.com/seleniumhq/selenium-google-code-issue-archive/issues/5773
+        this.getAttribute(outletSelector, 'textContent', (content) => {
+          this.assert.ok(
+            (content.value || '').indexOf(data.contactOutlet) > -1,
+            `Testing if element <${outletSelector}> contains text: "${data.contactOutlet}".`
+          )
+        })
       }
 
       if (data.contactStatus) {
@@ -81,6 +89,7 @@ module.exports = (prefix) => ({
       }
 
       if (data.embed) {
+        this.waitForElementPresent(selector)
         this.assert.elementPresent(`${selector} [href='${data.embed}'][data-id=link-preview]`)
       }
 
@@ -136,14 +145,15 @@ module.exports = (prefix) => ({
       return this
     },
     assertHasPostsForCampaign: function (campaign) {
-      const selector = `[data-campaign~='${campaign._id}']`
+      const selector = `[data-campaign~='${campaign.slug}']`
 
+      this.waitForElementPresent(selector)
       this.assert.elementPresent(selector)
 
       return this
     },
     assertHasNoPostsForCampaign: function (campaign) {
-      const selector = `[data-campaign~='${campaign._id}']`
+      const selector = `[data-campaign~='${campaign.slug}']`
 
       this.assert.elementNotPresent(selector)
 
@@ -153,8 +163,9 @@ module.exports = (prefix) => ({
       return this._assertHasPostForCampaign('coverage-post', campaign)
     },
     _assertHasPostForCampaign: function (type, campaign) {
-      const selector = `[data-id='${type}'][data-campaign~='${campaign._id}']`
+      const selector = `[data-id='${type}'][data-campaign~='${campaign.slug}']`
 
+      this.waitForElementPresent(selector)
       this.assert.elementPresent(selector)
 
       return this
@@ -163,7 +174,7 @@ module.exports = (prefix) => ({
       return this._assertHasNoPostForCampaign('coverage-post', campaign)
     },
     _assertHasNoPostForCampaign: function (type, campaign) {
-      const selector = `[data-id='${type}'][data-campaign~='${campaign._id}']`
+      const selector = `[data-id='${type}'][data-campaign~='${campaign.slug}']`
 
       this.assert.elementNotPresent(selector)
 
@@ -174,8 +185,9 @@ module.exports = (prefix) => ({
       return this._assertHasPostForContact('coverage-post', contact)
     },
     _assertHasPostForContact: function (type, contact) {
-      const selector = `[data-id='${type}'][data-contact~='${contact._id}']`
+      const selector = `[data-id='${type}'][data-contact~='${contact.slug}']`
 
+      this.waitForElementPresent(selector)
       this.assert.elementPresent(selector)
 
       return this
@@ -185,7 +197,7 @@ module.exports = (prefix) => ({
       return this._assertHasNoPostForContact('coverage-post', contact)
     },
     _assertHasNoPostForContact: function (type, contact) {
-      const selector = `[data-id='${type}'][data-contact~='${contact._id}']`
+      const selector = `[data-id='${type}'][data-contact~='${contact.slug}']`
 
       this.assert.elementNotPresent(selector)
 

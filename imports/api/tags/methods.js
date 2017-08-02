@@ -1,12 +1,11 @@
 import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
-import { SimpleSchema } from 'meteor/aldeed:simple-schema'
-import { TypeSchema } from '/imports/lib/schema'
+import SimpleSchema from 'simpl-schema'
 import Tags from '/imports/api/tags/tags'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import { checkAllSlugsExist, cleanSlug } from '/imports/lib/slug'
-import { findOneUserRef } from '/imports/api/users/users'
+import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 
 const createTagsWhereNecessary = (userId, names, type) => {
   const tags = names.map((n) => ({
@@ -26,7 +25,8 @@ const createTagsWhereNecessary = (userId, names, type) => {
       Object.assign(tag, {
         contactsCount: 0,
         campaignsCount: 0,
-        createdBy: findOneUserRef(userId)
+        createdBy: findOneUserRef(userId),
+        createdAt: new Date()
       })
     ))
     .map((tag) => Tags.insert(tag))
@@ -75,21 +75,14 @@ const updateTaggedItems = (userId, Collection, countField, slugs, tag) => {
   })
 }
 
-const setTaggedItems = (userId, _id, tags, Collection, countField) => {
-  const item = Collection.findOne({_id: _id}, {tags: 1})
-
-  if (!item) {
-    return
-  }
-
+const setTaggedItems = (userId, item, tags, Collection, countField) => {
   const existingTags = item.tags
 
   Collection.update({
-    _id: _id
+    _id: item._id
   }, {
     $set: {
-      tags: tags,
-      updatedAt: new Date()
+      tags: tags
     }
   })
 
@@ -156,24 +149,28 @@ const setTaggedItems = (userId, _id, tags, Collection, countField) => {
 export const batchAddTags = new ValidatedMethod({
   name: 'Tags/batchAddTags',
 
-  validate: new SimpleSchema([
-    TypeSchema, {
-      type: {
-        type: String,
-        allowedValues: ['Contacts', 'Campaigns']
-      },
-      // Contact or Campaign slugs depending on type.
-      slugs: {
-        type: [String],
-        min: 1
-      },
-      // Tag names, may be new or existing
-      names: {
-        type: [String],
-        min: 1
-      }
+  validate: new SimpleSchema({
+    type: {
+      type: String,
+      allowedValues: ['Contacts', 'Campaigns']
+    },
+    // Contact or Campaign slugs depending on type.
+    slugs: {
+      type: Array,
+      min: 1
+    },
+    'slugs.$': {
+      type: String
+    },
+    // Tag names, may be new or existing
+    names: {
+      type: Array,
+      min: 1
+    },
+    'names.$': {
+      type: String
     }
-  ]).validator(),
+  }).validator(),
 
   run ({ type, slugs, names }) {
     if (!this.userId) {
@@ -189,30 +186,37 @@ export const batchAddTags = new ValidatedMethod({
 
     tags
       .forEach((tag) => updateTaggedItems(this.userId, Collection, countField, slugs, tag))
+
+    addToMyFavourites({
+      userId: this.userId,
+      campaignSlugs: type === 'Campaigns' ? slugs : [],
+      contactSlugs: type === 'Contacts' ? slugs : []
+    })
   }
 })
 
 export const setTags = new ValidatedMethod({
   name: 'Tags/set',
 
-  validate: new SimpleSchema([
-    TypeSchema, {
-      type: {
-        type: String,
-        allowedValues: ['Contacts', 'Campaigns']
-      },
-      // Contact or Campaign slugs depending on type.
-      _id: {
-        type: String,
-        regEx: SimpleSchema.RegEx.Id
-      },
-      // Tag names, may be new or existing
-      tags: {
-        type: [String],
-        min: 1
-      }
+  validate: new SimpleSchema({
+    type: {
+      type: String,
+      allowedValues: ['Contacts', 'Campaigns']
+    },
+    // Contact or Campaign slugs depending on type.
+    _id: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    },
+    // Tag names, may be new or existing
+    tags: {
+      type: Array,
+      min: 1
+    },
+    'tags.$': {
+      type: String
     }
-  ]).validator(),
+  }).validator(),
 
   run ({ type, _id, tags }) {
     if (!this.userId) {
@@ -222,7 +226,18 @@ export const setTags = new ValidatedMethod({
     const countField = `${type.toLowerCase()}Count`
     const Collection = type === 'Contacts' ? Contacts : Campaigns
 
-    setTaggedItems(this.userId, _id, createTagsWhereNecessary(this.userId, tags, type), Collection, countField
-    )
+    const item = Collection.findOne({_id: _id}, {tags: 1})
+
+    if (!item) {
+      return
+    }
+
+    setTaggedItems(this.userId, item, createTagsWhereNecessary(this.userId, tags, type), Collection, countField)
+
+    addToMyFavourites({
+      userId: this.userId,
+      campaignSlugs: type === 'Campaigns' ? [item.slug] : [],
+      contactSlugs: type === 'Contacts' ? [item.slug] : []
+    })
   }
 })

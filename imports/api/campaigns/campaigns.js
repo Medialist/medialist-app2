@@ -8,6 +8,7 @@ Campaigns.allow(nothing)
 
 if (Meteor.isServer) {
   Campaigns._ensureIndex({ slug: 1 })
+  Campaigns._ensureIndex({ 'contacts.slug': 1 })
 }
 
 export default Campaigns

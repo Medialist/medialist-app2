@@ -129,7 +129,7 @@ export default createContainer((props) => {
   })
   const campaigns = contact ? Campaigns.find({
     slug: {
-      $in: Object.keys(contact.campaigns)
+      $in: contact.campaigns
     }
   }, {
     sort: {

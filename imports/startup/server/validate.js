@@ -3,7 +3,8 @@ import Campaigns from '/imports/api/campaigns/campaigns'
 import { CampaignSchema } from '/imports/api/campaigns/schema'
 import Contacts from '/imports/api/contacts/contacts'
 import { ContactSchema } from '/imports/api/contacts/schema'
-import Clients, { ClientSchema } from '/imports/api/clients/clients'
+import Clients from '/imports/api/clients/clients'
+import { ClientSchema } from '/imports/api/clients/schema'
 import Embeds from '/imports/api/embeds/embeds'
 import { EmbedSchema } from '/imports/api/embeds/schema'
 import MasterLists from '/imports/api/master-lists/master-lists'
@@ -28,11 +29,9 @@ const validate = (name, collection, schema) => {
     const context = schema.newContext()
     context.validate(doc)
 
-    const keys = context.invalidKeys()
-
-    if (keys.length) {
+    if (!context.isValid()) {
       docs.invalid++
-      console.warn(`${name} ${doc._id} had invalid keys: ${JSON.stringify(keys, null, 2)}`)
+      console.warn(`${name} ${doc._id} had validation errors: ${JSON.stringify(context.validationErrors(), null, 2)}`)
     } else {
       docs.valid++
     }
@@ -42,13 +41,17 @@ const validate = (name, collection, schema) => {
 }
 
 Meteor.startup(() => {
-  validate('campaigns', Campaigns, CampaignSchema)
-  validate('contacts', Contacts, ContactSchema)
-  validate('clients', Clients, ClientSchema)
-  validate('embeds', Embeds, EmbedSchema)
-  validate('master lists', MasterLists, MasterListSchema)
-  validate('orgs', Orgs, OrgSchema)
-  validate('posts', Posts, PostSchema)
-  validate('tags', Tags, TagSchema)
-  validate('users', Meteor.users, UserSchema)
+  if (Meteor.settings.validateDatabaseOnStartup) {
+    validate('campaigns', Campaigns, CampaignSchema)
+    validate('contacts', Contacts, ContactSchema)
+    validate('clients', Clients, ClientSchema)
+    validate('embeds', Embeds, EmbedSchema)
+    validate('master lists', MasterLists, MasterListSchema)
+    validate('orgs', Orgs, OrgSchema)
+    validate('posts', Posts, PostSchema)
+    validate('tags', Tags, TagSchema)
+    validate('users', Meteor.users, UserSchema)
+  } else {
+    console.info('Not validating database docs')
+  }
 })

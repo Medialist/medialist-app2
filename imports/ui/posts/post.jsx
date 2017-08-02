@@ -190,8 +190,8 @@ class Post extends React.Component {
 
   render () {
     const data = {
-      'data-contact': this.props.contacts.map(contact => contact._id).join(' '),
-      'data-campaign': this.props.campaigns.map(campaigns => campaigns._id).join(' ')
+      'data-contact': this.props.contacts.map(contact => contact.slug).join(' '),
+      'data-campaign': this.props.campaigns.map(campaign => campaign.slug).join(' ')
     }
     const postTypeLabels = {
       'FeedbackPost': 'Feedback',
@@ -283,8 +283,8 @@ const ContactLink = ({contact, showOutlet = true, ...props}) => {
 
   let outlet = null
 
-  if (showOutlet && contact.outlets && contact.outlets.length && contact.outlets[0].value) {
-    outlet = <span className='gray10' data-id='contact-outlet'> ({contact.outlets[0].value})</span>
+  if (showOutlet && contact.outlets && contact.outlets.length && contact.outlets[0].label) {
+    outlet = <span className='gray10' data-id='contact-outlet'> ({contact.outlets[0].label})</span>
   }
 
   return (
@@ -296,8 +296,8 @@ const ContactLink = ({contact, showOutlet = true, ...props}) => {
 }
 
 const ContactName = ({contacts, contact, onContactPage}) => {
-  if (onContactPage) {
-    return <span data-id='contact-name'>{firstName(contacts[0])}</span>
+  if (onContactPage && contact) {
+    return <span data-id='contact-name'>{firstName(contact)}</span>
   }
 
   if (contacts.length > 1) {

@@ -1,12 +1,11 @@
 import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
-import { SimpleSchema } from 'meteor/aldeed:simple-schema'
+import SimpleSchema from 'simpl-schema'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import findUniqueSlug from '/imports/lib/slug'
-import { TypeSchema } from '/imports/lib/schema'
-import { findOneUserRef } from '/imports/api/users/users'
+import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 
 /*
  * Add an array of Campaigns/Contacts to an array of master lists.
@@ -14,18 +13,25 @@ import { findOneUserRef } from '/imports/api/users/users'
  */
 export const batchAddToMasterLists = new ValidatedMethod({
   name: 'batchAddToMasterLists',
-  validate: new SimpleSchema([
-    TypeSchema, {
-      slugs: {
-        type: [String],
-        defaultValue: []
-      },
-      masterListIds: {
-        type: [String],
-        regEx: SimpleSchema.RegEx.Id,
-        defaultValue: []
-      }
-    }]).validator(),
+  validate: new SimpleSchema({
+    slugs: {
+      type: Array
+    },
+    'slugs.$': {
+      type: String
+    },
+    masterListIds: {
+      type: Array
+    },
+    'masterListIds.$': {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    },
+    type: {
+      type: String,
+      allowedValues: ['Contacts', 'Campaigns']
+    }
+  }).validator(),
 
   run ({type, slugs = [], masterListIds = []}) {
     if (!this.userId) {
@@ -89,20 +95,27 @@ export const batchAddToMasterLists = new ValidatedMethod({
     }, {
       multi: true
     })
+
+    addToMyFavourites({
+      userId: this.userId,
+      campaignSlugs: type === 'Campaigns' ? slugs : [],
+      contactSlugs: type === 'Contacts' ? slugs : []
+    })
   }
 })
 
 export const createMasterList = new ValidatedMethod({
   name: 'MasterLists/create',
-  validate: new SimpleSchema([
-    TypeSchema,
-    {
-      name: {
-        type: String,
-        min: 1
-      }
+  validate: new SimpleSchema({
+    name: {
+      type: String,
+      min: 1
+    },
+    type: {
+      type: String,
+      allowedValues: ['Contacts', 'Campaigns']
     }
-  ]).validator(),
+  }).validator(),
   run ({ type, name }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
@@ -124,6 +137,7 @@ export const createMasterList = new ValidatedMethod({
     const doc = {type, name, order, items: []}
     doc.slug = findUniqueSlug(doc.name, MasterLists)
     doc.createdBy = findOneUserRef(this.userId)
+    doc.createdAt = new Date()
 
     return MasterLists.insert(doc)
   }
@@ -133,7 +147,10 @@ export const removeMasterList = new ValidatedMethod({
   name: 'MasterLists/delete',
   validate: new SimpleSchema({
     _ids: {
-      type: [String],
+      type: Array
+    },
+    '_ids.$': {
+      type: String,
       regEx: SimpleSchema.RegEx.Id
     }
   }).validator(),
@@ -215,20 +232,23 @@ export const updateMasterList = new ValidatedMethod({
 
 export const setMasterLists = new ValidatedMethod({
   name: 'MasterLists/setMasterLists',
-  validate: new SimpleSchema([
-    TypeSchema,
-    {
-      item: {
-        type: String,
-        regEx: SimpleSchema.RegEx.Id
-      },
-      masterLists: {
-        type: [String],
-        regEx: SimpleSchema.RegEx.Id,
-        defaultValue: []
-      }
+  validate: new SimpleSchema({
+    item: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    },
+    masterLists: {
+      type: Array
+    },
+    'masterLists.$': {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    },
+    type: {
+      type: String,
+      allowedValues: ['Contacts', 'Campaigns']
     }
-  ]).validator(),
+  }).validator(),
   run ({type, item, masterLists = []}) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
@@ -289,6 +309,12 @@ export const setMasterLists = new ValidatedMethod({
       $set: {
         masterLists: masterListRefs
       }
+    })
+
+    addToMyFavourites({
+      userId: this.userId,
+      campaignSlugs: type === 'Campaigns' ? [itemDocument.slug] : [],
+      contactSlugs: type === 'Contacts' ? [itemDocument.slug] : []
     })
   }
 })
