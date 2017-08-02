@@ -404,6 +404,42 @@ ${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email
 
     t.page.main().logout()
     t.end()
+  },
+
+  'Should return contacts on any campaign searched for': function (t) {
+    t.createDomain(['contact', 'contact', 'campaign', 'campaign'], (contact1, contact2, campaign1, campaign2, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact1], campaign1, () => done())
+      })
+
+      t.perform((done) => {
+        t.addContactsToCampaign([contact2], campaign2, () => done())
+      })
+
+      const campaignsPage = t.page.main()
+        .navigateToCampaigns(t)
+
+      campaignsPage.section.campaignTable
+        .searchFor(campaign1.name)
+        .selectRow(0)
+
+      campaignsPage.section.campaignTable
+        .searchFor(campaign2.name)
+        .selectRow(0)
+
+      campaignsPage.section.toast.viewContacts()
+
+      t.page.contacts()
+        .section.contactTable.isInResults(contact1)
+
+      t.page.contacts()
+        .section.contactTable.isInResults(contact2)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   }
 }
 

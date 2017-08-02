@@ -23,7 +23,7 @@ describe('searchContacts', function () {
 
     users = createTestUsers(2)
     campaigns = createTestCampaigns(3)
-    contacts = createTestContacts(3)
+    contacts = createTestContacts(4)
     masterLists = createTestContactLists(2)
 
     contacts.forEach(contact => {
@@ -41,6 +41,11 @@ describe('searchContacts', function () {
       campaignSlug: campaigns[0].slug
     })
 
+    addContactsToCampaign.run.call({ userId: users[0]._id }, {
+      contactSlugs: [contacts[3].slug],
+      campaignSlug: campaigns[1].slug
+    })
+
     batchAddToMasterLists.run.call({ userId: users[0]._id }, {
       type: 'Contacts',
       slugs: [contacts[2].slug],
@@ -52,28 +57,45 @@ describe('searchContacts', function () {
     })
   })
 
-  it('should search the contacts to the campaign', function () {
+  it('should search for contacts by name', function () {
     const termSearch1Res = searchContacts({term: contacts[1].name, sort: {name: -1}}).fetch()
     assert.equal(termSearch1Res.length, 1)
     assert.equal(termSearch1Res[0]._id, contacts[1]._id)
+  })
 
+  it('should search for contacts by master list name', function () {
     const termSearch2Res = searchContacts({term: masterLists[0].name, sort: {name: -1}}).fetch()
     assert.equal(termSearch2Res.length, 1)
     assert.equal(termSearch2Res[0]._id, contacts[2]._id)
+  })
 
+  it('should search for multiple contacts by name', function () {
     const termSearchManyRes = searchContacts({term: 'name', sort: {name: -1}}).fetch()
-    assert.equal(termSearchManyRes.length, 3)
+    assert.equal(termSearchManyRes.length, 4)
+  })
 
+  it('should search for contacts by name and slug', function () {
     const termAndCampaignSearch1Res = searchContacts({term: 'name', campaignSlugs: [campaigns[0].slug], sort: {name: -1}}).fetch()
     assert.equal(termAndCampaignSearch1Res.length, 1)
     assert.equal(termAndCampaignSearch1Res[0]._id, contacts[1]._id)
+  })
 
+  it('should search for contacts by favourites', function () {
     const myContactsSearch1Res = searchContacts({userId: users[1]._id, sort: {name: -1}}).fetch()
     assert.equal(myContactsSearch1Res.length, 1)
     assert.equal(myContactsSearch1Res[0]._id, contacts[1]._id)
+  })
 
+  it('should search for contacts by master list slug', function () {
     const masterListSearch1Res = searchContacts({masterListSlug: masterLists[0].slug, sort: {name: -1}}).fetch()
     assert.equal(masterListSearch1Res.length, 1)
     assert.equal(masterListSearch1Res[0]._id, contacts[2]._id)
+  })
+
+  it('should search for contacts by either campaign slugs', function () {
+    const termAndCampaignSearch1Res = searchContacts({campaignSlugs: [campaigns[0].slug, campaigns[1].slug], sort: {name: -1}}).fetch()
+    assert.equal(termAndCampaignSearch1Res.length, 2)
+    assert.equal(termAndCampaignSearch1Res[0]._id, contacts[1]._id)
+    assert.equal(termAndCampaignSearch1Res[1]._id, contacts[3]._id)
   })
 })
