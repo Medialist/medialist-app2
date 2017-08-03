@@ -8,7 +8,6 @@ const appId = intercom && intercom.appId
 
 export default createContainer(() => {
   const user = Meteor.user()
-  console.log('intecomContainer', appId, user)
   let userData = {}
   if (user) {
     userData = {
