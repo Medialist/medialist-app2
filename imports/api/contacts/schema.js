@@ -143,24 +143,3 @@ ContactSchema.extend(IdSchema)
 ContactSchema.extend(AuditSchema)
 ContactSchema.extend(CreatedAtSchema)
 ContactSchema.extend(ContactCreateSchema)
-
-export const updateContactSchema = new SimpleSchema({
-  name: {
-    type: String,
-    min: 1
-  },
-  slug: {
-    type: String,
-    min: 1
-  },
-  outlets: {
-    type: Array
-  },
-  'outlets.$': {
-    type: LabelValueSchema
-  },
-  updatedAt: {
-    type: Date
-  }
-})
-updateContactSchema.extend(IdSchema)

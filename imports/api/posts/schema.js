@@ -3,7 +3,7 @@ import values from 'lodash.values'
 import { IdSchema, AuditSchema, CreatedAtSchema } from '/imports/lib/schema'
 import Contacts from '/imports/api/contacts/contacts'
 import { CampaignRefSchema, updateCampaignSchema } from '/imports/api/campaigns/schema'
-import { ContactRefSchema, updateContactSchema } from '/imports/api/contacts/schema'
+import { ContactRefSchema } from '/imports/api/contacts/schema'
 import { EmbedRefSchema } from '/imports/api/embeds/schema'
 import { StatusValues } from '/imports/api/contacts/status'
 
@@ -67,7 +67,7 @@ export const updatePostSchema = new SimpleSchema({
     optional: true
   },
   contact: {
-    type: updateContactSchema,
+    type: ContactRefSchema,
     optional: true
   },
   campaign: {

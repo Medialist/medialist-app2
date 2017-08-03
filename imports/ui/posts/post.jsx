@@ -163,6 +163,7 @@ class Post extends React.Component {
     })
 
     const update = { _id }
+
     if (message) update.message = message
     if (status) update.status = status
     if (contact) {

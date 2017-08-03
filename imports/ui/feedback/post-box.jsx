@@ -129,7 +129,7 @@ export class FeedbackInput extends Component {
 
     const { contact, campaign } = this.props
     const contactRef = campaign && campaign.contacts[contact.slug]
-    const status = contactRef && contactRef.status || StatusMap.toContact
+    const status = contactRef || StatusMap.toContact
 
     this.state = {
       contact,
@@ -143,7 +143,7 @@ export class FeedbackInput extends Component {
 
   onFieldChange = (event) => {
     const { name, value } = event.target
-    this.setState((s) => immutable.set(s, name, value))
+    this.setState(s => immutable.set(s, name, value))
   }
 
   onSubmit = () => {

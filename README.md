@@ -364,6 +364,12 @@ Then run the tests as usual:
 npm run test:browser
 ```
 
+If you want to run a single nightwatch test use the following command start the server as above then run
+
+```sh
+node_modules/nightwatch/bin/nightwatch -c tests/browser/nightwatch.conf.js --test tests/browser/tests/name-of-your-test-file.js --testcase "the title of your test"
+```
+
 #### Options
 
 Test options are specified as environment variables.

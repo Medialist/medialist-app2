@@ -195,14 +195,20 @@ export const updatePost = new ValidatedMethod({
     }
 
     if (status !== post.status) {
+      const slug = post.contacts[0].slug
+
       post.campaigns.forEach((campaign) => {
         Campaigns.update({
-          _id: campaign._id
+          _id: campaign._id,
+          'contacts.slug': slug
         }, {
           $set: {
-            [`contacts.${post.contacts[0].slug}`]: status,
-            updatedBy: userRef,
-            updatedAt
+            'contacts.$': {
+              slug,
+              status,
+              updatedAt,
+              updatedBy: userRef
+            }
           }
         })
       })
@@ -226,13 +232,19 @@ export const updatePost = new ValidatedMethod({
     if (campaign) {
       post.campaigns.forEach((postCampaign) => {
         if (postCampaign._id !== campaign._id) {
+          const slug = post.contacts[0].slug
+
           Campaigns.update({
-            _id: campaign._id
+            _id: campaign._id,
+            'contacts.slug': slug
           }, {
             $set: {
-              [`contacts.${post.contacts[0].slug}`]: status,
-              updatedBy: userRef,
-              updatedAt
+              'contacts.$': {
+                slug,
+                status,
+                updatedAt,
+                updatedBy: userRef
+              }
             }
           })
         }

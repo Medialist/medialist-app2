@@ -70,16 +70,27 @@ module.exports = {
         dropdownMenu: {
           selector: '[data-id=dropdown-menu]',
           elements: {
-            campaignContactSearchResult: '[data-type=campaign-contact-search-result]:first-child'
+            campaignContactSearchResult: '[data-type=campaign-contact-search-result]'
           },
           commands: [
             {
               selectContact: function (contact) {
-                const selector = `[data-id=edit-post-modal] [data-id=campaign-contact-${contact._id}]`
+                const selector = `[data-id=edit-post-modal] [data-id=campaign-contact-${contact.slug}]`
 
                 this
                   .waitForElementVisible(selector)
                   .click(selector)
+                return this
+              }
+            },
+            {
+              selectStatus: function (status) {
+                const selector = `[data-id=edit-post-modal] [data-id=contact-status-${status}]`
+
+                this
+                  .waitForElementVisible(selector)
+                  .click(selector)
+                  .waitForElementNotVisible(selector, 1000)
                 return this
               }
             }
@@ -292,12 +303,6 @@ module.exports = {
         .waitForElementVisible(this.section.editPostModal.selector)
 
       this.section.editPostModal
-        .waitForElementVisible('@contactStatusSelectorButton')
-        .click('@contactStatusSelectorButton')
-        .waitForElementVisible(`[data-id=contact-status-${contactStatus}]`)
-        .click(`[data-id=contact-status-${contactStatus}]`)
-        .waitForElementVisible('@feedbackInput')
-        .setValue('@feedbackInput', text)
         .waitForElementVisible('@selectContactButton')
         .click('@selectContactButton')
 
@@ -306,6 +311,15 @@ module.exports = {
         .selectContact(contact)
 
       this.section.editPostModal
+        .waitForElementVisible('@contactStatusSelectorButton')
+        .click('@contactStatusSelectorButton')
+
+      this.section.editPostModal.section.dropdownMenu
+        .selectStatus(contactStatus)
+
+      this.section.editPostModal
+        .waitForElementVisible('@feedbackInput')
+        .setValue('@feedbackInput', text)
         .waitForElementVisible('@createPostButton')
         .click('@createPostButton')
 
