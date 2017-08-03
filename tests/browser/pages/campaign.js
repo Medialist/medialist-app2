@@ -90,7 +90,6 @@ module.exports = {
                 this
                   .waitForElementVisible(selector)
                   .click(selector)
-                  .waitForElementNotVisible(selector, 1000)
                 return this
               }
             }
@@ -321,7 +320,7 @@ module.exports = {
         .waitForElementVisible('@feedbackInput')
         .setValue('@feedbackInput', text)
         .waitForElementVisible('@createPostButton')
-        .click('@createPostButton')
+        // .click('@createPostButton')
 
       return this
     },

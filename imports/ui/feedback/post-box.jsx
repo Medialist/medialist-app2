@@ -112,9 +112,8 @@ export const PostBoxButtons = ({focused, disabled, onPost, isEdit, children}) =>
 
 export class FeedbackInput extends Component {
   static propTypes = {
-    contact: PropTypes.object,
+    contacts: PropTypes.array,
     campaigns: PropTypes.array,
-    campaign: PropTypes.object,
     focused: PropTypes.bool.isRequired,
     onSubmit: PropTypes.func.isRequired,
     message: PropTypes.string,
@@ -127,9 +126,11 @@ export class FeedbackInput extends Component {
   constructor (props) {
     super(props)
 
-    const { contact, campaign } = this.props
-    const contactRef = campaign && campaign.contacts[contact.slug]
-    const status = contactRef || StatusMap.toContact
+    const { contacts, campaigns, currentCampaign } = this.props
+    const [contact] = contacts
+    const [campaign] = campaigns
+    const contactRef = currentCampaign.contacts.find(c => c.slug === contact.slug)
+    const status = contactRef.status || StatusMap.toContact
 
     this.state = {
       contact,
@@ -179,7 +180,7 @@ export class FeedbackInput extends Component {
     return (
       <div>
         <PostBoxtTextArea
-          placeholder={`What's happening with ${firstName(this.props.contact)}?`}
+          placeholder={`What's happening with ${firstName(this.state.contact)}?`}
           value={this.state.message}
           focused={this.props.focused}
           disabled={this.state.posting}
@@ -205,7 +206,7 @@ export class FeedbackInput extends Component {
             <CampaignSelector
               selectedContact={this.state.contact}
               selectedStatus={this.state.status}
-              contact={this.props.contact}
+              contact={this.state.contact}
               onChange={this.onFieldChange}
               campaigns={this.props.selectableCampaigns || this.props.campaigns}
               campaign={this.state.campaign}
@@ -217,7 +218,7 @@ export class FeedbackInput extends Component {
               <StatusSelector
                 buttonStyle={{padding: '6px 15px 7px'}}
                 status={this.state.status}
-                onChange={this.onFieldChange}
+                onChange={this.onStatusChange}
                 disabled={!this.state.campaign}
                 onOpen={this.onOpenDropDown}
                 onClose={this.onCloseDropDown} />
@@ -233,8 +234,6 @@ export class FeedbackInput extends Component {
 
 export class CoverageInput extends Component {
   static propTypes = {
-    contact: PropTypes.object.isRequired,
-    campaign: PropTypes.object,
     focused: PropTypes.bool,
     campaigns: PropTypes.array.isRequired,
     onSubmit: PropTypes.func.isRequired,
@@ -244,13 +243,23 @@ export class CoverageInput extends Component {
     selectableCampaigns: PropTypes.array
   }
 
-  state = {
-    contact: this.props.contact,
-    status: StatusMap.completed,
-    campaign: this.props.campaign,
-    message: this.props.message || '',
-    posting: false,
-    shouldFocusTextArea: true
+  constructor (props) {
+    super(props)
+
+    const { contacts, campaigns, currentCampaign } = this.props
+    const [contact] = contacts
+    const [campaign] = campaigns
+    const contactRef = currentCampaign.contacts.find(c => c.slug === contact.slug)
+    const status = contactRef.status || StatusMap.completed
+
+    this.state = {
+      contact,
+      status,
+      campaign,
+      message: this.props.message || '',
+      posting: false,
+      shouldFocusTextArea: true
+    }
   }
 
   onFieldChange = (event) => {
@@ -291,7 +300,7 @@ export class CoverageInput extends Component {
     return (
       <div>
         <PostBoxtTextArea
-          placeholder={`Has ${firstName(this.props.contact)} shared any coverage?`}
+          placeholder={`Has ${firstName(this.state.contact)} shared any coverage?`}
           value={this.state.message}
           focused={this.props.focused}
           disabled={this.state.posting}
@@ -317,7 +326,7 @@ export class CoverageInput extends Component {
             <CampaignSelector
               selectedContact={this.state.contact}
               selectedStatus={this.state.status}
-              contact={this.props.contact}
+              contact={this.props.contacts[0]}
               onChange={this.onFieldChange}
               campaigns={this.props.selectableCampaigns || this.props.campaigns}
               campaign={this.state.campaign}
