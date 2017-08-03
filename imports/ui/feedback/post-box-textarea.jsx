@@ -8,8 +8,8 @@ import debounce from 'lodash.debounce'
 // how long to wait before we try to create an embed preview from a url in the post text
 const EMBED_CREATION_WAIT = 500
 
-const PostBoxTextArea = React.createClass({
-  propTypes: {
+class PostBoxTextArea extends React.Component {
+  static propTypes = {
     placeholder: PropTypes.string.isRequired,
     value: PropTypes.string,
     focused: PropTypes.bool,
@@ -18,9 +18,10 @@ const PostBoxTextArea = React.createClass({
     disabled: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     'data-id': PropTypes.string.isRequired
-  },
+  }
 
-  getInitialState () {
+  constructor (props) {
+    super(props)
     this.createEmbed = debounce((url) => {
       this.setState({
         embedLoading: true
@@ -47,18 +48,24 @@ const PostBoxTextArea = React.createClass({
         })
       })
     }, EMBED_CREATION_WAIT)
+  }
 
-    return {
-      embedLoading: false,
-      embed: null
-    }
-  },
+  state = {
+    embedLoading: false,
+    embed: null
+  }
+
+  componentWillMount () {
+    if (!this.props.value) return
+    const url = findUrl(this.props.value)
+    if (!url) return
+    this.createEmbed(url)
+  }
 
   componentWillReceiveProps ({value}) {
     if (value === this.props.value) {
       return
     }
-
     const url = findUrl(value)
 
     if (!url) {
@@ -73,22 +80,22 @@ const PostBoxTextArea = React.createClass({
     }
 
     this.createEmbed(url)
-  },
+  }
 
-  onChange (event) {
+  onChange = (event) => {
     this.props.onChange({
       target: {
         name: 'message',
         value: event.target.value
       }
     })
-  },
+  }
 
-  onTextAreaRef (ref) {
+  onTextAreaRef = (ref) => {
     if (ref && this.props.focused && this.props.shouldFocus) {
       ref.focus()
     }
-  },
+  }
 
   render () {
     return (
@@ -111,6 +118,6 @@ const PostBoxTextArea = React.createClass({
       </div>
     )
   }
-})
+}
 
 export default PostBoxTextArea
