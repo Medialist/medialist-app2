@@ -12,6 +12,7 @@ import MasterLists from '/imports/api/master-lists/master-lists'
 import Contacts from '/imports/api/contacts/contacts'
 import toUserRef from '/imports/lib/to-user-ref'
 import { LinkSchema } from '/imports/lib/schema'
+import trackEvent from '/imports/ui/integrations/track-event'
 
 let sendCampaignLink = () => ([])
 let createInvitationLink = () => ([])
@@ -257,6 +258,8 @@ export const createCampaign = new ValidatedMethod({
       createdBy
     })
 
+    trackEvent('Created Campaign', {name: campaign.name, slug: campaign.slug})
+
     return slug
   }
 })
@@ -461,12 +464,14 @@ export const setTeamMates = new ValidatedMethod({
       campaignSlugs: [campaign.slug]
     })
 
-    userIds.forEach(userId => {
+    addedUserIds.forEach(userId => {
       // Add this campaign to the teammember's favourites if required
       addToMyFavourites({
         userId: userId,
         campaignSlugs: [campaign.slug]
       })
+
+      trackEvent('Added Teammate', { user_id: userId })
     })
 
     if (!this.isSimulation) {

@@ -20,6 +20,7 @@ import SigningInPage from '/imports/ui/sign-in/signing-in-page'
 function handleUpdate () {
   if (this.state.location.action === 'PUSH') {
     window.scrollTo(0, 0)
+    window.Intercom && window.Intercom('update')
   }
 }
 
