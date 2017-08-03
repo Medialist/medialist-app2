@@ -16,7 +16,7 @@ Meteor.publish('contactCount', function () {
   return contactCounter
 })
 
-Meteor.publish('my-contacts-and-campaigns', function () {
+Meteor.publish('recent-contacts-and-campaigns', function () {
   if (!this.userId) {
     return this.ready()
   }
