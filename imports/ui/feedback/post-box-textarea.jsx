@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import Textarea from 'react-textarea-autosize'
 import findUrl from '/imports/lib/find-url'
 import LinkPreview from '/imports/ui/feedback/link-preview'
 import { Meteor } from 'meteor/meteor'
@@ -100,8 +101,9 @@ class PostBoxTextArea extends React.Component {
   render () {
     return (
       <div>
-        <textarea
-          rows={this.props.focused ? '3' : '1'}
+        <Textarea
+          minRows={this.props.focused ? '3' : '1'}
+          maxRows={10}
           className='textarea placeholder-gray60 caret-blue'
           style={{border: '0 none', overflowY: 'auto', resize: 'none', paddingLeft: '3px'}}
           placeholder={this.props.placeholder}
