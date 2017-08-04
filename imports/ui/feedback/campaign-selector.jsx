@@ -81,6 +81,7 @@ const CampaignSelector = React.createClass({
     const { campaigns, contact, onStatusChange } = this.props
     const { campaign, open } = this.state
     const { status } = campaign.contacts.find(c => c.slug === contact.slug)
+
     return (
       <div className='inline-block'>
         <div className='inline-block'>

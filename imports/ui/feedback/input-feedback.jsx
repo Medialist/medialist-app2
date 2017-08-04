@@ -23,19 +23,12 @@ export default class FeedbackInput extends Component {
   constructor (props) {
     super(props)
 
-    const { contact, campaign, message, selectableContacts, selectableCampaigns } = props
-    console.log({ contact, campaign, message, selectableContacts, selectableCampaigns })
-    let status = StatusMap.toContact
-
-    if (selectableContacts) {
-      const selectedContact = selectableContacts.find(c => c.slug === contact.slug)
-      status = selectedContact && selectedContact.status || StatusMap.toContact
-    }
-
-    if (campaign && contact) {
-      const selectedContact = campaign.contacts.find(c => c.slug === contact.slug)
-      status = selectedContact && selectedContact.status || StatusMap.toContact
-    }
+    const {
+      contact,
+      campaign,
+      message,
+      status = StatusMap.toContact
+    } = props
 
     this.state = {
       contact,
@@ -123,7 +116,6 @@ export default class FeedbackInput extends Component {
               onChange={onFieldChange}
               onStatusChange={onFieldChange}
               campaigns={selectableCampaigns}
-              campaign={campaign}
               onOpen={onOpenDropDown}
               onClose={onCloseDropDown} />
           )}

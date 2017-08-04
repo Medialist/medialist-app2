@@ -25,9 +25,7 @@ class EditPost extends React.Component {
   render () {
     const { post } = this.props
     const { _id, icon, type, contacts, campaigns } = post
-    const contact = contacts[0]
-    const contactStatus = {[contact.slug]: post.status}
-    const campaign = Object.assign({}, campaigns[0], {contacts: contactStatus})
+
     const Component = {
       'FeedbackPost': FeedbackInput,
       'CoveragePost': CoverageInput,
@@ -40,7 +38,13 @@ class EditPost extends React.Component {
           {icon}<span className='mx1'>Edit</span>{type.replace(/Post/g, '')}
         </div>
         <div className='p3'>
-          <Component {...post} onSubmit={this.props.onUpdate.bind(null, _id)} focused contact={contacts[0]} campaign={campaign} isEdit />
+          <Component
+            {...post}
+            contact={contacts && contacts[0]}
+            campaign={campaigns && campaigns[0]}
+            onSubmit={this.props.onUpdate.bind(null, _id)}
+            focused
+            isEdit />
         </div>
       </div>
     )
