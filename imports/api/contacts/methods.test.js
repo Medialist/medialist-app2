@@ -43,9 +43,9 @@ describe('addContactsToCampaign', function () {
 
   it('should validate the parameters', function () {
     assert.throws(() => addContactsToCampaign.validate({contactSlugs: ['a']}), /Campaign slug is required/)
-    assert.throws(() => addContactsToCampaign.validate({campaignSlug: 'a'}), /Contact slugs is required/)
     assert.throws(() => addContactsToCampaign.validate({contactSlugs: [1], campaignSlug: 1}), /must be of type String/)
     assert.doesNotThrow(() => addContactsToCampaign.validate({contactSlugs: ['a'], campaignSlug: 'a'}))
+    assert.doesNotThrow(() => addContactsToCampaign.validate({contactSearch: { term: 'fred' }, campaignSlug: 'a'}))
   })
 
   it('should add all contacts to the campaign', function () {
@@ -158,6 +158,44 @@ describe('addContactsToCampaign', function () {
 
     assert.equal(campaign.contacts.length, 1)
     assert.equal(campaign.contacts[0].slug, contacts[0].slug)
+  })
+})
+
+if('should add contacts from a search', function () {
+  // Set all names to Alponse
+  Contacts.update({}, {
+    $set: {
+      outlets: [],
+      name: 'Alphonse'
+    }
+  })
+  // set contact 2's name to Ziggy
+  Contacts.update({
+    _id: contacts[1]._id
+  }, {
+    $set: {
+      name: 'Ziggy'
+    }
+  })
+
+  const campaignSlug = campaigns[1].slug
+
+  const contactSearch = { term: 'Alp' }
+
+  addContactsToCampaign.run.call({
+    userId: users[0]._id
+  }, {
+    contactSearch,
+    campaignSlug
+  })
+
+  const campaign = Campaigns.findOne({
+    slug: campaignSlug
+  })
+
+  assert.equal(Object.keys(campaign.contacts).length, 2)
+  campaign.contacts.forEach((c) => {
+    assert.equal(c.name, 'Alphonse')
   })
 })
 

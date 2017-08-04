@@ -143,3 +143,50 @@ ContactSchema.extend(IdSchema)
 ContactSchema.extend(AuditSchema)
 ContactSchema.extend(CreatedAtSchema)
 ContactSchema.extend(ContactCreateSchema)
+
+export const ContactSearchSchema = new SimpleSchema({
+  excludeSlugs: {
+    type: Array,
+    optional: true
+  },
+  'excludeSlugs.$': {
+    type: String
+  },
+  term: {
+    type: String,
+    optional: true
+  },
+  tagSlugs: {
+    type: Array,
+    optional: true
+  },
+  'tagSlugs.$': {
+    type: String
+  },
+  masterListSlug: {
+    type: String,
+    optional: true
+  },
+  userId: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id,
+    optional: true
+  },
+  campaignSlugs: {
+    type: Array,
+    optional: true
+  },
+  'campaignSlugs.$': {
+    type: String,
+    optional: true
+  },
+  importId: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id,
+    optional: true
+  },
+  minSearchLength: {
+    type: Number,
+    optional: true
+  }
+})

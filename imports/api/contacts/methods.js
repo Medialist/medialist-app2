@@ -9,9 +9,20 @@ import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
 import Contacts from '/imports/api/contacts/contacts'
-import { ContactCreateSchema } from '/imports/api/contacts/schema'
+import { ContactCreateSchema, ContactSearchSchema } from '/imports/api/contacts/schema'
+import { createContactSearchQuery } from '/imports/api/contacts/queries'
 import { StatusValues } from '/imports/api/contacts/status'
 import MasterLists from '/imports/api/master-lists/master-lists'
+
+function findContactSlugs (contactSearch, contactSlugs) {
+  if (contactSlugs) {
+    checkAllSlugsExist(contactSlugs, Contacts)
+    return contactSlugs
+  } else {
+    const query = createContactSearchQuery(contactSearch)
+    return Contacts.find(query, {fields: {slug: 1}}).map((doc) => doc.slug)
+  }
+}
 
 /*
  * Add mulitple Contacts to 1 Campaign
@@ -24,34 +35,56 @@ import MasterLists from '/imports/api/master-lists/master-lists'
 export const addContactsToCampaign = new ValidatedMethod({
   name: 'addContactsToCampaign',
 
+  // don't use the clients guess of how many were added
+  applyOptions: {
+    returnStubValue: false
+  },
+
   validate: new SimpleSchema({
     contactSlugs: {
-      type: Array
+      type: Array,
+      optional: true
     },
     'contactSlugs.$': {
       type: String
+    },
+    contactSearch: {
+      type: ContactSearchSchema,
+      optional: true
     },
     campaignSlug: {
       type: String
     }
   }).validator(),
 
-  run ({ contactSlugs, campaignSlug }) {
+  run ({ contactSearch, contactSlugs, campaignSlug }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
 
-    checkAllSlugsExist(contactSlugs, Contacts)
-    checkAllSlugsExist([campaignSlug], Campaigns)
+    if (!contactSlugs && !contactSearch) {
+      throw new Meteor.Error('contactSlugs or contactSearch must be provided')
+    }
 
-    const updatedBy = findOneUserRef(this.userId)
-    const updatedAt = new Date()
+    if (this.isSimulation) {
+      // This takes way too long on the client so we just perform the initial
+      // validation logic and bail here. The `returnStubValue: false` option above
+      // is important as otherwise the client will assume it's simulated null
+      // is the result of this method call and display incorrect info to the user.
+      return
+    }
 
     const campaign = Campaigns.findOne({
       slug: campaignSlug
     }, {
       contacts: 1
     })
+    if (!campaign) throw new Meteor.Error(`Campaign ${campaignSlug} could not be found`)
+
+    contactSlugs = findContactSlugs(contactSearch, contactSlugs)
+
+    const updatedBy = findOneUserRef(this.userId)
+    const updatedAt = new Date()
 
     // Add the things to the users my<Contact|Campaigns> list
     addToMyFavourites({
@@ -64,7 +97,7 @@ export const addContactsToCampaign = new ValidatedMethod({
 
     if (newContactSlugs.length === 0) {
       // User hasn't changed anything, so we're done.
-      return
+      return { numContactsAdded: 0 }
     }
 
     const newContacts = newContactSlugs.map((slug) => ({
