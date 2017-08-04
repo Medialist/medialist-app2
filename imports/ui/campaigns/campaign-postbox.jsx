@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import ContactSelector from '/imports/ui/feedback/contact-selector'
 import { PostBoxButtons } from '/imports/ui/feedback/post-box'
 import PostBoxTextArea from '/imports/ui/feedback/post-box-textarea'
+import FeedbackInput from '/imports/ui/feedback/input-feedback'
 import { FeedbackTab, CoverageTab, PostBoxTabs } from '/imports/ui/feedback/post-box-nav'
 import immutable from 'object-path-immutable'
 
@@ -41,7 +42,7 @@ const CampaignPostBox = React.createClass({
   render () {
     const { contacts, campaign } = this.props
     const { selected, focused } = this.state
-    const childProps = { focused, contacts, campaign }
+    const childProps = { focused, selectableContacts: contacts, campaign }
 
     return (
       <div className='pb3' onFocus={() => this.setState({focused: true})} data-id='post-box'>
@@ -60,90 +61,90 @@ const CampaignPostBox = React.createClass({
   }
 })
 
-const FeedbackInput = React.createClass({
-  propTypes: {
-    campaign: PropTypes.object.isRequired,
-    contacts: PropTypes.array.isRequired,
-    focused: PropTypes.bool.isRequired,
-    onSubmit: PropTypes.func.isRequired
-  },
-  getInitialState () {
-    return {
-      message: '',
-      contact: null,
-      status: null,
-      posting: false,
-      shouldFocusTextArea: true
-    }
-  },
-  onFieldChange (event) {
-    const { name, value } = event.target
-    this.setState((s) => immutable.set(s, name, value))
-
-    if (name === 'contact') {
-      const status = value.status
-
-      this.setState({
-        status
-      })
-    }
-  },
-  onSubmit () {
-    this.setState({
-      posting: true
-    })
-
-    this.props.onSubmit(this.state, (error) => {
-      this.setState(this.getInitialState())
-
-      if (error) {
-        console.error(error)
-      }
-    })
-  },
-  onOpenDropDown () {
-    this.setState({
-      shouldFocusTextArea: false
-    })
-  },
-  onCloseDropDown () {
-    this.setState({
-      shouldFocusTextArea: true
-    })
-  },
-  render () {
-    const {focused, contacts, campaign} = this.props
-    const {message, posting, contact, status} = this.state
-
-    return (
-      <div>
-        <PostBoxTextArea
-          placeholder={'What\'s happening with this campaign?'}
-          value={message}
-          focused={focused}
-          disabled={posting}
-          onChange={this.onFieldChange}
-          data-id='feedback-input'
-          shouldFocus={this.state.shouldFocusTextArea}
-        />
-        <PostBoxButtons
-          focused={focused}
-          disabled={!message || posting || !status || !contact}
-          onPost={this.onSubmit} >
-          <ContactSelector
-            selectedContact={contact}
-            selectedStatus={status}
-            campaign={campaign}
-            contacts={contacts}
-            onContactChange={this.onFieldChange}
-            onStatusChange={this.onFieldChange}
-            onOpen={this.onOpenDropDown}
-            onClose={this.onCloseDropDown} />
-        </PostBoxButtons>
-      </div>
-    )
-  }
-})
+// const FeedbackInput = React.createClass({
+//   propTypes: {
+//     campaign: PropTypes.object.isRequired,
+//     contacts: PropTypes.array.isRequired,
+//     focused: PropTypes.bool.isRequired,
+//     onSubmit: PropTypes.func.isRequired
+//   },
+//   getInitialState () {
+//     return {
+//       message: '',
+//       contact: null,
+//       status: null,
+//       posting: false,
+//       shouldFocusTextArea: true
+//     }
+//   },
+//   onFieldChange (event) {
+//     const { name, value } = event.target
+//     this.setState((s) => immutable.set(s, name, value))
+//
+//     if (name === 'contact') {
+//       const status = value.status
+//
+//       this.setState({
+//         status
+//       })
+//     }
+//   },
+//   onSubmit () {
+//     this.setState({
+//       posting: true
+//     })
+//
+//     this.props.onSubmit(this.state, (error) => {
+//       this.setState(this.getInitialState())
+//
+//       if (error) {
+//         console.error(error)
+//       }
+//     })
+//   },
+//   onOpenDropDown () {
+//     this.setState({
+//       shouldFocusTextArea: false
+//     })
+//   },
+//   onCloseDropDown () {
+//     this.setState({
+//       shouldFocusTextArea: true
+//     })
+//   },
+//   render () {
+//     const {focused, contacts, campaign} = this.props
+//     const {message, posting, contact, status} = this.state
+//
+//     return (
+//       <div>
+//         <PostBoxTextArea
+//           placeholder={'What\'s happening with this campaign?'}
+//           value={message}
+//           focused={focused}
+//           disabled={posting}
+//           onChange={this.onFieldChange}
+//           data-id='feedback-input'
+//           shouldFocus={this.state.shouldFocusTextArea}
+//         />
+//         <PostBoxButtons
+//           focused={focused}
+//           disabled={!message || posting || !status || !contact}
+//           onPost={this.onSubmit} >
+//           <ContactSelector
+//             selectedContact={contact}
+//             selectedStatus={status}
+//             campaign={campaign}
+//             contacts={contacts}
+//             onContactChange={this.onFieldChange}
+//             onStatusChange={this.onFieldChange}
+//             onOpen={this.onOpenDropDown}
+//             onClose={this.onCloseDropDown} />
+//         </PostBoxButtons>
+//       </div>
+//     )
+//   }
+// })
 
 const CoverageInput = React.createClass({
   propTypes: {

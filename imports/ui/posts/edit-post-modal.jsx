@@ -2,7 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Modal from '/imports/ui/navigation/modal'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
-import { FeedbackInput, CoverageInput, NeedToKnowInput } from '/imports/ui/feedback/post-box'
+import { CoverageInput, NeedToKnowInput } from '/imports/ui/feedback/post-box'
+import FeedbackInput from '/imports/ui/feedback/input-feedback'
 
 class EditPost extends React.Component {
   static propTypes = {

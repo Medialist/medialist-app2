@@ -157,11 +157,35 @@ class Post extends React.Component {
     })
   }
 
-  updatePost = (_id, { message, status }) => {
+  updatePost = (_id, { message, status, contact, campaign }) => {
     this.setState({
       editOpen: false
     })
-    updatePost.call({ _id, message, status })
+
+    const update = { _id }
+
+    if (message) update.message = message
+    if (status) update.status = status
+    if (contact) {
+      update.contact = {
+        _id: contact._id,
+        name: contact.name,
+        slug: contact.slug,
+        outlets: contact.outlets,
+        updatedAt: contact.updatedAt
+      }
+    }
+    if (campaign) {
+      update.campaign = {
+        _id: campaign._id,
+        name: campaign.name,
+        slug: campaign.slug,
+        avatar: campaign.avatar,
+        clientName: campaign.clientName,
+        updatedAt: campaign.updatedAt
+      }
+    }
+    updatePost // updatePost.call(update)
   }
 
   render () {
@@ -224,6 +248,7 @@ class Post extends React.Component {
           post={this.props}
           onUpdate={this.updatePost}
           onDismiss={this.closeMenu}
+          selectableContacts={this.props.selectableContacts}
         />
       </article>
     )
@@ -345,9 +370,10 @@ const FeedbackPostSummary = ({label, campaigns, contacts, status, contact, campa
   )
 }
 
-export const FeedbackPost = ({item, currentUser, contact, campaign}) => (
+export const FeedbackPost = ({item, currentUser, contact, campaign, contacts}) => (
   <Post
     {...item}
+    selectableContacts={contacts}
     currentUser={currentUser}
     icon={<FeedFeedbackIcon className='blue-dark' style={{verticalAlign: -2}} />}
     summary={<FeedbackPostSummary {...item} label='logged feedback' contact={contact} campaign={campaign} />}
