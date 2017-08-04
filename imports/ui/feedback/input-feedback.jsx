@@ -114,7 +114,6 @@ export default class FeedbackInput extends Component {
               selectedStatus={status}
               contact={contact}
               onChange={onFieldChange}
-              onStatusChange={onFieldChange}
               campaigns={selectableCampaigns}
               onOpen={onOpenDropDown}
               onClose={onCloseDropDown} />

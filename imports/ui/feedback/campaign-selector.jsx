@@ -19,11 +19,11 @@ const CampaignButton = (props) => {
 
 const CampaignSelector = React.createClass({
   propTypes: {
+    selectedStatus: PropTypes.string,
     contact: PropTypes.object.isRequired,
     campaigns: PropTypes.array.isRequired,
     campaign: PropTypes.object,
     onChange: PropTypes.func.isRequired,
-    onStatusChange: PropTypes.func.isRequired,
     onOpen: PropTypes.func,
     onClose: PropTypes.func
   },
@@ -78,9 +78,9 @@ const CampaignSelector = React.createClass({
   },
   render () {
     const { openDropdown, closeDropdown, onLinkClick, onClearFilter } = this
-    const { campaigns, contact, onStatusChange } = this.props
+    const { campaigns, contact, onChange, selectedStatus } = this.props
     const { campaign, open } = this.state
-    const { status } = campaign.contacts.find(c => c.slug === contact.slug)
+    const status = selectedStatus || campaign.contacts.find(c => c.slug === contact.slug).status
 
     return (
       <div className='inline-block'>
@@ -106,8 +106,8 @@ const CampaignSelector = React.createClass({
         <div className='ml1 inline-block'>
           <StatusSelector
             buttonStyle={{padding: '6px 15px 7px'}}
-            status={status}
-            onChange={onStatusChange}
+            status={status || this.props.selectedStatus}
+            onChange={onChange}
             disabled={!contact}>
             <StatusLabel name={status} />
           </StatusSelector>
