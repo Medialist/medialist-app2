@@ -11,21 +11,31 @@ import firstName from '/imports/lib/first-name'
 export default class FeedbackInput extends Component {
   static propTypes = {
     contact: PropTypes.object,
-    campaigns: PropTypes.array,
     campaign: PropTypes.object,
     focused: PropTypes.bool.isRequired,
     onSubmit: PropTypes.func.isRequired,
     message: PropTypes.string,
     isEdit: PropTypes.bool,
-    selectableContacts: PropTypes.array
+    selectableContacts: PropTypes.array,
+    selectableCampaigns: PropTypes.array
   }
 
   constructor (props) {
     super(props)
 
-    const { contact, campaign, message, selectableContacts = [] } = props
-    const selectedContact = selectableContacts.find(c => c.slug === contact.slug)
-    const status = selectedContact && selectedContact.status || StatusMap.toContact
+    const { contact, campaign, message, selectableContacts, selectableCampaigns } = props
+    console.log({ contact, campaign, message, selectableContacts, selectableCampaigns })
+    let status = StatusMap.toContact
+
+    if (selectableContacts) {
+      const selectedContact = selectableContacts.find(c => c.slug === contact.slug)
+      status = selectedContact && selectedContact.status || StatusMap.toContact
+    }
+
+    if (campaign && contact) {
+      const selectedContact = campaign.contacts.find(c => c.slug === contact.slug)
+      status = selectedContact && selectedContact.status || StatusMap.toContact
+    }
 
     this.state = {
       contact,
@@ -75,7 +85,7 @@ export default class FeedbackInput extends Component {
 
   render () {
     const { message, posting, shouldFocusTextArea, status, campaign, contact } = this.state
-    const { focused, isEdit, campaigns, selectableContacts = [], selectableCampaigns = [] } = this.props
+    const { focused, isEdit, selectableContacts, selectableCampaigns } = this.props
     const { onFieldChange, onSubmit, onOpenDropDown, onCloseDropDown } = this
 
     const isCampaignPage = window.location.pathname.split('/')[1] === 'campaign'
@@ -111,7 +121,8 @@ export default class FeedbackInput extends Component {
               selectedStatus={status}
               contact={contact}
               onChange={onFieldChange}
-              campaigns={selectableCampaigns || campaigns || []}
+              onStatusChange={onFieldChange}
+              campaigns={selectableCampaigns}
               campaign={campaign}
               onOpen={onOpenDropDown}
               onClose={onCloseDropDown} />

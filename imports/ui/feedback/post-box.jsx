@@ -68,7 +68,7 @@ const PostBox = React.createClass({
     const { contact, campaigns, loading } = this.props
     const campaign = this.props.campaign || campaigns[0]
     if (loading) return null
-    const childProps = { focused, contact }
+    const childProps = { focused, contact, selectableCampaigns: campaigns }
     return (
       <div className='pb3' onFocus={() => this.setState({focused: true})} data-id='post-box'>
         <PostBoxTabs>

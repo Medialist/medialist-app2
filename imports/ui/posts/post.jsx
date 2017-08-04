@@ -185,6 +185,7 @@ class Post extends React.Component {
         updatedAt: campaign.updatedAt
       }
     }
+    console.log(update)
     updatePost // updatePost.call(update)
   }
 
@@ -199,7 +200,6 @@ class Post extends React.Component {
       'NeedToKnowPost': 'Need-to-Knows'
     }
     const canEditPost = this.props.createdBy._id === this.props.currentUser._id
-
     return (
       <article className={`flex rounded px4 pt3 pb2 mb2 shadow-2 ${this.props.bgClass}`} data-id={dasherise(this.props.type)} {...data}>
         <div className='flex-none' style={{paddingTop: 1}}>
@@ -249,6 +249,7 @@ class Post extends React.Component {
           onUpdate={this.updatePost}
           onDismiss={this.closeMenu}
           selectableContacts={this.props.selectableContacts}
+          selectableCampaigns={this.props.selectableCampaigns}
         />
       </article>
     )
@@ -370,9 +371,10 @@ const FeedbackPostSummary = ({label, campaigns, contacts, status, contact, campa
   )
 }
 
-export const FeedbackPost = ({item, currentUser, contact, campaign, contacts}) => (
+export const FeedbackPost = ({item, currentUser, contact, campaign, contacts, campaigns}) => (
   <Post
     {...item}
+    selectableCampaigns={campaigns}
     selectableContacts={contacts}
     currentUser={currentUser}
     icon={<FeedFeedbackIcon className='blue-dark' style={{verticalAlign: -2}} />}

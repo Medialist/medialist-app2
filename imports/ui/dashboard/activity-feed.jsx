@@ -12,6 +12,7 @@ import SubscriptionLimitContainer from '/imports/ui/navigation/subscription-limi
 
 const ActivityFeed = React.createClass({
   propTypes: {
+    campaigns: PropTypes.array,
     campaign: PropTypes.object,
     contact: PropTypes.object,
     'data-id': PropTypes.string,
@@ -41,8 +42,9 @@ const ActivityFeed = React.createClass({
 
   render () {
     const { onFilterChange, onCampaignFilterChange } = this
-    const { contact, campaign, contacts } = this.props
+    const { contact, campaign, contacts, campaigns } = this.props
     const { filterType, filterCampaign } = this.state
+
     return (
       <div data-id={this.props['data-id']}>
         <div className='flex justify-start items-center pb3'>
@@ -68,7 +70,8 @@ const ActivityFeed = React.createClass({
                   filter={filterType}
                   campaign={filterCampaign || campaign}
                   contact={contact}
-                  contacts={contacts} />
+                  contacts={contacts}
+                  campaigns={campaigns} />
               )}
             </SubscriptionLimitContainer>
           )}
@@ -98,7 +101,7 @@ const CampaignFilterContainer = createContainer((props) => {
 }, CampaignFilter)
 
 const ActivityListContainer = createContainer((props) => {
-  const { campaign, contact, filter, limit, contacts } = props
+  const { campaign, contact, filter, limit } = props
   const typesForFilter = {
     'All Activity': Posts.types,
     'Feedback': ['FeedbackPost'],
@@ -144,7 +147,6 @@ const ActivityListContainer = createContainer((props) => {
     loading,
     currentUser: Meteor.user(),
     contact,
-    contacts,
     campaign,
     items,
     ...props

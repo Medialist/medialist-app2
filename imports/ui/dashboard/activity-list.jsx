@@ -10,11 +10,12 @@ const ActivityList = React.createClass({
     items: PropTypes.array.isRequired,
     contact: PropTypes.object,
     campaign: PropTypes.object,
-    contacts: PropTypes.array
+    contacts: PropTypes.array,
+    campaigns: PropTypes.array
   },
 
   render () {
-    const { items, currentUser, contact, contacts, campaign, loading } = this.props
+    const { items, currentUser, contact, contacts, campaign, loading, campaigns } = this.props
     if (!loading && !items.length) return <p className='p4 mb2 f-xl semibold center'>No items yet</p>
     return (
       <div style={{paddingBottom: 100}}>
@@ -33,6 +34,7 @@ const ActivityList = React.createClass({
               contact={contact}
               contacts={contacts}
               campaign={campaign}
+              campaigns={campaigns}
               editable={editable}
             />
           )
