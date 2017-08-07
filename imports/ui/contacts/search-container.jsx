@@ -1,91 +1,90 @@
-import React from 'react'
-import PropTypes from 'prop-types'
 import { Meteor } from 'meteor/meteor'
-import { ReactMeteorData } from 'meteor/react-meteor-data'
-import Tags from '/imports/api/tags/tags'
-import Contacts from '/imports/api/contacts/contacts'
-import { searchContacts } from '/imports/api/contacts/queries'
+import { createContainer } from 'meteor/react-meteor-data'
+import { createContactSearchQuery } from '/imports/api/contacts/queries'
+import { ContactSearchCount, ContactSearchResults } from './collections'
+
+function extractQueryOpts (props) {
+  const {
+    minSearchLength = 3,
+    term,
+    campaignSlugs,
+    tagSlugs,
+    masterListSlug,
+    userId,
+    importId
+  } = props
+
+  const queryOpts = {
+    campaignSlugs,
+    masterListSlug,
+    userId,
+    tagSlugs,
+    importId,
+    minSearchLength
+  }
+
+  if (term && term.length >= minSearchLength) {
+    queryOpts.term = term
+  }
+
+  return queryOpts
+}
+
+function isSearching (queryOpts) {
+  const query = createContactSearchQuery(queryOpts)
+  return Object.keys(query).length > 0
+}
 
 /**
-* SearchContainer
+* Contact SearchContainer HOC
 * Find contacts by a search term and other criteria.
 *
 * You can pass in:
 * - `term` - The Search term
-* - `sort` - A mongo sort sort specifier
-* - `limit` - Maximum number of docs to fetch.
-* - `campaignSlugs` - Array of campaigns ot search in.
+* - `campaignSlugs` - Array of campaigns to search in.
 * - `masterListSlug` - To search a in a specific list
 * - `userId` to search in the `myContacts` for a given user
+* - `sort` - A mongo sort sort specifier
+* - `limit` - Maximum number of docs to fetch.
 *
 * Your component will recieve these additional props:
 * - `contacts` - search results
-* - `contactsCount` - count of all contacts available
 * - `loading` - search subscription is loading
-* - `searching` - true if the term is long enough to trigger a search subscription
+* - `searching` - true if their is any search criteria
 */
-export default (Component, opts = {}) => {
-  const minSearchLength = opts.minSearchLength || 3
+export default (Component) => createContainer((props) => {
+  console.log('search', props)
 
-  return React.createClass({
-    propTypes: {
-      limit: PropTypes.number,
-      term: PropTypes.string.isRequired,
-      // http://docs.meteor.com/api/collections.html#sortspecifiers
-      sort: PropTypes.oneOfType([ PropTypes.object, PropTypes.array ]),
-      campaignSlugs: PropTypes.arrayOf(PropTypes.string),
-      selectedMasterListSlug: PropTypes.string,
-      userId: PropTypes.string,
-      importId: PropTypes.string
-    },
+  const {
+    limit,
+    sort = { updatedAt: -1 }
+  } = props
 
-    getDefaultProps () {
-      return { sort: { updatedAt: -1 } }
-    },
+  const queryOpts = extractQueryOpts(props)
 
-    mixins: [ReactMeteorData],
+  const searchOpts = {
+    sort,
+    limit,
+    ...queryOpts
+  }
 
-    getMeteorData () {
-      const { term, tagSlugs, selectedMasterListSlug, userId, campaignSlugs, importId, sort, limit } = this.props
-      const opts = {
-        tagSlugs,
-        campaignSlugs,
-        masterListSlug: selectedMasterListSlug,
-        userId,
-        importId,
-        sort,
-        limit
-      }
-      const searching = !!(term && term.length >= minSearchLength)
+  const searching = isSearching(queryOpts)
 
-      if (searching) {
-        opts.term = term
-      }
+  const subs = [Meteor.subscribe('contact-search-results', searchOpts)]
 
-      const subs = [
-        Meteor.subscribe('contactCount'),
-        Meteor.subscribe('searchContacts', opts)
-      ]
+  const contacts = ContactSearchResults.find().fetch()
 
-      if (userId && userId !== Meteor.userId()) {
-        subs.push(Meteor.subscribe('users-by-id', {userIds: [userId]}))
-      }
+  const loading = props.loading || subs.some((s) => !s.ready())
 
-      let selectedTags = []
+  return { contacts, searching, loading, sort }
+}, Component)
 
-      if (tagSlugs && tagSlugs.length) {
-        subs.push(Meteor.subscribe('tags-by-slug', {tagSlugs}))
-        selectedTags = Tags.find({slug: { $in: tagSlugs }}).fetch()
-      }
-
-      const contacts = searchContacts(opts).fetch()
-      const contactsCount = Contacts.allContactsCount()
-      const loading = !subs.every((sub) => sub.ready())
-      return { contacts, contactsCount, selectedTags, loading, searching }
-    },
-
-    render () {
-      return <Component {...this.props} {...this.data} />
-    }
-  })
-}
+export const createSearchCountContainer = (Component) => createContainer((props) => {
+  console.log('search-count', props)
+  const queryOpts = extractQueryOpts(props)
+  const subs = [Meteor.subscribe('contact-search-count', queryOpts)]
+  const res = ContactSearchCount.find().fetch()
+  const contactsCount = res[0] ? res[0].count : null
+  const loading = props.loading || subs.some((s) => !s.ready())
+  return { contactsCount, loading }
+}, Component)

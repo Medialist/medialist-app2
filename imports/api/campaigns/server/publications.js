@@ -30,6 +30,23 @@ Meteor.publish('campaign-refs', function () {
   })
 })
 
+Meteor.publish('campaign-refs-by-slug', function ({campaignSlugs}) {
+  return Campaigns.find({
+    slug: {
+      $in: campaignSlugs
+    }
+  }, {
+    fields: {
+      _id: 1,
+      slug: 1,
+      name: 1,
+      avatar: 1,
+      client: 1,
+      contacts: 1
+    }
+  })
+})
+
 Meteor.publish('campaign', function (slug) {
   if (!this.userId) {
     return []
