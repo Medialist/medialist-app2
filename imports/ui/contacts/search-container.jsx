@@ -55,7 +55,7 @@ function isSearching (queryOpts) {
 */
 export default (Component) => createContainer((props) => {
   const {
-    limit,
+    limit = 20,
     sort = { updatedAt: -1 }
   } = props
 
