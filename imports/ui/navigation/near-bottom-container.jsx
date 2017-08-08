@@ -16,7 +16,6 @@ const NearBottomContainer = React.createClass({
   },
   onScroll () {
     const nearBottom = this.isNearBottom()
-    console.log('scroll', {nearBottom})
     if (this.state.nearBottom === nearBottom) return
     this.setState({nearBottom})
   },

@@ -20,14 +20,12 @@ class SubscriptionLimitContainer extends React.PureComponent {
   }
 
   componentWillReceiveProps (nextProps) {
-    console.log('sub limit componentWillReceiveProps', {wantMore: nextProps.wantMore, limit: this.state.limit})
     if (!nextProps.wantMore && !nextProps.resetLimit) {
       return
     }
 
     this.setState((s) => {
       const limit = nextProps.resetLimit ? this.props.initialLimit : s.limit + this.props.incrementBy
-      console.log('subs limit set state', limit, this.props, nextProps)
       return { limit }
     })
   }

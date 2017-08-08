@@ -5,12 +5,8 @@ import { ReactiveAggregate } from 'meteor/jcbernack:reactive-aggregate'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/server/contacts'
 import { ContactSearchSchema } from '/imports/api/contacts/schema'
-import { publishAllForLoggedInUser } from '/imports/lib/publish-all'
-import * as Queries from '/imports/api/contacts/queries'
 import StatusMap from '/imports/api/contacts/status'
 import { createContactSearchQuery } from '/imports/api/contacts/queries'
-
-publishAllForLoggedInUser(Queries)
 
 const contactCounter = new Counter('contactCount', Contacts.find({}), 3000)
 
@@ -220,7 +216,6 @@ Meteor.publish('contact-search-results', function ({sort, limit, ...contactSearc
   }
   ContactSearchSchema.validate(contactSearch)
   const query = createContactSearchQuery(contactSearch)
-  console.log('contact-search-results', query, sort, limit)
   ReactiveAggregate(this, Contacts, [{
     $match: query
   }, {

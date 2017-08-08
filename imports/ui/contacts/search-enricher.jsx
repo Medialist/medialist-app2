@@ -4,7 +4,6 @@ import Campaigns from '/imports/api/campaigns/campaigns'
 import Tags from '/imports/api/tags/tags'
 
 export default (Component) => createContainer((props) => {
-  console.log('enrich')
   const {
     campaignSlugs,
     tagSlugs,

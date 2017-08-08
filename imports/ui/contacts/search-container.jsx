@@ -69,7 +69,6 @@ export default (Component) => createContainer((props) => {
 
   const searching = isSearching(queryOpts)
 
-  console.log('search', searchOpts)
   const subs = [Meteor.subscribe('contact-search-results', searchOpts)]
 
   const contacts = ContactSearchResults.find({}, {sort}).fetch()
@@ -83,8 +82,6 @@ export default (Component) => createContainer((props) => {
  * Container to get the all contacts and search result count
  */
 export const createSearchCountContainer = (Component) => createContainer((props) => {
-  console.log('search-count', props)
-
   const queryOpts = extractQueryOpts(props)
 
   const searching = isSearching(queryOpts)

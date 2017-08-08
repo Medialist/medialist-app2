@@ -4,7 +4,6 @@ import { createStore, applyMiddleware, compose } from 'redux'
 import { Provider } from 'react-redux'
 import { browserHistory } from 'react-router'
 import { syncHistoryWithStore } from 'react-router-redux'
-import { configureUrlQuery } from 'react-url-query'
 import thunkMiddleware from 'redux-thunk'
 import { Meteor } from 'meteor/meteor'
 import reducers from '/imports/ui/redux/reducers'
@@ -22,7 +21,6 @@ const store = createStore(
 )
 
 const history = syncHistoryWithStore(browserHistory, store)
-configureUrlQuery({ history: browserHistory })
 
 Meteor.startup(() => {
   render((
