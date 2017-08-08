@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
 import { createContactSearchQuery } from '/imports/api/contacts/queries'
 import { ContactSearchCount, ContactSearchResults } from './collections'
+import Contacts from '/imports/api/contacts/contacts'
 
 function extractQueryOpts (props) {
   const {
@@ -53,8 +54,6 @@ function isSearching (queryOpts) {
 * - `searching` - true if their is any search criteria
 */
 export default (Component) => createContainer((props) => {
-  console.log('search', props)
-
   const {
     limit,
     sort = { updatedAt: -1 }
@@ -70,21 +69,38 @@ export default (Component) => createContainer((props) => {
 
   const searching = isSearching(queryOpts)
 
+  console.log('search', searchOpts)
   const subs = [Meteor.subscribe('contact-search-results', searchOpts)]
 
-  const contacts = ContactSearchResults.find().fetch()
+  const contacts = ContactSearchResults.find({}, {sort}).fetch()
 
   const loading = props.loading || subs.some((s) => !s.ready())
 
   return { contacts, searching, loading, sort }
 }, Component)
 
+/**
+ * Container to get the all contacts and search result count
+ */
 export const createSearchCountContainer = (Component) => createContainer((props) => {
   console.log('search-count', props)
+
   const queryOpts = extractQueryOpts(props)
-  const subs = [Meteor.subscribe('contact-search-count', queryOpts)]
-  const res = ContactSearchCount.find().fetch()
-  const contactsCount = res[0] ? res[0].count : null
+
+  const searching = isSearching(queryOpts)
+
+  const allContactsCount = Contacts.allContactsCount()
+
+  let contactsCount = allContactsCount
+
+  const subs = []
+  if (searching) {
+    subs.push(Meteor.subscribe('contact-search-count', queryOpts))
+    const res = ContactSearchCount.find().fetch()
+    contactsCount = res[0] ? res[0].count : null
+  }
+
   const loading = props.loading || subs.some((s) => !s.ready())
-  return { contactsCount, loading }
+
+  return { allContactsCount, contactsCount, loading }
 }, Component)

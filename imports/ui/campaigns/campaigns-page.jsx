@@ -105,7 +105,7 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
     this.props.router.push({
       pathname: '/contacts',
       query: {
-        campaign: this.state.selections.map((s) => s.slug)
+        campaign: this.state.selections.map((s) => s.slug).join('_')
       }
     })
   },

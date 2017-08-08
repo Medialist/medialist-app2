@@ -5,7 +5,6 @@ import SubscriptionLimitContainer from './subscription-limit-container'
 export default (Component) => {
   return class IncreaseLimitOnScrollContainer extends React.Component {
     render () {
-      console.log('limit', this.props)
       return (
         <NearBottomContainer>
           {(nearBottom) => (

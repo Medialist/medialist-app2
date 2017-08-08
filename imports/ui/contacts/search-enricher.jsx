@@ -33,5 +33,5 @@ export default (Component) => createContainer((props) => {
 
   const loading = props.loading || subs.some((s) => !s.ready())
 
-  return {data, loading}
+  return {...data, loading}
 }, Component)

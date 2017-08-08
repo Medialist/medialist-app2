@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { compose } from 'redux'
 import { Meteor } from 'meteor/meteor'
 import MasterLists from '/imports/api/master-lists/master-lists'
@@ -44,6 +45,28 @@ import createSearchEnricher from './search-enricher'
  */
 
 class ContactsPage extends React.Component {
+  static propTypes = {
+    allContactsCount: PropTypes.number.isRequired,
+    contactsCount: PropTypes.number.isRequired,
+    contacts: PropTypes.array.isRequired,
+    masterListSlug: PropTypes.string,
+    loading: PropTypes.bool,
+    searching: PropTypes.bool,
+    term: PropTypes.string,
+    sort: PropTypes.object,
+    campaigns: PropTypes.array,
+    selectedTags: PropTypes.array,
+    importId: PropTypes.string,
+    onChangeTerm: PropTypes.func,
+    onChangeSort: PropTypes.func,
+    onChangeMasterListSlug: PropTypes.func,
+    onChangeUserId: PropTypes.func,
+    onChangeImportId: PropTypes.func,
+    onChangeTagSlugs: PropTypes.func,
+    onChangeCampaignSlugs: PropTypes.func,
+    onChangeUrlQueryParams: PropTypes.func
+  }
+
   state = {
     selections: [],
     isDropdownOpen: false,
@@ -51,8 +74,7 @@ class ContactsPage extends React.Component {
     addContactsToCampaignModal: false,
     addTagsModal: false,
     addToMasterListsModal: false,
-    deleteContactsModal: false,
-    resultsTotal: 0
+    deleteContactsModal: false
   }
 
   componentDidMount () {
@@ -67,13 +89,25 @@ class ContactsPage extends React.Component {
     }
   }
 
-  onMasterListChange = (selectedMasterListSlug) => {
-    // Only if not pseudo lists
-    if (!['all', 'my'].includes(selectedMasterListSlug)) {
-      addRecentContactList.call({ slug: selectedMasterListSlug })
+  onMasterListChange = (masterListSlug) => {
+    console.log('onMasterListChange', masterListSlug, this.props)
+    if (masterListSlug === 'all') {
+      this.props.onChangeUrlQueryParams({
+        masterListSlug: null,
+        userId: null
+      })
+    } else if (masterListSlug === 'my') {
+      this.props.onChangeUrlQueryParams({
+        masterListSlug: null,
+        userId: Meteor.userId()
+      })
+    } else {
+      this.props.onChangeUrlQueryParams({
+        masterListSlug,
+        userId: null
+      })
+      addRecentContactList.call({ slug: masterListSlug })
     }
-
-    this.props.onChangeMasterListSlug(selectedMasterListSlug)
   }
 
   onSelectionsChange = (selections) => {
@@ -172,25 +206,19 @@ class ContactsPage extends React.Component {
   }
 
   onImportRemove = () => {
-    const { onChangeImportId } = this.props
-    onChangeImportId()
-  }
-
-  setResultsTotal = (resultsTotal) => {
-    if (!resultsTotal) return
-    this.setState({resultsTotal})
+    this.props.onChangeImportId(null)
   }
 
   render () {
     const {
+      allContactsCount,
       contactsCount,
-      selectedMasterListSlug,
+      masterListSlug,
       loading,
       searching,
       contacts,
       term,
       sort,
-      limit,
       campaigns,
       selectedTags,
       importId,
@@ -203,13 +231,11 @@ class ContactsPage extends React.Component {
       onMasterListChange,
       onCampaignRemove,
       onTagRemove,
-      onImportRemove,
-      setResultsTotal
+      onImportRemove
     } = this
 
     const {
-      selections,
-      resultsTotal
+      selections
     } = this.state
 
     if (!loading && contactsCount === 0) {
@@ -223,10 +249,9 @@ class ContactsPage extends React.Component {
             <MasterListsSelectorContainer
               type='Contacts'
               userId={this.props.userId}
-              allCount={contactsCount}
-              selectedMasterListSlug={selectedMasterListSlug}
-              onChange={onMasterListChange}
-              setResultsTotal={setResultsTotal} />
+              allCount={allContactsCount}
+              selectedMasterListSlug={masterListSlug}
+              onChange={onMasterListChange} />
           </div>
           <div className='flex-none bg-white center px4' style={{width: 240}}>
             <button className='btn bg-completed white mr1' onClick={() => this.showModal('addContactModal')} data-id='new-contact-button'>New Contact</button>
@@ -361,12 +386,12 @@ const MasterListsSelectorContainer = createContainer((props) => {
 
 const ContactsTotal = ({ loading, total }) => {
   const suffix = `contact${total === 1 ? '' : 's'}`
-  const label = loading ? 'Calculating' : `${total} ${suffix}`
   return (
     <div
       className='f-xs gray60'
       style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>
-      {label}
+      { loading ? <Loading className='lolo-gray80' /> : null }
+      { !loading && total ? <span>{total} {suffix}</span> : null }
     </div>
   )
 }

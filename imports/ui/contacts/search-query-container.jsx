@@ -1,12 +1,12 @@
 import { UrlQueryParamTypes, addUrlProps } from 'react-url-query'
 
 const urlPropsQueryConfig = {
+  sort: {
+    type: UrlQueryParamTypes.json
+  },
   term: {
     type: UrlQueryParamTypes.string,
     queryParam: 'q'
-  },
-  sort: {
-    type: UrlQueryParamTypes.json
   },
   masterListSlug: {
     type: UrlQueryParamTypes.string,

@@ -72,7 +72,7 @@ const ContactsTable = React.createClass({
     const { sort, onSortChange, contacts, selections, campaign, loading } = this.props
 
     if (!loading && !contacts.length) {
-      return <p className='pt2 pb5 mt0 f-xl semibold center' data-id='contacts-table-empty'>No contacts found</p>
+      return <p className='p6 mt0 f-xl semibold center' data-id='contacts-table-empty'>No contacts found</p>
     }
 
     const selectionsById = selections.reduce((memo, selection) => {

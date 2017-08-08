@@ -1,34 +1,40 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const SubscriptionLimitContainer = React.createClass({
-  propTypes: {
+class SubscriptionLimitContainer extends React.PureComponent {
+  static propTypes = {
     wantMore: PropTypes.bool.isRequired,
     initialLimit: PropTypes.number.isRequired,
     incrementBy: PropTypes.number.isRequired,
+    resetLimit: PropTypes.bool,
     children: PropTypes.func.isRequired
-  },
-  getDefaultProps () {
-    return {
-      initialLimit: 20,
-      incrementBy: 20
-    }
-  },
-  getInitialState () {
-    return {
-      limit: this.props.initialLimit
-    }
-  },
+  }
+
+  static defaultProps = {
+    initialLimit: 20,
+    incrementBy: 20
+  }
+
+  state = {
+    limit: this.props.initialLimit
+  }
+
   componentWillReceiveProps (nextProps) {
-    if (!nextProps.wantMore) {
+    console.log('sub limit componentWillReceiveProps', {wantMore: nextProps.wantMore, limit: this.state.limit})
+    if (!nextProps.wantMore && !nextProps.resetLimit) {
       return
     }
 
-    this.setState((s) => ({limit: s.limit + this.props.incrementBy}))
-  },
+    this.setState((s) => {
+      const limit = nextProps.resetLimit ? this.props.initialLimit : s.limit + this.props.incrementBy
+      console.log('subs limit set state', limit, this.props, nextProps)
+      return { limit }
+    })
+  }
+
   render () {
     return <div>{this.props.children(this.state.limit)}</div>
   }
-})
+}
 
 export default SubscriptionLimitContainer
