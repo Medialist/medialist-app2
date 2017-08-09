@@ -7,6 +7,7 @@ import Contacts from '/imports/api/contacts/server/contacts'
 import { ContactSearchSchema } from '/imports/api/contacts/schema'
 import StatusMap from '/imports/api/contacts/status'
 import { createContactSearchQuery } from '/imports/api/contacts/queries'
+import publishToCollection from '/imports/lib/publish-to-collection'
 
 const contactCounter = new Counter('contactCount', Contacts.find({}), 3000)
 
@@ -215,34 +216,27 @@ Meteor.publish('contact-search-results', function ({sort, limit, ...contactSearc
     return this.ready()
   }
   ContactSearchSchema.validate(contactSearch)
+
   const query = createContactSearchQuery(contactSearch)
-  ReactiveAggregate(this, Contacts, [{
-    $match: query
-  }, {
-    $sort: sort
-  }, {
-    $limit: limit
-  }], {
-    clientCollection: 'contact-search-results',
-    observeSelector: query,
-    observeOptions: {sort, limit}
-  })
+
+  const cursor = Contacts.find(query, {sort, limit})
+
+  publishToCollection(this, 'contact-search-results', cursor)
 })
 
-Meteor.publish('contact-search-count', function (contactSearch) {
+Meteor.publish('contact-search-count-not-reactive', function (contactSearch) {
   if (!this.userId) {
     return this.ready()
   }
   ContactSearchSchema.validate(contactSearch)
+
   const query = createContactSearchQuery(contactSearch)
-  ReactiveAggregate(this, Contacts, [{
-    $match: query
-  }, {
-    $count: 'count'
-  }, {
-    $project: { _id: '$count', count: '$count' }
-  }], {
-    clientCollection: 'contact-search-count',
-    observeSelector: query
-  })
+
+  const count = Contacts.find(query).count()
+
+  const sub = this
+  // Always use the same _id, so it's replaced on the client.
+  sub.added('contact-search-count', 'contact-search-count-id', {count: count})
+
+  sub.ready()
 })

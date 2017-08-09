@@ -238,7 +238,7 @@ class ContactsPage extends React.Component {
       selections
     } = this.state
 
-    if (!loading && contactsCount === 0) {
+    if (!loading && !searching && contactsCount === 0) {
       return <ContactListEmpty />
     }
 
