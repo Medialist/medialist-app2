@@ -111,7 +111,7 @@ class PostBoxTextArea extends React.Component {
           value={this.props.value}
           disabled={this.props.disabled}
           data-id={this.props['data-id']}
-          ref={this.onTextAreaRef} />
+          inputRef={this.onTextAreaRef} />
         {this.state.embed || this.state.embedLoading ? (
           <div className='mb3'>
             <LinkPreview {...this.state.embed} loading={this.state.embedLoading} />
