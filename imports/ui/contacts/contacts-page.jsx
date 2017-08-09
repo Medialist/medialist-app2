@@ -90,7 +90,6 @@ class ContactsPage extends React.Component {
   }
 
   onMasterListChange = (masterListSlug) => {
-    console.log('onMasterListChange', masterListSlug, this.props)
     if (masterListSlug === 'all') {
       this.props.onChangeUrlQueryParams({
         masterListSlug: null,
