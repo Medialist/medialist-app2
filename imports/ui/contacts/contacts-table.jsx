@@ -82,7 +82,7 @@ const ContactsTable = React.createClass({
 
     return (
       <div>
-        <table className='table' data-id={`contacts-table${this.props.searching ? '-search-results' : '-unfiltered'}`}>
+        <table className='table' data-id={`contacts-table${this.props.searchTermActive ? '-search-results' : '-unfiltered'}`}>
           <thead>
             <tr className='bg-gray90'>
               <th className='right-align' style={{width: 34, paddingRight: 0, borderRight: '0 none'}}>

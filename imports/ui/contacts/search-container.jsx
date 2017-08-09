@@ -69,13 +69,15 @@ export default (Component) => createContainer((props) => {
 
   const searching = isSearching(queryOpts)
 
+  const searchTermActive = !!queryOpts.term
+
   const subs = [Meteor.subscribe('contact-search-results', searchOpts)]
 
   const contacts = ContactSearchResults.find({}, {sort}).fetch()
 
   const loading = props.loading || subs.some((s) => !s.ready())
 
-  return { contacts, searching, loading, sort }
+  return { contacts, searching, searchTermActive, loading, sort }
 }, Component)
 
 /**

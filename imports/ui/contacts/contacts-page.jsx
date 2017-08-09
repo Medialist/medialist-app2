@@ -52,6 +52,7 @@ class ContactsPage extends React.Component {
     masterListSlug: PropTypes.string,
     loading: PropTypes.bool,
     searching: PropTypes.bool,
+    searchTermActive: PropTypes.bool,
     term: PropTypes.string,
     sort: PropTypes.object,
     campaigns: PropTypes.array,
@@ -215,6 +216,7 @@ class ContactsPage extends React.Component {
       masterListSlug,
       loading,
       searching,
+      searchTermActive,
       contacts,
       term,
       sort,
@@ -305,7 +307,8 @@ class ContactsPage extends React.Component {
             selections={selections}
             onSortChange={onChangeSort}
             onSelectionsChange={onSelectionsChange}
-            searching={searching} />
+            searching={searching}
+            searchTermActive={searchTermActive} />
         </div>
         { loading && <div className='center p4'><Loading /></div> }
         <ContactsActionsToast

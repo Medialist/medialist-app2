@@ -79,7 +79,7 @@ const test = {
           name: updated.name
         })
         .then((doc) => {
-          assertions.contactsAreEqual(t, updated, doc)
+          assertions.contactsAreEqual(t, doc, updated)
 
           done()
         })
