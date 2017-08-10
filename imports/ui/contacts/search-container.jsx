@@ -45,13 +45,15 @@ function isSearching (queryOpts) {
 * - `campaignSlugs` - Array of campaigns to search in.
 * - `masterListSlug` - To search a in a specific list
 * - `userId` to search in the `myContacts` for a given user
-* - `sort` - A mongo sort sort specifier
+* - `importId` - to search in a specific import batch
+* - `sort` - A mongo sort specifier
 * - `limit` - Maximum number of docs to fetch.
 *
 * Your component will recieve these additional props:
 * - `contacts` - search results
 * - `loading` - search subscription is loading
-* - `searching` - true if their is any search criteria
+* - `searching` - true if any sub is not ready
+* - `searchTermActive` - true if search term is longer than `minSearchLength`
 */
 export default (Component) => createContainer((props) => {
   const {
@@ -81,8 +83,21 @@ export default (Component) => createContainer((props) => {
 }, Component)
 
 /**
- * Container to get the all contacts and search result count
- */
+* SearchCountContainer HOC
+* Count the total nunmber of results for your search criteria.
+*
+* You can pass in:
+* - `term` - The Search term
+* - `campaignSlugs` - Array of campaigns to search in.
+* - `masterListSlug` - To search a in a specific list
+* - `userId` - to search in the `myContacts` for a given user
+* - `importId` - to search in a specific import batch
+*
+* Your component will recieve these additional props:
+* - `allContactsCount` - total contacts in system
+* - `contactsCount` - Number of search results that match criteria
+* - `loading` - true if any sub is laoding
+*/
 export const createSearchCountContainer = (Component) => createContainer((props) => {
   const queryOpts = extractQueryOpts(props)
 
