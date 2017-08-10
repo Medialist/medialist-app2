@@ -54,7 +54,7 @@ module.exports = {
     },
     populate: function (contact) {
       this.waitForElementVisible('@nameInput')
-      this.clearValue('@nameInput')
+      this.clear('@nameInput')
       this.setValue('@nameInput', contact.name)
 
       contact.outlets.forEach((outlet, index) => {
@@ -86,7 +86,7 @@ module.exports = {
         }
 
         this.waitForElementVisible(input)
-        this.clearValue(input)
+        this.clear(input)
         this.setValue(input, email.value)
       })
 
@@ -116,7 +116,7 @@ module.exports = {
         }
 
         this.waitForElementVisible(input)
-        this.clearValue(input)
+        this.clear(input)
         this.setValue(input, social.value)
       })
 
@@ -136,7 +136,7 @@ module.exports = {
 
           if (contact.addresses[index][field]) {
             this.waitForElementVisible(fieldSelector)
-            this.clearValue(fieldSelector)
+            this.clear(fieldSelector)
             this.setValue(fieldSelector, contact.addresses[index][field])
           }
         })

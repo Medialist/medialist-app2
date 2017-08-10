@@ -29,7 +29,7 @@ module.exports = (dataId) => ({
         .waitForElementVisible(`${selector} [data-id=edit-list-button]`)
         .click(`${selector} [data-id=edit-list-button]`)
         .waitForElementVisible(`${selector} [data-id=list-name-input]`)
-        .clearValue(`${selector} [data-id=list-name-input]`)
+        .clear(`${selector} [data-id=list-name-input]`)
         .setValue(`${selector} [data-id=list-name-input]`, name)
         .waitForElementVisible(`${selector} [data-id=save-list-button]`)
         .click(`${selector} [data-id=save-list-button]`)
