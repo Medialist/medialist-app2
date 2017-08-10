@@ -69,7 +69,7 @@ export default (Component) => createContainer((props) => {
 
   const searching = isSearching(queryOpts)
 
-  const searchTermActive = !!queryOpts.term
+  const searchTermActive = queryOpts.hasOwnProperty('term')
 
   const subs = [Meteor.subscribe('contact-search-results', searchOpts)]
 

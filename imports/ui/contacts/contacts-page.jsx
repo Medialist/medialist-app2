@@ -307,7 +307,6 @@ class ContactsPage extends React.Component {
             selections={selections}
             onSortChange={onChangeSort}
             onSelectionsChange={onSelectionsChange}
-            searching={searching}
             searchTermActive={searchTermActive} />
         </div>
         { loading && <div className='center p4'><Loading /></div> }
