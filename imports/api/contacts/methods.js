@@ -41,6 +41,10 @@ export const addContactsToCampaign = new ValidatedMethod({
       throw new Meteor.Error('You must be logged in')
     }
 
+    if (this.isSimulation) {
+      return
+    }
+
     checkAllSlugsExist(contactSlugs, Contacts)
     checkAllSlugsExist([campaignSlug], Campaigns)
 
@@ -150,6 +154,10 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
       throw new Meteor.Error('You must be logged in')
     }
 
+    if (this.isSimulation) {
+      return
+    }
+
     checkAllSlugsExist(contactSlugs, Contacts)
     checkAllSlugsExist(campaignSlugs, Campaigns)
 
@@ -209,7 +217,14 @@ export const batchFavouriteContacts = new ValidatedMethod({
   }).validator(),
 
   run ({ contactSlugs }) {
-    if (!this.userId) throw new Meteor.Error('You must be logged in')
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    if (this.isSimulation) {
+      return
+    }
+
     checkAllSlugsExist(contactSlugs, Contacts)
     addToMyFavourites({
       userId: this.userId,
@@ -237,6 +252,10 @@ export const batchRemoveContacts = new ValidatedMethod({
   run ({ _ids }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
+    }
+
+    if (this.isSimulation) {
+      return
     }
 
     _ids.forEach(_id => {
@@ -504,6 +523,10 @@ export const batchUpdateStatus = new ValidatedMethod({
   run ({campaignSlug, contactSlugs, status}) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
+    }
+
+    if (this.isSimulation) {
+      return
     }
 
     const campaign = Campaigns.findOne({
