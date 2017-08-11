@@ -1,4 +1,13 @@
-import { UrlQueryParamTypes, addUrlProps } from 'react-url-query'
+import {
+  Serialize,
+  addUrlProps,
+  UrlQueryParamTypes
+} from 'react-url-query'
+
+const commaSeperatedArrayType = {
+  encode: (val) => Serialize.encodeArray(val, ','),
+  decode: (val) => Serialize.decodeArray(val, ',')
+}
 
 const urlPropsQueryConfig = {
   sort: {
@@ -17,11 +26,11 @@ const urlPropsQueryConfig = {
     queryParam: 'my'
   },
   campaignSlugs: {
-    type: UrlQueryParamTypes.array,
+    type: commaSeperatedArrayType,
     queryParam: 'campaign'
   },
   tagSlugs: {
-    type: UrlQueryParamTypes.array,
+    type: commaSeperatedArrayType,
     queryParam: 'tag'
   },
   importId: {
