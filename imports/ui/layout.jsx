@@ -6,6 +6,7 @@ import { configureUrlQuery } from 'react-url-query'
 import Authenticator from '/imports/ui/users/authenticator'
 import NavBar from '/imports/ui/navigation/navbar'
 import Snackbar from '/imports/ui/snackbar/snackbar'
+import Head from '/imports/ui/head'
 
 class Layout extends React.Component {
   static contextTypes = {
@@ -22,14 +23,13 @@ class Layout extends React.Component {
 
   render () {
     return (
-      <Authenticator userId={this.props.userId} user={this.props.user} location={this.props.location}>
-        <Snackbar>
-          <div>
-            <NavBar user={this.props.user} />
-            {this.props.children}
-          </div>
-        </Snackbar>
-      </Authenticator>
+      <Snackbar>
+        <Head />
+        <Authenticator userId={this.props.userId} user={this.props.user} location={this.props.location}>
+          <NavBar user={this.props.user} />
+          {this.props.children}
+        </Authenticator>
+      </Snackbar>
     )
   }
 }
