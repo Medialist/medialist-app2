@@ -16,12 +16,6 @@ class MasterListsSelector extends React.Component {
     this.resetState = this.resetState.bind(this)
   }
 
-  componentWillReceiveProps (props) {
-    this.resetState()
-    const resultTotal = calculateResultTotal(props)
-    this.props.setResultsTotal(resultTotal)
-  }
-
   resetState () {
     this.setState({
       hideItemsAfterIndex: null,

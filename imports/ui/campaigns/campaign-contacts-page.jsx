@@ -207,7 +207,7 @@ class CampaignContactsPage extends React.Component {
             statusFilter={status}
             onSortChange={this.onSortChange}
             onSelectionsChange={this.onSelectionsChange}
-            searching={Boolean(term)}
+            searchTermActive={Boolean(term)}
           />
         </div>
         <ContactsActionsToast

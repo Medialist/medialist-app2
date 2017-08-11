@@ -39,7 +39,7 @@ const ContactsTable = React.createClass({
     // returns true while subscriptionts are still syncing data.
     loading: PropTypes.bool,
     // true if we are searching
-    searching: PropTypes.bool
+    searchTermActive: PropTypes.bool
   },
 
   onSelectAllChange () {
@@ -69,10 +69,10 @@ const ContactsTable = React.createClass({
   },
 
   render () {
-    const { sort, onSortChange, contacts, selections, campaign, loading } = this.props
+    const { sort, onSortChange, contacts, selections, campaign, loading, searchTermActive } = this.props
 
     if (!loading && !contacts.length) {
-      return <p className='pt2 pb5 mt0 f-xl semibold center' data-id='contacts-table-empty'>No contacts found</p>
+      return <p className='p6 mt0 f-xl semibold center' data-id='contacts-table-empty'>No contacts found</p>
     }
 
     const selectionsById = selections.reduce((memo, selection) => {
@@ -82,7 +82,7 @@ const ContactsTable = React.createClass({
 
     return (
       <div>
-        <table className='table' data-id={`contacts-table${this.props.searching ? '-search-results' : '-unfiltered'}`}>
+        <table className='table' data-id={`contacts-table${searchTermActive ? '-search-results' : '-unfiltered'}`}>
           <thead>
             <tr className='bg-gray90'>
               <th className='right-align' style={{width: 34, paddingRight: 0, borderRight: '0 none'}}>

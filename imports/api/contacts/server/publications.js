@@ -4,11 +4,10 @@ import { Counter } from 'meteor/natestrauser:publish-performant-counts'
 import { ReactiveAggregate } from 'meteor/jcbernack:reactive-aggregate'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/server/contacts'
-import { publishAllForLoggedInUser } from '/imports/lib/publish-all'
-import * as Queries from '/imports/api/contacts/queries'
+import { ContactSearchSchema } from '/imports/api/contacts/schema'
 import StatusMap from '/imports/api/contacts/status'
-
-publishAllForLoggedInUser(Queries)
+import { createContactSearchQuery } from '/imports/api/contacts/queries'
+import publishToCollection from '/imports/lib/publish-to-collection'
 
 const contactCounter = new Counter('contactCount', Contacts.find({}), 3000)
 
@@ -210,4 +209,34 @@ Meteor.publish('contact-campaign-statuses', function (contactSlug) {
   }], {
     clientCollection: 'contact-campaign-statuses-client'
   })
+})
+
+Meteor.publish('contact-search-results', function ({sort, limit, ...contactSearch}) {
+  if (!this.userId) {
+    return this.ready()
+  }
+  ContactSearchSchema.validate(contactSearch)
+
+  const query = createContactSearchQuery(contactSearch)
+
+  const cursor = Contacts.find(query, {sort, limit})
+
+  publishToCollection(this, 'contact-search-results', cursor)
+})
+
+Meteor.publish('contact-search-count-not-reactive', function (contactSearch) {
+  if (!this.userId) {
+    return this.ready()
+  }
+  ContactSearchSchema.validate(contactSearch)
+
+  const query = createContactSearchQuery(contactSearch)
+
+  const count = Contacts.find(query).count()
+
+  const sub = this
+  // Always use the same _id, so it's replaced on the client.
+  sub.added('contact-search-count', 'contact-search-count-id', {count: count})
+
+  sub.ready()
 })

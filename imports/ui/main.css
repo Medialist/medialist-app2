@@ -700,6 +700,12 @@ button {
   height: 100%;
   animation: lolo 1.5s cubic-bezier(0.25,0.1,0.25,1) infinite;
 }
+.lolo-gray80::after {
+  background: var(--gray80);
+}
+.lolo-white::after {
+  background: var(--white);
+}
 
 .snackbar-appear {
   transform: translateX(-100%)
