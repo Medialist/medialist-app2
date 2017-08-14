@@ -24,6 +24,25 @@ function findContactSlugs (contactSearch, contactSlugs) {
   }
 }
 
+const ContactSlugsOrSearchSchema = new SimpleSchema({
+  contactSlugs: {
+    type: Array,
+    optional: true
+  },
+  'contactSlugs.$': {
+    type: String
+  },
+  contactSearch: {
+    type: ContactSearchSchema,
+    optional: true,
+    custom () {
+      if (!this.isSet && !this.field('contactSlugs').isSet) {
+        return SimpleSchema.ErrorTypes.REQUIRED
+      }
+    }
+  }
+})
+
 /*
  * Add mulitple Contacts to 1 Campaign
  * - Push all the contacts to the Campaign.contacts map
@@ -41,21 +60,10 @@ export const addContactsToCampaign = new ValidatedMethod({
   },
 
   validate: new SimpleSchema({
-    contactSlugs: {
-      type: Array,
-      optional: true
-    },
-    'contactSlugs.$': {
-      type: String
-    },
-    contactSearch: {
-      type: ContactSearchSchema,
-      optional: true
-    },
     campaignSlug: {
       type: String
     }
-  }).validator(),
+  }).extend(ContactSlugsOrSearchSchema).validator(),
 
   run ({ contactSearch, contactSlugs, campaignSlug }) {
     if (!this.userId) {
@@ -162,13 +170,6 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
   name: 'removeContactsFromCampaign',
 
   validate: new SimpleSchema({
-    contactSlugs: {
-      type: Array,
-      min: 1
-    },
-    'contactSlugs.$': {
-      type: String
-    },
     campaignSlugs: {
       type: Array,
       min: 1
@@ -176,7 +177,7 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
     'campaignSlugs.$': {
       type: String
     }
-  }).validator(),
+  }).extend(ContactSlugsOrSearchSchema).validator(),
 
   run ({ contactSlugs, campaignSlugs }) {
     if (!this.userId) {
@@ -236,14 +237,7 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
 export const batchFavouriteContacts = new ValidatedMethod({
   name: 'batchFavouriteContacts',
 
-  validate: new SimpleSchema({
-    contactSlugs: {
-      type: Array
-    },
-    'contactSlugs.$': {
-      type: String
-    }
-  }).validator(),
+  validate: ContactSlugsOrSearchSchema.validator(),
 
   run ({ contactSlugs }) {
     if (!this.userId) {
@@ -537,17 +531,11 @@ export const batchUpdateStatus = new ValidatedMethod({
     campaignSlug: {
       type: String
     },
-    contactSlugs: {
-      type: Array
-    },
-    'contactSlugs.$': {
-      type: String
-    },
     status: {
       type: String,
       allowedValues: StatusValues
     }
-  }).validator(),
+  }).extend(ContactSlugsOrSearchSchema).validator(),
 
   run ({campaignSlug, contactSlugs, status}) {
     if (!this.userId) {
