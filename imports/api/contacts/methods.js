@@ -155,6 +155,8 @@ export const addContactsToCampaign = new ValidatedMethod({
       campaignSlugs: [campaignSlug],
       createdBy: updatedBy
     })
+
+    return { numContactsAdded: newContactSlugs.length }
   }
 })
 

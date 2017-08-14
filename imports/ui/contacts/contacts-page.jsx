@@ -30,6 +30,7 @@ import DeleteContactsModal from '/imports/ui/contacts/delete-contacts-modal'
 import { addRecentContactList } from '/imports/api/users/methods'
 import createSearchQueryContainer from './search-query-container'
 import createSearchEnricher from './search-enricher'
+import { ContactSearchSchema } from '/imports/api/contacts/schema'
 
 /*
  * ContactPage and ContactsPageContainer
@@ -69,6 +70,7 @@ class ContactsPage extends React.Component {
   }
 
   state = {
+    selectionMode: 'include',
     selections: [],
     isDropdownOpen: false,
     addContactModal: false,
@@ -108,6 +110,7 @@ class ContactsPage extends React.Component {
       })
       addRecentContactList.call({ slug: masterListSlug })
     }
+    this.clearSelection()
   }
 
   onSelectionsChange = (selections) => {
@@ -154,9 +157,24 @@ class ContactsPage extends React.Component {
     })
   }
 
+  onTermChange = (term) => {
+    this.props.onChangeTerm(term)
+    this.clearSelection()
+  }
+
+  onSortChange = (sort) => {
+    this.props.onChangeSort(sort)
+    this.clearSelection()
+  }
+
+  onSelectionModeChange = (selectionMode) => {
+    this.setState({selectionMode})
+  }
+
   clearSelection = () => {
     this.setState({
-      selections: []
+      selections: [],
+      selectionMode: 'include'
     })
   }
 
@@ -198,15 +216,18 @@ class ContactsPage extends React.Component {
   onCampaignRemove = (campaign) => {
     const { onChangeCampaignSlugs, campaignSlugs } = this.props
     onChangeCampaignSlugs(campaignSlugs.filter((str) => str !== campaign.slug))
+    this.clearSelection()
   }
 
   onTagRemove = (tag) => {
     const { onChangeTagSlugs, tagSlugs } = this.props
     onChangeTagSlugs(tagSlugs.filter((str) => str !== tag.slug))
+    this.clearSelection()
   }
 
   onImportRemove = () => {
     this.props.onChangeImportId(null)
+    this.clearSelection()
   }
 
   render () {
@@ -222,9 +243,7 @@ class ContactsPage extends React.Component {
       sort,
       campaigns,
       selectedTags,
-      importId,
-      onChangeTerm,
-      onChangeSort
+      importId
     } = this.props
 
     const {
@@ -236,12 +255,15 @@ class ContactsPage extends React.Component {
     } = this
 
     const {
-      selections
+      selections,
+      selectionMode
     } = this.state
 
     if (!loading && !searching && contactsCount === 0) {
       return <ContactListEmpty />
     }
+
+    const contactSearch = ContactSearchSchema.clean(Object.assign({}, this.props))
 
     return (
       <div style={{paddingBottom: 100}}>
@@ -273,7 +295,7 @@ class ContactsPage extends React.Component {
         </div>
         <div className='bg-white shadow-2 m4 mt8' data-id='contacts-table'>
           <div className='pt4 pl4 pr4 pb1 items-center'>
-            <SearchBox initialTerm={term} onTermChange={onChangeTerm} placeholder='Search contacts...' data-id='search-contacts-input' style={{zIndex: 1}}>
+            <SearchBox initialTerm={term} onTermChange={this.onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' style={{zIndex: 1}}>
               <div style={{margin: '1px 4px -4px 6px'}} >
                 {campaigns && campaigns.map((c) => (
                   <AvatarTag
@@ -305,13 +327,16 @@ class ContactsPage extends React.Component {
             limit={25}
             term={term}
             selections={selections}
-            onSortChange={onChangeSort}
+            selectionMode={selectionMode}
+            onSelectionModeChange={this.onSelectionModeChange}
+            onSortChange={this.onSortChange}
             onSelectionsChange={onSelectionsChange}
             searchTermActive={searchTermActive} />
         </div>
         { loading && <div className='center p4'><Loading /></div> }
         <ContactsActionsToast
-          contacts={this.state.selections}
+          contacts={selections}
+          contactsCount={selectionMode === 'all' ? contactsCount : selections.length}
           onCampaignClick={() => this.showModal('addContactsToCampaignModal')}
           onSectorClick={() => this.showModal('addToMasterListsModal')}
           onFavouriteClick={() => this.onFavouriteAll()}
@@ -323,7 +348,10 @@ class ContactsPage extends React.Component {
           open={this.state.addContactModal} />
         <AddContactsToCampaign
           title='Add these Contacts to a Campaign'
-          contacts={this.state.selections}
+          contacts={selections}
+          contactsCount={selectionMode === 'all' ? contactsCount : selections.length}
+          contactSearch={contactSearch}
+          selectionMode={selectionMode}
           onDismiss={() => this.hideModals()}
           open={this.state.addContactsToCampaignModal} />
         <AddTagsModal

@@ -7,7 +7,7 @@ import StatusStats from '/imports/ui/contacts/status-stats'
 import { CircleAvatar } from '/imports/ui/images/avatar'
 import EditableAvatar from '/imports/ui/images/editable-avatar'
 import Contacts from '/imports/api/contacts/contacts'
-import AddContactsToCampaigns from '/imports/ui/contacts/add-contacts-to-campaign'
+import AddContactToCampaign from '/imports/ui/contacts/add-to-campaign/add-one-modal'
 import { updateContact } from '/imports/api/contacts/methods'
 import ContactCampaignsActionsToast from '/imports/ui/contacts/contact-campaigns-actions-toast'
 import AddTagsModal from '/imports/ui/tags/add-tags-modal'
@@ -274,11 +274,11 @@ class ContactCampaignsPage extends React.Component {
           onTagClick={() => this.showModal('addTagsToCampaignsModal')}
           onDeleteClick={() => this.showModal('removeContactFromCampaignsModal')}
           onDeselectAllClick={this.clearSelection} />
-        <AddContactsToCampaigns
+        <AddContactToCampaign
           title={`Add ${contact.name.split(' ')[0]} to a Campaign`}
           onDismiss={this.hideModals}
           open={this.state.addToCampaignModal}
-          contacts={[contact]}
+          contact={contact}
         />
         <AddTagsModal
           type='Campaigns'
