@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { SearchIcon } from '/imports/ui/images/icons'
 import debounce from 'lodash.debounce'
+import Loading from './loading'
 
 const SearchBox = React.createClass({
   propTypes: {
@@ -73,3 +74,15 @@ const SearchBox = React.createClass({
 })
 
 export default SearchBox
+
+export const SearchBoxCount = ({ type, loading, total }) => {
+  const suffix = `${type}${total === 1 ? '' : 's'}`
+  return (
+    <div
+      className='f-xs gray60'
+      style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>
+      { loading ? <Loading className='lolo-gray80' /> : null }
+      { !loading && total ? <span>{total} {suffix}</span> : <span />}
+    </div>
+  )
+}

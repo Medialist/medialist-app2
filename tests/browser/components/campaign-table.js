@@ -12,7 +12,7 @@ module.exports = {
     searchFor: function (query) {
       this
         .waitForElementVisible('@searchInput')
-        .clear('@searchInput')
+        .clearSlow('@searchInput')
         .waitForElementVisible('@unfilteredList')
         .setValue('@searchInput', query)
         .waitForElementVisible('@searchResults')
@@ -22,7 +22,7 @@ module.exports = {
     searchForWithoutFinding: function (query) {
       this
         .waitForElementVisible('@searchInput')
-        .clear('@searchInput')
+        .clearSlow('@searchInput')
         .waitForElementVisible('@unfilteredList')
         .setValue('@searchInput', query)
         .waitForElementVisible('@noResults')

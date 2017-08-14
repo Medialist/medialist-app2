@@ -65,6 +65,10 @@ export const batchFavouriteCampaigns = new ValidatedMethod({
       throw new Meteor.Error('You must be logged in')
     }
 
+    if (this.isSimulation) {
+      return
+    }
+
     checkAllSlugsExist(campaignSlugs, Campaigns)
 
     addToMyFavourites({
@@ -278,6 +282,10 @@ export const removeCampaign = new ValidatedMethod({
   run ({ _ids }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
+    }
+
+    if (this.isSimulation) {
+      return
     }
 
     _ids.forEach(_id => {

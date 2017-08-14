@@ -50,7 +50,7 @@ export const createContactSearchQuery = (contactSearch) => {
   }
 
   if (term && term.length >= minSearchLength) {
-    const termRegExp = new RegExp(escapeRegExp(term), 'gi')
+    const termRegExp = new RegExp(escapeRegExp(term), 'i')
     query.$or = [{
       name: termRegExp
     }, {

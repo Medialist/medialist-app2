@@ -1,5 +1,9 @@
 import React from 'react'
 
 export default (props) => {
-  return <div className='lolo' />
+  let className = 'lolo'
+  if (props.className) {
+    className = className + ' ' + props.className
+  }
+  return <div className={className} />
 }
