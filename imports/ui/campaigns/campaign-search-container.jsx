@@ -105,7 +105,6 @@ export default (Component, opts = {}) => {
       }
 
       const loading = !subs.every((sub) => sub.ready())
-      console.log({campaignsCount})
       return { campaigns, allCampaignsCount, campaignsCount, selectedTags, loading, searching }
     },
 
