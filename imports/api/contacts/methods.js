@@ -179,7 +179,7 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
     }
   }).extend(ContactSlugsOrSearchSchema).validator(),
 
-  run ({ contactSlugs, campaignSlugs }) {
+  run ({ contactSlugs, contactSearch, campaignSlugs }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -188,7 +188,7 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
       return
     }
 
-    checkAllSlugsExist(contactSlugs, Contacts)
+    contactSlugs = findContactSlugs(contactSearch, contactSlugs)
     checkAllSlugsExist(campaignSlugs, Campaigns)
 
     const updatedBy = findOneUserRef(this.userId)
@@ -239,7 +239,7 @@ export const batchFavouriteContacts = new ValidatedMethod({
 
   validate: ContactSlugsOrSearchSchema.validator(),
 
-  run ({ contactSlugs }) {
+  run ({ contactSlugs, contactSearch }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -248,7 +248,7 @@ export const batchFavouriteContacts = new ValidatedMethod({
       return
     }
 
-    checkAllSlugsExist(contactSlugs, Contacts)
+    contactSlugs = findContactSlugs(contactSearch, contactSlugs)
     addToMyFavourites({
       userId: this.userId,
       contactSlugs
@@ -537,7 +537,7 @@ export const batchUpdateStatus = new ValidatedMethod({
     }
   }).extend(ContactSlugsOrSearchSchema).validator(),
 
-  run ({campaignSlug, contactSlugs, status}) {
+  run ({campaignSlug, contactSlugs, contactSearch, status}) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -554,7 +554,7 @@ export const batchUpdateStatus = new ValidatedMethod({
       throw new Meteor.Error('Can\'t find campaign')
     }
 
-    checkAllSlugsExist(contactSlugs, Contacts)
+    contactSlugs = findContactSlugs(contactSearch, contactSlugs)
 
     // only keep contacts that are on the campaign
     contactSlugs = intersection(contactSlugs, campaign.contacts.map(c => c.slug))
