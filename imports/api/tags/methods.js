@@ -177,6 +177,10 @@ export const batchAddTags = new ValidatedMethod({
       throw new Meteor.Error('You must be logged in')
     }
 
+    if (this.isSimulation) {
+      return
+    }
+
     const countField = `${type.toLowerCase()}Count`
     const Collection = type === 'Contacts' ? Contacts : Campaigns
 

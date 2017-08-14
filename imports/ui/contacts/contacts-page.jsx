@@ -8,7 +8,7 @@ import { Link } from 'react-router'
 import Arrow from 'rebass/dist/Arrow'
 import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
 import ContactsTable from '/imports/ui/contacts/contacts-table'
-import SearchBox from '/imports/ui/lists/search-box'
+import SearchBox, { SearchBoxCount } from '/imports/ui/lists/search-box'
 import ContactsActionsToast from '/imports/ui/contacts/contacts-actions-toast'
 import MasterListsSelector from '/imports/ui/campaigns/masterlists-selector'
 import { CreateContactModal } from '/imports/ui/contacts/edit-contact'
@@ -296,7 +296,7 @@ class ContactsPage extends React.Component {
                 )}
               </div>
             </SearchBox>
-            <ContactsTotal loading={loading} total={contactsCount} />
+            <SearchBoxCount type='contact' loading={loading} total={contactsCount} />
           </div>
           <ContactsTable
             contacts={contacts}
@@ -384,18 +384,6 @@ const MasterListsSelectorContainer = createContainer((props) => {
 
   return { ...props, items, selectedSlug }
 }, MasterListsSelector)
-
-const ContactsTotal = ({ loading, total }) => {
-  const suffix = `contact${total === 1 ? '' : 's'}`
-  return (
-    <div
-      className='f-xs gray60'
-      style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>
-      { loading ? <Loading className='lolo-gray80' /> : null }
-      { !loading && total ? <span>{total} {suffix}</span> : null }
-    </div>
-  )
-}
 
 export default compose(
   createSearchQueryContainer,
