@@ -42,9 +42,9 @@ export default createContainer(() => {
   const user = Meteor.user()
   const userId = Meteor.userId()
   let subs = [
-    Meteor.subscribe('recent-contacts-and-campaigns'),
     Meteor.subscribe('master-lists'),
-    Meteor.subscribe('contactCount')
+    Meteor.subscribe('contactCount'),
+    Meteor.subscribe('campaignCount')
   ]
   const loading = !subs.every((sub) => sub.ready())
   return { userId, user, loading }

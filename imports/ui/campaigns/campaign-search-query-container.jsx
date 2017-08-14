@@ -22,11 +22,11 @@ const campaignsSearchQueryContainer = (Component) => {
         newQuery.q = opts.term
       }
 
-      if (opts.selectedMasterListSlug) {
-        if (opts.selectedMasterListSlug === 'my') {
+      if (opts.masterListSlug) {
+        if (opts.masterListSlug === 'my') {
           newQuery.my = Meteor.userId()
         } else {
-          newQuery.list = opts.selectedMasterListSlug
+          newQuery.list = opts.masterListSlug
         }
       }
 
@@ -62,7 +62,7 @@ const campaignsSearchQueryContainer = (Component) => {
       const term = query.q || ''
       const tagSlugs = query.tag ? [query.tag] : []
       const { list, my } = query
-      return { sort, term, selectedMasterListSlug: list, userId: my, tagSlugs }
+      return { sort, term, masterListSlug: list, userId: my, tagSlugs }
     },
 
     render () {

@@ -26,8 +26,9 @@ import { addRecentCampaignList } from '/imports/api/users/methods'
 const CampaignsPage = withSnackbar(withRouter(React.createClass({
   propTypes: {
     campaigns: PropTypes.arrayOf(PropTypes.object),
-    campaignCount: PropTypes.number,
-    selectedMasterListSlug: PropTypes.string,
+    campaignsCount: PropTypes.number,
+    allCampaignsCount: PropTypes.number,
+    masterListSlug: PropTypes.string,
     tagSlugs: PropTypes.arrayOf(PropTypes.string),
     selectedTags: PropTypes.arrayOf(PropTypes.object),
     loading: PropTypes.bool,
@@ -44,8 +45,7 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
       createCampaignModal: false,
       addTagsToCampaignsModal: false,
       addToCampaignListsModal: false,
-      deleteCampaignsModal: false,
-      resultsTotal: 0
+      deleteCampaignsModal: false
     }
   },
 
@@ -60,13 +60,13 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
     }
   },
 
-  onMasterListChange (selectedMasterListSlug) {
+  onMasterListChange (masterListSlug) {
     // Only if not pseudo lists
-    if (!['all', 'my'].includes(selectedMasterListSlug)) {
-      addRecentCampaignList.call({ slug: selectedMasterListSlug })
+    if (!['all', 'my'].includes(masterListSlug)) {
+      addRecentCampaignList.call({ slug: masterListSlug })
     }
 
-    this.props.setQuery({ selectedMasterListSlug })
+    this.props.setQuery({ masterListSlug })
   },
 
   onSelectionsChange (selections) {
@@ -166,26 +166,31 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
     })
   },
 
-  setResultsTotal (resultsTotal) {
-    if (!resultsTotal) return
-    this.setState({resultsTotal})
-  },
-
   render () {
-    const { campaignCount, campaigns, loading, sort, term, selectedTags, onTermChange, onSortChange, searching } = this.props
+    const {
+      allCampaignsCount,
+      campaignsCount,
+      campaigns,
+      loading,
+      sort,
+      term,
+      selectedTags,
+      masterListSlug,
+      userId,
+      onTermChange,
+      onSortChange,
+      searching
+    } = this.props
     const { onSelectionsChange, onTagRemove } = this
-    const { selections, resultsTotal: total } = this.state
+    const { selections, createCampaignModal } = this.state
 
-    if (!loading && campaignCount === 0) {
-      return (<div>
-        <CampaignListEmpty
-          onAddCampaign={() => this.showModal('createCampaignModal')}
-        />
-        <CreateCampaignModal
-          onDismiss={() => this.hideModals()}
-          open={this.state.createCampaignModal}
-        />
-      </div>)
+    if (!loading && allCampaignsCount === 0) {
+      return (
+        <div>
+          <CampaignListEmpty onAddCampaign={() => this.showModal('createCampaignModal')} />
+          <CreateCampaignModal onDismiss={this.hideModals} open={createCampaignModal} />
+        </div>
+      )
     }
 
     return (
@@ -194,11 +199,10 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
           <div className='flex-auto border-right border-gray80'>
             <MasterListsSelectorContainer
               type='Campaigns'
-              userId={this.props.userId}
-              allCount={this.props.campaignCount}
-              selectedMasterListSlug={this.props.selectedMasterListSlug}
-              onChange={this.onMasterListChange}
-              setResultsTotal={this.setResultsTotal} />
+              userId={userId}
+              allCount={allCampaignsCount}
+              selectedMasterListSlug={masterListSlug}
+              onChange={this.onMasterListChange} />
           </div>
           <div className='flex-none bg-white center px4'>
             <button className='btn bg-completed white mx4' onClick={() => this.showModal('createCampaignModal')} data-id='create-campaign-button'>New Campaign</button>
@@ -211,10 +215,10 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
           onTermChange,
           selectedTags,
           onTagRemove,
-          total,
           term,
           sort,
           campaigns,
+          campaignsCount,
           selections,
           onSortChange,
           onSelectionsChange,

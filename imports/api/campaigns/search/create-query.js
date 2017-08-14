@@ -1,31 +1,22 @@
 import { Meteor } from 'meteor/meteor'
-import { check, Match } from 'meteor/check'
 import escapeRegExp from 'lodash.escaperegexp'
-import Campaigns from '/imports/api/campaigns/campaigns'
 
-/**
- * Find campaigns that match a search term and other criteria.
- * Returns a Cursor.
- */
-export const searchCampaigns = ({
-  term,
-  tagSlugs,
-  masterListSlug,
-  userId,
-  contactSlug,
-  sort,
-  limit = 20,
-  minSearchLength = 3
-}) => {
-  check(term, Match.Maybe(String))
-  check(tagSlugs, Match.Maybe(Array))
-  check(masterListSlug, Match.Maybe(String))
-  check(userId, Match.Maybe(String))
-  check(contactSlug, Match.Maybe(String))
-  check(sort, Object)
-  check(limit, Number)
+export default function createCampaignSearchQuery (campaignSearch) {
+  const {
+    excludeSlugs,
+    term,
+    tagSlugs,
+    masterListSlug,
+    userId,
+    contactSlug,
+    minSearchLength = 0
+  } = campaignSearch
 
   const query = {}
+
+  if (excludeSlugs && excludeSlugs.length) {
+    query.slug = { $nin: excludeSlugs }
+  }
 
   if (masterListSlug) {
     query['masterLists.slug'] = masterListSlug
@@ -66,7 +57,5 @@ export const searchCampaigns = ({
     }]
   }
 
-  return Campaigns.find(query, {
-    sort, limit
-  })
+  return query
 }

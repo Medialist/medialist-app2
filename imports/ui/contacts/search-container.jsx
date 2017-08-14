@@ -111,7 +111,7 @@ export const createSearchCountContainer = (Component) => createContainer((props)
   if (searching) {
     subs.push(Meteor.subscribe('contact-search-count-not-reactive', queryOpts))
     const res = ContactSearchCount.find().fetch()
-    contactsCount = res[0] ? res[0].count : null
+    contactsCount = res[0] ? res[0].count : allContactsCount
   }
 
   const loading = props.loading || subs.some((s) => !s.ready())

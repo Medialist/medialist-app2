@@ -4,11 +4,8 @@ import { check } from 'meteor/check'
 import { ReactiveAggregate } from 'meteor/jcbernack:reactive-aggregate'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
-import { publishAllForLoggedInUser } from '/imports/lib/publish-all'
-import * as Queries from '/imports/api/campaigns/queries'
 import StatusMap from '/imports/api/contacts/status'
-
-publishAllForLoggedInUser(Queries)
+import '/imports/api/campaigns/search/publications'
 
 const campaignCounter = new Counter('campaignCount', Campaigns.find({}))
 
