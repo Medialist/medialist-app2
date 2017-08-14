@@ -3,7 +3,6 @@ import { resetDatabase } from 'meteor/xolvio:cleaner'
 import assert from 'assert'
 import faker from 'faker'
 import Contacts from '/imports/api/contacts/contacts'
-import { searchCampaigns } from '/imports/api/campaigns/queries'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import { campaign, user, contact } from '/tests/browser/fixtures/domain'
 import { findOneUserRef } from '/imports/api/users/users'
@@ -14,6 +13,12 @@ import { batchFavouriteCampaigns } from '/imports/api/campaigns/methods'
 import { batchAddToMasterLists, createMasterList } from '/imports/api/master-lists/methods'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists } from '/tests/fixtures/server-domain'
+import createCampaignSearchQuery from './create-query'
+
+function searchCampaigns ({sort, limit, ...queryOpts}) {
+  const query = createCampaignSearchQuery(queryOpts)
+  return Campaigns.find(query, {sort, limit})
+}
 
 describe('searchCampaigns', function () {
   let users
@@ -56,6 +61,7 @@ describe('searchCampaigns', function () {
   })
 
   it('should search for campaigns', function () {
+
     const termSearch1Res = searchCampaigns({term: campaigns[1].name, sort: {name: -1}}).fetch()
     assert.equal(termSearch1Res.length, 1)
     assert.equal(termSearch1Res[0]._id, campaigns[1]._id)
