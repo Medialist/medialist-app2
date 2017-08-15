@@ -335,6 +335,7 @@ class ContactsPage extends React.Component {
         </AddTagsModal>
         <AddToMasterListModal
           type='Contacts'
+          title='Add these contacts to a list'
           items={this.state.selections}
           open={this.state.addToMasterListsModal}
           onDismiss={() => this.hideModals()}
