@@ -242,6 +242,7 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
         </AddTagsModal>
         <AddToMasterListModal
           type='Campaigns'
+          title='Add these campaigns to a list'
           items={this.state.selections}
           open={this.state.addToCampaignListsModal}
           onDismiss={() => this.hideModals()}
