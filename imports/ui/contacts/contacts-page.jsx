@@ -18,8 +18,8 @@ import createSearchContainer, { createSearchCountContainer } from '/imports/ui/c
 import AddContactsToCampaign from '/imports/ui/contacts/add-to-campaign/add-many-modal'
 import CountTag, { AvatarTag } from '/imports/ui/tags/tag'
 import { batchFavouriteContacts } from '/imports/api/contacts/methods'
-import { batchAddTags } from '/imports/api/tags/methods'
-import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
+import { batchAddTagsToContacts } from '/imports/api/tags/methods'
+import { batchAddToContactLists } from '/imports/api/master-lists/methods'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import AddTagsModal from '/imports/ui/tags/add-tags-modal'
 import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
@@ -130,30 +130,30 @@ class ContactsPage extends React.Component {
   }
 
   onTagAll = (tags) => {
-    const slugs = this.state.selections.map((s) => s.slug)
-    const names = tags.map((t) => t.name)
-
-    batchAddTags.call({type: 'Contacts', slugs, names}, (error) => {
+    const opts = this.getSearchOrSlugs()
+    opts.names = tags.map((t) => t.name)
+    batchAddTagsToContacts.call(opts, (error, res) => {
       if (error) {
         console.error(error)
         return this.props.snackbar.error('batch-tag-contacts-failure')
       }
-
-      this.props.snackbar.show(`Added ${names.length} ${names.length === 1 ? 'tag' : 'tags'} to ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'}`, 'batch-tag-contacts-success')
+      const {snackbar} = this.props
+      const {slugCount, tagCount} = res
+      snackbar.show(`Added ${tagCount} ${tagCount === 1 ? 'tag' : 'tags'} to ${slugCount} ${slugCount === 1 ? 'contact' : 'contacts'}`, 'batch-tag-contacts-success')
     })
   }
 
   onAddAllToMasterLists = (masterLists) => {
-    const slugs = this.state.selections.map((s) => s.slug)
-    const masterListIds = masterLists.map((m) => m._id)
-
-    batchAddToMasterLists.call({type: 'Contacts', slugs, masterListIds}, (error) => {
+    const opts = this.getSearchOrSlugs()
+    opts.masterListIds = masterLists.map((m) => m._id)
+    batchAddToContactLists.call(opts, (error, res) => {
       if (error) {
         console.error(error)
         return this.props.snackbar.error('contacts-batch-add-to-contact-list-failure')
       }
-
-      this.props.snackbar.show(`Added ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'} to ${masterLists.length} ${masterLists.length === 1 ? 'Contact List' : 'Contact Lists'}`, 'batch-add-contacts-to-contact-list-success')
+      const {snackbar} = this.props
+      const {slugCount, masterListCount} = res
+      snackbar.show(`Added ${slugCount} ${slugCount === 1 ? 'contact' : 'contacts'} to ${masterListCount} ${masterListCount === 1 ? 'Contact List' : 'Contact Lists'}`, 'batch-add-contacts-to-contact-list-success')
     })
   }
 
@@ -230,6 +230,21 @@ class ContactsPage extends React.Component {
     this.clearSelection()
   }
 
+  getSearchOrSlugs = () => {
+    const {selectionMode} = this.state
+    if (selectionMode === 'all') {
+      const contactSearch = this.extractContactSearch(this.props)
+      return { contactSearch }
+    } else {
+      const contactSlugs = this.state.selections.map((s) => s.slug)
+      return { contactSlugs }
+    }
+  }
+
+  extractContactSearch (props) {
+    return ContactSearchSchema.clean(Object.assign({}, props))
+  }
+
   render () {
     const {
       allContactsCount,
@@ -263,7 +278,8 @@ class ContactsPage extends React.Component {
       return <ContactListEmpty />
     }
 
-    const contactSearch = ContactSearchSchema.clean(Object.assign({}, this.props))
+    const contactSearch = this.extractContactSearch(this.props)
+    const selectionsLength = selectionMode === 'all' ? contactsCount : selections.length
 
     return (
       <div style={{paddingBottom: 100}}>
@@ -336,7 +352,7 @@ class ContactsPage extends React.Component {
         { loading && <div className='center p4'><Loading /></div> }
         <ContactsActionsToast
           contacts={selections}
-          contactsCount={selectionMode === 'all' ? contactsCount : selections.length}
+          contactsCount={selectionsLength}
           onCampaignClick={() => this.showModal('addContactsToCampaignModal')}
           onSectorClick={() => this.showModal('addToMasterListsModal')}
           onFavouriteClick={() => this.onFavouriteAll()}
@@ -349,7 +365,7 @@ class ContactsPage extends React.Component {
         <AddContactsToCampaign
           title='Add these Contacts to a Campaign'
           contacts={selections}
-          contactsCount={selectionMode === 'all' ? contactsCount : selections.length}
+          contactsCount={selectionsLength}
           contactSearch={contactSearch}
           selectionMode={selectionMode}
           onDismiss={() => this.hideModals()}
@@ -359,7 +375,7 @@ class ContactsPage extends React.Component {
           open={this.state.addTagsModal}
           onDismiss={() => this.hideModals()}
           onUpdateTags={(tags) => this.onTagAll(tags)}>
-          <AbbreviatedAvatarList items={selections} maxTooltip={12} />
+          <AbbreviatedAvatarList items={selections} maxTooltip={12} total={selectionsLength} />
         </AddTagsModal>
         <AddToMasterListModal
           type='Contacts'
@@ -367,7 +383,7 @@ class ContactsPage extends React.Component {
           open={this.state.addToMasterListsModal}
           onDismiss={() => this.hideModals()}
           onSave={(masterLists) => this.onAddAllToMasterLists(masterLists)}>
-          <AbbreviatedAvatarList items={selections} maxTooltip={12} />
+          <AbbreviatedAvatarList items={selections} maxTooltip={12} total={selectionsLength} />
         </AddToMasterListModal>
         <DeleteContactsModal
           open={this.state.deleteContactsModal}

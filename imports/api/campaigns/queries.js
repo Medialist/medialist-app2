@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor'
 import escapeRegExp from 'lodash.escaperegexp'
+import Campaigns from './campaigns'
+import { checkAllSlugsExist } from '/imports/lib/slug'
 
 export default function createCampaignSearchQuery (campaignSearch) {
   const {
@@ -58,4 +60,17 @@ export default function createCampaignSearchQuery (campaignSearch) {
   }
 
   return query
+}
+
+/**
+ * Helper method to validate an array of slugs or find slugs from a search
+ */
+export const findOrValidateCampaignSlugs = ({campaignSearch, campaignSlugs}) => {
+  if (campaignSlugs) {
+    checkAllSlugsExist(campaignSlugs, Campaigns)
+    return campaignSlugs
+  } else {
+    const query = createCampaignSearchQuery(campaignSearch)
+    return Campaigns.find(query, {fields: {slug: 1}}).map((doc) => doc.slug)
+  }
 }

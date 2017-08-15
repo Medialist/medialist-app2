@@ -9,39 +9,10 @@ import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
 import Contacts from '/imports/api/contacts/contacts'
-import { ContactCreateSchema, ContactSearchSchema } from '/imports/api/contacts/schema'
-import { createContactSearchQuery } from '/imports/api/contacts/queries'
+import { ContactCreateSchema, ContactSlugsOrSearchSchema } from '/imports/api/contacts/schema'
+import { findOrValidateContactSlugs } from '/imports/api/contacts/queries'
 import { StatusValues } from '/imports/api/contacts/status'
 import MasterLists from '/imports/api/master-lists/master-lists'
-
-function findContactSlugs (contactSearch, contactSlugs) {
-  if (contactSlugs) {
-    checkAllSlugsExist(contactSlugs, Contacts)
-    return contactSlugs
-  } else {
-    const query = createContactSearchQuery(contactSearch)
-    return Contacts.find(query, {fields: {slug: 1}}).map((doc) => doc.slug)
-  }
-}
-
-const ContactSlugsOrSearchSchema = new SimpleSchema({
-  contactSlugs: {
-    type: Array,
-    optional: true
-  },
-  'contactSlugs.$': {
-    type: String
-  },
-  contactSearch: {
-    type: ContactSearchSchema,
-    optional: true,
-    custom () {
-      if (!this.isSet && !this.field('contactSlugs').isSet) {
-        return SimpleSchema.ErrorTypes.REQUIRED
-      }
-    }
-  }
-})
 
 /*
  * Add mulitple Contacts to 1 Campaign
@@ -65,13 +36,9 @@ export const addContactsToCampaign = new ValidatedMethod({
     }
   }).extend(ContactSlugsOrSearchSchema).validator(),
 
-  run ({ contactSearch, contactSlugs, campaignSlug }) {
+  run ({ campaignSlug, ...searchOrSlugs }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
-    }
-
-    if (!contactSlugs && !contactSearch) {
-      throw new Meteor.Error('contactSlugs or contactSearch must be provided')
     }
 
     if (this.isSimulation) {
@@ -89,8 +56,7 @@ export const addContactsToCampaign = new ValidatedMethod({
     })
     if (!campaign) throw new Meteor.Error(`Campaign ${campaignSlug} could not be found`)
 
-    contactSlugs = findContactSlugs(contactSearch, contactSlugs)
-
+    const contactSlugs = findOrValidateContactSlugs(searchOrSlugs)
     const updatedBy = findOneUserRef(this.userId)
     const updatedAt = new Date()
 
@@ -181,7 +147,7 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
     }
   }).extend(ContactSlugsOrSearchSchema).validator(),
 
-  run ({ contactSlugs, contactSearch, campaignSlugs }) {
+  run ({ campaignSlugs, ...searchOrSlugs }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -190,7 +156,7 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
       return
     }
 
-    contactSlugs = findContactSlugs(contactSearch, contactSlugs)
+    const contactSlugs = findOrValidateContactSlugs(searchOrSlugs)
     checkAllSlugsExist(campaignSlugs, Campaigns)
 
     const updatedBy = findOneUserRef(this.userId)
@@ -241,7 +207,7 @@ export const batchFavouriteContacts = new ValidatedMethod({
 
   validate: ContactSlugsOrSearchSchema.validator(),
 
-  run ({ contactSlugs, contactSearch }) {
+  run (searchOrSlugs) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -250,7 +216,7 @@ export const batchFavouriteContacts = new ValidatedMethod({
       return
     }
 
-    contactSlugs = findContactSlugs(contactSearch, contactSlugs)
+    const contactSlugs = findOrValidateContactSlugs(searchOrSlugs)
     addToMyFavourites({
       userId: this.userId,
       contactSlugs
@@ -539,7 +505,7 @@ export const batchUpdateStatus = new ValidatedMethod({
     }
   }).extend(ContactSlugsOrSearchSchema).validator(),
 
-  run ({campaignSlug, contactSlugs, contactSearch, status}) {
+  run ({campaignSlug, status, ...searchOrSlugs}) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -556,7 +522,7 @@ export const batchUpdateStatus = new ValidatedMethod({
       throw new Meteor.Error('Can\'t find campaign')
     }
 
-    contactSlugs = findContactSlugs(contactSearch, contactSlugs)
+    let contactSlugs = findOrValidateContactSlugs(searchOrSlugs)
 
     // only keep contacts that are on the campaign
     contactSlugs = intersection(contactSlugs, campaign.contacts.map(c => c.slug))

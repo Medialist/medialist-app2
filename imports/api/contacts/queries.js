@@ -3,6 +3,7 @@ import { check } from 'meteor/check'
 import escapeRegExp from 'lodash.escaperegexp'
 import Contacts from '/imports/api/contacts/contacts'
 import { ContactSearchSchema } from '/imports/api/contacts/schema'
+import { checkAllSlugsExist } from '/imports/lib/slug'
 
 export const createContactSearchQuery = (contactSearch) => {
   const {
@@ -82,4 +83,17 @@ export const searchContacts = ({
 
   const query = createContactSearchQuery(contactSearch)
   return Contacts.find(query, {sort, limit})
+}
+
+/**
+ * Helper method to validate an array of slugs or find slugs from a search
+ */
+export const findOrValidateContactSlugs = ({contactSearch, contactSlugs}) => {
+  if (contactSlugs) {
+    checkAllSlugsExist(contactSlugs, Contacts)
+    return contactSlugs
+  } else {
+    const query = createContactSearchQuery(contactSearch)
+    return Contacts.find(query, {fields: {slug: 1}}).map((doc) => doc.slug)
+  }
 }

@@ -28,7 +28,7 @@ const AbbreviatedAvatarList = React.createClass({
   renderTooltip ({ tooltipExcess, tooltipItems }) {
     return (
       <ul className='list-reset m0 left-align p1 f-xs semibold' style={{ minWidth: '150px', lineHeight: 1.35 }}>
-        {tooltipItems.map((item) => <li>{item.name}</li>)}
+        {tooltipItems.map((item) => <li key={item._id}>{item.name}</li>)}
         {tooltipExcess ? <li>and {tooltipExcess} more...</li> : null}
       </ul>
     )

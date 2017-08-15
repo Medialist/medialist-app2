@@ -6,6 +6,10 @@ import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import { checkAllSlugsExist, cleanSlug } from '/imports/lib/slug'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
+import { ContactSlugsOrSearchSchema } from '/imports/api/contacts/schema'
+import { findOrValidateContactSlugs } from '/imports/api/contacts/queries'
+import { findOrValidateCampaignSlugs } from '/imports/api/campaigns/queries'
+import { CampaignSlugsOrSearchSchema } from '/imports/api/campaigns/schema'
 
 const createTagsWhereNecessary = (userId, names, type) => {
   const tags = names.map((n) => ({
@@ -147,7 +151,7 @@ const setTaggedItems = (userId, item, tags, Collection, countField) => {
  * Create new tags for ones that don't exist.
  */
 export const batchAddTags = new ValidatedMethod({
-  name: 'Tags/batchAddTags',
+  name: 'batchAddTags',
 
   validate: new SimpleSchema({
     type: {
@@ -195,6 +199,80 @@ export const batchAddTags = new ValidatedMethod({
       userId: this.userId,
       campaignSlugs: type === 'Campaigns' ? slugs : [],
       contactSlugs: type === 'Contacts' ? slugs : []
+    })
+
+    return { slugCount: slugs.length, tagCount: tags.length }
+  }
+})
+
+export const batchAddTagsToContacts = new ValidatedMethod({
+  name: 'batchAddTagsToContacts',
+
+  applyOptions: {
+    returnStubValue: false
+  },
+
+  validate: new SimpleSchema({
+    names: {
+      type: Array,
+      min: 1
+    },
+    'names.$': {
+      type: String
+    }
+  }).extend(ContactSlugsOrSearchSchema).validator(),
+
+  run ({names, ...searchOrSlugs}) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    if (this.isSimulation) {
+      return
+    }
+
+    const slugs = findOrValidateContactSlugs(searchOrSlugs)
+
+    return batchAddTags.run.call(this, {
+      type: 'Contacts',
+      slugs,
+      names
+    })
+  }
+})
+
+export const batchAddTagsToCampaigns = new ValidatedMethod({
+  name: 'batchAddTagsToCampaigns',
+
+  applyOptions: {
+    returnStubValue: false
+  },
+
+  validate: new SimpleSchema({
+    names: {
+      type: Array,
+      min: 1
+    },
+    'names.$': {
+      type: String
+    }
+  }).extend(CampaignSlugsOrSearchSchema).validator(),
+
+  run ({names, ...searchOrSlugs}) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    if (this.isSimulation) {
+      return
+    }
+
+    const slugs = findOrValidateCampaignSlugs(searchOrSlugs)
+
+    return batchAddTags.run.call(this, {
+      type: 'Campaigns',
+      slugs,
+      names
     })
   }
 })
