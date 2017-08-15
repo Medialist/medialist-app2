@@ -64,7 +64,7 @@ export const batchAddToCampaignLists = new ValidatedMethod({
     }
   }).extend(CampaignSlugsOrSearchSchema).validator(),
 
-  run ({campaignSlugs, campaignSearch, masterListIds}) {
+  run ({masterListIds, ...searchOrSlugs}) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -73,7 +73,7 @@ export const batchAddToCampaignLists = new ValidatedMethod({
       return
     }
 
-    const slugs = findOrValidateCampaignSlugs(campaignSlugs, campaignSearch)
+    const slugs = findOrValidateCampaignSlugs(searchOrSlugs)
 
     return batchAddToMasterLists.run.call(this, {
       slugs,

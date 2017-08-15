@@ -14,9 +14,11 @@ const CampaignSearch = ({
   campaigns,
   campaignsCount,
   selections,
+  selectionMode,
   contact,
   onSortChange,
   onSelectionsChange,
+  onSelectionModeChange,
   loading,
   searching
 }) => (
@@ -41,9 +43,11 @@ const CampaignSearch = ({
         sort={sort}
         campaigns={campaigns}
         selections={selections}
+        selectionMode={selectionMode}
         contact={contact}
         onSortChange={onSortChange}
         onSelectionsChange={onSelectionsChange}
+        onSelectionModeChange={onSelectionModeChange}
         searching={Boolean(term)} />
     </div>
     { loading && <div className='center p4'><Loading /></div> }

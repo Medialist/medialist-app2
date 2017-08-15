@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import SimpleSchema from 'simpl-schema'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import escapeRegExp from 'lodash.escaperegexp'
-import createUniqueSlug, { checkAllSlugsExist } from '/imports/lib/slug'
+import createUniqueSlug from '/imports/lib/slug'
 import Campaigns from './campaigns'
 import Clients from '/imports/api/clients/clients'
 import Uploadcare from '/imports/lib/uploadcare'
@@ -13,6 +13,8 @@ import Contacts from '/imports/api/contacts/contacts'
 import toUserRef from '/imports/lib/to-user-ref'
 import { LinkSchema } from '/imports/lib/schema'
 import trackEvent from '/imports/ui/integrations/track-event'
+import { CampaignSlugsOrSearchSchema } from '/imports/api/campaigns/schema'
+import { findOrValidateCampaignSlugs } from '/imports/api/campaigns/queries'
 
 let sendCampaignLink = () => ([])
 let createInvitationLink = () => ([])
@@ -51,16 +53,14 @@ function findOrCreateClientRef (name) {
 export const batchFavouriteCampaigns = new ValidatedMethod({
   name: 'batchFavouriteCampaigns',
 
-  validate: new SimpleSchema({
-    campaignSlugs: {
-      type: Array
-    },
-    'campaignSlugs.$': {
-      type: String
-    }
-  }).validator(),
+  // don't use the clients guess of how many were fav'd
+  applyOptions: {
+    returnStubValue: false
+  },
 
-  run ({ campaignSlugs }) {
+  validate: CampaignSlugsOrSearchSchema.validator(),
+
+  run (slugsOrSearch) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -69,12 +69,14 @@ export const batchFavouriteCampaigns = new ValidatedMethod({
       return
     }
 
-    checkAllSlugsExist(campaignSlugs, Campaigns)
+    const campaignSlugs = findOrValidateCampaignSlugs(slugsOrSearch)
 
     addToMyFavourites({
       userId: this.userId,
       campaignSlugs
     })
+
+    return { slugCount: campaignSlugs.length }
   }
 })
 
@@ -270,16 +272,15 @@ export const createCampaign = new ValidatedMethod({
 
 export const removeCampaign = new ValidatedMethod({
   name: 'Campaigns/remove',
-  validate: new SimpleSchema({
-    _ids: {
-      type: Array
-    },
-    '_ids.$': {
-      type: String,
-      regEx: SimpleSchema.RegEx.Id
-    }
-  }).validator(),
-  run ({ _ids }) {
+
+  // don't use the clients guess of how many were removed
+  applyOptions: {
+    returnStubValue: false
+  },
+
+  validate: CampaignSlugsOrSearchSchema.validator(),
+
+  run (slugsOrSearch) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -288,18 +289,20 @@ export const removeCampaign = new ValidatedMethod({
       return
     }
 
-    _ids.forEach(_id => {
+    const slugs = findOrValidateCampaignSlugs(slugsOrSearch)
+
+    slugs.forEach(slug => {
       // get slugs from ids
       const campaign = Campaigns.findOne({
-        _id: _id
+        slug: slug
       }, {
         fields: {
-          slug: 1,
+          _id: 1,
           team: 1
         }
       })
 
-      const slug = campaign.slug
+      const _id = campaign._id
 
       Campaigns.remove({
         _id: _id
@@ -375,6 +378,8 @@ export const removeCampaign = new ValidatedMethod({
         }
       })
     })
+
+    return { slugCount: slugs.length }
   }
 })
 

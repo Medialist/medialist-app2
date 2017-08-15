@@ -118,14 +118,15 @@ class ContactsPage extends React.Component {
   }
 
   onFavouriteAll = () => {
-    const contactSlugs = this.state.selections.map((s) => s.slug)
-
-    batchFavouriteContacts.call({contactSlugs}, (error) => {
+    const opts = this.getSearchOrSlugs()
+    batchFavouriteContacts.call(opts, (error, res) => {
       if (error) {
         console.error(error)
         return this.props.snackbar.error('batch-favourite-contacts-failure')
       }
-      this.props.snackbar.show(`Favourited ${contactSlugs.length} ${contactSlugs.length === 1 ? 'contact' : 'contacts'}`, 'batch-favourite-contacts-success')
+      const {slugCount} = res
+      const {snackbar} = this.props
+      snackbar.show(`Favourited ${slugCount} ${slugCount === 1 ? 'contact' : 'contacts'}`, 'batch-favourite-contacts-success')
     })
   }
 
@@ -258,7 +259,7 @@ class ContactsPage extends React.Component {
   }
 
   extractContactSearch (props) {
-    return ContactSearchSchema.clean(Object.assign({}, props))
+    return ContactSearchSchema.clean({...props})
   }
 
   render () {
@@ -376,7 +377,7 @@ class ContactsPage extends React.Component {
           onDeleteClick={() => this.showModal('deleteContactsModal')}
           onDeselectAllClick={() => this.clearSelection()} />
         <CreateContactModal
-          onDismiss={() => this.hideModals()}
+          onDismiss={this.hideModals}
           open={this.state.addContactModal} />
         <AddContactsToCampaign
           title='Add these Contacts to a Campaign'
@@ -384,21 +385,21 @@ class ContactsPage extends React.Component {
           contactsCount={selectionsLength}
           contactSearch={contactSearch}
           selectionMode={selectionMode}
-          onDismiss={() => this.hideModals()}
+          onDismiss={this.hideModals}
           open={this.state.addContactsToCampaignModal} />
         <AddTagsModal
           type='Contacts'
           open={this.state.addTagsModal}
-          onDismiss={() => this.hideModals()}
-          onUpdateTags={(tags) => this.onTagAll(tags)}>
+          onDismiss={this.hideModals}
+          onUpdateTags={this.onTagAll}>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} total={selectionsLength} />
         </AddTagsModal>
         <AddToMasterListModal
           type='Contacts'
           items={this.state.selections}
           open={this.state.addToMasterListsModal}
-          onDismiss={() => this.hideModals()}
-          onSave={(masterLists) => this.onAddAllToMasterLists(masterLists)}>
+          onDismiss={this.hideModals}
+          onSave={this.onAddAllToMasterLists}>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} total={selectionsLength} />
         </AddToMasterListModal>
         <DeleteContactsModal
@@ -406,7 +407,7 @@ class ContactsPage extends React.Component {
           contacts={this.state.selections}
           contactsCount={selectionsLength}
           onDelete={this.onDelete}
-          onDismiss={() => this.hideModals()} />
+          onDismiss={this.hideModals} />
       </div>
     )
   }

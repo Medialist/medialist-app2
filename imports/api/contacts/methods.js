@@ -205,6 +205,11 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
 export const batchFavouriteContacts = new ValidatedMethod({
   name: 'batchFavouriteContacts',
 
+  // don't use the clients guess of how many were fav'd
+  applyOptions: {
+    returnStubValue: false
+  },
+
   validate: ContactSlugsOrSearchSchema.validator(),
 
   run (searchOrSlugs) {
@@ -221,6 +226,8 @@ export const batchFavouriteContacts = new ValidatedMethod({
       userId: this.userId,
       contactSlugs
     })
+
+    return { slugCount: contactSlugs.length }
   }
 })
 
