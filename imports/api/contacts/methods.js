@@ -230,17 +230,14 @@ export const batchFavouriteContacts = new ValidatedMethod({
 export const batchRemoveContacts = new ValidatedMethod({
   name: 'batchRemoveContacts',
 
-  validate: new SimpleSchema({
-    _ids: {
-      type: Array
-    },
-    '_ids.$': {
-      type: String,
-      regEx: SimpleSchema.RegEx.Id
-    }
-  }).validator(),
+  // don't use the clients guess of how many were removed
+  applyOptions: {
+    returnStubValue: false
+  },
 
-  run ({ _ids }) {
+  validate: ContactSlugsOrSearchSchema.validator(),
+
+  run (slugsOrSearch) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -249,16 +246,17 @@ export const batchRemoveContacts = new ValidatedMethod({
       return
     }
 
-    _ids.forEach(_id => {
-      // get slugs from ids
-      const slug = Contacts.findOne({
-        _id: _id
+    const slugs = findOrValidateContactSlugs(slugsOrSearch)
+
+    slugs.forEach(slug => {
+      const _id = Contacts.findOne({
+        slug: slug
       }, {
         fields: {
-          'slug': 1
+          '_id': 1
         }
       })
-      .slug
+      ._id
 
       // remove contact
       Contacts.remove({
@@ -324,6 +322,8 @@ export const batchRemoveContacts = new ValidatedMethod({
         }
       })
     })
+
+    return { slugCount: slugs.length }
   }
 })
 

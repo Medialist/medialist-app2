@@ -17,7 +17,7 @@ import { FeedContactIcon } from '/imports/ui/images/icons'
 import createSearchContainer, { createSearchCountContainer } from '/imports/ui/contacts/search-container'
 import AddContactsToCampaign from '/imports/ui/contacts/add-to-campaign/add-many-modal'
 import CountTag, { AvatarTag } from '/imports/ui/tags/tag'
-import { batchFavouriteContacts } from '/imports/api/contacts/methods'
+import { batchFavouriteContacts, batchRemoveContacts } from '/imports/api/contacts/methods'
 import { batchAddTagsToContacts } from '/imports/api/tags/methods'
 import { batchAddToContactLists } from '/imports/api/master-lists/methods'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
@@ -154,6 +154,22 @@ class ContactsPage extends React.Component {
       const {snackbar} = this.props
       const {slugCount, masterListCount} = res
       snackbar.show(`Added ${slugCount} ${slugCount === 1 ? 'contact' : 'contacts'} to ${masterListCount} ${masterListCount === 1 ? 'Contact List' : 'Contact Lists'}`, 'batch-add-contacts-to-contact-list-success')
+    })
+  }
+
+  onDelete = () => {
+    const opts = this.getSearchOrSlugs()
+    batchRemoveContacts.call(opts, (error, res) => {
+      if (error) {
+        console.log(error)
+        this.props.snackbar.error('batch-delete-contacts-failure')
+      } else {
+        const {snackbar} = this.props
+        const {slugCount} = res
+        const name = slugCount > 1 ? `${slugCount} Contacts` : this.state.selections[0].name
+        snackbar.show(`Deleted ${name}`, 'batch-delete-contacts-success')
+        this.clearSelectionAndHideModals()
+      }
     })
   }
 
@@ -388,9 +404,9 @@ class ContactsPage extends React.Component {
         <DeleteContactsModal
           open={this.state.deleteContactsModal}
           contacts={this.state.selections}
-          onDelete={() => this.clearSelectionAndHideModals()}
-          onDismiss={() => this.hideModals()}
-        />
+          contactsCount={selectionsLength}
+          onDelete={this.onDelete}
+          onDismiss={() => this.hideModals()} />
       </div>
     )
   }
