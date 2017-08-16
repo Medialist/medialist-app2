@@ -21,7 +21,7 @@ import { batchAddTags } from '/imports/api/tags/methods'
 import { batchFavouriteContacts, batchUpdateStatus } from '/imports/api/contacts/methods'
 import NearBottomContainer from '/imports/ui/navigation/near-bottom-container'
 import SubscriptionLimitContainer from '/imports/ui/navigation/subscription-limit-container'
-import Loading from '/imports/ui/lists/loading'
+import { LoadingBar } from '/imports/ui/lists/loading'
 import querystring from 'querystring'
 import { StatusIndex } from '/imports/api/contacts/status'
 import escapeRegExp from 'lodash.escaperegexp'
@@ -279,7 +279,7 @@ CampaignContactsPage.contextTypes = {
 // and set up the subscriptions and collecton queries from those options.
 const CampaignContactsPageContainer = (props, context) => {
   if (props.loading) {
-    return <Loading />
+    return <LoadingBar />
   }
 
   // API is like setState...

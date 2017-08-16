@@ -681,7 +681,7 @@ button {
     transform: translateX(30px) scaleX(0.14);
   }
   25%, 75% {
-    transform: scaleX(1);
+    transform: translateX(0px) scaleX(1);
   }
   50% {
     transform: translateX(-30px) scaleX(0.14);
