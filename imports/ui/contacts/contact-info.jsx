@@ -124,7 +124,7 @@ const ContactInfo = withSnackbar(React.createClass({
           </div>
           <div className='col col-9 pl3'>
             <div className='semibold f-xl gray10'>
-              {name}
+              <span data-id='contact-name'>{name}</span>
               <Tooltip title={tooltip}>
                 <FavouritesIcon data-id={favouriteButtonId} className='mx1 pointer' onClick={this.onToggleFavourite} style={{width: '18px', height: '18px', fill: isFavourite ? GOLD : GREY60}} svgStyle={{verticalAlign: '-1px'}} />
               </Tooltip>
