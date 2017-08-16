@@ -25,7 +25,7 @@ import AddTagsModal from '/imports/ui/tags/add-tags-modal'
 import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
 import AddToMasterListModal from '/imports/ui/master-lists/add-to-master-list-modal'
 import createLimitContainer from '/imports/ui/navigation/increase-limit-on-scroll-container'
-import Loading from '/imports/ui/lists/loading'
+import {LoadingBar} from '/imports/ui/lists/loading'
 import DeleteContactsModal from '/imports/ui/contacts/delete-contacts-modal'
 import { addRecentContactList } from '/imports/api/users/methods'
 import createSearchQueryContainer from './search-query-container'
@@ -309,7 +309,7 @@ class ContactsPage extends React.Component {
             onSelectionsChange={onSelectionsChange}
             searchTermActive={searchTermActive} />
         </div>
-        { loading && <div className='center p4'><Loading /></div> }
+        { loading && <LoadingBar /> }
         <ContactsActionsToast
           contacts={this.state.selections}
           onCampaignClick={() => this.showModal('addContactsToCampaignModal')}

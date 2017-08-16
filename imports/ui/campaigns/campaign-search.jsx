@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Loading from '/imports/ui/lists/loading'
+import { LoadingBar } from '/imports/ui/lists/loading'
 import SearchBox, { SearchBoxCount } from '/imports/ui/lists/search-box'
 import CampaignsTable from '/imports/ui/campaigns/campaigns-table'
 import CountTag from '/imports/ui/tags/tag'
@@ -46,7 +46,7 @@ const CampaignSearch = ({
         onSelectionsChange={onSelectionsChange}
         searching={Boolean(term)} />
     </div>
-    { loading && <div className='center p4'><Loading /></div> }
+    { loading && <LoadingBar /> }
   </div>
 )
 
