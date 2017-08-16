@@ -180,10 +180,12 @@ const AddContactContainer = withSnackbar(React.createClass({
     } = this
 
     const { term, selectedContacts } = this.state
-    const { onCreate } = this.props
+    const { onCreate, campaign } = this.props
+    const excludeSlugs = campaign.contacts.map((c) => c.slug)
 
     return (
       <SearchableAddContact
+        excludeSlugs={excludeSlugs}
         term={term}
         onTermChange={onTermChange}
         isSelected={this.isSelected}
