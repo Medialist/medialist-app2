@@ -103,7 +103,6 @@ const ActivityListContainer = createContainer((props) => {
 
   const types = typesForFilter[filter] || Posts.types
   const subs = [
-    Meteor.subscribe('campaign-favourites'),
     Meteor.subscribe('posts', {
       campaign: campaign && campaign._id,
       contact: contact && contact._id,
