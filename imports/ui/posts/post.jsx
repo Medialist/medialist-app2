@@ -185,8 +185,8 @@ class Post extends React.Component {
         updatedAt: campaign.updatedAt
       }
     }
-    console.log(update)
-    updatePost // updatePost.call(update)
+
+    updatePost.call(update)
   }
 
   render () {
@@ -393,9 +393,11 @@ export const FeedbackPost = ({item, currentUser, contact, campaign, contacts, ca
   />
 )
 
-export const CoveragePost = ({item, currentUser, contact, campaign}) => (
+export const CoveragePost = ({item, currentUser, contact, campaign, contacts, campaigns}) => (
   <Post
     {...item}
+    selectableCampaigns={campaigns}
+    selectableContacts={contacts}
     currentUser={currentUser}
     icon={<FeedCoverageIcon className='blue' />}
     summary={<FeedbackPostSummary {...item} label='logged coverage' contact={contact} campaign={campaign} />}

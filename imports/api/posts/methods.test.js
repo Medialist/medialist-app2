@@ -417,7 +417,8 @@ describe('updateCoveragePost', function () {
       userId: users[0]._id
     }, {
       _id,
-      message: 'Tip top'
+      message: 'Tip top',
+      status: StatusMap.hotLead
     })
 
     const updatedPost = Posts.findOne({

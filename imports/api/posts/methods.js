@@ -8,6 +8,7 @@ import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
+import { UpdatePostSchema } from '/imports/api/posts/schema'
 
 let createEmbed = {
   run: () => {}
@@ -134,21 +135,8 @@ export const createFeedbackPost = new ValidatedMethod({
 
 export const updatePost = new ValidatedMethod({
   name: 'updatePost',
-  validate: new SimpleSchema({
-    _id: {
-      type: String
-    },
-    message: {
-      type: String,
-      optional: true
-    },
-    status: {
-      type: String,
-      allowedValues: StatusValues,
-      optional: true
-    }
-  }).validator(),
-  run ({ _id, message, status }) {
+  validate: UpdatePostSchema.validator(),
+  run ({ _id, message, status, contact, campaign }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -183,9 +171,9 @@ export const updatePost = new ValidatedMethod({
       $set.embeds = embed ? [embed] : []
     }
 
-    if (status) {
-      $set.status = status
-    }
+    if (status) $set.status = status
+    if (contact) $set.contacts = [contact]
+    if (campaign) $set.campaigns = [campaign]
 
     Posts.update({
       _id
@@ -193,18 +181,12 @@ export const updatePost = new ValidatedMethod({
       $set: $set
     })
 
-    if (status !== post.status) {
-      post.campaigns.forEach((campaign) => {
-        Campaigns.update({
-          slug: campaign.slug,
-          'contacts.slug': {
-            $in: post.contacts.map(c => c.slug)
-          }
+    if (post.type === 'NeedToKnowPost') {
+      post.contacts.forEach((contact) => {
+        Contacts.update({
+          _id: contact._id
         }, {
           $set: {
-            'contacts.$.status': status,
-            'contacts.$.updatedAt': updatedAt,
-            'contacts.$.updatedBy': userRef,
             updatedBy: userRef,
             updatedAt
           }
@@ -212,16 +194,60 @@ export const updatePost = new ValidatedMethod({
       })
     }
 
-    if (post.type === 'NeedToKnowPost') {
-      post.contacts.forEach((contact) => {
-        Contacts.update({
-          slug: contact.slug
+    if (status !== post.status) {
+      const slug = post.contacts[0].slug
+
+      post.campaigns.forEach((campaign) => {
+        Campaigns.update({
+          _id: campaign._id,
+          'contacts.slug': slug
         }, {
           $set: {
-            updatedBy: userRef,
-            updatedAt
+            'contacts.$': {
+              slug,
+              status,
+              updatedAt,
+              updatedBy: userRef
+            }
           }
         })
+      })
+    }
+
+    if (contact) {
+      post.contacts.forEach((postContact) => {
+        if (postContact._id !== contact._id) {
+          Contacts.update({
+            _id: {$in: [contact._id, postContact._id]}
+          }, {
+            $set: {
+              updatedBy: userRef,
+              updatedAt
+            }
+          })
+        }
+      })
+    }
+
+    if (campaign) {
+      post.campaigns.forEach((postCampaign) => {
+        if (postCampaign._id !== campaign._id) {
+          const slug = post.contacts[0].slug
+
+          Campaigns.update({
+            _id: campaign._id,
+            'contacts.slug': slug
+          }, {
+            $set: {
+              'contacts.$': {
+                slug,
+                status,
+                updatedAt,
+                updatedBy: userRef
+              }
+            }
+          })
+        }
       })
     }
   }

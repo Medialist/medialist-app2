@@ -8,7 +8,7 @@ import immutable from 'object-path-immutable'
 import PostBoxButtons from './post-box-buttons'
 import firstName from '/imports/lib/first-name'
 
-export default class FeedbackInput extends Component {
+export default class CoverageInput extends Component {
   static propTypes = {
     contact: PropTypes.object,
     campaign: PropTypes.object,
@@ -27,7 +27,7 @@ export default class FeedbackInput extends Component {
       contact,
       campaign,
       message,
-      status = StatusMap.toContact
+      status = StatusMap.completed
     } = props
 
     this.state = {
@@ -42,8 +42,7 @@ export default class FeedbackInput extends Component {
 
   onFieldChange = (event) => {
     const { name, value } = event.target
-    this.setState(state => immutable.set(state, name, value))
-    // update the status if the contact changes to the contact's status
+    this.setState((s) => immutable.set(s, name, value))
     if (name === 'contact' && this.props.isEdit) this.setState({status: value.status})
   }
 
@@ -91,13 +90,13 @@ export default class FeedbackInput extends Component {
           focused={focused}
           disabled={posting}
           onChange={onFieldChange}
-          data-id='feedback-input'
+          data-id='coverage-input'
           shouldFocus={shouldFocusTextArea} />
         <PostBoxButtons
           focused={focused}
-          disabled={!message || posting || !status || !campaign}
+          disabled={!message || posting || !campaign}
           onPost={onSubmit}
-          isEdit={isEdit}>
+          isEdit={isEdit} >
           {isCampaignPage ? (
             <ContactSelector
               selectedContact={contact}
