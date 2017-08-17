@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor'
 import SimpleSchema from 'simpl-schema'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import escapeRegExp from 'lodash.escaperegexp'
-import createUniqueSlug from '/imports/lib/slug'
+import babyparse from 'babyparse'
+import createUniqueSlug, { checkAllSlugsExist } from '/imports/lib/slug'
 import Campaigns from './campaigns'
 import Clients from '/imports/api/clients/clients'
 import Uploadcare from '/imports/lib/uploadcare'
@@ -13,8 +14,6 @@ import Contacts from '/imports/api/contacts/contacts'
 import toUserRef from '/imports/lib/to-user-ref'
 import { LinkSchema } from '/imports/lib/schema'
 import trackEvent from '/imports/ui/integrations/track-event'
-import { CampaignSlugsOrSearchSchema } from '/imports/api/campaigns/schema'
-import { findOrValidateCampaignSlugs } from '/imports/api/campaigns/queries'
 
 let sendCampaignLink = () => ([])
 let createInvitationLink = () => ([])
@@ -53,14 +52,16 @@ function findOrCreateClientRef (name) {
 export const batchFavouriteCampaigns = new ValidatedMethod({
   name: 'batchFavouriteCampaigns',
 
-  // don't use the clients guess of how many were fav'd
-  applyOptions: {
-    returnStubValue: false
-  },
+  validate: new SimpleSchema({
+    campaignSlugs: {
+      type: Array
+    },
+    'campaignSlugs.$': {
+      type: String
+    }
+  }).validator(),
 
-  validate: CampaignSlugsOrSearchSchema.validator(),
-
-  run (slugsOrSearch) {
+  run ({ campaignSlugs }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -69,14 +70,12 @@ export const batchFavouriteCampaigns = new ValidatedMethod({
       return
     }
 
-    const campaignSlugs = findOrValidateCampaignSlugs(slugsOrSearch)
+    checkAllSlugsExist(campaignSlugs, Campaigns)
 
     addToMyFavourites({
       userId: this.userId,
       campaignSlugs
     })
-
-    return { slugCount: campaignSlugs.length }
   }
 })
 
@@ -272,15 +271,16 @@ export const createCampaign = new ValidatedMethod({
 
 export const removeCampaign = new ValidatedMethod({
   name: 'Campaigns/remove',
-
-  // don't use the clients guess of how many were removed
-  applyOptions: {
-    returnStubValue: false
-  },
-
-  validate: CampaignSlugsOrSearchSchema.validator(),
-
-  run (slugsOrSearch) {
+  validate: new SimpleSchema({
+    _ids: {
+      type: Array
+    },
+    '_ids.$': {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    }
+  }).validator(),
+  run ({ _ids }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -289,20 +289,18 @@ export const removeCampaign = new ValidatedMethod({
       return
     }
 
-    const slugs = findOrValidateCampaignSlugs(slugsOrSearch)
-
-    slugs.forEach(slug => {
+    _ids.forEach(_id => {
       // get slugs from ids
       const campaign = Campaigns.findOne({
-        slug: slug
+        _id: _id
       }, {
         fields: {
-          _id: 1,
+          slug: 1,
           team: 1
         }
       })
 
-      const _id = campaign._id
+      const slug = campaign.slug
 
       Campaigns.remove({
         _id: _id
@@ -378,8 +376,6 @@ export const removeCampaign = new ValidatedMethod({
         }
       })
     })
-
-    return { slugCount: slugs.length }
   }
 })
 
@@ -529,5 +525,80 @@ export const createCampaignInvitationLink = new ValidatedMethod({
     const user = findOrCreateUser(email)
 
     return createInvitationLink(user, campaign)
+  }
+})
+
+export const exportCampaignToCsv = new ValidatedMethod({
+  name: 'exportCampaignToCsv',
+
+  applyOptions: {
+    returnStubValue: false
+  },
+
+  validate: new SimpleSchema({
+    campaignSlug: {
+      type: String
+    }
+  }).validator(),
+
+  run ({campaignSlug}) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    if (this.isSimulation) {
+      return
+    }
+
+    const res = Campaigns.aggregate([{
+      $match: {
+        slug: campaignSlug
+      }
+    }, {
+      $project: {
+        campaign: '$slug',
+        contacts: 1
+      }
+    }, {
+      $unwind: '$contacts'
+    }, {
+      $lookup: {
+        from: 'contacts',
+        localField: 'contacts.slug',
+        foreignField: 'slug',
+        as: 'remote_contact'
+      }
+    }, {
+      $unwind: {
+        path: '$remote_contact'
+      }
+    }, {
+      $project: {
+        contacts: true,
+        remote_contact: true,
+        firstOutlet: { $arrayElemAt: ['$remote_contact.outlets', 0] },
+        firstEmail: { $arrayElemAt: ['$remote_contact.emails', 0] },
+        firstPhone: { $arrayElemAt: ['$remote_contact.phones', 0] }
+      }
+    }, {
+      $project: {
+        _id: false,
+        Name: '$remote_contact.name',
+        Title: '$firstOutlet.value',
+        'Media Outlet': '$firstOutlet.label',
+        Email: '$firstEmail.value',
+        Phone: '$firstPhone.value',
+        Status: '$contacts.status',
+        'Updated At': '$contacts.updatedAt',
+        'Updated By': '$contacts.updatedBy.name'
+      }
+    }])
+
+    const csvStr = babyparse.unparse(res)
+
+    return {
+      filename: `${campaignSlug}.csv`,
+      data: csvStr
+    }
   }
 })

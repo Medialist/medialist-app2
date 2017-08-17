@@ -29,6 +29,7 @@
     "@achingbrain/react-validation": "^2.11.1",
     "async": "^2.1.2",
     "babel-runtime": "^6.23.0",
+    "babyparse": "^0.4.6",
     "bcrypt": "^1.0.2",
     "classnames": "^2.2.5",
     "dasherize": "^2.0.0",
