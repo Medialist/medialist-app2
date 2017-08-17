@@ -10,6 +10,7 @@ import Scroll from '/imports/ui/navigation/scroll'
 
 class AddToMasterList extends React.Component {
   static propTypes = {
+    title: PropTypes.string,
     open: PropTypes.bool.isRequired,
     onDismiss: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
@@ -47,11 +48,11 @@ class AddToMasterList extends React.Component {
 
     const { type, allMasterLists, children } = this.props
     const { selectedMasterLists } = this.state
-
+    const title = this.props.title || `${type.substring(0, type.length - 1)} Lists`
     return (
       <div data-id='add-to-list-modal'>
         <div className='py6 center border-bottom border-gray80'>
-          <span className='f-xl'>{type.substring(0, type.length - 1)} Lists</span>
+          <span className='f-xl'>{title}</span>
           {children}
         </div>
         <Scroll height={'calc(90vh - 250px)'} className='bg-gray90'>
