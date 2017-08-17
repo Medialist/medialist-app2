@@ -190,3 +190,22 @@ export const ContactSearchSchema = new SimpleSchema({
     optional: true
   }
 })
+
+export const ContactSlugsOrSearchSchema = new SimpleSchema({
+  contactSlugs: {
+    type: Array,
+    optional: true
+  },
+  'contactSlugs.$': {
+    type: String
+  },
+  contactSearch: {
+    type: ContactSearchSchema,
+    optional: true,
+    custom () {
+      if (!this.isSet && !this.field('contactSlugs').isSet) {
+        return SimpleSchema.ErrorTypes.REQUIRED
+      }
+    }
+  }
+})

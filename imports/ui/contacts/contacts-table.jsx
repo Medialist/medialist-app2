@@ -7,7 +7,6 @@ import Checkbox from '/imports/ui/tables/checkbox'
 import { TimeAgo } from '/imports/ui/time/time'
 import YouOrName from '/imports/ui/users/you-or-name'
 import { CircleAvatar } from '/imports/ui/images/avatar'
-import isSameItems from '/imports/ui/lists/is-same-items'
 import StatusLabel from '/imports/ui/feedback/status-label'
 import StatusSelectorContainer from '/imports/ui/feedback/status-selector-container'
 
@@ -34,6 +33,10 @@ const ContactsTable = React.createClass({
     selections: PropTypes.array,
     // Callback when selection(s) change
     onSelectionsChange: PropTypes.func,
+    // The select all state ['include', 'all', 'exclude']
+    selectionMode: PropTypes.oneOf(['include', 'all', 'exclude']),
+    // Callback when select all is clicked
+    onSelectionModeChange: PropTypes.func,
     // Optional campaign for calculating a contacts status
     campaign: PropTypes.object,
     // returns true while subscriptionts are still syncing data.
@@ -43,19 +46,18 @@ const ContactsTable = React.createClass({
   },
 
   onSelectAllChange () {
-    let selections
-
-    if (isSameItems(this.props.selections, this.props.contacts)) {
-      selections = []
+    const { selectionMode } = this.props
+    if (selectionMode === 'include') {
+      this.props.onSelectionModeChange('all')
+      this.props.onSelectionsChange(this.props.contacts.slice())
     } else {
-      selections = this.props.contacts.slice()
+      this.props.onSelectionModeChange('include')
+      this.props.onSelectionsChange([])
     }
-
-    this.props.onSelectionsChange(selections)
   },
 
   onSelectChange (contact) {
-    let { selections } = this.props
+    let { selections, selectionMode } = this.props
     const index = selections.findIndex((c) => c._id === contact._id)
 
     if (index === -1) {
@@ -66,10 +68,14 @@ const ContactsTable = React.createClass({
     }
 
     this.props.onSelectionsChange(selections)
+
+    if (selectionMode === 'all') {
+      this.props.onSelectionModeChange('include')
+    }
   },
 
   render () {
-    const { sort, onSortChange, contacts, selections, campaign, loading, searchTermActive } = this.props
+    const { sort, onSortChange, contacts, selections, selectionMode, campaign, loading, searchTermActive } = this.props
 
     if (!loading && !contacts.length) {
       return <p className='p6 mt0 f-xl semibold center' data-id='contacts-table-empty'>No contacts found</p>
@@ -87,7 +93,7 @@ const ContactsTable = React.createClass({
             <tr className='bg-gray90'>
               <th className='right-align' style={{width: 34, paddingRight: 0, borderRight: '0 none'}}>
                 <Checkbox
-                  checked={isSameItems(selections, contacts)}
+                  checked={selectionMode === 'all'}
                   onChange={this.onSelectAllChange} />
               </th>
               <SortableHeader
@@ -143,17 +149,17 @@ const ContactsTable = React.createClass({
               const contactRef = campaign ? campaign.contacts[campaign.slug] : null
               const contextualUpdatedAt = contactRef ? contactRef.updatedAt : (updatedAt || createdAt)
               const contextualUpdatedBy = contactRef ? contactRef.updatedBy : (updatedBy || createdBy)
-
+              const firstOutlet = (outlets && outlets.length && outlets[0]) || {}
               return (
                 <SelectableRow data={contact} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={slug} data-id={`contacts-table-row-${index}`} data-item={slug}>
                   <td className='left-align'>
                     <ContactLink contact={contact} campaign={campaign} />
                   </td>
                   <td className='left-align'>
-                    {(outlets && outlets.length && outlets[0].value) ? outlets[0].value : <span className='gray60'>No title</span>}
+                    {firstOutlet.value || <span className='gray60'>No title</span>}
                   </td>
                   <td className='left-align'>
-                    {(outlets && outlets.length && outlets[0].label) ? outlets[0].label : <span className='gray60'>No outlet</span>}
+                    {firstOutlet.label || <span className='gray60'>No outlet</span>}
                   </td>
                   <td className='left-align'>
                     <DisplayEmail emails={emails} />

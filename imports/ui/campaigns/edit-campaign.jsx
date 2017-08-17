@@ -283,7 +283,7 @@ const EditCampaignForm = withRouter(withSnackbar(React.createClass({
     event.preventDefault()
 
     removeCampaign.call({
-      _ids: [this.props.campaign._id]
+      campaignSlugs: [this.props.campaign.slug]
     }, (error) => {
       if (error) {
         console.log(error)

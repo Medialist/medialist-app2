@@ -6,6 +6,82 @@ import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import findUniqueSlug from '/imports/lib/slug'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
+import { ContactSlugsOrSearchSchema } from '/imports/api/contacts/schema'
+import { findOrValidateContactSlugs } from '/imports/api/contacts/queries'
+import { findOrValidateCampaignSlugs } from '/imports/api/campaigns/queries'
+import { CampaignSlugsOrSearchSchema } from '/imports/api/campaigns/schema'
+
+export const batchAddToContactLists = new ValidatedMethod({
+  name: 'batchAddToContactLists',
+
+  applyOptions: {
+    returnStubValue: false
+  },
+
+  validate: new SimpleSchema({
+    masterListIds: {
+      type: Array
+    },
+    'masterListIds.$': {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    }
+  }).extend(ContactSlugsOrSearchSchema).validator(),
+
+  run ({masterListIds, ...searchOrSlugs}) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    if (this.isSimulation) {
+      return
+    }
+
+    const slugs = findOrValidateContactSlugs(searchOrSlugs)
+
+    return batchAddToMasterLists.run.call(this, {
+      slugs,
+      masterListIds,
+      type: 'Contacts'
+    })
+  }
+})
+
+export const batchAddToCampaignLists = new ValidatedMethod({
+  name: 'batchAddToCampaignLists',
+
+  applyOptions: {
+    returnStubValue: false
+  },
+
+  validate: new SimpleSchema({
+    masterListIds: {
+      type: Array
+    },
+    'masterListIds.$': {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    }
+  }).extend(CampaignSlugsOrSearchSchema).validator(),
+
+  run ({masterListIds, ...searchOrSlugs}) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    if (this.isSimulation) {
+      return
+    }
+
+    const slugs = findOrValidateCampaignSlugs(searchOrSlugs)
+
+    return batchAddToMasterLists.run.call(this, {
+      slugs,
+      masterListIds,
+      type: 'Campaigns'
+    })
+  }
+})
 
 /*
  * Add an array of Campaigns/Contacts to an array of master lists.
@@ -101,6 +177,8 @@ export const batchAddToMasterLists = new ValidatedMethod({
       campaignSlugs: type === 'Campaigns' ? slugs : [],
       contactSlugs: type === 'Contacts' ? slugs : []
     })
+
+    return { slugCount: slugs.length, masterListCount: masterListIds.length }
   }
 })
 

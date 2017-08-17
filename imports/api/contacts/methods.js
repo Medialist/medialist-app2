@@ -9,7 +9,8 @@ import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
 import Contacts from '/imports/api/contacts/contacts'
-import { ContactCreateSchema } from '/imports/api/contacts/schema'
+import { ContactCreateSchema, ContactSlugsOrSearchSchema } from '/imports/api/contacts/schema'
+import { findOrValidateContactSlugs } from '/imports/api/contacts/queries'
 import { StatusValues } from '/imports/api/contacts/status'
 import MasterLists from '/imports/api/master-lists/master-lists'
 
@@ -24,38 +25,40 @@ import MasterLists from '/imports/api/master-lists/master-lists'
 export const addContactsToCampaign = new ValidatedMethod({
   name: 'addContactsToCampaign',
 
+  // don't use the clients guess of how many were added
+  applyOptions: {
+    returnStubValue: false
+  },
+
   validate: new SimpleSchema({
-    contactSlugs: {
-      type: Array
-    },
-    'contactSlugs.$': {
-      type: String
-    },
     campaignSlug: {
       type: String
     }
-  }).validator(),
+  }).extend(ContactSlugsOrSearchSchema).validator(),
 
-  run ({ contactSlugs, campaignSlug }) {
+  run ({ campaignSlug, ...searchOrSlugs }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
 
     if (this.isSimulation) {
+      // This takes way too long on the client so we just perform the initial
+      // validation logic and bail here. The `returnStubValue: false` option above
+      // is important as otherwise the client will assume it's simulated null
+      // is the result of this method call and display incorrect info to the user.
       return
     }
-
-    checkAllSlugsExist(contactSlugs, Contacts)
-    checkAllSlugsExist([campaignSlug], Campaigns)
-
-    const updatedBy = findOneUserRef(this.userId)
-    const updatedAt = new Date()
 
     const campaign = Campaigns.findOne({
       slug: campaignSlug
     }, {
       contacts: 1
     })
+    if (!campaign) throw new Meteor.Error(`Campaign ${campaignSlug} could not be found`)
+
+    const contactSlugs = findOrValidateContactSlugs(searchOrSlugs)
+    const updatedBy = findOneUserRef(this.userId)
+    const updatedAt = new Date()
 
     // Add the things to the users my<Contact|Campaigns> list
     addToMyFavourites({
@@ -68,7 +71,7 @@ export const addContactsToCampaign = new ValidatedMethod({
 
     if (newContactSlugs.length === 0) {
       // User hasn't changed anything, so we're done.
-      return
+      return { numContactsAdded: 0 }
     }
 
     const newContacts = newContactSlugs.map((slug) => ({
@@ -118,6 +121,8 @@ export const addContactsToCampaign = new ValidatedMethod({
       campaignSlugs: [campaignSlug],
       createdBy: updatedBy
     })
+
+    return { numContactsAdded: newContactSlugs.length }
   }
 })
 
@@ -133,13 +138,6 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
   name: 'removeContactsFromCampaign',
 
   validate: new SimpleSchema({
-    contactSlugs: {
-      type: Array,
-      min: 1
-    },
-    'contactSlugs.$': {
-      type: String
-    },
     campaignSlugs: {
       type: Array,
       min: 1
@@ -147,9 +145,9 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
     'campaignSlugs.$': {
       type: String
     }
-  }).validator(),
+  }).extend(ContactSlugsOrSearchSchema).validator(),
 
-  run ({ contactSlugs, campaignSlugs }) {
+  run ({ campaignSlugs, ...searchOrSlugs }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -158,7 +156,7 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
       return
     }
 
-    checkAllSlugsExist(contactSlugs, Contacts)
+    const contactSlugs = findOrValidateContactSlugs(searchOrSlugs)
     checkAllSlugsExist(campaignSlugs, Campaigns)
 
     const updatedBy = findOneUserRef(this.userId)
@@ -207,16 +205,14 @@ export const removeContactsFromCampaigns = new ValidatedMethod({
 export const batchFavouriteContacts = new ValidatedMethod({
   name: 'batchFavouriteContacts',
 
-  validate: new SimpleSchema({
-    contactSlugs: {
-      type: Array
-    },
-    'contactSlugs.$': {
-      type: String
-    }
-  }).validator(),
+  // don't use the clients guess of how many were fav'd
+  applyOptions: {
+    returnStubValue: false
+  },
 
-  run ({ contactSlugs }) {
+  validate: ContactSlugsOrSearchSchema.validator(),
+
+  run (searchOrSlugs) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -225,11 +221,13 @@ export const batchFavouriteContacts = new ValidatedMethod({
       return
     }
 
-    checkAllSlugsExist(contactSlugs, Contacts)
+    const contactSlugs = findOrValidateContactSlugs(searchOrSlugs)
     addToMyFavourites({
       userId: this.userId,
       contactSlugs
     })
+
+    return { slugCount: contactSlugs.length }
   }
 })
 
@@ -239,17 +237,14 @@ export const batchFavouriteContacts = new ValidatedMethod({
 export const batchRemoveContacts = new ValidatedMethod({
   name: 'batchRemoveContacts',
 
-  validate: new SimpleSchema({
-    _ids: {
-      type: Array
-    },
-    '_ids.$': {
-      type: String,
-      regEx: SimpleSchema.RegEx.Id
-    }
-  }).validator(),
+  // don't use the clients guess of how many were removed
+  applyOptions: {
+    returnStubValue: false
+  },
 
-  run ({ _ids }) {
+  validate: ContactSlugsOrSearchSchema.validator(),
+
+  run (slugsOrSearch) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -258,16 +253,17 @@ export const batchRemoveContacts = new ValidatedMethod({
       return
     }
 
-    _ids.forEach(_id => {
-      // get slugs from ids
-      const slug = Contacts.findOne({
-        _id: _id
+    const slugs = findOrValidateContactSlugs(slugsOrSearch)
+
+    slugs.forEach(slug => {
+      const _id = Contacts.findOne({
+        slug: slug
       }, {
         fields: {
-          'slug': 1
+          '_id': 1
         }
       })
-      .slug
+      ._id
 
       // remove contact
       Contacts.remove({
@@ -333,6 +329,8 @@ export const batchRemoveContacts = new ValidatedMethod({
         }
       })
     })
+
+    return { slugCount: slugs.length }
   }
 })
 
@@ -508,19 +506,13 @@ export const batchUpdateStatus = new ValidatedMethod({
     campaignSlug: {
       type: String
     },
-    contactSlugs: {
-      type: Array
-    },
-    'contactSlugs.$': {
-      type: String
-    },
     status: {
       type: String,
       allowedValues: StatusValues
     }
-  }).validator(),
+  }).extend(ContactSlugsOrSearchSchema).validator(),
 
-  run ({campaignSlug, contactSlugs, status}) {
+  run ({campaignSlug, status, ...searchOrSlugs}) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -537,7 +529,7 @@ export const batchUpdateStatus = new ValidatedMethod({
       throw new Meteor.Error('Can\'t find campaign')
     }
 
-    checkAllSlugsExist(contactSlugs, Contacts)
+    let contactSlugs = findOrValidateContactSlugs(searchOrSlugs)
 
     // only keep contacts that are on the campaign
     contactSlugs = intersection(contactSlugs, campaign.contacts.map(c => c.slug))

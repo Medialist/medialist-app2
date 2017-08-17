@@ -13,7 +13,7 @@ import { batchFavouriteCampaigns } from '/imports/api/campaigns/methods'
 import { batchAddToMasterLists, createMasterList } from '/imports/api/master-lists/methods'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists } from '/tests/fixtures/server-domain'
-import createCampaignSearchQuery from './create-query'
+import createCampaignSearchQuery from './queries'
 
 function searchCampaigns ({sort, limit, ...queryOpts}) {
   const query = createCampaignSearchQuery(queryOpts)

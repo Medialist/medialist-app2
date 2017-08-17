@@ -19,6 +19,7 @@ class ContactsActionsToast extends React.Component {
   static propTypes = {
     campaign: PropTypes.object,
     contacts: PropTypes.array.isRequired,
+    contactsCount: PropTypes.number.isRequired,
     onCampaignClick: PropTypes.func.isRequired,
     onSectorClick: PropTypes.func.isRequired,
     onFavouriteClick: PropTypes.func.isRequired,
@@ -49,6 +50,7 @@ class ContactsActionsToast extends React.Component {
     const {
       campaign,
       contacts,
+      contactsCount,
       onCampaignClick,
       onSectorClick,
       onFavouriteClick,
@@ -62,8 +64,8 @@ class ContactsActionsToast extends React.Component {
         { contacts.length && (
           <div className='bg-white shadow-1 p4 flex items-center' key='ContactsActionsToast'>
             <div className='flex-none'>
-              <span className='badge f-sm bg-blue mr2'>{contacts.length}</span>
-              <span className='gray20'>contact{contacts.length === 1 ? '' : 's'} selected</span>
+              <span className='badge f-sm bg-blue mr2'>{contactsCount}</span>
+              <span className='gray20'>contact{contactsCount === 1 ? '' : 's'} selected</span>
             </div>
             <div className='flex-auto center'>
               <Tooltip title='Add to Campaign'>

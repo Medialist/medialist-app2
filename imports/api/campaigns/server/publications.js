@@ -5,7 +5,9 @@ import { ReactiveAggregate } from 'meteor/jcbernack:reactive-aggregate'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
 import StatusMap from '/imports/api/contacts/status'
-import '/imports/api/campaigns/search/publications'
+import publishToCollection from '/imports/lib/publish-to-collection'
+import createCampaignSearchQuery from '/imports/api/campaigns/queries'
+import { CampaignSearchSchema } from '/imports/api/campaigns/schema'
 
 const campaignCounter = new Counter('campaignCount', Campaigns.find({}))
 
@@ -172,4 +174,34 @@ Meteor.publish('campaign-contact-statuses', function (campaignSlug) {
   }], {
     clientCollection: 'campaign-contact-statuses-client'
   })
+})
+
+Meteor.publish('campaign-search-results', function ({sort, limit, ...campaignSearch}) {
+  if (!this.userId) {
+    return this.ready()
+  }
+  CampaignSearchSchema.validate(campaignSearch)
+
+  const query = createCampaignSearchQuery(campaignSearch)
+
+  const cursor = Campaigns.find(query, {sort, limit})
+
+  publishToCollection(this, 'campaign-search-results', cursor)
+})
+
+Meteor.publish('campaign-search-count-not-reactive', function (campaignSearch) {
+  if (!this.userId) {
+    return this.ready()
+  }
+  CampaignSearchSchema.validate(campaignSearch)
+
+  const query = createCampaignSearchQuery(campaignSearch)
+
+  const count = Campaigns.find(query).count()
+
+  const sub = this
+  // Always use the same _id, so it's replaced on the client.
+  sub.added('campaign-search-count', 'campaign-search-count-id', {count: count})
+
+  sub.ready()
 })

@@ -1,48 +1,31 @@
-
 import React from 'react'
 import PropTypes from 'prop-types'
 import Modal from '/imports/ui/navigation/modal'
-import { removeCampaign } from '/imports/api/campaigns/methods'
-import AvatarList from '/imports/ui/lists/avatar-list'
-import withSnackbar from '/imports/ui/snackbar/with-snackbar'
+import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
 import DeleteConfirmation from '/imports/ui/navigation/delete-confirmation'
 
-const DeleteCampaigns = withSnackbar(React.createClass({
-  propTypes: {
+class DeleteCampaigns extends React.Component {
+  static propTypes = {
     campaigns: PropTypes.array.isRequired,
+    campaignsCount: PropTypes.number.isRequired,
     onDelete: PropTypes.func.isRequired,
     onDismiss: PropTypes.func.isRequired
-  },
-
-  onDelete () {
-    removeCampaign.call({
-      _ids: this.props.campaigns.map(campaigns => campaigns._id)
-    }, (error) => {
-      if (error) {
-        console.error('Failed to delete campaigns', error)
-        this.props.snackbar.error('batch-delete-campaigns-failure')
-      } else {
-        const name = this.props.campaigns.length > 1 ? `${this.props.campaigns.length} Campaigns` : this.props.campaigns[0].name
-
-        this.props.snackbar.show(`Deleted ${name}`, 'batch-delete-campaigns-success')
-      }
-
-      this.props.onDelete()
-    })
-  },
+  }
 
   render () {
+    const {campaigns, campaignsCount, onDelete, onDismiss} = this.props
     return (
-      <DeleteConfirmation type='Campaign' items={this.props.campaigns} onDelete={() => this.onDelete()} onDismiss={this.props.onDismiss}>
-        <h3 className='normal f-xl m4'>Are you sure you want to <strong>delete {this.props.campaigns.length > 1 ? 'these campaigns' : 'this campaign'}</strong>?</h3>
-        <AvatarList items={this.props.campaigns} maxAvatars={10} className='my4 px4' />
+      <DeleteConfirmation type='Campaign' items={campaigns} onDelete={onDelete} onDismiss={onDismiss}>
+        <h3 className='normal f-xl m4'>Are you sure you want to <strong>delete {campaigns.length > 1 ? 'these campaigns' : 'this campaign'}</strong>?</h3>
+        <AbbreviatedAvatarList items={campaigns} maxAvatars={10} className='my4 px4' shape='square' total={campaignsCount} />
         <h4 className='normal f-xl'>Deleted campaigns can't be retrieved.</h4>
       </DeleteConfirmation>
     )
   }
-}))
+}
 
 export default Modal(DeleteCampaigns, {
+  overflowY: 'visible',
   width: 500,
   'data-id': 'delete-campaigns-modal'
 })
