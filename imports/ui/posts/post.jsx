@@ -167,8 +167,10 @@ class Post extends React.Component {
     if (message) update.message = message
     if (status) update.status = status
     if (contact) {
+      // on the campaigns page contacts are from the campaign-contacts sub so we are picking off the contact id
+      // i.e. 8aa1f276522c974ff0-8298fc091b3b12cb0e00a9 -> campaignId-contactId
       update.contact = {
-        _id: contact._id,
+        _id: contact._id.split('-')[1] || contact._id,
         name: contact.name,
         slug: contact.slug,
         outlets: contact.outlets,
@@ -185,7 +187,6 @@ class Post extends React.Component {
         updatedAt: campaign.updatedAt
       }
     }
-
     updatePost.call(update)
   }
 
@@ -200,6 +201,7 @@ class Post extends React.Component {
       'NeedToKnowPost': 'Need-to-Knows'
     }
     const canEditPost = this.props.createdBy._id === this.props.currentUser._id
+
     return (
       <article className={`flex rounded px4 pt3 pb2 mb2 shadow-2 ${this.props.bgClass}`} data-id={dasherise(this.props.type)} {...data}>
         <div className='flex-none' style={{paddingTop: 1}}>

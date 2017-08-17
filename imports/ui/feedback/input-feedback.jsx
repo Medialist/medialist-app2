@@ -51,7 +51,6 @@ export default class FeedbackInput extends Component {
     this.setState({
       posting: true
     })
-
     this.props.onSubmit(this.state, (err) => {
       this.setState({
         message: '',

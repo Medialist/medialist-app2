@@ -63,7 +63,38 @@ module.exports = {
         coverageInput: '[data-id=coverage-input]',
         needToKnowInput: '[data-id=need-to-know-input]',
         createPostButton: '[data-id=create-post-button]',
-        contactStatusSelectorButton: '[data-id=contact-status-selector-button]'
+        contactStatusSelectorButton: '[data-id=contact-status-selector-button]',
+        selectContactButton: '[data-id=select-contact-button]'
+      },
+      sections: {
+        dropdownMenu: {
+          selector: '[data-id=dropdown-menu]',
+          elements: {
+            campaignContactSearchResult: '[data-type=campaign-contact-search-result]'
+          },
+          commands: [
+            {
+              selectContact: function (contact) {
+                const selector = `[data-id=edit-post-modal] [data-id=campaign-contact-${contact.slug}]`
+
+                this
+                  .waitForElementVisible(selector)
+                  .click(selector)
+                return this
+              }
+            },
+            {
+              selectStatus: function (status) {
+                const selector = `[data-id=edit-post-modal] [data-id=contact-status-${status}]`
+
+                this
+                  .waitForElementVisible(selector)
+                  .click(selector)
+                return this
+              }
+            }
+          ]
+        }
       }
     },
     addContactsModal: {
@@ -108,6 +139,11 @@ module.exports = {
 
           this.waitForElementNotPresent(this.selector)
 
+          return this
+        },
+        addFeedbackPost: function () {
+          this.section.postBox
+            .postFeedbackMessage('test')
           return this
         }
       }]
@@ -244,13 +280,26 @@ module.exports = {
         .waitForElementVisible(this.section.editPostModal.selector)
 
       this.section.editPostModal
+        .waitForElementVisible('@selectContactButton')
+        .click('@selectContactButton')
+
+      this.section.editPostModal.section.dropdownMenu
+        .waitForElementVisible('@campaignContactSearchResult')
+        .selectContact(contact)
+
+      this.section.editPostModal
         .waitForElementVisible('@contactStatusSelectorButton')
         .click('@contactStatusSelectorButton')
-        .waitForElementVisible(`[data-id=contact-status-${contactStatus}]`)
-        .click(`[data-id=contact-status-${contactStatus}]`)
+
+      this.section.editPostModal.section.dropdownMenu
+        .selectStatus(contactStatus)
+
+      this.section.editPostModal
         .waitForElementVisible('@feedbackInput')
         .setValue('@feedbackInput', text)
+        .waitForElementVisible('@createPostButton')
         .click('@createPostButton')
+        .waitForElementNotPresent('@createPostButton')
 
       return this
     },
