@@ -591,6 +591,11 @@ export const batchUpdateStatus = new ValidatedMethod({
 export const exportContactsToCsv = new ValidatedMethod({
   name: 'exportContactsToCsv',
 
+  // Just don't even try, client.
+  applyOptions: {
+    returnStubValue: false
+  },
+
   validate: ContactSlugsOrSearchSchema.validator(),
 
   run (slugsOrSearch) {
@@ -615,12 +620,10 @@ export const exportContactsToCsv = new ValidatedMethod({
         'Media Outlet': c.outlets[0] && c.outlets[0].label || '',
         'Email': c.emails[0] && c.emails[0].value || '',
         'Phone': c.phones[0] && c.phones[0].value || '',
-        'Updated At': moment(c.updatedAt).toISOString(),
-        'Updated By': c.updatedBy.name
+        'Updated At': moment(c.updatedAt || c.createdAt).toISOString(),
+        'Updated By': c.updatedBy ? c.updatedBy.name : c.createdBy.name
       }
     })
-
-    console.log(res)
 
     const csvStr = babyparse.unparse(res)
 

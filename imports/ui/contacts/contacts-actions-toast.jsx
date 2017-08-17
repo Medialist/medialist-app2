@@ -12,7 +12,8 @@ import {
   ListIcon,
   TagIcon,
   StatusUpdateIcon,
-  DeleteIcon
+  DeleteIcon,
+  DownloadIcon
 } from '/imports/ui/images/icons'
 
 class ContactsActionsToast extends React.Component {
@@ -26,7 +27,8 @@ class ContactsActionsToast extends React.Component {
     onTagClick: PropTypes.func.isRequired,
     onStatusClick: PropTypes.func,
     onDeleteClick: PropTypes.func.isRequired,
-    onDeselectAllClick: PropTypes.func.isRequired
+    onDeselectAllClick: PropTypes.func.isRequired,
+    onExportToCsvClick: PropTypes.func.isRequired
   }
 
   state = {
@@ -56,7 +58,8 @@ class ContactsActionsToast extends React.Component {
       onFavouriteClick,
       onTagClick,
       onDeleteClick,
-      onDeselectAllClick
+      onDeselectAllClick,
+      onExportToCsvClick
     } = this.props
 
     return (
@@ -119,6 +122,13 @@ class ContactsActionsToast extends React.Component {
                   className='mx3 pointer gray60 hover-blue'
                   onClick={() => onTagClick(contacts)}
                   data-id='contact-actions-add-tags'
+                  style={{width: '21px', height: '21px'}} />
+              </Tooltip>
+              <Tooltip title='Download as CSV'>
+                <DownloadIcon
+                  className='mx3 pointer gray60 hover-blue'
+                  onClick={onExportToCsvClick}
+                  data-id={`contact-actions-export-csv`}
                   style={{width: '21px', height: '21px'}} />
               </Tooltip>
               <Tooltip title={`${campaign ? 'Remove' : 'Delete'} Contact${contacts.length > 1 ? 's' : ''}`}>
