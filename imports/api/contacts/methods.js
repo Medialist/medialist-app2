@@ -4,6 +4,8 @@ import SimpleSchema from 'simpl-schema'
 import escapeRegExp from 'lodash.escaperegexp'
 import difference from 'lodash.difference'
 import intersection from 'lodash.intersection'
+import moment from 'moment'
+import babyparse from 'babyparse'
 import slugify, { checkAllSlugsExist } from '/imports/lib/slug'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import Campaigns from '/imports/api/campaigns/campaigns'
@@ -583,5 +585,48 @@ export const batchUpdateStatus = new ValidatedMethod({
       status: status,
       createdBy: updatedBy
     })
+  }
+})
+
+export const exportContactsToCsv = new ValidatedMethod({
+  name: 'exportContactsToCsv',
+
+  validate: ContactSlugsOrSearchSchema.validator(),
+
+  run (slugsOrSearch) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    if (this.isSimulation) {
+      return
+    }
+
+    const contactSlugs = findOrValidateContactSlugs(slugsOrSearch)
+    const sort = (slugsOrSearch.contactSearch && slugsOrSearch.contactSearch.sort) || {updatedAt: -1}
+    const res = Contacts.find({
+      slug: { $in: contactSlugs }
+    }, {
+      sort: sort
+    }).map(c => {
+      return {
+        'Name': c.name,
+        'Title': c.outlets[0] && c.outlets[0].value || '',
+        'Media Outlet': c.outlets[0] && c.outlets[0].label || '',
+        'Email': c.emails[0] && c.emails[0].value || '',
+        'Phone': c.phones[0] && c.phones[0].value || '',
+        'Updated At': moment(c.updatedAt).toISOString(),
+        'Updated By': c.updatedBy.name
+      }
+    })
+
+    console.log(res)
+
+    const csvStr = babyparse.unparse(res)
+
+    return {
+      filename: 'medialist.csv',
+      data: csvStr
+    }
   }
 })

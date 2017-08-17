@@ -551,7 +551,7 @@ describe('Campaign remove method', function () {
   })
 })
 
-describe.only('Export Campaign to CSV method', function () {
+describe('Export Campaign to CSV method', function () {
   beforeEach(function () {
     resetDatabase()
   })
