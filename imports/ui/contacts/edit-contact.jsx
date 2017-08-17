@@ -470,7 +470,7 @@ const EditContactForm = withRouter(withSnackbar(React.createClass({
   onDelete (event) {
     event.preventDefault()
 
-    batchRemoveContacts.call({_ids: [this.props.contact._id]}, (error) => {
+    batchRemoveContacts.call({conactSlugs: [this.props.contact.slug]}, (error) => {
       if (error) {
         console.log(error)
 
