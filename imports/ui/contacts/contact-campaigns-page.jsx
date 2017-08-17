@@ -406,7 +406,10 @@ export default createContainer(({location, params: { contactSlug }}) => {
   const subs = [
     Meteor.subscribe('contact-page', contactSlug),
     Meteor.subscribe('contact-campaigns', contactSlug),
-    Meteor.subscribe('contact-campaign-statuses', contactSlug)
+    Meteor.subscribe('contact-campaign-statuses', contactSlug),
+    Meteor.subscribe('campaigns', {
+      'contacts.slug': contactSlug
+    })
   ]
   const loading = subs.some((s) => !s.ready())
 
