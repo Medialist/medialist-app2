@@ -25,7 +25,7 @@ describe('Campaigns/batchFavouriteCampaigns', function () {
   })
 
   it('should validate the parameters', function () {
-    assert.throws(() => batchFavouriteCampaigns.validate({}), /Campaign slugs is required/)
+    assert.throws(() => batchFavouriteCampaigns.validate({}), /Campaign search is required/)
     assert.throws(() => batchFavouriteCampaigns.validate({campaignSlugs: [1]}), /must be of type String/)
     assert.doesNotThrow(() => batchFavouriteCampaigns.validate({campaignSlugs: ['a']}))
   })
@@ -415,9 +415,9 @@ describe('Campaign remove method', function () {
   })
 
   it('should validate the parameters', function () {
-    assert.throws(() => removeCampaign.validate({}), /Ids is required/)
-    assert.throws(() => removeCampaign.validate({ _ids: 'foo' }), /must be of type Array/)
-    assert.doesNotThrow(() => removeCampaign.validate({ _ids: ['kKz46qgWmbGHrznJC'] }))
+    assert.throws(() => removeCampaign.validate({}), / Campaign search is required/)
+    assert.throws(() => removeCampaign.validate({ campaignSlugs: 'foo' }), /must be of type Array/)
+    assert.doesNotThrow(() => removeCampaign.validate({ campaignSlugs: ['kKz46qgWmbGHrznJC'] }))
   })
 
   it('should remove the campaign from Campaigns and all other places', function () {
@@ -511,8 +511,8 @@ describe('Campaign remove method', function () {
     removeCampaign.run.call({
       userId: users[0]._id
     }, {
-      _ids: [
-        campaigns[0]._id, campaigns[2]._id
+      campaignSlugs: [
+        campaigns[0].slug, campaigns[2].slug
       ]
     })
 

@@ -303,9 +303,9 @@ describe('batchRemoveContacts', function () {
   })
 
   it('should validate the parameters', function () {
-    assert.throws(() => batchRemoveContacts.validate({}), /Ids is required/)
-    assert.throws(() => batchRemoveContacts.validate({ _ids: 'foo' }), /must be of type Array/)
-    assert.doesNotThrow(() => batchRemoveContacts.validate({ _ids: ['kKz46qgWmbGHrznJC'] }))
+    assert.throws(() => batchRemoveContacts.validate({}), /Contact search is required/)
+    assert.throws(() => batchRemoveContacts.validate({ contactSlugs: 'foo' }), /must be of type Array/)
+    assert.doesNotThrow(() => batchRemoveContacts.validate({ contactSlugs: ['kKz46qgWmbGHrznJC'] }))
   })
 
   it('should remove the contact from Contacts and all other places', function () {
@@ -398,9 +398,9 @@ describe('batchRemoveContacts', function () {
     batchRemoveContacts.run.call({
       userId: users[0]._id
     }, {
-      _ids: [
-        contacts[0]._id,
-        contacts[2]._id
+      contactSlugs: [
+        contacts[0].slug,
+        contacts[2].slug
       ]
     })
 
