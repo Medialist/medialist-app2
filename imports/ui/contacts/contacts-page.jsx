@@ -6,6 +6,7 @@ import MasterLists from '/imports/api/master-lists/master-lists'
 import { createContainer } from 'meteor/react-meteor-data'
 import { Link } from 'react-router'
 import Arrow from 'rebass/dist/Arrow'
+import fileDownload from 'react-file-download'
 import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
 import ContactsTable from '/imports/ui/contacts/contacts-table'
 import SearchBox, { SearchBoxCount } from '/imports/ui/lists/search-box'
@@ -17,7 +18,7 @@ import { FeedContactIcon } from '/imports/ui/images/icons'
 import createSearchContainer, { createSearchCountContainer } from '/imports/ui/contacts/search-container'
 import AddContactsToCampaign from '/imports/ui/contacts/add-to-campaign/add-many-modal'
 import CountTag, { AvatarTag } from '/imports/ui/tags/tag'
-import { batchFavouriteContacts, batchRemoveContacts } from '/imports/api/contacts/methods'
+import { batchFavouriteContacts, batchRemoveContacts, exportContactsToCsv } from '/imports/api/contacts/methods'
 import { batchAddTagsToContacts } from '/imports/api/tags/methods'
 import { batchAddToContactLists } from '/imports/api/master-lists/methods'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
@@ -169,6 +170,19 @@ class ContactsPage extends React.Component {
         const {slugCount} = res
         const name = slugCount > 1 ? `${slugCount} Contacts` : this.state.selections[0].name
         snackbar.show(`Deleted ${name}`, 'batch-delete-contacts-success')
+        this.clearSelectionAndHideModals()
+      }
+    })
+  }
+
+  onExportToCsv = () => {
+    const opts = this.getSearchOrSlugs()
+    exportContactsToCsv.call(opts, (error, res) => {
+      if (error) {
+        console.log(error)
+        this.props.snackbar.error('export-contacts-to-csv-failure')
+      } else {
+        fileDownload(res.data, res.filename, 'text/csv')
         this.clearSelectionAndHideModals()
       }
     })
@@ -375,7 +389,8 @@ class ContactsPage extends React.Component {
           onFavouriteClick={() => this.onFavouriteAll()}
           onTagClick={() => this.showModal('addTagsModal')}
           onDeleteClick={() => this.showModal('deleteContactsModal')}
-          onDeselectAllClick={() => this.clearSelection()} />
+          onDeselectAllClick={() => this.clearSelection()}
+          onExportToCsvClick={this.onExportToCsv} />
         <CreateContactModal
           onDismiss={this.hideModals}
           open={this.state.addContactModal} />

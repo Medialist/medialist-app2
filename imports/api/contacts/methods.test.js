@@ -3,6 +3,7 @@ import { resetDatabase } from 'meteor/xolvio:cleaner'
 import assert from 'assert'
 import faker from 'faker'
 import moment from 'moment'
+import babyparse from 'babyparse'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
@@ -18,7 +19,8 @@ import {
   batchFavouriteContacts,
   batchRemoveContacts,
   createContact,
-  batchUpdateStatus
+  batchUpdateStatus,
+  exportContactsToCsv
 } from './methods'
 import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists } from '/tests/fixtures/server-domain'
 import toUserRef from '/imports/lib/to-user-ref'
@@ -590,5 +592,73 @@ describe('batchUpdateStatus', function () {
     assert.equal(updatedCampaign.contacts.find(c => c.slug === contacts[0].slug).status, StatusMap.completed)
     assert.equal(updatedCampaign.contacts.find(c => c.slug === contacts[1].slug).status, StatusMap.completed)
     assert.equal(updatedCampaign.contacts.find(c => c.slug === contacts[2].slug).status, StatusMap.toContact)
+  })
+})
+
+describe('Export Contacts to CSV method', function () {
+  beforeEach(function () {
+    resetDatabase()
+  })
+
+  it('should require the user to be logged in', function () {
+    assert.throws(() => exportContactsToCsv.run.call({}, {}), /You must be logged in/)
+  })
+
+  it('should validate the parameters', function () {
+    assert.throws(() => exportContactsToCsv.validate({}), /Contact search is required/)
+    assert.throws(() => exportContactsToCsv.validate({ contactSlugs: 9 }), /must be of type Array/)
+    assert.doesNotThrow(() => exportContactsToCsv.validate({ contactSlugs: ['ohmy'] }))
+  })
+
+  it('should return a valid csv', function () {
+    const users = createTestUsers(1)
+    const campaigns = createTestCampaigns(1)
+    const contactSlugs = createTestContacts(3).map(c => c.slug)
+
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      campaignSlug: campaigns[0].slug,
+      contactSlugs: contactSlugs
+    })
+
+    batchUpdateStatus.run.call({
+      userId: users[0]._id
+    }, {
+      campaignSlug: campaigns[0].slug,
+      contactSlugs: [contactSlugs[0], contactSlugs[2]],
+      status: StatusMap.completed
+    })
+
+    const res = exportContactsToCsv.run.call({
+      userId: users[0]._id
+    }, {
+      contactSlugs: contactSlugs
+    })
+
+    assert.equal(res.filename, `medialist.csv`)
+
+    const csvObj = babyparse.parse(res.data, {header: false})
+    assert.equal(csvObj.data.length, 4)
+
+    const expectedHeader = ['Name', 'Title', 'Media Outlet', 'Email', 'Phone', 'Updated At', 'Updated By']
+    assert.deepEqual(csvObj.data[0], expectedHeader)
+
+    const contacts = Contacts.find({
+      slug: { $in: contactSlugs }
+    }, {
+      sort: { updatedAt: -1 }
+    }).fetch()
+
+    const contactRows = csvObj.data.slice(1)
+    contactRows.forEach((row, i) => {
+      assert.equal(row[0], contacts[i].name)
+      assert.equal(row[1], contacts[i].outlets[0].value)
+      assert.equal(row[2], contacts[i].outlets[0].label)
+      assert.equal(row[3], contacts[i].emails[0].value)
+      assert.equal(row[4], contacts[i].phones[0].value)
+      assert.equal(row[5], contacts[i].updatedAt.toISOString())
+      assert.equal(row[6], users[0].profile.name)
+    })
   })
 })
