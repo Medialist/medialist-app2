@@ -2,6 +2,8 @@ import { Meteor } from 'meteor/meteor'
 import SimpleSchema from 'simpl-schema'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import escapeRegExp from 'lodash.escaperegexp'
+import babyparse from 'babyparse'
+import moment from 'moment'
 import createUniqueSlug from '/imports/lib/slug'
 import Campaigns from './campaigns'
 import Clients from '/imports/api/clients/clients'
@@ -529,5 +531,102 @@ export const createCampaignInvitationLink = new ValidatedMethod({
     const user = findOrCreateUser(email)
 
     return createInvitationLink(user, campaign)
+  }
+})
+
+export const exportCampaignToCsv = new ValidatedMethod({
+  name: 'exportCampaignToCsv',
+
+  applyOptions: {
+    returnStubValue: false
+  },
+
+  validate: new SimpleSchema({
+    campaignSlug: {
+      type: String
+    },
+    contactSlugs: {
+      type: Array,
+      optional: true
+    },
+    'contactSlugs.$': {
+      type: String
+    }
+  }).validator(),
+
+  run ({campaignSlug, contactSlugs}) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    if (this.isSimulation) {
+      return
+    }
+
+    const pipeline = [{
+      $match: {
+        slug: campaignSlug
+      }
+    }, {
+      $project: {
+        campaign: '$slug',
+        contacts: 1
+      }
+    }, {
+      $unwind: '$contacts'
+    }, {
+      $lookup: {
+        from: 'contacts',
+        localField: 'contacts.slug',
+        foreignField: 'slug',
+        as: 'remote_contact'
+      }
+    }, {
+      $unwind: {
+        path: '$remote_contact'
+      }
+    }, {
+      $project: {
+        name: '$remote_contact.name',
+        outlets: '$remote_contact.outlets',
+        emails: '$remote_contact.emails',
+        phones: '$remote_contact.phones',
+        status: '$contacts.status',
+        updatedAt: '$contacts.updatedAt',
+        updatedBy: '$contacts.updatedBy'
+      }
+    }]
+
+    // Strip out contacts that the user didn't explicitly ask for.
+    if (contactSlugs && contactSlugs.length) {
+      pipeline.splice(3, 0, {
+        $match: {
+          'contacts.slug': {
+            $in: contactSlugs
+          }
+        }
+      })
+    }
+
+    const res = Campaigns.aggregate(pipeline).map(c => {
+      // Ensure all fields appear, and the keys are human friendly for the csv header row.
+      return {
+        'Name': c.name,
+        'Title': c.outlets[0] && c.outlets[0].value || '',
+        'Media Outlet': c.outlets[0] && c.outlets[0].label || '',
+        'Email': c.emails[0] && c.emails[0].value || '',
+        'Phone': c.phones[0] && c.phones[0].value || '',
+        'Status': c.status,
+        'Updated At': moment(c.updatedAt).toISOString(),
+        'Updated By': c.updatedBy.name
+      }
+    })
+
+    const csvStr = babyparse.unparse(res)
+
+    return {
+      filename: `${campaignSlug}.csv`,
+      data: csvStr
+    }
   }
 })
