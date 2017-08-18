@@ -7,6 +7,7 @@ import Contacts from '/imports/api/contacts/contacts'
 function extractQueryOpts (props) {
   const {
     minSearchLength = 3,
+    excludeSlugs,
     term,
     campaignSlugs,
     tagSlugs,
@@ -16,6 +17,7 @@ function extractQueryOpts (props) {
   } = props
 
   const queryOpts = {
+    excludeSlugs,
     campaignSlugs,
     masterListSlug,
     userId,
