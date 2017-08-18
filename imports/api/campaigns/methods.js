@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import SimpleSchema from 'simpl-schema'
+import moment from 'moment'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import escapeRegExp from 'lodash.escaperegexp'
 import babyparse from 'babyparse'
@@ -538,10 +539,17 @@ export const exportCampaignToCsv = new ValidatedMethod({
   validate: new SimpleSchema({
     campaignSlug: {
       type: String
+    },
+    contactSlugs: {
+      type: Array,
+      optional: true
+    },
+    'contactSlugs.$': {
+      type: String
     }
   }).validator(),
 
-  run ({campaignSlug}) {
+  run ({campaignSlug, contactSlugs}) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -550,7 +558,7 @@ export const exportCampaignToCsv = new ValidatedMethod({
       return
     }
 
-    const res = Campaigns.aggregate([{
+    const pipeline = [{
       $match: {
         slug: campaignSlug
       }
@@ -574,25 +582,40 @@ export const exportCampaignToCsv = new ValidatedMethod({
       }
     }, {
       $project: {
-        contacts: true,
-        remote_contact: true,
-        firstOutlet: { $arrayElemAt: ['$remote_contact.outlets', 0] },
-        firstEmail: { $arrayElemAt: ['$remote_contact.emails', 0] },
-        firstPhone: { $arrayElemAt: ['$remote_contact.phones', 0] }
+        name: '$remote_contact.name',
+        outlets: '$remote_contact.outlets',
+        emails: '$remote_contact.emails',
+        phones: '$remote_contact.phones',
+        status: '$contacts.status',
+        updatedAt: '$contacts.updatedAt',
+        updatedBy: '$contacts.updatedBy'
       }
-    }, {
-      $project: {
-        _id: false,
-        Name: '$remote_contact.name',
-        Title: '$firstOutlet.value',
-        'Media Outlet': '$firstOutlet.label',
-        Email: '$firstEmail.value',
-        Phone: '$firstPhone.value',
-        Status: '$contacts.status',
-        'Updated At': '$contacts.updatedAt',
-        'Updated By': '$contacts.updatedBy.name'
+    }]
+
+    // Strip out contacts that the user didn't explicitly ask for.
+    if (contactSlugs && contactSlugs.length) {
+      pipeline.splice(3, 0, {
+        $match: {
+          'contacts.slug': {
+            $in: contactSlugs
+          }
+        }
+      })
+    }
+
+    const res = Campaigns.aggregate(pipeline).map(c => {
+      // Ensure all fields appear, and the keys are human friendly for the csv header row.
+      return {
+        'Name': c.name,
+        'Title': c.outlets[0] && c.outlets[0].value || '',
+        'Media Outlet': c.outlets[0] && c.outlets[0].label || '',
+        'Email': c.emails[0] && c.emails[0].value || '',
+        'Phone': c.phones[0] && c.phones[0].value || '',
+        'Status': c.status,
+        'Updated At': moment(c.updatedAt).toISOString(),
+        'Updated By': c.updatedBy.name
       }
-    }])
+    })
 
     const csvStr = babyparse.unparse(res)
 

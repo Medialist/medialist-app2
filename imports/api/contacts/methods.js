@@ -596,9 +596,13 @@ export const exportContactsToCsv = new ValidatedMethod({
     returnStubValue: false
   },
 
-  validate: ContactSlugsOrSearchSchema.validator(),
+  validate: new SimpleSchema({
+    campaignSlug: {
+      type: String
+    }
+  }).extend(ContactSlugsOrSearchSchema).validator(),
 
-  run (slugsOrSearch) {
+  run ({campaignSlug, ...slugsOrSearch}) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }

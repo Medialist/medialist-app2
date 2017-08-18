@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
+import fileDownload from 'react-file-download'
 import ContactsTable from '/imports/ui/contacts/contacts-table'
 import SearchBox from '/imports/ui/lists/search-box'
 import ContactsActionsToast from '/imports/ui/contacts/contacts-actions-toast'
@@ -19,6 +20,7 @@ import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import { batchAddTags } from '/imports/api/tags/methods'
 import { batchFavouriteContacts, batchUpdateStatus } from '/imports/api/contacts/methods'
+import { exportCampaignToCsv } from '/imports/api/campaigns/methods'
 import NearBottomContainer from '/imports/ui/navigation/near-bottom-container'
 import SubscriptionLimitContainer from '/imports/ui/navigation/subscription-limit-container'
 import { LoadingBar } from '/imports/ui/lists/loading'
@@ -42,6 +44,7 @@ class CampaignContactsPage extends React.Component {
 
   state = {
     selections: [],
+    selectionMode: 'include',
     isDropdownOpen: false,
     addContactModal: false,
     createContactModal: false,
@@ -115,6 +118,28 @@ class CampaignContactsPage extends React.Component {
     })
   }
 
+  onExportToCsv = () => {
+    const {campaign} = this.props
+    const {selections, selectionMode} = this.state
+    const opts = {campaignSlug: campaign.slug}
+    if (selectionMode === 'include') {
+      opts.contactSlugs = selections.map(c => c.slug)
+    }
+    exportCampaignToCsv.call(opts, (error, res) => {
+      if (error) {
+        console.log(error)
+        this.context.snackbar.error('export-campaign-to-csv-failure')
+      } else {
+        fileDownload(res.data, res.filename, 'text/csv')
+        this.clearSelectionAndHideModals()
+      }
+    })
+  }
+
+  onSelectionModeChange = (selectionMode) => {
+    this.setState({selectionMode})
+  }
+
   onShowCreateContact = (data) => {
     this.setState({
       contactPrefillData: data
@@ -146,7 +171,8 @@ class CampaignContactsPage extends React.Component {
 
   clearSelection = () => {
     this.setState({
-      selections: []
+      selections: [],
+      selectionMode: 'include'
     })
   }
 
@@ -178,7 +204,8 @@ class CampaignContactsPage extends React.Component {
 
     const {
       contactPrefillData,
-      selections
+      selections,
+      selectionMode
     } = this.state
 
     let {
@@ -204,22 +231,26 @@ class CampaignContactsPage extends React.Component {
             campaign={campaign}
             contacts={contacts}
             selections={selections}
+            selectionMode={selectionMode}
             statusFilter={status}
             onSortChange={this.onSortChange}
             onSelectionsChange={this.onSelectionsChange}
+            onSelectionModeChange={this.onSelectionModeChange}
             searchTermActive={Boolean(term)}
           />
         </div>
         <ContactsActionsToast
           campaign={campaign}
           contacts={selections}
+          contactsCount={selections.length}
           onCampaignClick={() => this.showModal('addContactsToCampaignModal')}
           onSectorClick={() => this.showModal('addToMasterListsModal')}
           onFavouriteClick={this.onFavouriteAll}
           onTagClick={() => this.showModal('addTagsModal')}
           onStatusClick={this.onBatchUpdateStatus}
           onDeleteClick={() => this.showModal('removeContactsModal')}
-          onDeselectAllClick={this.clearSelection} />
+          onDeselectAllClick={this.clearSelection}
+          onExportToCsvClick={this.onExportToCsv} />
         <CreateContactModal
           open={this.state.createContactModal}
           onDismiss={this.hideModals}

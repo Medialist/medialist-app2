@@ -614,4 +614,55 @@ describe('Export Campaign to CSV method', function () {
     assert.equal(contactRows[1][5], StatusMap.toContact)
     assert.equal(contactRows[2][5], StatusMap.completed)
   })
+
+
+it('should return a csv with only the requested contacts in', function () {
+  const users = createTestUsers(1)
+  const campaigns = createTestCampaigns(1)
+  const contacts = createTestContacts(6)
+
+  addContactsToCampaign.run.call({
+    userId: users[0]._id
+  }, {
+    campaignSlug: campaigns[0].slug,
+    contactSlugs: contacts.slice(0, 5).map(c => c.slug)
+  })
+
+  batchUpdateStatus.run.call({
+    userId: users[0]._id
+  }, {
+    campaignSlug: campaigns[0].slug,
+    contactSlugs: [contacts[0].slug, contacts[2].slug],
+    status: StatusMap.completed
+  })
+
+  const res = exportCampaignToCsv.run.call({
+    userId: users[0]._id
+  }, {
+    campaignSlug: campaigns[0].slug,
+    contactSlugs: contacts.slice(0, 3).map(c => c.slug)
+  })
+
+  assert.equal(res.filename, `${campaigns[0].slug}.csv`)
+
+  const csvObj = babyparse.parse(res.data, {header: false})
+  assert.equal(csvObj.data.length, 4)
+
+  const expectedHeader = ['Name', 'Title', 'Media Outlet', 'Email', 'Phone', 'Status', 'Updated At', 'Updated By']
+  assert.deepEqual(csvObj.data[0], expectedHeader)
+
+  const contactRows = csvObj.data.slice(1)
+  contactRows.forEach((row, i) => {
+    assert.equal(row[0], contacts[i].name)
+    assert.equal(row[1], contacts[i].outlets[0].value)
+    assert.equal(row[2], contacts[i].outlets[0].label)
+    assert.equal(row[3], contacts[i].emails[0].value)
+    assert.equal(row[4], contacts[i].phones[0].value)
+    assert.equal(row[7], users[0].profile.name)
+  })
+
+  assert.equal(contactRows[0][5], StatusMap.completed)
+  assert.equal(contactRows[1][5], StatusMap.toContact)
+  assert.equal(contactRows[2][5], StatusMap.completed)
+})
 })
