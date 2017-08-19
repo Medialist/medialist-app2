@@ -1,4 +1,4 @@
-import { SimpleSchema } from 'meteor/aldeed:simple-schema'
+import SimpleSchema from 'simpl-schema'
 import { StatusValues } from '/imports/api/contacts/status'
 
 export const IdSchema = new SimpleSchema({
@@ -34,10 +34,6 @@ export const LabelValueSchema = new SimpleSchema({
 })
 
 export const UserRefSchema = new SimpleSchema({
-  _id: {
-    type: String,
-    regEx: SimpleSchema.RegEx.Id
-  },
   name: {
     type: String,
     optional: true,
@@ -54,36 +50,28 @@ export const UserRefSchema = new SimpleSchema({
     regEx: SimpleSchema.RegEx.Email
   }
 })
+UserRefSchema.extend(IdSchema)
 
 export const CreatedAtSchema = new SimpleSchema({
   createdAt: {
     type: Date,
-    denyUpdate: true,
-    autoValue: function () {
-      if (!this.isSet && this.isInsert) {
-        return new Date()
-      }
-
-      return this.value
-    }
+    denyUpdate: true
   },
   createdBy: {
     type: UserRefSchema
   }
 })
 
-export const AuditSchema = new SimpleSchema([
-  CreatedAtSchema, {
-    updatedAt: {
-      type: Date,
-      optional: true
-    },
-    updatedBy: {
-      type: UserRefSchema,
-      optional: true
-    }
+export const AuditSchema = new SimpleSchema({
+  updatedAt: {
+    type: Date,
+    optional: true
+  },
+  updatedBy: {
+    type: UserRefSchema,
+    optional: true
   }
-])
+})
 
 export const LinkSchema = new SimpleSchema({
   url: {

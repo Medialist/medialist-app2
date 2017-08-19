@@ -1,34 +1,31 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Loading from '/imports/ui/lists/loading'
-import SearchBox from '/imports/ui/lists/search-box'
+import { LoadingBar } from '/imports/ui/lists/loading'
+import SearchBox, { SearchBoxCount } from '/imports/ui/lists/search-box'
 import CampaignsTable from '/imports/ui/campaigns/campaigns-table'
 import CountTag from '/imports/ui/tags/tag'
-
-const CampaignsTotal = ({ searching, results, total }) => {
-  const num = searching ? results.length : total
-  return <div className='f-xs gray60' style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>{num} campaign{num === 1 ? '' : 's'}</div>
-}
 
 const CampaignSearch = ({
   onTermChange,
   selectedTags,
   onTagRemove,
-  total,
   term,
   sort,
   campaigns,
+  campaignsCount,
   selections,
-  contactSlug,
+  selectionMode,
+  contact,
   onSortChange,
   onSelectionsChange,
+  onSelectionModeChange,
   loading,
   searching
 }) => (
   <div>
     <div className='bg-white shadow-2 m4' data-id='campaigns-table'>
       <div className='pt4 pl4 pr4 pb1 items-center'>
-        <SearchBox onTermChange={onTermChange} placeholder='Search campaigns...' data-id='search-campaigns-input' style={{zIndex: 1}}>
+        <SearchBox initialTerm={term} onTermChange={onTermChange} placeholder='Search campaigns...' data-id='search-campaigns-input' style={{zIndex: 1}}>
           {selectedTags && selectedTags.map((t) => (
             <CountTag
               style={{marginBottom: 0}}
@@ -39,19 +36,21 @@ const CampaignSearch = ({
             />
           ))}
         </SearchBox>
-        <CampaignsTotal searching={searching} results={campaigns} total={total} />
+        <SearchBoxCount type='campaign' loading={loading} total={campaignsCount} />
       </div>
       <CampaignsTable
         term={term}
         sort={sort}
         campaigns={campaigns}
         selections={selections}
-        contactSlug={contactSlug}
+        selectionMode={selectionMode}
+        contact={contact}
         onSortChange={onSortChange}
         onSelectionsChange={onSelectionsChange}
+        onSelectionModeChange={onSelectionModeChange}
         searching={Boolean(term)} />
     </div>
-    { loading && <div className='center p4'><Loading /></div> }
+    { loading && <LoadingBar /> }
   </div>
 )
 
@@ -59,12 +58,12 @@ CampaignSearch.propTypes = {
   onTermChange: PropTypes.func.isRequired,
   selectedTags: PropTypes.array,
   onTagRemove: PropTypes.func.isRequired,
-  total: PropTypes.number.isRequired,
   term: PropTypes.string,
   sort: PropTypes.object,
   campaigns: PropTypes.array.isRequired,
+  campaignsCount: PropTypes.number,
   selections: PropTypes.array,
-  contactSlug: PropTypes.string,
+  contact: PropTypes.object,
   onSortChange: PropTypes.func.isRequired,
   onSelectionsChange: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,

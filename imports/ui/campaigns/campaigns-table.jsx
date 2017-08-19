@@ -4,10 +4,9 @@ import { Link } from 'react-router'
 import SortableHeader from '/imports/ui/tables/sortable-header'
 import SelectableRow from '/imports/ui/tables/selectable-row'
 import Checkbox from '/imports/ui/tables/checkbox'
-import { TimeFromNow } from '/imports/ui/time/time'
+import { TimeAgo } from '/imports/ui/time/time'
 import YouOrName from '/imports/ui/users/you-or-name'
 import { SquareAvatar } from '/imports/ui/images/avatar'
-import isSameItems from '/imports/ui/lists/is-same-items'
 import StatusLabel from '/imports/ui/feedback/status-label'
 import StatusSelectorContainer from '/imports/ui/feedback/status-selector-container'
 
@@ -21,6 +20,8 @@ const CampaignsTable = React.createClass({
     campaigns: PropTypes.array,
     // Selected campaigns in the table
     selections: PropTypes.array,
+    // 'all' or 'include'
+    selectionMode: PropTypes.string,
     // Callback when selection(s) change
     onSelectionsChange: PropTypes.func,
     // Callback when contact status is changed
@@ -28,23 +29,24 @@ const CampaignsTable = React.createClass({
     // returns true while subscriptionts are still syncing data.
     loading: PropTypes.bool,
     // true if we are searching
-    searching: PropTypes.bool
+    searching: PropTypes.bool,
+    // If this is a contact campaigns table
+    contact: PropTypes.object
   },
 
   onSelectAllChange () {
-    let selections
-
-    if (isSameItems(this.props.selections, this.props.campaigns)) {
-      selections = []
+    const { selectionMode } = this.props
+    if (selectionMode === 'include') {
+      this.props.onSelectionModeChange('all')
+      this.props.onSelectionsChange(this.props.campaigns.slice())
     } else {
-      selections = this.props.campaigns.slice()
+      this.props.onSelectionModeChange('include')
+      this.props.onSelectionsChange([])
     }
-
-    this.props.onSelectionsChange(selections)
   },
 
   onSelectChange (campaign) {
-    let { selections } = this.props
+    let { selections, selectionMode } = this.props
     const index = selections.findIndex((c) => c._id === campaign._id)
 
     if (index === -1) {
@@ -55,10 +57,14 @@ const CampaignsTable = React.createClass({
     }
 
     this.props.onSelectionsChange(selections)
+
+    if (selectionMode === 'all') {
+      this.props.onSelectionModeChange('include')
+    }
   },
 
   render () {
-    const { sort, onSortChange, campaigns, selections, loading, contactSlug } = this.props
+    const { sort, onSortChange, campaigns, selections, selectionMode, loading, contact } = this.props
 
     if (!loading && !campaigns.length) {
       return <p className='p4 mb2 f-xl semibold center' data-id='campaign-table-empty'>No campaigns found</p>
@@ -75,7 +81,7 @@ const CampaignsTable = React.createClass({
           <tr className='bg-gray90'>
             <th className='right-align' style={{width: 34, paddingRight: 0, borderRight: '0 none'}}>
               <Checkbox
-                checked={isSameItems(selections, campaigns)}
+                checked={selectionMode === 'all'}
                 onChange={this.onSelectAllChange} />
             </th>
             <SortableHeader
@@ -92,7 +98,7 @@ const CampaignsTable = React.createClass({
               Client
             </SortableHeader>
             <th className='left-align' style={{width: '40%'}}>Key Message</th>
-            {contactSlug && (
+            {contact && (
               <SortableHeader
                 className='left-align'
                 sortDirection={sort['status']}
@@ -113,7 +119,7 @@ const CampaignsTable = React.createClass({
             const { _id, slug, name, avatar, client, purpose, updatedAt, updatedBy, createdAt, createdBy } = campaign
             const clientName = client && client.name
             return (
-              <SelectableRow data={campaign} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id} data-id={`campaigns-table-row-${index}`} data-item={_id}>
+              <SelectableRow data={campaign} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id} data-id={`campaigns-table-row-${index}`} data-item={slug}>
                 <td className='left-align'>
                   <Link to={`/campaign/${slug}`} className='nowrap' data-id='campaign-link'>
                     <SquareAvatar avatar={avatar} name={name} />
@@ -126,19 +132,19 @@ const CampaignsTable = React.createClass({
                 <td className='left-align truncate'>
                   {purpose || <span className='gray60'>No key message</span>}
                 </td>
-                {contactSlug && (
+                {contact && (
                   <td className='left-align' style={{overflow: 'visible'}}>
                     <StatusSelectorContainer
                       buttonClassName='btn btn-no-border bg-transparent'
                       buttonStyle={{marginLeft: 0}}
-                      contactSlug={contactSlug}
+                      contact={contact}
                       campaign={campaign}
                       children={(status) => <StatusLabel name={status} />}
                     />
                   </td>
                 )}
                 <td className='left-align'>
-                  <span className='semibold'><TimeFromNow date={updatedAt || createdAt} /></span>
+                  <span className='semibold'><TimeAgo date={updatedAt || createdAt} /></span>
                   <span> by <YouOrName user={updatedBy || createdBy} /></span>
                 </td>
               </SelectableRow>

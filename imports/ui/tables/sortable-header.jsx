@@ -23,6 +23,7 @@ const SortableHeader = React.createClass({
   getClassName () {
     const { className, sortDirection } = this.props
     return classnames(className, {
+      pointer: true,
       sortable: true,
       'sorted-asc': sortDirection > 0,
       'sorted-desc': sortDirection < 0

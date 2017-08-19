@@ -10,20 +10,22 @@ import {
   ViewIcon
 } from '/imports/ui/images/icons'
 
-const CampaignsActionsToast = React.createClass({
-  propTypes: {
+class CampaignsActionsToast extends React.Component {
+  static propTypes: {
     campaigns: PropTypes.array.isRequired,
+    campaignsCount: PropTypes.number.isRequired,
     onViewClick: PropTypes.func.isRequired,
     onSectorClick: PropTypes.func.isRequired,
     onFavouriteClick: PropTypes.func.isRequired,
     onTagClick: PropTypes.func.isRequired,
     onDeleteClick: PropTypes.func.isRequired,
     onDeselectAllClick: PropTypes.func.isRequired
-  },
+  }
 
   render () {
     const {
       campaigns,
+      campaignsCount,
       onViewClick,
       onSectorClick,
       onFavouriteClick,
@@ -37,8 +39,8 @@ const CampaignsActionsToast = React.createClass({
         { campaigns.length && (
           <div className='bg-white shadow-1 p4 flex items-center' key='CampaignsActionsToast' data-id='campaign-actions-toast'>
             <div className='flex-none'>
-              <span className='badge f-sm bg-blue mr2'>{campaigns.length}</span>
-              <span className='gray20'>campaign{campaigns.length === 1 ? '' : 's'} selected</span>
+              <span className='badge f-sm bg-blue mr2'>{campaignsCount}</span>
+              <span className='gray20'>campaign{campaignsCount === 1 ? '' : 's'} selected</span>
             </div>
             <div className='flex-auto center'>
               <Tooltip title='View Contacts'>
@@ -85,6 +87,6 @@ const CampaignsActionsToast = React.createClass({
       </Toast>
     )
   }
-})
+}
 
 export default CampaignsActionsToast

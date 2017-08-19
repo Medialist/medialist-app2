@@ -12,20 +12,23 @@ import {
   ListIcon,
   TagIcon,
   StatusUpdateIcon,
-  DeleteIcon
+  DeleteIcon,
+  DownloadIcon
 } from '/imports/ui/images/icons'
 
 class ContactsActionsToast extends React.Component {
   static propTypes = {
     campaign: PropTypes.object,
     contacts: PropTypes.array.isRequired,
+    contactsCount: PropTypes.number.isRequired,
     onCampaignClick: PropTypes.func.isRequired,
     onSectorClick: PropTypes.func.isRequired,
     onFavouriteClick: PropTypes.func.isRequired,
     onTagClick: PropTypes.func.isRequired,
     onStatusClick: PropTypes.func,
     onDeleteClick: PropTypes.func.isRequired,
-    onDeselectAllClick: PropTypes.func.isRequired
+    onDeselectAllClick: PropTypes.func.isRequired,
+    onExportToCsvClick: PropTypes.func.isRequired
   }
 
   state = {
@@ -49,12 +52,14 @@ class ContactsActionsToast extends React.Component {
     const {
       campaign,
       contacts,
+      contactsCount,
       onCampaignClick,
       onSectorClick,
       onFavouriteClick,
       onTagClick,
       onDeleteClick,
-      onDeselectAllClick
+      onDeselectAllClick,
+      onExportToCsvClick
     } = this.props
 
     return (
@@ -62,8 +67,8 @@ class ContactsActionsToast extends React.Component {
         { contacts.length && (
           <div className='bg-white shadow-1 p4 flex items-center' key='ContactsActionsToast'>
             <div className='flex-none'>
-              <span className='badge f-sm bg-blue mr2'>{contacts.length}</span>
-              <span className='gray20'>contact{contacts.length === 1 ? '' : 's'} selected</span>
+              <span className='badge f-sm bg-blue mr2'>{contactsCount}</span>
+              <span className='gray20'>contact{contactsCount === 1 ? '' : 's'} selected</span>
             </div>
             <div className='flex-auto center'>
               <Tooltip title='Add to Campaign'>
@@ -117,6 +122,13 @@ class ContactsActionsToast extends React.Component {
                   className='mx3 pointer gray60 hover-blue'
                   onClick={() => onTagClick(contacts)}
                   data-id='contact-actions-add-tags'
+                  style={{width: '21px', height: '21px'}} />
+              </Tooltip>
+              <Tooltip title='Download as CSV'>
+                <DownloadIcon
+                  className='mx3 pointer gray60 hover-blue'
+                  onClick={onExportToCsvClick}
+                  data-id={`contact-actions-export-csv`}
                   style={{width: '21px', height: '21px'}} />
               </Tooltip>
               <Tooltip title={`${campaign ? 'Remove' : 'Delete'} Contact${contacts.length > 1 ? 's' : ''}`}>

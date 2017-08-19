@@ -13,6 +13,7 @@ Meteor.publish(null, function () {
     _id: this.userId
   }, {
     fields: {
+      createdAt: 1,
       myCampaigns: 1,
       myContacts: 1,
       onCampaigns: 1,
@@ -95,7 +96,3 @@ Meteor.publish('users-by-id', function (opts = {}) {
   }
   return Meteor.users.find(query, options)
 })
-
-export const createUser = (details) => {
-  return Meteor.users.insert(details)
-}

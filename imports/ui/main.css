@@ -675,19 +675,16 @@ button {
 /* ---- Animations -----------------------------------------------------------*/
 
 /* lolo loading spinner */
-/* See: http://jsbin.com/jimawe/edit?html,css,output */
+/* See: http://jsbin.com/hucoyi/edit?html,css,output*/
 @keyframes lolo {
   0%, 100% {
-    width: 10px;
-    transform: translateX(0px);
+    transform: translateX(30px) scaleX(0.14);
   }
   25%, 75% {
-    width: 70px;
-    transform: translateX(0px);
+    transform: translateX(0px) scaleX(1);
   }
   50% {
-    width: 10px;
-    transform: translateX(60px);
+    transform: translateX(-30px) scaleX(0.14);
   }
 }
 .lolo {
@@ -699,21 +696,26 @@ button {
   content:'';
   display:block;
   background: var(--blue);
-  width: 10px;
+  width: 70px;
   height: 100%;
-  transform: translateX(0px);
   animation: lolo 1.5s cubic-bezier(0.25,0.1,0.25,1) infinite;
+}
+.lolo-gray80::after {
+  background: var(--gray80);
+}
+.lolo-white::after {
+  background: var(--white);
 }
 
 .snackbar-appear {
-  transform: translateX(100%)
+  transform: translateX(-100%)
 }
 .snackbar-appear.snackbar-appear-active {
   transform: translateX(0);
   transition: transform 300ms ease-in-out;
 }
 .snackbar-enter {
-  transform: translateX(100%)
+  transform: translateX(-100%)
 }
 .snackbar-enter.snackbar-enter-active {
   transform: translateX(0);

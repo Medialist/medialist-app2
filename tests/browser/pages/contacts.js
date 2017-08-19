@@ -1,5 +1,6 @@
 'use strict'
 
+const masterListsSelector = require('../components/masterlists-selector')
 const editContactForm = require('../components/edit-contact-form')
 const contactTable = require('../components/contact-table')
 const addtoListsModal = require('../components/add-to-lists-modal')
@@ -16,6 +17,7 @@ module.exports = {
     myContactsButton: '[data-slug=my]'
   },
   sections: {
+    masterListsSelector: masterListsSelector,
     editContactForm: editContactForm,
     contactTable: contactTable,
     toast: {

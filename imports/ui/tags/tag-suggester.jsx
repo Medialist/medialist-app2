@@ -2,7 +2,7 @@ import React from 'react'
 import { createContainer } from 'meteor/react-meteor-data'
 import { Meteor } from 'meteor/meteor'
 import Tags from '/imports/api/tags/tags'
-import Loading from '/imports/ui/lists/loading'
+import { LoadingBar } from '/imports/ui/lists/loading'
 import Scroll from '/imports/ui/navigation/scroll'
 
 const TagListItem = (props) => (
@@ -18,7 +18,7 @@ const TagListItem = (props) => (
 const TagSuggester = ({loading, suggestedTags, searchTerm, onSelectTag, onCreateTag}) => {
   return (
     <Scroll height={'calc(95vh - 380px)'} className='pb2'>
-      {loading && <div className='center p4'><Loading /></div>}
+      {loading && <LoadingBar />}
 
       {!loading && suggestedTags.map((tag, i) =>
         <TagListItem onClick={() => onSelectTag(tag)} key={tag.slug} data-id={tag.slug}>

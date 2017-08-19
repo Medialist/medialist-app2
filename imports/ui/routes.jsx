@@ -1,3 +1,4 @@
+import { Session } from 'meteor/session'
 import React from 'react'
 import { Router, Route, IndexRoute } from 'react-router'
 import Layout from '/imports/ui/layout'
@@ -20,7 +21,13 @@ import SigningInPage from '/imports/ui/sign-in/signing-in-page'
 function handleUpdate () {
   if (this.state.location.action === 'PUSH') {
     window.scrollTo(0, 0)
+    window.Intercom && window.Intercom('update')
   }
+}
+
+function recordCampaignVisit (routerState) {
+  const {campaignSlug} = routerState.params
+  Session.set('lastCampaignVisitedSlug', campaignSlug)
 }
 
 const Routes = ({ store, history }) => {
@@ -32,7 +39,7 @@ const Routes = ({ store, history }) => {
         <Route path='notifications' component={NotificationsPage} />
         <Route path='campaigns' component={CampaignsPage} />
         <Route path='campaign'>
-          <Route path=':campaignSlug'>
+          <Route path=':campaignSlug' onEnter={recordCampaignVisit}>
             <IndexRoute component={CampaignActivityPage} />
             <Route path='contacts' component={CampaignContactsPage} />
           </Route>

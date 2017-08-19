@@ -453,6 +453,8 @@ const EditContactForm = withRouter(withSnackbar(React.createClass({
   },
 
   onSubmit (details) {
+    details = ContactCreateSchema.clean(details)
+
     updateContact.call({details, contactId: this.props.contact._id}, (error, id) => {
       if (error) {
         console.log(error)
@@ -468,7 +470,7 @@ const EditContactForm = withRouter(withSnackbar(React.createClass({
   onDelete (event) {
     event.preventDefault()
 
-    batchRemoveContacts.call({_ids: [this.props.contact._id]}, (error) => {
+    batchRemoveContacts.call({contactSlugs: [this.props.contact.slug]}, (error) => {
       if (error) {
         console.log(error)
 
@@ -498,6 +500,8 @@ const CreateContactForm = withRouter(withSnackbar(React.createClass({
   },
 
   onSubmit (details) {
+    details = ContactCreateSchema.clean(details)
+
     createContact.call({details}, (error, slug) => {
       if (error) {
         console.log(error)

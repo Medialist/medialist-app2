@@ -17,7 +17,14 @@ const findOneUserRef = require('/imports/api/users/users').findOneUserRef
 const createTestUsers = (count) => {
   return Array(count)
     .fill(0)
-    .map(() => Meteor.users.insert(user()))
+    .map(() => Meteor.users.insert(Object.assign({}, user(), {
+      createdAt: faker.date.past(),
+      myContacts: [],
+      myCampaigns: [],
+      onCampaigns: 0,
+      recentCampaignLists: [],
+      recentContactLists: []
+    })))
     .map((_id) => Meteor.users.findOne(_id))
 }
 
@@ -64,6 +71,7 @@ const createTestEmbeds = (count, creatorId) => {
     .fill(0)
     .map(() => Embeds.insert({
       createdBy: findOneUserRef(creatorId || createTestUsers(1)[0]._id),
+      createdAt: faker.date.past(),
       datePublished: faker.date.past(),
       headline: faker.lorem.sentence(),
       image: {

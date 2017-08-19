@@ -12,7 +12,8 @@ import FormField from '/imports/ui/forms/form-field'
 import EditableAvatar from '/imports/ui/images/editable-avatar'
 import ClientAutocomplete from '/imports/ui/campaigns/client-autocomplete'
 import { createCampaign, updateCampaign, removeCampaign } from '/imports/api/campaigns/methods'
-import { Form, Input, Textarea, Button } from '@achingbrain/react-validation'
+import { Form, Input, Button } from '@achingbrain/react-validation'
+import Textarea from 'react-textarea-autosize'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import Scroll from '/imports/ui/navigation/scroll'
 import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
@@ -207,13 +208,13 @@ const EditCampaign = withSnackbar(React.createClass({
                   style={{height: '70px'}}
                   className='input block textarea placeholder-gray60'
                   type='text'
-                  rows='5'
+                  minRows={5}
+                  maxRows={10}
                   name='purpose'
                   value={this.state.purpose}
                   placeholder='Key Message'
                   onChange={this.onFieldChange}
-                  data-id='key-message-input'
-                  validations={[]} />
+                  data-id='key-message-input' />
               </FormField>
             </FormSection>
 
@@ -282,7 +283,7 @@ const EditCampaignForm = withRouter(withSnackbar(React.createClass({
     event.preventDefault()
 
     removeCampaign.call({
-      _ids: [this.props.campaign._id]
+      campaignSlugs: [this.props.campaign.slug]
     }, (error) => {
       if (error) {
         console.log(error)

@@ -5,7 +5,8 @@ import Contacts from '/imports/api/contacts/contacts'
 import ContactsImport from '/imports/api/contacts-import/contacts-import'
 import { importContacts } from './methods'
 import { createContact } from '/imports/api/contacts/methods'
-import { user, contact } from '../../../../tests/browser/fixtures/domain'
+import { contact } from '../../../../tests/browser/fixtures/domain'
+import { createTestUsers } from '/tests/fixtures/server-domain'
 
 let userId = null
 
@@ -14,7 +15,7 @@ describe('importContacts', function () {
 
   beforeEach(function () {
     resetDatabase()
-    userId = Meteor.users.insert({...user(), myContacts: []})
+    userId = createTestUsers(1)[0]._id
   })
 
   it('should require the user to be logged in', function () {

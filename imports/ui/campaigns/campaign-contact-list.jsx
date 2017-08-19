@@ -13,7 +13,10 @@ const CampaignContactList = React.createClass({
 
   render () {
     const { contacts, campaign, contactsCount, onAddContactClick } = this.props
-    if (!contacts || !campaign) return null
+
+    if (!contacts || !campaign) {
+      return null
+    }
 
     return (
       <aside className='bg-white mb4 shadow-2' data-id='campaign-contact-list'>

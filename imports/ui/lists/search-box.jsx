@@ -2,10 +2,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { SearchIcon } from '/imports/ui/images/icons'
 import debounce from 'lodash.debounce'
+import Loading from './loading'
 
 const SearchBox = React.createClass({
   propTypes: {
     placeholder: PropTypes.string,
+    initialTerm: PropTypes.string,
     onTermChange: PropTypes.func.isRequired,
     onKeyDown: PropTypes.func,
     children: PropTypes.node,
@@ -14,11 +16,11 @@ const SearchBox = React.createClass({
   },
 
   getDefaultProps () {
-    return { placeholder: 'Search...' }
+    return { initialTerm: '', placeholder: 'Search...' }
   },
 
   getInitialState () {
-    return { term: '', isFocused: false }
+    return { term: this.props.initialTerm, isFocused: false }
   },
 
   onChange (e) {
@@ -72,3 +74,15 @@ const SearchBox = React.createClass({
 })
 
 export default SearchBox
+
+export const SearchBoxCount = ({ type, loading, total }) => {
+  const suffix = `${type}${total === 1 ? '' : 's'}`
+  return (
+    <div
+      className='f-xs gray60'
+      style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>
+      { loading ? <Loading className='lolo-gray80' /> : null }
+      { !loading && total ? <span>{total} {suffix}</span> : <span />}
+    </div>
+  )
+}

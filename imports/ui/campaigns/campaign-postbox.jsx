@@ -81,7 +81,7 @@ const FeedbackInput = React.createClass({
     this.setState((s) => immutable.set(s, name, value))
 
     if (name === 'contact') {
-      const status = this.props.campaign.contacts[value.slug]
+      const status = value.status
 
       this.setState({
         status
@@ -165,7 +165,7 @@ const CoverageInput = React.createClass({
     this.setState((s) => immutable.set(s, name, value))
 
     if (name === 'contact') {
-      const status = this.props.campaign.contacts[value.slug]
+      const status = value.status
 
       this.setState({
         status

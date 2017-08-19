@@ -121,8 +121,8 @@ module.exports = {
       },
       commands: [{
         updateStatus: function (contact, status) {
-          const openStatusDropdownButton = `[data-contact='${contact._id}'] [data-id=contact-status-selector-button]`
-          const statusButton = `[data-contact='${contact._id}'] [data-id=contact-status-${status}]`
+          const openStatusDropdownButton = `[data-contact='${contact.slug}'] [data-id=contact-status-selector-button]`
+          const statusButton = `[data-contact='${contact.slug}'] [data-id=contact-status-${status}]`
 
           this
             .waitForElementVisible(openStatusDropdownButton)

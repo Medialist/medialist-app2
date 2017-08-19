@@ -1,11 +1,10 @@
-import { SimpleSchema } from 'meteor/aldeed:simple-schema'
+import SimpleSchema from 'simpl-schema'
 import { IdSchema } from '/imports/lib/schema'
 
-export const OrgSchema = new SimpleSchema([
-  IdSchema, {
-    name: {
-      type: String,
-      min: 1
-    }
+export const OrgSchema = new SimpleSchema({
+  name: {
+    type: String,
+    min: 1
   }
-])
+})
+OrgSchema.extend(IdSchema)
