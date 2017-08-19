@@ -10,15 +10,17 @@ pipeline:
   test:
     image: node:4.8.3
     environment:
+      LC_ALL: "POSIX"
+      METEOR_ALLOW_SUPERUSER: "true"
       SELENIUM_START: "false"
       SELENIUM_HOST: selenium
       SELENIUM_LAUNCH_URL: http://test:3000
-      METEOR_ALLOW_SUPERUSER: "true"
-      LC_ALL: "POSIX"
+      MONGO_URL: mongodb://mongo/meteor
+
     commands:
-      - env
       - curl -sL https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
       - meteor npm install --quiet
+      - meteor npm run build --quiet
       - meteor npm run test:browser:ci
 
   rebuild-cache:
@@ -32,3 +34,5 @@ pipeline:
 services:
   selenium:
     image: selenium/standalone-chrome
+  mongo:
+    image: mongo:3.4

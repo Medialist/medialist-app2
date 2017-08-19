@@ -7,7 +7,7 @@ const http = require('http')
 const url = require('url')
 const APP_URL = process.env.SELENIUM_LAUNCH_URL || 'http://localhost:3000'
 const hostname = url.parse(APP_URL).hostname
-const MONGO_URL = `mongodb://${hostname}:3001/meteor`
+const MONGO_URL = process.env.MONGO_URL || `mongodb://${hostname}:3001/meteor`
 
 let server
 
