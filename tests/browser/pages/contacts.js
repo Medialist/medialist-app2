@@ -74,7 +74,7 @@ module.exports = {
   },
   commands: [{
     navigateToContactList: function (contactList) {
-      this.api.url('http://localhost:3000/contacts?list=' + contactList.slug)
+      this.api.url(this.api.launchUrl + '/contacts?list=' + contactList.slug)
       this.waitForElementVisible(this.section.contactTable.selector)
 
       return this
@@ -88,7 +88,7 @@ module.exports = {
       return this
     },
     navigateToTag: function (tag) {
-      this.api.url('http://localhost:3000/contacts?tag=' + tag)
+      this.api.url(this.api.launchUrl + '/contacts?tag=' + tag)
       this.waitForElementVisible(this.section.contactTable.selector)
 
       return this

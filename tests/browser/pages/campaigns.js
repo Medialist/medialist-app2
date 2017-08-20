@@ -73,7 +73,7 @@ module.exports = {
   },
   commands: [{
     navigateToCampaignList: function (campaignList) {
-      this.api.url('http://localhost:3000/campaigns?list=' + campaignList.slug)
+      this.api.url(this.api.launchUrl + '/campaigns?list=' + campaignList.slug)
       this.waitForElementVisible(this.section.campaignTable.selector)
 
       return this

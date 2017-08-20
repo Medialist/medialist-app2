@@ -20,7 +20,7 @@ module.exports = {
   },
   commands: [{
     navigate: function () {
-      this.api.url('http://localhost:3000/')
+      this.api.url(this.api.launchUrl + '/')
       this.waitForElementVisible(this.section.activityFeed.selector)
 
       return this
