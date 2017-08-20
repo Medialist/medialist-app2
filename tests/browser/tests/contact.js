@@ -173,7 +173,7 @@ const test = {
 
       t.page.main().waitForSnackbarMessage('contact-delete-success')
 
-      t.assert.urlEquals('http://localhost:3000/contacts')
+      t.assert.urlEquals(this.api.launchUrl + '/contacts')
 
       t.page.contacts().section.contactTable
         .searchForWithoutFinding(contact.name)

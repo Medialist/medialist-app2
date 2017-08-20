@@ -87,7 +87,7 @@ module.exports = {
       return this
     },
     navigateToTag: function (tag) {
-      this.api.url(`http://localhost:3000/campaigns?tag=${tag}`)
+      this.api.url(`${this.api.launchUrl}/campaigns?tag=${tag}`)
       this.waitForElementVisible(this.section.campaignTable.selector)
 
       return this

@@ -86,7 +86,7 @@ module.exports = {
   },
   commands: [{
     navigate: function (campaign) {
-      this.api.url(`http://localhost:3000/campaign/${campaign.slug}/contacts`)
+      this.api.url(`${this.api.launchUrl}/campaign/${campaign.slug}/contacts`)
       this.waitForElementVisible(this.section.contactTable.selector)
 
       return this
