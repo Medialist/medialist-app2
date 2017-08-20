@@ -68,7 +68,7 @@ ${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email
         name: contact.name
       })
       .then((doc) => {
-        t.assert.urlEquals(`${this.api.launchUrl}/contact/${doc.slug}`)
+        t.assert.urlEquals(`${t.api.launchUrl}/contact/${doc.slug}`)
 
         assertions.contactsAreEqual(t, contact, doc)
 
@@ -92,7 +92,7 @@ ${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email
         .searchFor(contact.name)
         .clickRow(0)
 
-      t.assert.urlEquals(`${this.api.launchUrl}/contact/${contact.slug}`)
+      t.assert.urlEquals(`${t.lauch_url}/contact/${contact.slug}`)
 
       done()
     })

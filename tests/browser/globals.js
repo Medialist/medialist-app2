@@ -1,13 +1,15 @@
 'use strict'
 
-const app = require('./fixtures/app')
-const mongo = require('./fixtures/mongo')
-const ddp = require('./fixtures/ddp')
 const http = require('http')
 const url = require('url')
+
 const APP_URL = process.env.SELENIUM_LAUNCH_URL || 'http://localhost:3000'
-const hostname = url.parse(APP_URL).hostname
+const {hostname, port} = url.parse(APP_URL)
 const MONGO_URL = process.env.MONGO_URL || `mongodb://${hostname}:3001/meteor`
+
+const app = require('./fixtures/app')
+const mongo = require('./fixtures/mongo')
+const ddp = require('./fixtures/ddp')({hostname, port})
 
 let server
 
@@ -16,7 +18,6 @@ module.exports = {
   waitForConditionTimeout: 30000,
 
   before: (done) => {
-    console.log('before', process.argv)
     http.get(APP_URL, result => {
       result.resume()
       done()

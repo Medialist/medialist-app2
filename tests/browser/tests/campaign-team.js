@@ -93,7 +93,7 @@ const test = {
           t.page.onboarding()
             .onboard(name)
 
-          t.assert.urlEquals(`${this.api.launchUrl}/campaign/${campaign.slug}`)
+          t.assert.urlEquals(`${t.lauch_url}/campaign/${campaign.slug}`)
 
           done()
         })

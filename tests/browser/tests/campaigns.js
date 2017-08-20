@@ -34,7 +34,7 @@ const test = {
         name: campaign.name
       })
       .then(function (doc) {
-        t.assert.urlEquals(`${this.api.launchUrl}/campaign/${doc.slug}`)
+        t.assert.urlEquals(`${t.lauch_url}/campaign/${doc.slug}`)
 
         assertions.campaignsAreEqual(t, doc, campaign)
 
@@ -73,7 +73,7 @@ const test = {
         .searchFor(campaign.name)
         .clickRow(0)
 
-      t.assert.urlEquals(`${this.api.launchUrl}/campaign/${campaign.slug}`)
+      t.assert.urlEquals(`${t.lauch_url}/campaign/${campaign.slug}`)
 
       done()
     })
@@ -97,7 +97,7 @@ const test = {
 
       campaignsPage.section.toast.viewContacts()
 
-      t.assert.urlEquals(`${this.api.launchUrl}/contacts?campaign=${campaign.slug}`)
+      t.assert.urlEquals(`${t.lauch_url}/contacts?campaign=${campaign.slug}`)
 
       t.page.contacts()
         .section.contactTable.isInResults(contact1)
