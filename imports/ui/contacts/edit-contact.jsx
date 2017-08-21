@@ -496,7 +496,8 @@ const EditContactForm = withRouter(withSnackbar(React.createClass({
 
 const CreateContactForm = withRouter(withSnackbar(React.createClass({
   propTypes: {
-    prefill: PropTypes.object
+    prefill: PropTypes.object,
+    onContactCreated: PropTypes.func
   },
 
   onSubmit (details) {
@@ -508,10 +509,8 @@ const CreateContactForm = withRouter(withSnackbar(React.createClass({
 
         return this.props.snackbar.error('contact-create-failure')
       }
-
       this.props.snackbar.show(`Created ${details.name.split(' ')[0]}`, 'contact-create-success')
-      this.props.router.push(`/contact/${slug}`)
-      this.props.onDismiss()
+      this.props.onContactCreated(slug)
     })
   },
 

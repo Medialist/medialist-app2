@@ -157,6 +157,8 @@ const SearchableAddContact = createSearchContainer(ContactSortContainer)
 
 const AddContactContainer = withSnackbar(React.createClass({
   propTypes: {
+    term: PropTypes.string.isRequired,
+    onTermChange: PropTypes.func.isRequired,
     onCreate: PropTypes.func.isRequired,
     onDismiss: PropTypes.func.isRequired,
     campaign: PropTypes.object.isRequired,
@@ -171,8 +173,7 @@ const AddContactContainer = withSnackbar(React.createClass({
 
   getInitialState () {
     return {
-      selectedContacts: [],
-      term: ''
+      selectedContacts: []
     }
   },
 
@@ -227,21 +228,16 @@ const AddContactContainer = withSnackbar(React.createClass({
     this.setState({ selectedContacts: [] })
   },
 
-  onTermChange (term) {
-    this.setState({ term })
-  },
-
   render () {
     const {
-      onTermChange,
       onAdd,
       onRemove,
       onReset,
       onSubmit
     } = this
 
-    const { term, selectedContacts } = this.state
-    const { onCreate, campaignContacts } = this.props
+    const { selectedContacts } = this.state
+    const { term, onCreate, campaignContacts, onTermChange } = this.props
     const myContacts = Meteor.user().myContacts
 
     return (

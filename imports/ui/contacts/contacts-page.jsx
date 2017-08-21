@@ -261,6 +261,11 @@ class ContactsPage extends React.Component {
     this.clearSelection()
   }
 
+  onContactCreated = (contact) => {
+    this.hideModals()
+    this.props.router.push(`/contact/${contact.slug}`)
+  }
+
   getSearchOrSlugs = () => {
     const {selectionMode} = this.state
     if (selectionMode === 'all') {
@@ -392,6 +397,7 @@ class ContactsPage extends React.Component {
           onDeselectAllClick={() => this.clearSelection()}
           onExportToCsvClick={this.onExportToCsv} />
         <CreateContactModal
+          onContactCreated={this.onContactCreated}
           onDismiss={this.hideModals}
           open={this.state.addContactModal} />
         <AddContactsToCampaign
