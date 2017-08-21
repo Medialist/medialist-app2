@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
@@ -92,7 +93,65 @@ const AddContact = React.createClass({
   }
 })
 
-const SearchableAddContact = createSearchContainer(AddContact)
+class ContactSortContainer extends React.Component {
+  addToCampaignSort = (a, b) => {
+    const {notInCampaignSort, inMyContactsSort, updatedAtSort} = this
+    let res = notInCampaignSort(a, b)
+    if (res !== 0) {
+      return res
+    }
+
+    res = inMyContactsSort(a, b)
+    if (res !== 0) {
+      return res
+    }
+
+    return updatedAtSort(a, b)
+  }
+
+  // Sort contacts not in the campaign before those already in it
+  notInCampaignSort = (a, b) => {
+    const {campaignContacts} = this.props
+    const isA = campaignContacts.some(c => c.slug === a.slug)
+    const isB = campaignContacts.some(c => c.slug === b.slug)
+    if (isA && !isB) {
+      return 1
+    }
+    if (!isA && isB) {
+      return -1
+    }
+    return 0
+  }
+
+  inMyContactsSort = (a, b) => {
+    const {myContacts} = this.props
+    const aContact = myContacts.find(c => c.slug === a.slug)
+    const bContact = myContacts.find(c => c.slug === b.slug)
+    if (aContact && !bContact) {
+      return -1
+    }
+    if (bContact && !aContact) {
+      return 1
+    }
+    if (aContact && bContact) {
+      return bContact.updatedAt.getTime() - aContact.updatedAt.getTime()
+    }
+    return 0
+  }
+
+  updatedAtSort = (a, b) => {
+    return (b.updatedAt || b.createdAt).getTime() - (a.updatedAt || a.createdAt).getTime()
+  }
+
+  render () {
+    const {contacts, ...props} = this.props
+    const {addToCampaignSort} = this
+    contacts.sort(addToCampaignSort)
+    return <AddContact {...props} contacts={contacts} />
+  }
+}
+
+const SearchableAddContact = createSearchContainer(ContactSortContainer)
 
 const AddContactContainer = withSnackbar(React.createClass({
   propTypes: {
@@ -117,12 +176,12 @@ const AddContactContainer = withSnackbar(React.createClass({
 
   // Is the contact in the campaign or in selected contacts list?
   isSelected (contact) {
-    return this.state.selectedContacts.some((c) => c._id === contact._id)
+    return this.state.selectedContacts.some((c) => c.slug === contact.slug)
   },
 
   // Is the contact not on the campaign already
   isSelectable (contact) {
-    return !this.props.campaignContacts.some((c) => c._id === contact._id)
+    return !this.props.campaignContacts.some((c) => c.slug === contact.slug)
   },
 
   onAdd (contact) {
@@ -180,13 +239,14 @@ const AddContactContainer = withSnackbar(React.createClass({
     } = this
 
     const { term, selectedContacts } = this.state
-    const { onCreate, campaign } = this.props
-    const excludeSlugs = campaign.contacts.map((c) => c.slug)
+    const { onCreate, campaignContacts } = this.props
+    const myContacts = Meteor.user().myContacts
 
     return (
       <SearchableAddContact
-        excludeSlugs={excludeSlugs}
         term={term}
+        campaignContacts={campaignContacts}
+        myContacts={myContacts}
         onTermChange={onTermChange}
         isSelected={this.isSelected}
         isSelectable={this.isSelectable}
