@@ -123,6 +123,7 @@ class ContactSortContainer extends React.Component {
     return 0
   }
 
+  // Sort contacts in myContacts before those that aren't
   inMyContactsSort = (a, b) => {
     const {myContacts} = this.props
     const aContact = myContacts.find(c => c.slug === a.slug)
@@ -139,6 +140,7 @@ class ContactSortContainer extends React.Component {
     return 0
   }
 
+  // Sort recently updated contacts before less recently updated ones
   updatedAtSort = (a, b) => {
     return (b.updatedAt || b.createdAt).getTime() - (a.updatedAt || a.createdAt).getTime()
   }
