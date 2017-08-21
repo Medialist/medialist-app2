@@ -8,7 +8,10 @@ import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
-import { UpdatePostSchema } from '/imports/api/posts/schema'
+import { CampaignRefSchema } from '/imports/api/campaigns/schema'
+import { ContactRefSchema } from '/imports/api/contacts/schema'
+import { IdSchema } from '/imports/lib/schema'
+import values from 'lodash.values'
 
 let createEmbed = {
   run: () => {}
@@ -132,6 +135,27 @@ export const createFeedbackPost = new ValidatedMethod({
     })
   }
 })
+
+const UpdatePostSchema = new SimpleSchema({
+  message: {
+    type: String,
+    optional: true
+  },
+  status: {
+    type: String,
+    allowedValues: values(Contacts.status),
+    optional: true
+  },
+  contact: {
+    type: ContactRefSchema,
+    optional: true
+  },
+  campaign: {
+    type: CampaignRefSchema,
+    optional: true
+  }
+})
+UpdatePostSchema.extend(IdSchema)
 
 export const updatePost = new ValidatedMethod({
   name: 'updatePost',
