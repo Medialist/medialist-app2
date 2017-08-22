@@ -8,8 +8,6 @@ import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
-import { CampaignRefSchema } from '/imports/api/campaigns/schema'
-import { ContactRefSchema } from '/imports/api/contacts/schema'
 import { IdSchema } from '/imports/lib/schema'
 import values from 'lodash.values'
 import moment from 'moment'
@@ -137,27 +135,6 @@ export const createFeedbackPost = new ValidatedMethod({
   }
 })
 
-const UpdatePostSchema = new SimpleSchema({
-  message: {
-    type: String,
-    optional: true
-  },
-  status: {
-    type: String,
-    allowedValues: values(Contacts.status),
-    optional: true
-  },
-  contact: {
-    type: ContactRefSchema,
-    optional: true
-  },
-  campaign: {
-    type: CampaignRefSchema,
-    optional: true
-  }
-})
-UpdatePostSchema.extend(IdSchema)
-
 export const updatePost = new ValidatedMethod({
   name: 'updatePost',
 
@@ -260,44 +237,44 @@ export const updatePost = new ValidatedMethod({
         })
       }
 
-      // const mostRecentPreviousPost = Posts.findOne({
-      //   _id: {$nin: [oldPost._id]},
-      //   type: {$in: ['FeedbackPost', 'CoveragePost']},
-      //   'contacts.slug': oldPost.contacts[0].slug,
-      //   'campaigns.slug': oldPost.campaigns[0].slug
-      // }, {
-      //   sort: {createdAt: -1}
-      // })
-      //
-      // if (!mostRecentPreviousPost) {
-      //   Campaigns.update({
-      //     _id: oldPost.campaigns[0]._id,
-      //     'contacts.slug': oldPost.contacts[0].slug
-      //   }, {
-      //     $set: {
-      //       'contacts.$': {
-      //         slug: oldPost.contacts[0].slug,
-      //         status: StatusMap.toContact,
-      //         updatedAt: oldPost.updatedAt,
-      //         updatedBy: oldPost.updatedBy
-      //       }
-      //     }
-      //   })
-      // } else if (moment(mostRecentPreviousPost.createdAt).isBefore(oldPost.createdAt)) {
-      //   Campaigns.update({
-      //     _id: oldPost.campaigns[0]._id,
-      //     'contacts.slug': oldPost.contacts[0].slug
-      //   }, {
-      //     $set: {
-      //       'contacts.$': {
-      //         slug: oldPost.contacts[0].slug,
-      //         status: mostRecentPreviousPost.status,
-      //         updatedAt: oldPost.updatedAt,
-      //         updatedBy: oldPost.updatedBy
-      //       }
-      //     }
-      //   })
-      // }
+      const mostRecentPreviousPost = Posts.findOne({
+        _id: {$nin: [_id]},
+        type: {$in: ['FeedbackPost', 'CoveragePost']},
+        'contacts.slug': oldPost.contacts[0].slug,
+        'campaigns.slug': oldPost.campaigns[0].slug
+      }, {
+        sort: {createdAt: -1}
+      })
+
+      if (!mostRecentPreviousPost) {
+        Campaigns.update({
+          _id: oldPost.campaigns[0]._id,
+          'contacts.slug': oldPost.contacts[0].slug
+        }, {
+          $set: {
+            'contacts.$': {
+              slug: oldPost.contacts[0].slug,
+              status: StatusMap.toContact,
+              updatedAt: oldPost.updatedAt,
+              updatedBy: oldPost.updatedBy
+            }
+          }
+        })
+      } else if (moment(mostRecentPreviousPost.createdAt).isBefore(oldPost.createdAt)) {
+        Campaigns.update({
+          _id: oldPost.campaigns[0]._id,
+          'contacts.slug': oldPost.contacts[0].slug
+        }, {
+          $set: {
+            'contacts.$': {
+              slug: oldPost.contacts[0].slug,
+              status: mostRecentPreviousPost.status,
+              updatedAt: oldPost.updatedAt,
+              updatedBy: oldPost.updatedBy
+            }
+          }
+        })
+      }
     }
   }
 })

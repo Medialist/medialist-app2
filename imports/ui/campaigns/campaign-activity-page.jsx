@@ -122,7 +122,7 @@ const CampaignActivityPage = React.createClass({
     if (loading) {
       return <div className='center p4'><Loading /></div>
     }
-    console.log(campaign.contacts.forEach(c => console.log(c.slug, c.status)))
+
     return (
       <div>
         <CampaignTopbar campaign={campaign} onAddContactClick={onAddContactClick} />
