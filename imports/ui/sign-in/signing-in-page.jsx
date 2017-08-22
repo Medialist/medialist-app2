@@ -4,7 +4,7 @@ import SignInLayout from '/imports/ui/sign-in/sign-in-layout'
 import { Meteor } from 'meteor/meteor'
 import { browserHistory } from 'react-router'
 import InvalidTokenPage from '/imports/ui/sign-in/invalid-token-page'
-import Loading from '/imports/ui/lists/loading'
+import { LoadingBar } from '/imports/ui/lists/loading'
 import SignInErrorPage from '/imports/ui/sign-in/sign-in-error-page'
 
 const SigningInPage = React.createClass({
@@ -50,7 +50,7 @@ const SigningInPage = React.createClass({
     const content = (
       <div className='bg-white max-width-2 mt6 p5 mx-auto shadow-2'>
         <p className='semibold f-sm'>Signing you in...</p>
-        <div className='center p4'><Loading /></div>
+        <LoadingBar />
         <p className='gray40 f-sm'>Having trouble signing in? Please email us at <a href='mailto:feedback@medialist.io'>feedback@medialist.io</a></p>
       </div>
     )

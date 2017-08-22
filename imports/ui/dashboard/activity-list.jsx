@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Loading from '/imports/ui/lists/loading'
+import { LoadingBar } from '/imports/ui/lists/loading'
 import * as PostMap from '/imports/ui/posts/post'
 
 const ActivityList = React.createClass({
@@ -39,7 +39,7 @@ const ActivityList = React.createClass({
             />
           )
         })}
-        { loading && <div className='center p4'><Loading /></div> }
+        { loading && <LoadingBar /> }
       </div>
     )
   }

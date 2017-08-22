@@ -1,27 +1,24 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Loading from '/imports/ui/lists/loading'
-import SearchBox from '/imports/ui/lists/search-box'
+import { LoadingBar } from '/imports/ui/lists/loading'
+import SearchBox, { SearchBoxCount } from '/imports/ui/lists/search-box'
 import CampaignsTable from '/imports/ui/campaigns/campaigns-table'
 import CountTag from '/imports/ui/tags/tag'
-
-const CampaignsTotal = ({ searching, results, total }) => {
-  const num = searching ? results.length : total
-  return <div className='f-xs gray60' style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>{num} campaign{num === 1 ? '' : 's'}</div>
-}
 
 const CampaignSearch = ({
   onTermChange,
   selectedTags,
   onTagRemove,
-  total,
   term,
   sort,
   campaigns,
+  campaignsCount,
   selections,
+  selectionMode,
   contact,
   onSortChange,
   onSelectionsChange,
+  onSelectionModeChange,
   loading,
   searching
 }) => (
@@ -39,19 +36,21 @@ const CampaignSearch = ({
             />
           ))}
         </SearchBox>
-        <CampaignsTotal searching={searching} results={campaigns} total={total} />
+        <SearchBoxCount type='campaign' loading={loading} total={campaignsCount} />
       </div>
       <CampaignsTable
         term={term}
         sort={sort}
         campaigns={campaigns}
         selections={selections}
+        selectionMode={selectionMode}
         contact={contact}
         onSortChange={onSortChange}
         onSelectionsChange={onSelectionsChange}
+        onSelectionModeChange={onSelectionModeChange}
         searching={Boolean(term)} />
     </div>
-    { loading && <div className='center p4'><Loading /></div> }
+    { loading && <LoadingBar /> }
   </div>
 )
 
@@ -59,10 +58,10 @@ CampaignSearch.propTypes = {
   onTermChange: PropTypes.func.isRequired,
   selectedTags: PropTypes.array,
   onTagRemove: PropTypes.func.isRequired,
-  total: PropTypes.number.isRequired,
   term: PropTypes.string,
   sort: PropTypes.object,
   campaigns: PropTypes.array.isRequired,
+  campaignsCount: PropTypes.number,
   selections: PropTypes.array,
   contact: PropTypes.object,
   onSortChange: PropTypes.func.isRequired,

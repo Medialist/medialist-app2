@@ -1,34 +1,37 @@
-import querystring from 'querystring'
 import React from 'react'
+import PropTypes from 'prop-types'
+import { compose } from 'redux'
 import { Meteor } from 'meteor/meteor'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import { createContainer } from 'meteor/react-meteor-data'
-import { Link, withRouter } from 'react-router'
+import { Link } from 'react-router'
 import Arrow from 'rebass/dist/Arrow'
+import fileDownload from 'react-file-download'
 import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
 import ContactsTable from '/imports/ui/contacts/contacts-table'
-import SearchBox from '/imports/ui/lists/search-box'
+import SearchBox, { SearchBoxCount } from '/imports/ui/lists/search-box'
 import ContactsActionsToast from '/imports/ui/contacts/contacts-actions-toast'
 import MasterListsSelector from '/imports/ui/campaigns/masterlists-selector'
 import { CreateContactModal } from '/imports/ui/contacts/edit-contact'
 import ContactListEmpty from '/imports/ui/contacts/contacts-list-empty'
 import { FeedContactIcon } from '/imports/ui/images/icons'
-import createSearchContainer from '/imports/ui/contacts/search-container'
+import createSearchContainer, { createSearchCountContainer } from '/imports/ui/contacts/search-container'
 import AddContactsToCampaign from '/imports/ui/contacts/add-to-campaign/add-many-modal'
-import Campaigns from '/imports/api/campaigns/campaigns'
 import CountTag, { AvatarTag } from '/imports/ui/tags/tag'
-import { batchFavouriteContacts } from '/imports/api/contacts/methods'
-import { batchAddTags } from '/imports/api/tags/methods'
-import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
+import { batchFavouriteContacts, batchRemoveContacts, exportContactsToCsv } from '/imports/api/contacts/methods'
+import { batchAddTagsToContacts } from '/imports/api/tags/methods'
+import { batchAddToContactLists } from '/imports/api/master-lists/methods'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import AddTagsModal from '/imports/ui/tags/add-tags-modal'
 import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
 import AddToMasterListModal from '/imports/ui/master-lists/add-to-master-list-modal'
-import NearBottomContainer from '/imports/ui/navigation/near-bottom-container'
-import SubscriptionLimitContainer from '/imports/ui/navigation/subscription-limit-container'
-import Loading from '/imports/ui/lists/loading'
+import createLimitContainer from '/imports/ui/navigation/increase-limit-on-scroll-container'
+import {LoadingBar} from '/imports/ui/lists/loading'
 import DeleteContactsModal from '/imports/ui/contacts/delete-contacts-modal'
 import { addRecentContactList } from '/imports/api/users/methods'
+import createSearchQueryContainer from './search-query-container'
+import createSearchEnricher from './search-enricher'
+import { ContactSearchSchema } from '/imports/api/contacts/schema'
 
 /*
  * ContactPage and ContactsPageContainer
@@ -43,19 +46,40 @@ import { addRecentContactList } from '/imports/api/users/methods'
  * The sector-selector is ?sector=<sector>
  */
 
-const ContactsPage = withSnackbar(React.createClass({
-  getInitialState () {
-    return {
-      selections: [],
-      isDropdownOpen: false,
-      addContactModal: false,
-      addContactsToCampaignModal: false,
-      addTagsModal: false,
-      addToMasterListsModal: false,
-      deleteContactsModal: false,
-      resultsTotal: 0
-    }
-  },
+class ContactsPage extends React.Component {
+  static propTypes = {
+    allContactsCount: PropTypes.number.isRequired,
+    contactsCount: PropTypes.number.isRequired,
+    contacts: PropTypes.array.isRequired,
+    masterListSlug: PropTypes.string,
+    loading: PropTypes.bool,
+    searching: PropTypes.bool,
+    searchTermActive: PropTypes.bool,
+    term: PropTypes.string,
+    sort: PropTypes.object,
+    campaigns: PropTypes.array,
+    selectedTags: PropTypes.array,
+    importId: PropTypes.string,
+    onChangeTerm: PropTypes.func,
+    onChangeSort: PropTypes.func,
+    onChangeMasterListSlug: PropTypes.func,
+    onChangeUserId: PropTypes.func,
+    onChangeImportId: PropTypes.func,
+    onChangeTagSlugs: PropTypes.func,
+    onChangeCampaignSlugs: PropTypes.func,
+    onChangeUrlQueryParams: PropTypes.func
+  }
+
+  state = {
+    selectionMode: 'include',
+    selections: [],
+    isDropdownOpen: false,
+    addContactModal: false,
+    addContactsToCampaignModal: false,
+    addTagsModal: false,
+    addToMasterListsModal: false,
+    deleteContactsModal: false
+  }
 
   componentDidMount () {
     const { location: { pathname, query }, router } = this.props
@@ -67,101 +91,150 @@ const ContactsPage = withSnackbar(React.createClass({
 
       router.replace(pathname)
     }
-  },
+  }
 
-  onMasterListChange (selectedMasterListSlug) {
-    // Only if not pseudo lists
-    if (!['all', 'my'].includes(selectedMasterListSlug)) {
-      addRecentContactList.call({ slug: selectedMasterListSlug })
+  onMasterListChange = (masterListSlug) => {
+    if (masterListSlug === 'all') {
+      this.props.onChangeUrlQueryParams({
+        masterListSlug: null,
+        userId: null
+      })
+    } else if (masterListSlug === 'my') {
+      this.props.onChangeUrlQueryParams({
+        masterListSlug: null,
+        userId: Meteor.userId()
+      })
+    } else {
+      this.props.onChangeUrlQueryParams({
+        masterListSlug,
+        userId: null
+      })
+      addRecentContactList.call({ slug: masterListSlug })
     }
+    this.clearSelection()
+  }
 
-    this.props.setQuery({ selectedMasterListSlug })
-  },
-
-  onSortChange (sort) {
-    this.props.setQuery({ sort })
-  },
-
-  onTermChange (term) {
-    this.props.setQuery({ term })
-  },
-
-  onSelectionsChange (selections) {
+  onSelectionsChange = (selections) => {
     this.setState({ selections })
-  },
+  }
 
-  onFavouriteAll () {
-    const contactSlugs = this.state.selections.map((s) => s.slug)
-
-    batchFavouriteContacts.call({contactSlugs}, (error) => {
+  onFavouriteAll = () => {
+    const opts = this.getSearchOrSlugs()
+    batchFavouriteContacts.call(opts, (error, res) => {
       if (error) {
         console.error(error)
         return this.props.snackbar.error('batch-favourite-contacts-failure')
       }
-      this.props.snackbar.show(`Favourited ${contactSlugs.length} ${contactSlugs.length === 1 ? 'contact' : 'contacts'}`, 'batch-favourite-contacts-success')
+      const {slugCount} = res
+      const {snackbar} = this.props
+      snackbar.show(`Favourited ${slugCount} ${slugCount === 1 ? 'contact' : 'contacts'}`, 'batch-favourite-contacts-success')
     })
-  },
+  }
 
-  onTagAll (tags) {
-    const slugs = this.state.selections.map((s) => s.slug)
-    const names = tags.map((t) => t.name)
-
-    batchAddTags.call({type: 'Contacts', slugs, names}, (error) => {
+  onTagAll = (tags) => {
+    const opts = this.getSearchOrSlugs()
+    opts.names = tags.map((t) => t.name)
+    batchAddTagsToContacts.call(opts, (error, res) => {
       if (error) {
         console.error(error)
         return this.props.snackbar.error('batch-tag-contacts-failure')
       }
-
-      this.props.snackbar.show(`Added ${names.length} ${names.length === 1 ? 'tag' : 'tags'} to ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'}`, 'batch-tag-contacts-success')
+      const {snackbar} = this.props
+      const {slugCount, tagCount} = res
+      snackbar.show(`Added ${tagCount} ${tagCount === 1 ? 'tag' : 'tags'} to ${slugCount} ${slugCount === 1 ? 'contact' : 'contacts'}`, 'batch-tag-contacts-success')
     })
-  },
+  }
 
-  onAddAllToMasterLists (masterLists) {
-    const slugs = this.state.selections.map((s) => s.slug)
-    const masterListIds = masterLists.map((m) => m._id)
-
-    batchAddToMasterLists.call({type: 'Contacts', slugs, masterListIds}, (error) => {
+  onAddAllToMasterLists = (masterLists) => {
+    const opts = this.getSearchOrSlugs()
+    opts.masterListIds = masterLists.map((m) => m._id)
+    batchAddToContactLists.call(opts, (error, res) => {
       if (error) {
         console.error(error)
         return this.props.snackbar.error('contacts-batch-add-to-contact-list-failure')
       }
-
-      this.props.snackbar.show(`Added ${slugs.length} ${slugs.length === 1 ? 'contact' : 'contacts'} to ${masterLists.length} ${masterLists.length === 1 ? 'Contact List' : 'Contact Lists'}`, 'batch-add-contacts-to-contact-list-success')
+      const {snackbar} = this.props
+      const {slugCount, masterListCount} = res
+      snackbar.show(`Added ${slugCount} ${slugCount === 1 ? 'contact' : 'contacts'} to ${masterListCount} ${masterListCount === 1 ? 'Contact List' : 'Contact Lists'}`, 'batch-add-contacts-to-contact-list-success')
     })
-  },
+  }
 
-  clearSelection () {
+  onDelete = () => {
+    const opts = this.getSearchOrSlugs()
+    batchRemoveContacts.call(opts, (error, res) => {
+      if (error) {
+        console.log(error)
+        this.props.snackbar.error('batch-delete-contacts-failure')
+      } else {
+        const {snackbar} = this.props
+        const {slugCount} = res
+        const name = slugCount > 1 ? `${slugCount} Contacts` : this.state.selections[0].name
+        snackbar.show(`Deleted ${name}`, 'batch-delete-contacts-success')
+        this.clearSelectionAndHideModals()
+      }
+    })
+  }
+
+  onExportToCsv = () => {
+    const opts = this.getSearchOrSlugs()
+    exportContactsToCsv.call(opts, (error, res) => {
+      if (error) {
+        console.log(error)
+        this.props.snackbar.error('export-contacts-to-csv-failure')
+      } else {
+        fileDownload(res.data, res.filename, 'text/csv')
+        this.clearSelectionAndHideModals()
+      }
+    })
+  }
+
+  onTermChange = (term) => {
+    this.props.onChangeTerm(term)
+    this.clearSelection()
+  }
+
+  onSortChange = (sort) => {
+    this.props.onChangeSort(sort)
+    this.clearSelection()
+  }
+
+  onSelectionModeChange = (selectionMode) => {
+    this.setState({selectionMode})
+  }
+
+  clearSelection = () => {
     this.setState({
-      selections: []
+      selections: [],
+      selectionMode: 'include'
     })
-  },
+  }
 
-  showModal (modal) {
+  showModal = (modal) => {
     this.hideModals()
 
     this.setState((s) => ({
       [modal]: true
     }))
-  },
+  }
 
-  onDropdownArrowClick () {
+  onDropdownArrowClick = () => {
     this.setState({ isDropdownOpen: true })
-  },
+  }
 
-  onDropdownDismiss () {
+  onDropdownDismiss = () => {
     this.setState({ isDropdownOpen: false })
-  },
+  }
 
-  onLinkClick () {
+  onLinkClick = () => {
     this.setState({ isDropdownOpen: false })
-  },
+  }
 
-  clearSelectionAndHideModals () {
+  clearSelectionAndHideModals = () => {
     this.hideModals()
     this.clearSelection()
-  },
+  }
 
-  hideModals () {
+  hideModals = () => {
     this.setState({
       addContactModal: false,
       addContactsToCampaignModal: false,
@@ -169,66 +242,75 @@ const ContactsPage = withSnackbar(React.createClass({
       addToMasterListsModal: false,
       deleteContactsModal: false
     })
-  },
+  }
 
-  onCampaignRemove (campaign) {
-    const { setQuery, campaignSlugs } = this.props
-    setQuery({
-      campaignSlugs: campaignSlugs.filter((str) => str !== campaign.slug)
-    })
-  },
+  onCampaignRemove = (campaign) => {
+    const { onChangeCampaignSlugs, campaignSlugs } = this.props
+    onChangeCampaignSlugs(campaignSlugs.filter((str) => str !== campaign.slug))
+    this.clearSelection()
+  }
 
-  onTagRemove (tag) {
-    const { setQuery, tagSlugs } = this.props
-    setQuery({
-      tagSlugs: tagSlugs.filter((str) => str !== tag.slug)
-    })
-  },
+  onTagRemove = (tag) => {
+    const { onChangeTagSlugs, tagSlugs } = this.props
+    onChangeTagSlugs(tagSlugs.filter((str) => str !== tag.slug))
+    this.clearSelection()
+  }
 
-  onImportRemove () {
-    const { setQuery } = this.props
-    setQuery({ importId: false })
-  },
+  onImportRemove = () => {
+    this.props.onChangeImportId(null)
+    this.clearSelection()
+  }
 
-  setResultsTotal (resultsTotal) {
-    if (!resultsTotal) return
-    this.setState({resultsTotal})
-  },
+  getSearchOrSlugs = () => {
+    const {selectionMode} = this.state
+    if (selectionMode === 'all') {
+      const contactSearch = this.extractContactSearch(this.props)
+      return { contactSearch }
+    } else {
+      const contactSlugs = this.state.selections.map((s) => s.slug)
+      return { contactSlugs }
+    }
+  }
+
+  extractContactSearch (props) {
+    return ContactSearchSchema.clean({...props})
+  }
 
   render () {
     const {
+      allContactsCount,
       contactsCount,
-      selectedMasterListSlug,
+      masterListSlug,
       loading,
       searching,
+      searchTermActive,
       contacts,
       term,
       sort,
-      limit,
       campaigns,
       selectedTags,
       importId
     } = this.props
 
     const {
-      onSortChange,
       onSelectionsChange,
       onMasterListChange,
-      onTermChange,
       onCampaignRemove,
       onTagRemove,
-      onImportRemove,
-      setResultsTotal
+      onImportRemove
     } = this
 
     const {
       selections,
-      resultsTotal
+      selectionMode
     } = this.state
 
-    if (!loading && contactsCount === 0) {
+    if (!loading && !searching && contactsCount === 0) {
       return <ContactListEmpty />
     }
+
+    const contactSearch = this.extractContactSearch(this.props)
+    const selectionsLength = selectionMode === 'all' ? contactsCount : selections.length
 
     return (
       <div style={{paddingBottom: 100}}>
@@ -237,10 +319,9 @@ const ContactsPage = withSnackbar(React.createClass({
             <MasterListsSelectorContainer
               type='Contacts'
               userId={this.props.userId}
-              allCount={contactsCount}
-              selectedMasterListSlug={selectedMasterListSlug}
-              onChange={onMasterListChange}
-              setResultsTotal={setResultsTotal} />
+              allCount={allContactsCount}
+              selectedMasterListSlug={masterListSlug}
+              onChange={onMasterListChange} />
           </div>
           <div className='flex-none bg-white center px4' style={{width: 240}}>
             <button className='btn bg-completed white mr1' onClick={() => this.showModal('addContactModal')} data-id='new-contact-button'>New Contact</button>
@@ -261,7 +342,7 @@ const ContactsPage = withSnackbar(React.createClass({
         </div>
         <div className='bg-white shadow-2 m4 mt8' data-id='contacts-table'>
           <div className='pt4 pl4 pr4 pb1 items-center'>
-            <SearchBox initialTerm={term} onTermChange={onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' style={{zIndex: 1}}>
+            <SearchBox initialTerm={term} onTermChange={this.onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' style={{zIndex: 1}}>
               <div style={{margin: '1px 4px -4px 6px'}} >
                 {campaigns && campaigns.map((c) => (
                   <AvatarTag
@@ -284,7 +365,7 @@ const ContactsPage = withSnackbar(React.createClass({
                 )}
               </div>
             </SearchBox>
-            <ContactsTotal loading={loading} searching={searching} results={contacts} limit={limit} total={resultsTotal} />
+            <SearchBoxCount type='contact' loading={loading} total={contactsCount} />
           </div>
           <ContactsTable
             contacts={contacts}
@@ -293,52 +374,60 @@ const ContactsPage = withSnackbar(React.createClass({
             limit={25}
             term={term}
             selections={selections}
-            onSortChange={onSortChange}
+            selectionMode={selectionMode}
+            onSelectionModeChange={this.onSelectionModeChange}
+            onSortChange={this.onSortChange}
             onSelectionsChange={onSelectionsChange}
-            searching={searching} />
+            searchTermActive={searchTermActive} />
         </div>
-        { loading && <div className='center p4'><Loading /></div> }
+        { loading && <LoadingBar /> }
         <ContactsActionsToast
-          contacts={this.state.selections}
+          contacts={selections}
+          contactsCount={selectionsLength}
           onCampaignClick={() => this.showModal('addContactsToCampaignModal')}
           onSectorClick={() => this.showModal('addToMasterListsModal')}
           onFavouriteClick={() => this.onFavouriteAll()}
           onTagClick={() => this.showModal('addTagsModal')}
           onDeleteClick={() => this.showModal('deleteContactsModal')}
-          onDeselectAllClick={() => this.clearSelection()} />
+          onDeselectAllClick={() => this.clearSelection()}
+          onExportToCsvClick={this.onExportToCsv} />
         <CreateContactModal
-          onDismiss={() => this.hideModals()}
+          onDismiss={this.hideModals}
           open={this.state.addContactModal} />
         <AddContactsToCampaign
           title='Add these Contacts to a Campaign'
-          contacts={this.state.selections}
-          onDismiss={() => this.hideModals()}
+          contacts={selections}
+          contactsCount={selectionsLength}
+          contactSearch={contactSearch}
+          selectionMode={selectionMode}
+          onDismiss={this.hideModals}
           open={this.state.addContactsToCampaignModal} />
         <AddTagsModal
           type='Contacts'
           open={this.state.addTagsModal}
-          onDismiss={() => this.hideModals()}
-          onUpdateTags={(tags) => this.onTagAll(tags)}>
-          <AbbreviatedAvatarList items={selections} maxTooltip={12} />
+          onDismiss={this.hideModals}
+          onUpdateTags={this.onTagAll}>
+          <AbbreviatedAvatarList items={selections} maxTooltip={12} total={selectionsLength} />
         </AddTagsModal>
         <AddToMasterListModal
           type='Contacts'
+          title='Add these contacts to a list'
           items={this.state.selections}
           open={this.state.addToMasterListsModal}
-          onDismiss={() => this.hideModals()}
-          onSave={(masterLists) => this.onAddAllToMasterLists(masterLists)}>
-          <AbbreviatedAvatarList items={selections} maxTooltip={12} />
+          onDismiss={this.hideModals}
+          onSave={this.onAddAllToMasterLists}>
+          <AbbreviatedAvatarList items={selections} maxTooltip={12} total={selectionsLength} />
         </AddToMasterListModal>
         <DeleteContactsModal
           open={this.state.deleteContactsModal}
           contacts={this.state.selections}
-          onDelete={() => this.clearSelectionAndHideModals()}
-          onDismiss={() => this.hideModals()}
-        />
+          contactsCount={selectionsLength}
+          onDelete={this.onDelete}
+          onDismiss={this.hideModals} />
       </div>
     )
   }
-}))
+}
 
 const MasterListsSelectorContainer = createContainer((props) => {
   const { selectedMasterListSlug, userId } = props
@@ -373,154 +462,11 @@ const MasterListsSelectorContainer = createContainer((props) => {
   return { ...props, items, selectedSlug }
 }, MasterListsSelector)
 
-const ContactsTotal = ({ loading, searching, results = [], limit, total }) => {
-  let prefix = ''
-  let num = total
-  if (searching) {
-    prefix = results.length === limit ? 'over' : ''
-    num = results.length
-  }
-  const suffix = `contact${num === 1 ? '' : 's'}`
-  const label = loading ? 'Calculating' : `${prefix} ${num} ${suffix}`
-  return (
-    <div
-      className='f-xs gray60'
-      style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>
-      {label}
-    </div>
-  )
-}
-
-const SearchableContactsPage = createSearchContainer(ContactsPage)
-
-// I decode and encode the search options from the query string
-// and set up the subscriptions and collecton queries from those options.
-const ContactsPageContainer = withRouter(React.createClass({
-  // API is like setState...
-  // Pass an obj with the new params you want to set on the query string.
-  setQuery (opts) {
-    const { location, router } = this.props
-    const newQuery = {}
-
-    if (opts.sort) {
-      newQuery.sort = JSON.stringify(opts.sort)
-    }
-
-    if (opts.hasOwnProperty('term')) {
-      newQuery.q = opts.term
-    }
-
-    if (opts.selectedMasterListSlug) {
-      if (opts.selectedMasterListSlug === 'my') {
-        newQuery.my = Meteor.userId()
-      } else {
-        newQuery.list = opts.selectedMasterListSlug
-      }
-    }
-
-    if (opts.tagSlugs) {
-      newQuery.tag = opts.tagSlugs
-    }
-
-    if (opts.campaignSlugs) {
-      newQuery.campaign = opts.campaignSlugs
-    }
-
-    if (opts.hasOwnProperty('importId')) {
-      newQuery.importId = opts.importId
-    }
-
-    const query = Object.assign({}, location.query, newQuery)
-    if (query.q === '') {
-      delete query.q
-    }
-
-    if (query.list === 'all' || newQuery.my) {
-      delete query.list
-    }
-
-    if (newQuery.list) {
-      delete query.my
-    }
-
-    if (!query.importId) {
-      delete query.importId
-    }
-
-    const qs = querystring.stringify(query)
-
-    if (!qs) {
-      return router.replace('/contacts')
-    }
-
-    router.replace(`/contacts?${qs}`)
-  },
-
-  render () {
-    const { location } = this.props
-    return (
-      <NearBottomContainer>
-        {(nearBottom) => (
-          <SubscriptionLimitContainer wantMore={nearBottom}>
-            {(limit) => (
-              <SearchableContactsPage
-                limit={limit}
-                {...this.props}
-                {...this.data}
-                {...this.props.parseQuery(location)}
-                setQuery={this.setQuery} />
-            )}
-          </SubscriptionLimitContainer>
-        )}
-      </NearBottomContainer>
-    )
-  }
-}))
-
-export default createContainer((props) => {
-  const sub = Meteor.subscribe('campaigns')
-
-  const parseQuery = ({query}) => {
-    const sort = query.sort ? JSON.parse(query.sort) : {
-      updatedAt: -1
-    }
-    const term = query.q || ''
-    const tagSlugs = query.tag ? [query.tag] : []
-    const { campaign, list, my, importId } = query
-
-    if (!campaign) {
-      return {
-        sort,
-        term,
-        selectedMasterListSlug: list,
-        userId: my,
-        campaignSlugs: [],
-        campaigns: [],
-        tagSlugs,
-        importId,
-        loading: sub.ready()
-      }
-    }
-
-    const campaignSlugs = Array.isArray(campaign) ? campaign : [campaign]
-    const campaigns = Campaigns.find({
-      slug: {
-        $in: campaignSlugs
-      }
-    }).fetch()
-
-    return {
-      sort,
-      term,
-      list,
-      selectedMasterListSlug: list,
-      userId: my,
-      campaignSlugs,
-      campaigns,
-      tagSlugs,
-      loading: sub.ready()
-    }
-  }
-
-  return { ...props, parseQuery, loading: sub.ready() }
-}, ContactsPageContainer)
+export default compose(
+  createSearchQueryContainer,
+  createSearchEnricher,
+  createLimitContainer,
+  createSearchContainer,
+  createSearchCountContainer,
+  withSnackbar
+)(ContactsPage)

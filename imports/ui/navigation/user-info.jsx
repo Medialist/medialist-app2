@@ -9,38 +9,37 @@ import { dropdownMenuStyle } from '/imports/ui/common-styles'
 
 const dropdownStyle = Object.assign({}, dropdownMenuStyle, { width: 223, top: 'calc(100% - 2px)', right: '-5px' })
 
-const UserInfo = React.createClass({
-  propTypes: {
-    user: PropTypes.object
-  },
+class UserInfo extends React.PureComponent {
+  static propTypes = {
+    name: PropTypes.string
+  }
 
-  getInitialState () {
-    return { isDropdownOpen: false }
-  },
+  state = {
+    isDropdownOpen: false
+  }
 
-  onNameClick () {
+  onNameClick = () => {
     this.setState({ isDropdownOpen: true })
-  },
+  }
 
-  onLinkClick () {
+  onLinkClick = () => {
     this.setState({ isDropdownOpen: false })
-  },
+  }
 
-  onDropdownDismiss () {
+  onDropdownDismiss = () => {
     this.setState({ isDropdownOpen: false })
-  },
+  }
 
   render () {
-    const { user } = this.props
-
+    const { name, email, avatar } = this.props
     return (
       <Dropdown style={{padding: '14px 0 13px 25px', marginRight: 18}}>
         <div className='inline-block hover-opacity-trigger pointer' onClick={this.onNameClick} data-id='user-info-menu'>
           <HamburgerIcon className='flex-none md-hide lg-hide' />
-          <CircleAvatar name={user.profile.name} avatar={user.profile.avatar} style={{ verticalAlign: '-2px', marginRight: '10px' }} className='xs-hide sm-hide' />
+          <CircleAvatar name={name} avatar={avatar} style={{ verticalAlign: '-2px', marginRight: '10px' }} className='xs-hide sm-hide' />
           <div className='inline-block xs-hide sm-hide'>
-            <div className='f-xs semibold white'>{user.profile.name}</div>
-            <div className='f-xxs semibold white opacity-40 hover-opacity-50' style={{marginTop: 2}}>{user.emails[0].address}</div>
+            <div className='f-xs semibold white'>{name}</div>
+            <div className='f-xxs semibold white opacity-40 hover-opacity-50' style={{marginTop: 2}}>{email}</div>
           </div>
           <div className='inline-block xs-hide sm-hide' style={{ verticalAlign: '5px', padding: '0 12px 0 20px' }}>
             <Arrow direction='down' />
@@ -48,10 +47,10 @@ const UserInfo = React.createClass({
         </div>
         <DropdownMenu right arrowPosition='calc(100% - 24px)' style={dropdownStyle} open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
           <div className='px4 py3 md-hide lg-hide' style={{width: 225}}>
-            <CircleAvatar name={user.profile.name} avatar={user.profile.avatar} />
+            <CircleAvatar name={name} avatar={avatar} />
             <div className='inline-block align-middle pl2'>
-              <div className='f-md semibold gray10'>{user.profile.name}</div>
-              <div className='f-xs normal gray20'>{user.emails[0].address}</div>
+              <div className='f-md semibold gray10'>{name}</div>
+              <div className='f-xs normal gray20'>{email}</div>
             </div>
           </div>
           <nav className='block border-top border-gray80 py1' style={{width: 225}}>
@@ -68,6 +67,6 @@ const UserInfo = React.createClass({
       </Dropdown>
     )
   }
-})
+}
 
 export default UserInfo

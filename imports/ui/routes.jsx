@@ -1,3 +1,4 @@
+import { Session } from 'meteor/session'
 import React from 'react'
 import { Router, Route, IndexRoute } from 'react-router'
 import Layout from '/imports/ui/layout'
@@ -24,6 +25,11 @@ function handleUpdate () {
   }
 }
 
+function recordCampaignVisit (routerState) {
+  const {campaignSlug} = routerState.params
+  Session.set('lastCampaignVisitedSlug', campaignSlug)
+}
+
 const Routes = ({ store, history }) => {
   return (
     <Router history={history} onUpdate={handleUpdate}>
@@ -33,7 +39,7 @@ const Routes = ({ store, history }) => {
         <Route path='notifications' component={NotificationsPage} />
         <Route path='campaigns' component={CampaignsPage} />
         <Route path='campaign'>
-          <Route path=':campaignSlug'>
+          <Route path=':campaignSlug' onEnter={recordCampaignVisit}>
             <IndexRoute component={CampaignActivityPage} />
             <Route path='contacts' component={CampaignContactsPage} />
           </Route>

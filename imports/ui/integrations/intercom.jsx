@@ -6,7 +6,7 @@ import ReactIntercom from 'react-intercom'
 const { intercom } = Meteor.settings.public
 const appId = intercom && intercom.appId
 
-export default createContainer(() => {
+export default !appId ? () => null : createContainer(() => {
   const user = Meteor.user()
   let userData = {}
   if (user) {

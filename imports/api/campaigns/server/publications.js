@@ -4,11 +4,10 @@ import { check } from 'meteor/check'
 import { ReactiveAggregate } from 'meteor/jcbernack:reactive-aggregate'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
-import { publishAllForLoggedInUser } from '/imports/lib/publish-all'
-import * as Queries from '/imports/api/campaigns/queries'
 import StatusMap from '/imports/api/contacts/status'
-
-publishAllForLoggedInUser(Queries)
+import publishToCollection from '/imports/lib/publish-to-collection'
+import createCampaignSearchQuery from '/imports/api/campaigns/queries'
+import { CampaignSearchSchema } from '/imports/api/campaigns/schema'
 
 const campaignCounter = new Counter('campaignCount', Campaigns.find({}))
 
@@ -19,6 +18,23 @@ Meteor.publish('campaignCount', function () {
 // TODO: replace with campaign-search for filter dropdown.
 Meteor.publish('campaign-refs', function () {
   return Campaigns.find({}, {
+    fields: {
+      _id: 1,
+      slug: 1,
+      name: 1,
+      avatar: 1,
+      client: 1,
+      contacts: 1
+    }
+  })
+})
+
+Meteor.publish('campaign-refs-by-slug', function ({campaignSlugs}) {
+  return Campaigns.find({
+    slug: {
+      $in: campaignSlugs
+    }
+  }, {
     fields: {
       _id: 1,
       slug: 1,
@@ -158,4 +174,34 @@ Meteor.publish('campaign-contact-statuses', function (campaignSlug) {
   }], {
     clientCollection: 'campaign-contact-statuses-client'
   })
+})
+
+Meteor.publish('campaign-search-results', function ({sort, limit, ...campaignSearch}) {
+  if (!this.userId) {
+    return this.ready()
+  }
+  CampaignSearchSchema.validate(campaignSearch)
+
+  const query = createCampaignSearchQuery(campaignSearch)
+
+  const cursor = Campaigns.find(query, {sort, limit})
+
+  publishToCollection(this, 'campaign-search-results', cursor)
+})
+
+Meteor.publish('campaign-search-count-not-reactive', function (campaignSearch) {
+  if (!this.userId) {
+    return this.ready()
+  }
+  CampaignSearchSchema.validate(campaignSearch)
+
+  const query = createCampaignSearchQuery(campaignSearch)
+
+  const count = Campaigns.find(query).count()
+
+  const sub = this
+  // Always use the same _id, so it's replaced on the client.
+  sub.added('campaign-search-count', 'campaign-search-count-id', {count: count})
+
+  sub.ready()
 })

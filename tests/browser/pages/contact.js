@@ -21,6 +21,7 @@ module.exports = {
     info: {
       selector: '[data-id=contact-info]',
       elements: {
+        name: '[data-id=contact-name]',
         editContactInfoButton: '[data-id=edit-contact-info-button]',
         editContactCampaignsButton: '[data-id=edit-contact-campaigns-button]',
         editContactMasterListsButton: '[data-id=edit-contact-contact-lists-button]',

@@ -94,3 +94,60 @@ export const CampaignSchema = new SimpleSchema({
 CampaignSchema.extend(IdSchema)
 CampaignSchema.extend(AuditSchema)
 CampaignSchema.extend(CreatedAtSchema)
+
+export const CampaignSearchSchema = new SimpleSchema({
+  excludeSlugs: {
+    type: Array,
+    optional: true
+  },
+  'excludeSlugs.$': {
+    type: String
+  },
+  term: {
+    type: String,
+    optional: true
+  },
+  tagSlugs: {
+    type: Array,
+    optional: true
+  },
+  'tagSlugs.$': {
+    type: String
+  },
+  masterListSlug: {
+    type: String,
+    optional: true
+  },
+  userId: {
+    type: String,
+    regEx: SimpleSchema.RegEx.Id,
+    optional: true
+  },
+  contactSlug: {
+    type: String,
+    optional: true
+  },
+  minSearchLength: {
+    type: Number,
+    optional: true
+  }
+})
+
+export const CampaignSlugsOrSearchSchema = new SimpleSchema({
+  campaignSlugs: {
+    type: Array,
+    optional: true
+  },
+  'campaignSlugs.$': {
+    type: String
+  },
+  campaignSearch: {
+    type: CampaignSearchSchema,
+    optional: true,
+    custom () {
+      if (!this.isSet && !this.field('campaignSlugs').isSet) {
+        return SimpleSchema.ErrorTypes.REQUIRED
+      }
+    }
+  }
+})

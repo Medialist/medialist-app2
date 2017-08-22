@@ -1,5 +1,5 @@
-
 import React from 'react'
+import PropTypes from 'prop-types'
 
 /**
  * Styled tooltip that shows on hover
@@ -82,7 +82,7 @@ const Tooltip = ({ title, children, position = 'top', arrowPosition = '50%', ...
 
 Tooltip.propTypes = {
   /** Text to display in tooltip */
-  title: React.PropTypes.string
+  title: PropTypes.node
 }
 
 export default Tooltip

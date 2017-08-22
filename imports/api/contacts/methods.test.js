@@ -3,6 +3,7 @@ import { resetDatabase } from 'meteor/xolvio:cleaner'
 import assert from 'assert'
 import faker from 'faker'
 import moment from 'moment'
+import babyparse from 'babyparse'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
@@ -18,7 +19,8 @@ import {
   batchFavouriteContacts,
   batchRemoveContacts,
   createContact,
-  batchUpdateStatus
+  batchUpdateStatus,
+  exportContactsToCsv
 } from './methods'
 import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists } from '/tests/fixtures/server-domain'
 import toUserRef from '/imports/lib/to-user-ref'
@@ -43,9 +45,9 @@ describe('addContactsToCampaign', function () {
 
   it('should validate the parameters', function () {
     assert.throws(() => addContactsToCampaign.validate({contactSlugs: ['a']}), /Campaign slug is required/)
-    assert.throws(() => addContactsToCampaign.validate({campaignSlug: 'a'}), /Contact slugs is required/)
     assert.throws(() => addContactsToCampaign.validate({contactSlugs: [1], campaignSlug: 1}), /must be of type String/)
     assert.doesNotThrow(() => addContactsToCampaign.validate({contactSlugs: ['a'], campaignSlug: 'a'}))
+    assert.doesNotThrow(() => addContactsToCampaign.validate({contactSearch: { term: 'fred' }, campaignSlug: 'a'}))
   })
 
   it('should add all contacts to the campaign', function () {
@@ -161,6 +163,44 @@ describe('addContactsToCampaign', function () {
   })
 })
 
+if('should add contacts from a search', function () {
+  // Set all names to Alponse
+  Contacts.update({}, {
+    $set: {
+      outlets: [],
+      name: 'Alphonse'
+    }
+  })
+  // set contact 2's name to Ziggy
+  Contacts.update({
+    _id: contacts[1]._id
+  }, {
+    $set: {
+      name: 'Ziggy'
+    }
+  })
+
+  const campaignSlug = campaigns[1].slug
+
+  const contactSearch = { term: 'Alp' }
+
+  addContactsToCampaign.run.call({
+    userId: users[0]._id
+  }, {
+    contactSearch,
+    campaignSlug
+  })
+
+  const campaign = Campaigns.findOne({
+    slug: campaignSlug
+  })
+
+  assert.equal(Object.keys(campaign.contacts).length, 2)
+  campaign.contacts.forEach((c) => {
+    assert.equal(c.name, 'Alphonse')
+  })
+})
+
 describe('removeContactsFromCampaigns', function () {
   beforeEach(function () {
     resetDatabase()
@@ -171,7 +211,7 @@ describe('removeContactsFromCampaigns', function () {
   })
 
   it('should validate the parameters', function () {
-    assert.throws(() => removeContactsFromCampaigns.validate({}), /Contact slugs is required/)
+    assert.throws(() => removeContactsFromCampaigns.validate({}), /Campaign slugs is required/)
     assert.throws(() => removeContactsFromCampaigns.validate({ contactSlugs: 'foo' }), /must be of type Array/)
     assert.throws(() => removeContactsFromCampaigns.validate({ contactSlugs: ['foo'], campaignSlugs: 'cam' }), /must be of type Array/)
     assert.doesNotThrow(() => removeContactsFromCampaigns.validate({ contactSlugs: ['foo'], campaignSlugs: ['cam'] }))
@@ -215,7 +255,7 @@ describe('batchFavouriteContacts', function () {
   })
 
   it('should validate the parameters', function () {
-    assert.throws(() => batchFavouriteContacts.validate({}), /Contact slugs is required/)
+    assert.throws(() => batchFavouriteContacts.validate({}), /Contact search is required/)
     assert.throws(() => batchFavouriteContacts.validate({contactSlugs: [1]}), /must be of type String/)
     assert.doesNotThrow(() => batchFavouriteContacts.validate({contactSlugs: ['a']}))
   })
@@ -265,9 +305,9 @@ describe('batchRemoveContacts', function () {
   })
 
   it('should validate the parameters', function () {
-    assert.throws(() => batchRemoveContacts.validate({}), /Ids is required/)
-    assert.throws(() => batchRemoveContacts.validate({ _ids: 'foo' }), /must be of type Array/)
-    assert.doesNotThrow(() => batchRemoveContacts.validate({ _ids: ['kKz46qgWmbGHrznJC'] }))
+    assert.throws(() => batchRemoveContacts.validate({}), /Contact search is required/)
+    assert.throws(() => batchRemoveContacts.validate({ contactSlugs: 'foo' }), /must be of type Array/)
+    assert.doesNotThrow(() => batchRemoveContacts.validate({ contactSlugs: ['kKz46qgWmbGHrznJC'] }))
   })
 
   it('should remove the contact from Contacts and all other places', function () {
@@ -360,9 +400,9 @@ describe('batchRemoveContacts', function () {
     batchRemoveContacts.run.call({
       userId: users[0]._id
     }, {
-      _ids: [
-        contacts[0]._id,
-        contacts[2]._id
+      contactSlugs: [
+        contacts[0].slug,
+        contacts[2].slug
       ]
     })
 
@@ -552,5 +592,73 @@ describe('batchUpdateStatus', function () {
     assert.equal(updatedCampaign.contacts.find(c => c.slug === contacts[0].slug).status, StatusMap.completed)
     assert.equal(updatedCampaign.contacts.find(c => c.slug === contacts[1].slug).status, StatusMap.completed)
     assert.equal(updatedCampaign.contacts.find(c => c.slug === contacts[2].slug).status, StatusMap.toContact)
+  })
+})
+
+describe('Export Contacts to CSV method', function () {
+  beforeEach(function () {
+    resetDatabase()
+  })
+
+  it('should require the user to be logged in', function () {
+    assert.throws(() => exportContactsToCsv.run.call({}, {}), /You must be logged in/)
+  })
+
+  it('should validate the parameters', function () {
+    assert.throws(() => exportContactsToCsv.validate({}), /Contact search is required/)
+    assert.throws(() => exportContactsToCsv.validate({ contactSlugs: 9 }), /must be of type Array/)
+    assert.doesNotThrow(() => exportContactsToCsv.validate({ contactSlugs: ['ohmy'] }))
+  })
+
+  it('should return a valid csv', function () {
+    const users = createTestUsers(1)
+    const campaigns = createTestCampaigns(1)
+    const contactSlugs = createTestContacts(3).map(c => c.slug)
+
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      campaignSlug: campaigns[0].slug,
+      contactSlugs: contactSlugs
+    })
+
+    batchUpdateStatus.run.call({
+      userId: users[0]._id
+    }, {
+      campaignSlug: campaigns[0].slug,
+      contactSlugs: [contactSlugs[0], contactSlugs[2]],
+      status: StatusMap.completed
+    })
+
+    const res = exportContactsToCsv.run.call({
+      userId: users[0]._id
+    }, {
+      contactSlugs: contactSlugs
+    })
+
+    assert.equal(res.filename, `medialist.csv`)
+
+    const csvObj = babyparse.parse(res.data, {header: false})
+    assert.equal(csvObj.data.length, 4)
+
+    const expectedHeader = ['Name', 'Title', 'Media Outlet', 'Email', 'Phone', 'Updated At', 'Updated By']
+    assert.deepEqual(csvObj.data[0], expectedHeader)
+
+    const contacts = Contacts.find({
+      slug: { $in: contactSlugs }
+    }, {
+      sort: { updatedAt: -1 }
+    }).fetch()
+
+    const contactRows = csvObj.data.slice(1)
+    contactRows.forEach((row, i) => {
+      assert.equal(row[0], contacts[i].name)
+      assert.equal(row[1], contacts[i].outlets[0].value)
+      assert.equal(row[2], contacts[i].outlets[0].label)
+      assert.equal(row[3], contacts[i].emails[0].value)
+      assert.equal(row[4], contacts[i].phones[0].value)
+      assert.equal(row[5], contacts[i].updatedAt.toISOString())
+      assert.equal(row[6], users[0].profile.name)
+    })
   })
 })

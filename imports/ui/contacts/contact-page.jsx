@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
+import { Session } from 'meteor/session'
 import { createFeedbackPost, createCoveragePost, createNeedToKnowPost } from '/imports/api/posts/methods'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
@@ -111,7 +112,8 @@ const ContactPage = withSnackbar(React.createClass({
 }))
 
 export default createContainer((props) => {
-  const { contactSlug, campaignSlug } = props.params
+  const { contactSlug } = props.params
+  const campaignSlug = Session.get('lastCampaignVisitedSlug')
   const subs = [
     Meteor.subscribe('contact-page', contactSlug),
     Meteor.subscribe('need-to-knows', {

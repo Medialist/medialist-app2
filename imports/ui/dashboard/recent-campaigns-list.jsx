@@ -11,7 +11,7 @@ const RecentCampaignsList = React.createClass({
   render () {
     const { campaigns } = this.props
     return (
-      <section className='block'>
+      <section className='block' data-id='recent-campaigns-list'>
         <header className='clearfix p4 border-gray80 border-bottom'>
           <Link to='/campaigns' className='f-sm semibold blue right' >See All <ChevronRight className='ml1' /></Link>
           <h1 className='m0 f-md semibold gray20 left'>
@@ -22,7 +22,12 @@ const RecentCampaignsList = React.createClass({
         <nav className='p3'>
           {campaigns.length
             ? campaigns.map((campaign) => (
-              <Link key={campaign.slug} to={`/campaign/${campaign.slug}`} className='block py1 mb2' title={campaign.name}>
+              <Link
+                key={campaign.slug}
+                data-id={`campaign-link-${campaign.slug}`}
+                to={`/campaign/${campaign.slug}`}
+                className='block py1 mb2'
+                title={campaign.name}>
                 <CampaignPreview {...campaign} />
               </Link>
             ))

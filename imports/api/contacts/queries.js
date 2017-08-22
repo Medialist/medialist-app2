@@ -1,32 +1,27 @@
 import { Meteor } from 'meteor/meteor'
-import { check, Match } from 'meteor/check'
+import { check } from 'meteor/check'
 import escapeRegExp from 'lodash.escaperegexp'
 import Contacts from '/imports/api/contacts/contacts'
+import { ContactSearchSchema } from '/imports/api/contacts/schema'
+import { checkAllSlugsExist } from '/imports/lib/slug'
 
-/**
- * Find contacts that match a search term and other criteria.
- * Returns a Cursor.
- */
-export const searchContacts = ({
-  term,
-  tagSlugs,
-  masterListSlug,
-  userId,
-  campaignSlugs,
-  importId,
-  sort,
-  limit = 20,
-  minSearchLength = 3
-}) => {
-  check(term, Match.Maybe(String))
-  check(tagSlugs, Match.Maybe(Array))
-  check(masterListSlug, Match.Maybe(String))
-  check(userId, Match.Maybe(String))
-  check(campaignSlugs, Match.Maybe(Array))
-  check(sort, Object)
-  check(limit, Number)
+export const createContactSearchQuery = (contactSearch) => {
+  const {
+    excludeSlugs,
+    term,
+    tagSlugs,
+    masterListSlug,
+    userId,
+    campaignSlugs,
+    importId,
+    minSearchLength = 0
+  } = contactSearch
 
   const query = {}
+
+  if (excludeSlugs && excludeSlugs.length) {
+    query.slug = { $nin: excludeSlugs }
+  }
 
   if (campaignSlugs && campaignSlugs.length) {
     query.campaigns = {
@@ -56,8 +51,7 @@ export const searchContacts = ({
   }
 
   if (term && term.length >= minSearchLength) {
-    const termRegExp = new RegExp(escapeRegExp(term), 'gi')
-
+    const termRegExp = new RegExp(escapeRegExp(term), 'i')
     query.$or = [{
       name: termRegExp
     }, {
@@ -70,5 +64,36 @@ export const searchContacts = ({
       'masterLists.name': termRegExp
     }]
   }
+
+  return query
+}
+
+/**
+ * Find contacts that match a search term and other criteria.
+ * Returns a Cursor.
+ */
+export const searchContacts = ({
+  sort,
+  limit = 20,
+  ...contactSearch
+}) => {
+  check(sort, Object)
+  check(limit, Number)
+  ContactSearchSchema.validate(contactSearch)
+
+  const query = createContactSearchQuery(contactSearch)
   return Contacts.find(query, {sort, limit})
+}
+
+/**
+ * Helper method to validate an array of slugs or find slugs from a search
+ */
+export const findOrValidateContactSlugs = ({contactSearch, contactSlugs}) => {
+  if (contactSlugs) {
+    checkAllSlugsExist(contactSlugs, Contacts)
+    return contactSlugs
+  } else {
+    const query = createContactSearchQuery(contactSearch)
+    return Contacts.find(query, {fields: {slug: 1}}).map((doc) => doc.slug)
+  }
 }

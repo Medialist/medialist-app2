@@ -7,7 +7,7 @@ import StatusStats from '/imports/ui/contacts/status-stats'
 import { CircleAvatar } from '/imports/ui/images/avatar'
 import EditableAvatar from '/imports/ui/images/editable-avatar'
 import Contacts from '/imports/api/contacts/contacts'
-import AddContactsToCampaigns from '/imports/ui/contacts/add-contacts-to-campaign'
+import AddContactToCampaign from '/imports/ui/contacts/add-to-campaign/add-one-modal'
 import { updateContact } from '/imports/api/contacts/methods'
 import ContactCampaignsActionsToast from '/imports/ui/contacts/contact-campaigns-actions-toast'
 import AddTagsModal from '/imports/ui/tags/add-tags-modal'
@@ -22,7 +22,7 @@ import TagLink from '/imports/ui/campaigns/tag-link'
 import RemoveContactModal from '/imports/ui/campaigns/remove-contact'
 import NearBottomContainer from '/imports/ui/navigation/near-bottom-container'
 import SubscriptionLimitContainer from '/imports/ui/navigation/subscription-limit-container'
-import Loading from '/imports/ui/lists/loading'
+import { LoadingBar } from '/imports/ui/lists/loading'
 import querystring from 'querystring'
 import { StatusIndex } from '/imports/api/contacts/status'
 import escapeRegExp from 'lodash.escaperegexp'
@@ -217,8 +217,8 @@ class ContactCampaignsPage extends React.Component {
       selections
     } = this.state
 
-    if (!contact) {
-      return null
+    if (!contact || loading) {
+      return <LoadingBar />
     }
 
     return (
@@ -265,7 +265,7 @@ class ContactCampaignsPage extends React.Component {
             onSelectionsChange={onSelectionsChange}
             searching={Boolean(term)} />
         </div>
-        { loading && <div className='center p4'><Loading /></div> }
+        { loading && <LoadingBar /> }
         <ContactCampaignsActionsToast
           campaigns={this.state.selections}
           onViewClick={this.onViewSelection}
@@ -274,11 +274,11 @@ class ContactCampaignsPage extends React.Component {
           onTagClick={() => this.showModal('addTagsToCampaignsModal')}
           onDeleteClick={() => this.showModal('removeContactFromCampaignsModal')}
           onDeselectAllClick={this.clearSelection} />
-        <AddContactsToCampaigns
+        <AddContactToCampaign
           title={`Add ${contact.name.split(' ')[0]} to a Campaign`}
           onDismiss={this.hideModals}
           open={this.state.addToCampaignModal}
-          contacts={[contact]}
+          contact={contact}
         />
         <AddTagsModal
           type='Campaigns'
@@ -314,7 +314,7 @@ class ContactCampaignsPage extends React.Component {
 // and set up the subscriptions and collecton queries from those options.
 const ContactCampaignsPageContainer = (props, context) => {
   if (props.loading) {
-    return <Loading />
+    return <LoadingBar />
   }
 
   // API is like setState...
@@ -406,7 +406,10 @@ export default createContainer(({location, params: { contactSlug }}) => {
   const subs = [
     Meteor.subscribe('contact-page', contactSlug),
     Meteor.subscribe('contact-campaigns', contactSlug),
-    Meteor.subscribe('contact-campaign-statuses', contactSlug)
+    Meteor.subscribe('contact-campaign-statuses', contactSlug),
+    Meteor.subscribe('campaigns', {
+      'contacts.slug': contactSlug
+    })
   ]
   const loading = subs.some((s) => !s.ready())
 

@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor'
 import { ReactMeteorData } from 'meteor/react-meteor-data'
 import Tags from '/imports/api/tags/tags'
 import Campaigns from '/imports/api/campaigns/campaigns'
-import { searchCampaigns } from '/imports/api/campaigns/queries'
+import { CampaignSearchResults, CampaignSearchCount } from './collections'
 import { StatusIndex } from '/imports/api/contacts/status'
 
 // dir is -1 or 1. Returns a sort functon.
@@ -39,7 +39,8 @@ export default (Component, opts = {}) => {
       term: PropTypes.string.isRequired,
       // http://docs.meteor.com/api/collections.html#sortspecifiers
       sort: PropTypes.oneOfType([ PropTypes.object, PropTypes.array ]),
-      selectedMasterListSlug: PropTypes.string,
+      masterListSlug: PropTypes.string,
+      tagSlugs: PropTypes.array,
       userId: PropTypes.string,
       contactSlug: PropTypes.string
     },
@@ -51,26 +52,46 @@ export default (Component, opts = {}) => {
     mixins: [ReactMeteorData],
 
     getMeteorData () {
-      const { term, tagSlugs, selectedMasterListSlug, userId, contactSlug, sort, limit } = this.props
-      const opts = {
+      const { term, tagSlugs, masterListSlug, userId, contactSlug, sort, limit } = this.props
+      const queryOpts = {
         tagSlugs,
-        masterListSlug: selectedMasterListSlug,
+        masterListSlug,
         userId,
-        contactSlug,
-        sort,
-        limit
+        contactSlug
       }
 
       const searching = !!(term && term.length >= minSearchLength)
 
       if (searching) {
-        opts.term = term
+        queryOpts.term = term
+      }
+
+      const searchOpts = {
+        sort,
+        limit,
+        ...queryOpts
       }
 
       const subs = [
-        Meteor.subscribe('campaignCount'),
-        Meteor.subscribe('searchCampaigns', opts)
+        Meteor.subscribe('campaign-search-results', searchOpts)
       ]
+
+      const campaigns = CampaignSearchResults.find({}, {sort, limit}).fetch()
+
+      if (sort.status && contactSlug) {
+        const byStatus = campaignStatusSort(contactSlug, sort.status)
+        campaigns.sort(byStatus)
+      }
+
+      const allCampaignsCount = Campaigns.allCampaignsCount()
+
+      let campaignsCount = allCampaignsCount
+
+      if (searching) {
+        subs.push(Meteor.subscribe('campaign-search-count-not-reactive', queryOpts))
+        const res = CampaignSearchCount.findOne()
+        campaignsCount = res ? res.count : allCampaignsCount
+      }
 
       if (userId && userId !== Meteor.userId()) {
         subs.push(Meteor.subscribe('users-by-id', {userIds: [userId]}))
@@ -83,17 +104,8 @@ export default (Component, opts = {}) => {
         selectedTags = Tags.find({slug: { $in: tagSlugs }}).fetch()
       }
 
-      const campaigns = searchCampaigns(opts).fetch()
-
-      if (sort.status && contactSlug) {
-        const byStatus = campaignStatusSort(contactSlug, sort.status)
-        campaigns.sort(byStatus)
-      }
-
-      const campaignCount = Campaigns.allCampaignsCount()
       const loading = !subs.every((sub) => sub.ready())
-
-      return { campaigns, campaignCount, selectedTags, loading, searching }
+      return { campaigns, allCampaignsCount, campaignsCount, selectedTags, loading, searching }
     },
 
     render () {

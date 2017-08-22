@@ -18,6 +18,7 @@ import { CreateContactModal } from '/imports/ui/contacts/edit-contact'
 import AddContact from '/imports/ui/campaigns/add-contact'
 import EditTeam from '/imports/ui/campaigns/edit-team'
 import { CampaignContacts } from '/imports/ui/campaigns/collections'
+import Loading from '/imports/ui/lists/loading'
 
 const CampaignActivityPage = React.createClass({
   propTypes: {
@@ -118,8 +119,8 @@ const CampaignActivityPage = React.createClass({
       contactPrefillData
     } = this.state
 
-    if (!campaign) {
-      return null
+    if (loading) {
+      return <div className='center p4'><Loading /></div>
     }
 
     return (
@@ -199,7 +200,7 @@ export default createContainer((props) => {
     contacts: cursor.fetch(),
     contactsCount: cursor.count(),
     contactsAllCount: Contacts.allContactsCount(),
-    teamMates: campaign && campaign.team,
+    teamMates: (campaign && campaign.team) || [],
     user: Meteor.user(),
     clients: Clients.find({}).fetch(),
     masterlists: MasterLists.find({type: 'Campaigns'}).fetch()

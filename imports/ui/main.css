@@ -681,7 +681,7 @@ button {
     transform: translateX(30px) scaleX(0.14);
   }
   25%, 75% {
-    transform: scaleX(1);
+    transform: translateX(0px) scaleX(1);
   }
   50% {
     transform: translateX(-30px) scaleX(0.14);
@@ -699,6 +699,12 @@ button {
   width: 70px;
   height: 100%;
   animation: lolo 1.5s cubic-bezier(0.25,0.1,0.25,1) infinite;
+}
+.lolo-gray80::after {
+  background: var(--gray80);
+}
+.lolo-white::after {
+  background: var(--white);
 }
 
 .snackbar-appear {
