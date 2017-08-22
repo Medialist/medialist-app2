@@ -431,13 +431,18 @@ class ContactsPage extends React.Component {
 
 const MasterListsSelectorContainer = createContainer((props) => {
   const { selectedMasterListSlug, userId } = props
+
   const user = Meteor.user()
+
   const lists = MasterLists
     .find({
       type: 'Contacts'
+    }, {
+      sort: { name: 1 }
     }).map(({slug, name, items}) => ({
       slug, name, count: items.length
     }))
+
   const items = [{
     slug: 'all',
     name: 'All',
@@ -447,15 +452,7 @@ const MasterListsSelectorContainer = createContainer((props) => {
     name: 'My Contacts',
     count: user.myContacts.length
   }]
-    .concat(
-      user.recentContactLists
-        .map(slug => lists.find(list => list.slug === slug))
-        .filter(list => !!list)
-    )
-    .concat(
-      lists.filter(list => !user.recentContactLists
-        .find(slug => list.slug === slug))
-    )
+    .concat(lists)
 
   const selectedSlug = userId ? 'my' : selectedMasterListSlug
 
