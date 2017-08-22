@@ -261,9 +261,9 @@ class ContactsPage extends React.Component {
     this.clearSelection()
   }
 
-  onContactCreated = (contact) => {
+  onContactCreated = (contactSlug) => {
     this.hideModals()
-    this.props.router.push(`/contact/${contact.slug}`)
+    this.props.router.push(`/contact/${contactSlug}`)
   }
 
   getSearchOrSlugs = () => {

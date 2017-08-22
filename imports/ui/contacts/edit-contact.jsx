@@ -425,7 +425,7 @@ const EditContact = withSnackbar(React.createClass({
 
         <div className='flex p4 bg-white border-top border-gray80'>
           <div className='flex-auto flex order-last' style={{justifyContent: 'flex-end'}}>
-            <Button className='btn bg-completed white order-last' data-id='edit-contact-form-submit-button' disabled={false}>Save Changes</Button>
+            <Button className='btn bg-completed white order-last' data-id='edit-contact-form-submit-button' disabled={false}>Save</Button>
             <button className='btn bg-transparent gray40 mr2' onClick={this.props.onCancel} data-id='edit-contact-form-cancel-button'>Cancel</button>
           </div>
           {this.props.onDelete && <Dropdown className='flex-auto'>
