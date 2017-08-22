@@ -8,12 +8,13 @@ class AddOrCreateContact extends React.Component {
     open: PropTypes.bool.isRequired,
     onDismiss: PropTypes.func.isRequired,
     campaign: PropTypes.object.isRequired,
-    campaignContacts: PropTypes.array.isRequired
+    campaignContacts: PropTypes.array.isRequired,
+    allContactsCount: PropTypes.number.isRequired
   }
 
   state = {
     term: '',
-    activeModal: 'add'
+    activeModal: this.props.allContactsCount > 0 ? 'add' : 'create'
   }
 
   onTermChange = (term) => {

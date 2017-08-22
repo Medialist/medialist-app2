@@ -39,15 +39,7 @@ const CampaignActivityPage = React.createClass({
   },
 
   onAddContactClick () {
-    const { contactsAllCount } = this.props
-
-    if (contactsAllCount) {
-      const addContactModalOpen = !this.state.addContactModalOpen
-      this.setState({ addContactModalOpen })
-    } else {
-      const createContactModalOpen = !this.state.createContactModalOpen
-      this.setState({ createContactModalOpen })
-    }
+    this.setState({ addContactModalOpen: true })
   },
 
   onAddContactModalDismiss () {
@@ -89,7 +81,17 @@ const CampaignActivityPage = React.createClass({
       onFeedback,
       onCoverage
     } = this
-    const { campaign, contacts, contactsCount, teamMates, loading, user } = this.props
+
+    const {
+      campaign,
+      contacts,
+      contactsCount,
+      teamMates,
+      loading,
+      user,
+      contactsAllCount
+    } = this.props
+
     const {
       addContactModalOpen,
       editModalOpen,
@@ -137,7 +139,8 @@ const CampaignActivityPage = React.createClass({
           open={addContactModalOpen}
           onDismiss={onAddContactModalDismiss}
           campaign={campaign}
-          campaignContacts={contacts} />
+          campaignContacts={contacts}
+          allContactsCount={contactsAllCount} />
       </div>
     )
   }
