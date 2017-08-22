@@ -6,6 +6,7 @@ import Loading from './loading'
 
 const SearchBox = React.createClass({
   propTypes: {
+    inputRef: PropTypes.func,
     placeholder: PropTypes.string,
     initialTerm: PropTypes.string,
     onTermChange: PropTypes.func.isRequired,
@@ -33,14 +34,6 @@ const SearchBox = React.createClass({
     this.onTermChange = debounce(this.props.onTermChange, 200, {maxWait: 600})
   },
 
-  focus () {
-    this.textInput.focus()
-  },
-
-  clear () {
-    this.setState({term: ''})
-  },
-
   render () {
     const { placeholder, children, onKeyDown, style } = this.props
     const { term, isFocused } = this.state
@@ -56,7 +49,7 @@ const SearchBox = React.createClass({
             {children}
           </div>
           <input
-            ref={(input) => { this.textInput = input }}
+            ref={this.props.inputRef}
             type='search'
             style={{outline: 'none', height: 30, lineHeight: 30, backgroundColor: 'transparent'}}
             className='flex-auto f-lg normal gray20 placeholder-gray60'
