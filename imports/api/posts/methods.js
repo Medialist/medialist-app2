@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import SimpleSchema from 'simpl-schema'
-import { StatusValues } from '/imports/api/contacts/status'
+import StatusMap, { StatusValues } from '/imports/api/contacts/status'
 import { checkAllSlugsExist } from '/imports/lib/slug'
 import findUrl from '/imports/lib/find-url'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
@@ -12,6 +12,7 @@ import { CampaignRefSchema } from '/imports/api/campaigns/schema'
 import { ContactRefSchema } from '/imports/api/contacts/schema'
 import { IdSchema } from '/imports/lib/schema'
 import values from 'lodash.values'
+import moment from 'moment'
 
 let createEmbed = {
   run: () => {}
@@ -159,28 +160,50 @@ UpdatePostSchema.extend(IdSchema)
 
 export const updatePost = new ValidatedMethod({
   name: 'updatePost',
-  validate: UpdatePostSchema.validator(),
-  run ({ _id, message, status, contact, campaign }) {
+
+  validate: new SimpleSchema({
+    message: {
+      type: String,
+      optional: true
+    },
+    status: {
+      type: String,
+      allowedValues: values(Contacts.status),
+      optional: true
+    },
+    contactSlug: {
+      type: String,
+      optional: true
+    },
+    campaignSlug: {
+      type: String,
+      optional: true
+    }
+  }).extend(IdSchema).validator(),
+
+  run ({ _id, message, status, contactSlug, campaignSlug }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
 
-    const post = Posts.findOne({ _id })
+    const oldPost = Posts.findOne({ _id })
 
-    if (!post) {
-      throw new Meteor.Error('Can\'t find post')
+    if (!oldPost) {
+      throw new Meteor.Error('Can\'t find Post')
     }
 
-    if (this.userId !== post.createdBy._id) {
-      throw new Meteor.Error('You can only edit posts you created')
+    if (this.userId !== oldPost.createdBy._id) {
+      throw new Meteor.Error('You can only edit Posts you created')
     }
 
+    const contact = Contacts.findOneRef(contactSlug)
+    const campaign = Campaigns.findOneRef(campaignSlug)
     const userRef = findOneUserRef(this.userId)
     const updatedAt = new Date()
 
     const $set = {
-      updatedBy: userRef,
-      updatedAt
+      updatedAt,
+      updatedBy: userRef
     }
 
     if (message) {
@@ -199,80 +222,82 @@ export const updatePost = new ValidatedMethod({
     if (contact) $set.contacts = [contact]
     if (campaign) $set.campaigns = [campaign]
 
+    if (!Object.keys($set)) return
+
     Posts.update({
       _id
     }, {
       $set: $set
     })
 
-    if (post.type === 'NeedToKnowPost') {
-      post.contacts.forEach((contact) => {
-        Contacts.update({
-          _id: contact._id
-        }, {
-          $set: {
-            updatedBy: userRef,
-            updatedAt
-          }
-        })
+    if (status || contact || campaign) {
+      const newPost = Posts.findOne({ _id })
+
+      const moreRecentPost = Posts.findOne({
+        _id: {$nin: [newPost._id]},
+        type: {$in: ['FeedbackPost', 'CoveragePost']},
+        'contacts.slug': newPost.contacts[0].slug,
+        'campaigns.slug': newPost.campaigns[0].slug,
+        'createdAt': {$gt: newPost.createdAt}
+      }, {
+        sort: {createdAt: -1},
+        limit: 1
       })
-    }
 
-    if (status !== post.status) {
-      const slug = post.contacts[0].slug
-
-      post.campaigns.forEach((campaign) => {
+      if (!moreRecentPost) {
         Campaigns.update({
-          _id: campaign._id,
-          'contacts.slug': slug
+          _id: newPost.campaigns[0]._id,
+          'contacts.slug': newPost.contacts[0].slug
         }, {
           $set: {
             'contacts.$': {
-              slug,
-              status,
-              updatedAt,
-              updatedBy: userRef
+              slug: newPost.contacts[0].slug,
+              status: newPost.status,
+              updatedAt: newPost.updatedAt,
+              updatedBy: newPost.updatedBy
             }
           }
         })
-      })
-    }
+      }
 
-    if (contact) {
-      post.contacts.forEach((postContact) => {
-        if (postContact._id !== contact._id) {
-          Contacts.update({
-            _id: {$in: [contact._id, postContact._id]}
-          }, {
-            $set: {
-              updatedBy: userRef,
-              updatedAt
-            }
-          })
-        }
-      })
-    }
-
-    if (campaign) {
-      post.campaigns.forEach((postCampaign) => {
-        if (postCampaign._id !== campaign._id) {
-          const slug = post.contacts[0].slug
-
-          Campaigns.update({
-            _id: campaign._id,
-            'contacts.slug': slug
-          }, {
-            $set: {
-              'contacts.$': {
-                slug,
-                status,
-                updatedAt,
-                updatedBy: userRef
-              }
-            }
-          })
-        }
-      })
+      // const mostRecentPreviousPost = Posts.findOne({
+      //   _id: {$nin: [oldPost._id]},
+      //   type: {$in: ['FeedbackPost', 'CoveragePost']},
+      //   'contacts.slug': oldPost.contacts[0].slug,
+      //   'campaigns.slug': oldPost.campaigns[0].slug
+      // }, {
+      //   sort: {createdAt: -1}
+      // })
+      //
+      // if (!mostRecentPreviousPost) {
+      //   Campaigns.update({
+      //     _id: oldPost.campaigns[0]._id,
+      //     'contacts.slug': oldPost.contacts[0].slug
+      //   }, {
+      //     $set: {
+      //       'contacts.$': {
+      //         slug: oldPost.contacts[0].slug,
+      //         status: StatusMap.toContact,
+      //         updatedAt: oldPost.updatedAt,
+      //         updatedBy: oldPost.updatedBy
+      //       }
+      //     }
+      //   })
+      // } else if (moment(mostRecentPreviousPost.createdAt).isBefore(oldPost.createdAt)) {
+      //   Campaigns.update({
+      //     _id: oldPost.campaigns[0]._id,
+      //     'contacts.slug': oldPost.contacts[0].slug
+      //   }, {
+      //     $set: {
+      //       'contacts.$': {
+      //         slug: oldPost.contacts[0].slug,
+      //         status: mostRecentPreviousPost.status,
+      //         updatedAt: oldPost.updatedAt,
+      //         updatedBy: oldPost.updatedBy
+      //       }
+      //     }
+      //   })
+      // }
     }
   }
 })

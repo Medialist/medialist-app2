@@ -158,36 +158,19 @@ class Post extends React.Component {
   }
 
   updatePost = (_id, { message, status, contact, campaign }) => {
-    this.setState({
-      editOpen: false
-    })
-
     const update = { _id }
 
     if (message) update.message = message
     if (status) update.status = status
-    if (contact) {
-      // on the campaigns page contacts are from the campaign-contacts sub so we are picking off the contact id
-      // i.e. 8aa1f276522c974ff0-8298fc091b3b12cb0e00a9 -> campaignId-contactId
-      update.contact = {
-        _id: contact._id.split('-')[1] || contact._id,
-        name: contact.name,
-        slug: contact.slug,
-        outlets: contact.outlets,
-        updatedAt: contact.updatedAt
-      }
-    }
-    if (campaign) {
-      update.campaign = {
-        _id: campaign._id,
-        name: campaign.name,
-        slug: campaign.slug,
-        avatar: campaign.avatar,
-        clientName: campaign.clientName,
-        updatedAt: campaign.updatedAt
-      }
-    }
-    updatePost.call(update)
+    if (contact) update.contactSlug = contact.slug
+    if (campaign) update.campaignSlug = campaign.slug
+
+    updatePost.call(update, (err) => {
+      if (err) return console.error(err)
+      this.setState({
+        editOpen: false
+      })
+    })
   }
 
   render () {

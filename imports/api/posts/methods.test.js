@@ -1,14 +1,13 @@
+/* global describe beforeEach it */
 import { Meteor } from 'meteor/meteor'
-import { Random } from 'meteor/random'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
 import assert from 'assert'
 import faker from 'faker'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
-import Embeds from '/imports/api/embeds/embeds'
 import { createFeedbackPost, createCoveragePost, createNeedToKnowPost, updatePost } from '/imports/api/posts/methods'
-import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists, createTestEmbeds } from '/tests/fixtures/server-domain'
+import { createTestUsers, createTestContacts, createTestCampaigns, createTestEmbeds } from '/tests/fixtures/server-domain'
 import { batchUpdateStatus, addContactsToCampaign } from '/imports/api/contacts/methods'
 import toUserRef from '/imports/lib/to-user-ref'
 import StatusMap from '/imports/api/contacts/status'
@@ -307,7 +306,7 @@ describe('updateFeedbackPost', function () {
 
     users = createTestUsers(2)
     contacts = createTestContacts(2)
-    campaigns = createTestCampaigns(1)
+    campaigns = createTestCampaigns(2)
   })
 
   it('should require the user to be logged in', function () {
@@ -330,7 +329,7 @@ describe('updateFeedbackPost', function () {
     }), /You can only edit posts you created/)
   })
 
-  it('should let users update a post and cascade updates to campaign contacts status', function () {
+  it('should let users update a post\'s status and cascade updates to campaign contacts status', function () {
     addContactsToCampaign.run.call({
       userId: users[0]._id
     }, {
@@ -338,11 +337,12 @@ describe('updateFeedbackPost', function () {
       campaignSlug: campaigns[0].slug
     })
 
-    const _id = createCoveragePost.run.call({
+    const _id = createFeedbackPost.run.call({
       userId: users[0]._id
     }, {
       contactSlug: contacts[0].slug,
       campaignSlug: campaigns[0].slug,
+      status: StatusMap.contacted,
       message: faker.lorem.paragraph()
     })
 
@@ -350,21 +350,143 @@ describe('updateFeedbackPost', function () {
       userId: users[0]._id
     }, {
       _id,
-      message: 'test update2',
-      status: StatusMap.contacted
+      status: StatusMap.hotLead
     })
 
     const updatedPost = Posts.findOne({ _id })
     const campaign = Campaigns.findOne({slug: campaigns[0].slug})
-    assert.equal(campaign.contacts.find((c) => c.slug === contacts[0].slug).status, StatusMap.contacted)
-    assert.equal(campaign.contacts.find((c) => c.slug === contacts[0].slug).updatedAt.getTime(), updatedPost.updatedAt.getTime())
-    assert.deepEqual(campaign.contacts.find((c) => c.slug === contacts[0].slug).updatedBy, toUserRef(users[0]))
 
-    // not in post, should remain unchanged
-    assert.equal(campaign.contacts.find((c) => c.slug === contacts[1].slug).status, StatusMap.toContact)
+    assert.equal(campaign.contacts.find((c) => c.slug === contacts[0].slug).status, StatusMap.hotLead)
+    assert.equal(updatedPost.status, StatusMap.hotLead)
+  })
 
-    assert.equal(updatedPost.status, StatusMap.contacted)
-    assert.equal(updatedPost.message, 'test update2')
+  it('should let users update a post\'s contact & status and cascade updates to campaign contacts', function () {
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      contactSlugs: [contacts[0].slug, contacts[1].slug],
+      campaignSlug: campaigns[0].slug
+    })
+
+    const _id = createFeedbackPost.run.call({
+      userId: users[0]._id
+    }, {
+      contactSlug: contacts[0].slug,
+      campaignSlug: campaigns[0].slug,
+      status: StatusMap.contacted,
+      message: faker.lorem.paragraph()
+    })
+
+    updatePost.run.call({
+      userId: users[0]._id
+    }, {
+      _id,
+      message: 'I got the contact and their status wrong',
+      status: StatusMap.hotLead,
+      contactSlug: contacts[1].slug
+    })
+
+    const updatedPost = Posts.findOne({ _id })
+    const campaign = Campaigns.findOne({slug: campaigns[0].slug})
+
+    assert.equal(updatedPost.status, StatusMap.hotLead)
+    assert.equal(updatedPost.message, 'I got the contact and their status wrong')
+
+    assert.equal(campaign.contacts.find((c) => c.slug === contacts[0].slug).status, StatusMap.toContact)
+    assert.equal(campaign.contacts.find((c) => c.slug === contacts[1].slug).status, StatusMap.hotLead)
+
+    assert.deepEqual(campaign.contacts.find((c) => c.slug === contacts[1].slug).updatedBy, toUserRef(users[0]))
+  })
+
+  it('should let users update a post but NOT cascade updates to campaign contacts if there are more recent posts', function () {
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      contactSlugs: [contacts[0].slug, contacts[1].slug],
+      campaignSlug: campaigns[0].slug
+    })
+
+    createFeedbackPost.run.call({
+      userId: users[0]._id
+    }, {
+      contactSlug: contacts[0].slug,
+      campaignSlug: campaigns[0].slug,
+      status: StatusMap.notInterested,
+      message: 'original post'
+    })
+
+    const _id = createFeedbackPost.run.call({
+      userId: users[0]._id
+    }, {
+      contactSlug: contacts[0].slug,
+      campaignSlug: campaigns[0].slug,
+      status: StatusMap.contacted,
+      message: 'next post on contacted'
+    })
+
+    createFeedbackPost.run.call({
+      userId: users[0]._id
+    }, {
+      contactSlug: contacts[1].slug,
+      campaignSlug: campaigns[0].slug,
+      status: StatusMap.contacted,
+      message: 'actually the latest post for contacts[1]'
+    })
+
+    updatePost.run.call({
+      userId: users[0]._id
+    }, {
+      _id,
+      status: StatusMap.hotLead,
+      contactSlug: contacts[1].slug
+    })
+
+    const campaign = Campaigns.findOne({slug: campaigns[0].slug})
+    const updatedPost = Posts.findOne({ _id })
+
+    assert.equal(updatedPost.status, StatusMap.hotLead)
+    assert.equal(updatedPost.contacts[0].slug, contacts[1].slug)
+    // the updated contact's status on the campaign should not be changed
+    assert.equal(campaign.contacts.find((c) => c.slug === contacts[0].slug).status, StatusMap.notInterested)
+    assert.equal(campaign.contacts.find((c) => c.slug === contacts[1].slug).status, StatusMap.contacted)
+  })
+
+  it.only('should let users update a post\'s campaign', function () {
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      contactSlugs: [contacts[0].slug, contacts[1].slug],
+      campaignSlug: campaigns[0].slug
+    })
+
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      contactSlugs: [contacts[0].slug, contacts[1].slug],
+      campaignSlug: campaigns[1].slug
+    })
+
+    const _id = createFeedbackPost.run.call({
+      userId: users[0]._id
+    }, {
+      contactSlug: contacts[0].slug,
+      campaignSlug: campaigns[0].slug,
+      status: StatusMap.toContact,
+      message: 'test'
+    })
+
+    updatePost.run.call({
+      userId: users[0]._id
+    }, {
+      _id,
+      campaign: campaigns[1].slug
+    })
+
+    const campaign = Campaigns.findOne({slug: campaigns[1].slug})
+    const updatedPost = Posts.findOne({ _id })
+
+    assert.equal(updatedPost.campaigns[0].slug, campaigns[1].slug)
+    assert.equal(campaign.contacts.find((c) => c.slug === contacts[0].slug).slug, contacts[0].slug)
   })
 })
 
