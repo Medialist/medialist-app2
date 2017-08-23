@@ -41,7 +41,7 @@ const CampaignsFilterableList = React.createClass({
       borderRight: 'solid 0px',
       borderLeft: 'solid 0px'
     }
-    console.log({contact, campaigns: this.props.campaigns})
+
     return (
       <nav>
         <SearchBox
