@@ -1,7 +1,4 @@
 import React from 'react'
-import { createContainer } from 'meteor/react-meteor-data'
-import { Meteor } from 'meteor/meteor'
-import Tags from '/imports/api/tags/tags'
 import { LoadingBar } from '/imports/ui/lists/loading'
 import Scroll from '/imports/ui/navigation/scroll'
 
@@ -15,7 +12,7 @@ const TagListItem = (props) => (
   </div>
 )
 
-const TagSuggester = ({loading, suggestedTags, searchTerm, onSelectTag, onCreateTag}) => {
+export default ({loading, suggestedTags, searchTerm, onSelectTag, onCreateTag}) => {
   return (
     <Scroll height={'calc(95vh - 380px)'} className='pb2'>
       {loading && <LoadingBar />}
@@ -26,37 +23,11 @@ const TagSuggester = ({loading, suggestedTags, searchTerm, onSelectTag, onCreate
         </TagListItem>
       )}
 
-      {!loading && (searchTerm && suggestedTags.length === 0 ? (
+      {!loading && searchTerm ? (
         <TagListItem onClick={() => onCreateTag(searchTerm)} data-id='create-new-tag'>
           Add tag "{searchTerm}"
         </TagListItem>
-      ) : null)}
+      ) : null}
     </Scroll>
   )
 }
-
-export default createContainer((props) => {
-  const userId = Meteor.userId()
-  const { searchTerm, type, selectedTags } = props
-  const subs = []
-
-  if (searchTerm) {
-    subs.push(Meteor.subscribe('tags', {
-      type: type,
-      searchTerm: searchTerm.substring(0, 2)
-    }))
-  } else {
-    subs.push(Meteor.subscribe('tags', {
-      type: type
-    }))
-  }
-
-  const suggestedTags = Tags
-    .suggest({type, userId, searchTerm})
-    .fetch()
-    .filter((t1) => !(selectedTags || []).some((t2) => t1.slug === t2.slug))
-
-  const loading = subs.some((s) => !s.ready())
-
-  return { suggestedTags, loading, ...props }
-}, TagSuggester)
