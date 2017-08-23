@@ -301,14 +301,19 @@ class CampaignsPage extends React.Component {
 
 const MasterListsSelectorContainer = createContainer((props) => {
   const { selectedMasterListSlug, userId } = props
+
   const user = Meteor.user()
+
   const lists = MasterLists
     .find({
       type: 'Campaigns'
+    }, {
+      sort: { name: 1 }
     })
     .map(({slug, name, items}) => ({
       slug, name, count: items.length
     }))
+
   const items = [{
     slug: 'all',
     name: 'All',
@@ -318,15 +323,7 @@ const MasterListsSelectorContainer = createContainer((props) => {
     name: 'My Campaigns',
     count: user.myCampaigns.length
   }]
-    .concat(
-      user.recentCampaignLists
-        .map(slug => lists.find(list => list.slug === slug))
-        .filter(list => !!list)
-    )
-    .concat(
-      lists.filter(list => !user.recentCampaignLists
-        .find(slug => list.slug === slug))
-    )
+    .concat(lists)
 
   const selectedSlug = userId ? 'my' : selectedMasterListSlug
 
