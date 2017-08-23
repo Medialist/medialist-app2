@@ -4,7 +4,7 @@ import { Link } from 'react-router'
 import Arrow from 'rebass/dist/Arrow'
 import { Dropdown, DropdownMenu } from '/imports/ui/lists/dropdown'
 import { CircleAvatar } from '/imports/ui/images/avatar'
-import { SettingsIcon, ExitIcon, HamburgerIcon } from '/imports/ui/images/icons'
+import { SettingsIcon, ExitIcon, HamburgerIcon, QuestionMark } from '/imports/ui/images/icons'
 import { dropdownMenuStyle } from '/imports/ui/common-styles'
 
 const dropdownStyle = Object.assign({}, dropdownMenuStyle, { width: 223, top: 'calc(100% - 2px)', right: '-5px' })
@@ -53,13 +53,17 @@ class UserInfo extends React.PureComponent {
               <div className='f-xs normal gray20'>{email}</div>
             </div>
           </div>
-          <nav className='block border-top border-gray80 py1' style={{width: 225}}>
-            <Link to='/settings' className='block px3 py2 f-md normal gray20 hover-bg-blue' activeClassName='active' onClick={this.onLinkClick} data-id='settings-link'>
-              <SettingsIcon />
+          <nav className='block border-top border-gray80' style={{width: 225}}>
+            <Link to='/settings' className='block px3 py2 f-md normal gray20 hover-bg-gray90' activeClassName='active' onClick={this.onLinkClick} data-id='settings-link'>
+              <SettingsIcon className='gray60' />
               <span className='ml2'>Settings</span>
             </Link>
-            <Link to='/logout' className='block px3 py2 f-md normal gray20 hover-bg-blue' activeClassName='active' data-id='logout-link'>
-              <ExitIcon />
+            <a href='http://docs.medialist.io/' className='block px3 py2 f-md normal gray20 hover-bg-gray90' target='_blank'>
+              <QuestionMark className='gray60' />
+              <span className='ml2'>Help Center</span>
+            </a>
+            <Link to='/logout' className='block px3 py2 f-md normal gray20 hover-bg-gray90' activeClassName='active' data-id='logout-link'>
+              <ExitIcon className='gray60' />
               <span className='ml2'>Logout</span>
             </Link>
           </nav>
