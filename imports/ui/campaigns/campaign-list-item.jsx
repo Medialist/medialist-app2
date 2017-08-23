@@ -6,7 +6,7 @@ export default ({campaign, contact}) => {
   const status = contact ? contact.status : null
 
   return (
-    <div className='flex items-center justify-end'>
+    <div className='flex items-center'>
       <div className='flex-auto pr3'>
         <CampaignPreview {...campaign} />
       </div>
