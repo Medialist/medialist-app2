@@ -34,7 +34,6 @@ class StatusSelectorContainer extends React.Component {
       compact,
       ...props
     } = this.props
-
     return (
       <StatusSelector
         {...props}
