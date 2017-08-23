@@ -51,7 +51,7 @@ class TagSelector extends React.Component {
   }
 
   onRemoveTag = (tag) => {
-    this.props.onRemoveTag()
+    this.props.onRemoveTag(tag)
     this.searchBox.value = ''
     this.searchBox.focus()
   }
