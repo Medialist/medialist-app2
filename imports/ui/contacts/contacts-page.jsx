@@ -4,7 +4,7 @@ import { compose } from 'redux'
 import { Meteor } from 'meteor/meteor'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import { createContainer } from 'meteor/react-meteor-data'
-import { Link } from 'react-router'
+import { Link, withRouter } from 'react-router'
 import Arrow from 'rebass/dist/Arrow'
 import fileDownload from 'react-file-download'
 import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
@@ -261,6 +261,11 @@ class ContactsPage extends React.Component {
     this.clearSelection()
   }
 
+  onContactCreated = (contactSlug) => {
+    this.hideModals()
+    this.props.router.push(`/contact/${contactSlug}`)
+  }
+
   getSearchOrSlugs = () => {
     const {selectionMode} = this.state
     if (selectionMode === 'all') {
@@ -392,6 +397,7 @@ class ContactsPage extends React.Component {
           onDeselectAllClick={() => this.clearSelection()}
           onExportToCsvClick={this.onExportToCsv} />
         <CreateContactModal
+          onContactCreated={this.onContactCreated}
           onDismiss={this.hideModals}
           open={this.state.addContactModal} />
         <AddContactsToCampaign
@@ -431,13 +437,18 @@ class ContactsPage extends React.Component {
 
 const MasterListsSelectorContainer = createContainer((props) => {
   const { selectedMasterListSlug, userId } = props
+
   const user = Meteor.user()
+
   const lists = MasterLists
     .find({
       type: 'Contacts'
+    }, {
+      sort: { name: 1 }
     }).map(({slug, name, items}) => ({
       slug, name, count: items.length
     }))
+
   const items = [{
     slug: 'all',
     name: 'All',
@@ -447,15 +458,7 @@ const MasterListsSelectorContainer = createContainer((props) => {
     name: 'My Contacts',
     count: user.myContacts.length
   }]
-    .concat(
-      user.recentContactLists
-        .map(slug => lists.find(list => list.slug === slug))
-        .filter(list => !!list)
-    )
-    .concat(
-      lists.filter(list => !user.recentContactLists
-        .find(slug => list.slug === slug))
-    )
+    .concat(lists)
 
   const selectedSlug = userId ? 'my' : selectedMasterListSlug
 
@@ -468,5 +471,6 @@ export default compose(
   createLimitContainer,
   createSearchContainer,
   createSearchCountContainer,
-  withSnackbar
+  withSnackbar,
+  withRouter
 )(ContactsPage)

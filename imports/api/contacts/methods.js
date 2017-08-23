@@ -343,6 +343,11 @@ export const batchRemoveContacts = new ValidatedMethod({
 export const createContact = new ValidatedMethod({
   name: 'createContact',
 
+  // don't use the clients guess
+  applyOptions: {
+    returnStubValue: false
+  },
+
   validate: new SimpleSchema({
     details: {
       type: ContactCreateSchema
@@ -353,6 +358,11 @@ export const createContact = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
+
+    if (this.isSimulation) {
+      return
+    }
+
     // return if a matching twitter handle already exists
     const existingContact = details.twitter && Contacts.findOne({ 'socials.label': 'Twitter', 'socials.value': details.twitter })
 

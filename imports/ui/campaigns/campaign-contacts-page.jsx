@@ -10,8 +10,7 @@ import CampaignTopbar from '/imports/ui/campaigns/campaign-topbar'
 import CampaignSummary from '/imports/ui/campaigns/campaign-summary'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
-import { CreateContactModal } from '../contacts/edit-contact'
-import AddContactModal from '/imports/ui/campaigns/add-contact'
+import AddOrCreateContactModal from '/imports/ui/campaigns/add-or-create-contact'
 import RemoveContactModal from '/imports/ui/campaigns/remove-contact'
 import AddContactsToCampaign from '/imports/ui/contacts/add-contacts-to-campaign'
 import AddTagsModal from '/imports/ui/tags/add-tags-modal'
@@ -47,7 +46,6 @@ class CampaignContactsPage extends React.Component {
     selectionMode: 'include',
     isDropdownOpen: false,
     addContactModal: false,
-    createContactModal: false,
     addContactsToCampaignModal: false,
     addTagsModal: false,
     addToMasterListsModal: false,
@@ -55,11 +53,7 @@ class CampaignContactsPage extends React.Component {
   }
 
   onAddContactClick = () => {
-    if (this.props.contactsAllCount) {
-      this.showModal('addContactModal')
-    } else {
-      this.showModal('createContactModal')
-    }
+    this.showModal('addContactModal')
   }
 
   onFavouriteAll = () => {
@@ -140,14 +134,6 @@ class CampaignContactsPage extends React.Component {
     this.setState({selectionMode})
   }
 
-  onShowCreateContact = (data) => {
-    this.setState({
-      contactPrefillData: data
-    })
-
-    this.showModal('createContactModal')
-  }
-
   onSortChange = (sort) => {
     this.props.setQuery({ sort })
   }
@@ -187,7 +173,6 @@ class CampaignContactsPage extends React.Component {
   hideModals = () => {
     this.setState({
       addContactModal: false,
-      createContactModal: false,
       addContactsToCampaignModal: false,
       addTagsModal: false,
       addToMasterListsModal: false,
@@ -203,9 +188,9 @@ class CampaignContactsPage extends React.Component {
     }
 
     const {
-      contactPrefillData,
       selections,
-      selectionMode
+      selectionMode,
+      addContactModal
     } = this.state
 
     let {
@@ -213,7 +198,8 @@ class CampaignContactsPage extends React.Component {
       sort,
       term,
       status,
-      statusCounts
+      statusCounts,
+      contactsAllCount
     } = this.props
 
     return (
@@ -251,17 +237,12 @@ class CampaignContactsPage extends React.Component {
           onDeleteClick={() => this.showModal('removeContactsModal')}
           onDeselectAllClick={this.clearSelection}
           onExportToCsvClick={this.onExportToCsv} />
-        <CreateContactModal
-          open={this.state.createContactModal}
+        <AddOrCreateContactModal
+          open={addContactModal}
           onDismiss={this.hideModals}
           campaign={campaign}
-          prefill={contactPrefillData} />
-        <AddContactModal
-          open={this.state.addContactModal}
-          onDismiss={this.hideModals}
-          onCreate={this.onShowCreateContact}
-          campaign={campaign}
-          campaignContacts={contacts} />
+          campaignContacts={contacts}
+          allContactsCount={contactsAllCount} />
         <AddContactsToCampaign
           title='Add these Contacts to a Campaign'
           contacts={this.state.selections}
