@@ -41,6 +41,7 @@ const CampaignsFilterableList = React.createClass({
       borderRight: 'solid 0px',
       borderLeft: 'solid 0px'
     }
+    console.log({contact, campaigns: this.props.campaigns})
     return (
       <nav>
         <SearchBox
@@ -62,7 +63,7 @@ const CampaignsFilterableList = React.createClass({
               onClick={() => onFilter(item)}
               data-type='campaign-search-result'
               data-id={`campaign-${item.slug}`}>
-              <Campaign campaign={item} contact={contact} />
+              <Campaign campaign={item} contact={item.contacts.find(c => c.slug === contact.slug)} />
             </div>
           ))}
         </div>
