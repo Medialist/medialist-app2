@@ -189,7 +189,8 @@ export default class TagSelectorContainer extends React.Component {
         onSave={this.onSave}
         onCreateTag={this.onCreateTag}
         onAddTag={this.onAddTag}
-        onRemoveTag={this.onRemoveTag} />
+        onRemoveTag={this.onRemoveTag}
+        onDismiss={this.props.onDismiss} />
     )
   }
 }
