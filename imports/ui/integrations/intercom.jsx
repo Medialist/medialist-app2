@@ -5,12 +5,21 @@ import ReactIntercom from 'react-intercom'
 
 const { intercom } = Meteor.settings.public
 const appId = intercom && intercom.appId
+const shouldRender = appId && Meteor.isClient
 
-export default !appId ? () => null : createContainer(() => {
+export default !shouldRender ? () => null : createContainer(() => {
   const user = Meteor.user()
-  let userData = {}
+  const {hostname} = window.location
+  const deployment = hostname.split('.')[0]
+
+  let userData = {
+    hostname,
+    deployment
+  }
+
   if (user) {
     userData = {
+      ...userData,
       user_id: user._id,
       name: user.profile.name,
       email: user.emails[0].address,
@@ -19,5 +28,6 @@ export default !appId ? () => null : createContainer(() => {
       my_contacts: user.myContacts.length
     }
   }
+
   return { appID: appId, ...userData }
 }, ReactIntercom)
