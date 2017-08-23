@@ -4,7 +4,7 @@ import { compose } from 'redux'
 import { Meteor } from 'meteor/meteor'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import { createContainer } from 'meteor/react-meteor-data'
-import { Link } from 'react-router'
+import { Link, withRouter } from 'react-router'
 import Arrow from 'rebass/dist/Arrow'
 import fileDownload from 'react-file-download'
 import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
@@ -474,5 +474,6 @@ export default compose(
   createLimitContainer,
   createSearchContainer,
   createSearchCountContainer,
-  withSnackbar
+  withSnackbar,
+  withRouter
 )(ContactsPage)
