@@ -173,8 +173,6 @@ export const updatePost = new ValidatedMethod({
       throw new Meteor.Error('You can only edit Posts you created')
     }
 
-    const contact = Contacts.findOneRef(contactSlug)
-    const campaign = Campaigns.findOneRef(campaignSlug)
     const userRef = findOneUserRef(this.userId)
     const updatedAt = new Date()
 
@@ -195,9 +193,9 @@ export const updatePost = new ValidatedMethod({
       $set.embeds = embed ? [embed] : []
     }
 
-    if (status) $set.status = status
-    if (contact) $set.contacts = [contact]
-    if (campaign) $set.campaigns = [campaign]
+    if (status && oldPost.status !== status) $set.status = status
+    if (contactSlug && oldPost.contacts[0].slug !== contactSlug) $set.contacts = [Contacts.findOneRef(contactSlug)]
+    if (campaignSlug && oldPost.campaigns[0].slug !== campaignSlug) $set.campaigns = [Campaigns.findOneRef(campaignSlug)]
 
     if (!Object.keys($set)) return
 
@@ -207,7 +205,8 @@ export const updatePost = new ValidatedMethod({
       $set: $set
     })
 
-    if (status || contact || campaign) {
+    // do the work to update our denormalized references
+    if ($set.status || $set.contacts || $set.campaigns) {
       const newPost = Posts.findOne({ _id })
 
       const moreRecentPost = Posts.findOne({
@@ -237,6 +236,10 @@ export const updatePost = new ValidatedMethod({
         })
       }
 
+      // if only the status needs updating stop here
+      if (!$set.contacts && !$set.campaigns) return
+
+      // these changes will roll back changes for a replaced contact
       const mostRecentPreviousPost = Posts.findOne({
         _id: {$nin: [_id]},
         type: {$in: ['FeedbackPost', 'CoveragePost']},

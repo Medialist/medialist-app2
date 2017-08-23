@@ -314,7 +314,7 @@ describe('updateFeedbackPost', function () {
   })
 
   it('should require the user updating to be the creator of the post', function () {
-    const postId = createNeedToKnowPost.run.call({
+    const postId = createFeedbackPost.run.call({
       userId: users[0]._id
     }, {
       contactSlug: contacts[0].slug,
@@ -322,11 +322,11 @@ describe('updateFeedbackPost', function () {
     })
 
     assert.throws(() => updatePost.run.call({
-      userId: users[1]
+      userId: users[1]._id
     }, {
       _id: postId,
       message: 'this will throw'
-    }), /You can only edit posts you created/)
+    }), /You can only edit Posts you created/)
   })
 
   it('should let users update a post\'s status and cascade updates to campaign contacts status', function () {
@@ -412,7 +412,7 @@ describe('updateFeedbackPost', function () {
       contactSlug: contacts[0].slug,
       campaignSlug: campaigns[0].slug,
       status: StatusMap.notInterested,
-      message: 'original post'
+      message: 'Post 1'
     })
 
     const _id = createFeedbackPost.run.call({
@@ -421,7 +421,7 @@ describe('updateFeedbackPost', function () {
       contactSlug: contacts[0].slug,
       campaignSlug: campaigns[0].slug,
       status: StatusMap.contacted,
-      message: 'next post on contacted'
+      message: 'Post 2'
     })
 
     createFeedbackPost.run.call({
@@ -430,7 +430,7 @@ describe('updateFeedbackPost', function () {
       contactSlug: contacts[1].slug,
       campaignSlug: campaigns[0].slug,
       status: StatusMap.contacted,
-      message: 'actually the latest post for contacts[1]'
+      message: 'Post 3'
     })
 
     updatePost.run.call({
@@ -451,7 +451,7 @@ describe('updateFeedbackPost', function () {
     assert.equal(campaign.contacts.find((c) => c.slug === contacts[1].slug).status, StatusMap.contacted)
   })
 
-  it.only('should let users update a post\'s campaign', function () {
+  it('should let users update a post\'s campaign', function () {
     addContactsToCampaign.run.call({
       userId: users[0]._id
     }, {
@@ -479,14 +479,101 @@ describe('updateFeedbackPost', function () {
       userId: users[0]._id
     }, {
       _id,
-      campaign: campaigns[1].slug
+      campaignSlug: campaigns[1].slug
     })
 
-    const campaign = Campaigns.findOne({slug: campaigns[1].slug})
+    const campaign = Campaigns.findOne({_id: campaigns[1]._id})
     const updatedPost = Posts.findOne({ _id })
 
     assert.equal(updatedPost.campaigns[0].slug, campaigns[1].slug)
     assert.equal(campaign.contacts.find((c) => c.slug === contacts[0].slug).slug, contacts[0].slug)
+  })
+
+  it('should let users update a post\'s campaign and status and update the denormalized data', function () {
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      contactSlugs: [contacts[0].slug, contacts[1].slug],
+      campaignSlug: campaigns[0].slug
+    })
+
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      contactSlugs: [contacts[0].slug, contacts[1].slug],
+      campaignSlug: campaigns[1].slug
+    })
+
+    createFeedbackPost.run.call({
+      userId: users[0]._id
+    }, {
+      contactSlug: contacts[0].slug,
+      campaignSlug: campaigns[0].slug,
+      status: StatusMap.toContact,
+      message: 'Post 1 on campaign 0'
+    })
+
+    createFeedbackPost.run.call({
+      userId: users[0]._id
+    }, {
+      contactSlug: contacts[0].slug,
+      campaignSlug: campaigns[1].slug,
+      status: StatusMap.hotLead,
+      message: 'Post 1 on campaign 1'
+    })
+
+    const _id = createFeedbackPost.run.call({
+      userId: users[0]._id
+    }, {
+      contactSlug: contacts[0].slug,
+      campaignSlug: campaigns[0].slug,
+      status: StatusMap.contacted,
+      message: 'Post 2 on campaign 0'
+    })
+
+    createFeedbackPost.run.call({
+      userId: users[0]._id
+    }, {
+      contactSlug: contacts[0].slug,
+      campaignSlug: campaigns[1].slug,
+      status: StatusMap.completed,
+      message: 'Post 2 on campaign 1'
+    })
+
+    updatePost.run.call({
+      userId: users[0]._id
+    }, {
+      _id,
+      campaignSlug: campaigns[1].slug,
+      status: StatusMap.hotLead
+    })
+
+    const updatedPost = Posts.findOne({ _id })
+    const oldCampaign = Campaigns.findOne({_id: campaigns[0]._id})
+    const updatedCampaign = Campaigns.findOne({_id: campaigns[1]._id})
+    const oldCampaignContact = oldCampaign.contacts.find(c => c.slug === contacts[0].slug)
+    const updatedCampaignContact = updatedCampaign.contacts.find(c => c.slug === contacts[0].slug)
+
+    /*
+    This is the story. Bob (contacts[0].slug) has feedback posted on two different campaigns 'toContact' & 'hotLead'.
+    We then post again on campaign[0] with a status of 'contacted'
+    Then we post on campaign[1] with a status of 'completed'
+
+    whoops edit time!
+
+    Got the wrong campaign, I meant for my 'Post 2 on campaign[0]' to actually be for 'campaign[1]'
+    and I meant the status to be 'hotLead' not 'contacted'
+
+    Make the post change and reflect that. Done.
+
+    But because a more recent post with the status of 'completed' exists on campaign[1]
+    the status of Bob on 'campaign[1]' remains unchanged as 'completed'
+    and on 'campaign[0]' Bob's status reflects the eariler state of 'toContact'
+    */
+
+    assert.equal(updatedPost.status, StatusMap.hotLead)
+    assert.equal(oldCampaignContact.status, StatusMap.toContact)
+    assert.equal(updatedCampaignContact.status, StatusMap.completed)
   })
 })
 
