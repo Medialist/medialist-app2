@@ -147,6 +147,13 @@ const test = {
         done()
       })
 
+      t.perform((done) => {
+        t.page.campaign()
+          .section.campaignContacts.assertContactHasStatus(contact2, 'Not Interested')
+
+        done()
+      })
+
       done()
     })
     t.page.main().logout()

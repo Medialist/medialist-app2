@@ -167,6 +167,12 @@ module.exports = {
           this.waitForElementNotVisible(statusButton)
 
           return this
+        },
+        assertContactHasStatus: function (contact, status) {
+          const selector = `[data-contact='${contact.slug}'] [data-id=contact-status-selector-button] span`
+          this.assert.attributeEquals(selector, 'title', status)
+
+          return this
         }
       }]
     }
