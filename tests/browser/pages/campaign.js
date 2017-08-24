@@ -164,7 +164,7 @@ module.exports = {
             .waitForElementVisible(statusButton)
             .click(statusButton)
 
-          this.waitForElementNotVisible(statusButton)
+          this.waitForElementNotPresent(statusButton)
 
           return this
         },
