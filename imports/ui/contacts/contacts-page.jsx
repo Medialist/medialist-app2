@@ -287,7 +287,6 @@ class ContactsPage extends React.Component {
       contactsCount,
       masterListSlug,
       loading,
-      searching,
       searchTermActive,
       contacts,
       term,
@@ -310,7 +309,7 @@ class ContactsPage extends React.Component {
       selectionMode
     } = this.state
 
-    if (!loading && !searching && contactsCount === 0) {
+    if (!loading && allContactsCount === 0) {
       return <ContactListEmpty />
     }
 
