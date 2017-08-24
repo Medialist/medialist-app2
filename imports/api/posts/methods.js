@@ -229,8 +229,8 @@ export const updatePost = new ValidatedMethod({
             'contacts.$': {
               slug: newPost.contacts[0].slug,
               status: newPost.status,
-              updatedAt: newPost.updatedAt,
-              updatedBy: newPost.updatedBy
+              updatedAt: newPost.createdAt,
+              updatedBy: newPost.createdBy
             }
           }
         })
@@ -258,8 +258,8 @@ export const updatePost = new ValidatedMethod({
             'contacts.$': {
               slug: oldPost.contacts[0].slug,
               status: StatusMap.toContact,
-              updatedAt: oldPost.updatedAt,
-              updatedBy: oldPost.updatedBy
+              updatedAt: oldPost.createdAt,
+              updatedBy: oldPost.createdBy
             }
           }
         })
@@ -272,8 +272,8 @@ export const updatePost = new ValidatedMethod({
             'contacts.$': {
               slug: oldPost.contacts[0].slug,
               status: mostRecentPreviousPost.status,
-              updatedAt: oldPost.updatedAt,
-              updatedBy: oldPost.updatedBy
+              updatedAt: oldPost.createdAt,
+              updatedBy: oldPost.createdBy
             }
           }
         })

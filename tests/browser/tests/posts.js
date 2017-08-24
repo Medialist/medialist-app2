@@ -140,7 +140,6 @@ const test = {
 
       t.perform((done) => {
         t.page.campaign()
-          .navigate(campaign)
           .section.campaignContacts.assertContactHasStatus(contact1, 'Hot Lead')
 
         done()
@@ -156,7 +155,6 @@ const test = {
 
       t.perform((done) => {
         t.page.campaign()
-          .navigate(campaign)
           .section.campaignContacts.assertContactHasStatus(contact2, 'Not Interested')
 
         done()
