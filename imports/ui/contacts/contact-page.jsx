@@ -17,6 +17,7 @@ import ActivityFeed from '/imports/ui/dashboard/activity-feed'
 import { EditContactModal } from '/imports/ui/contacts/edit-contact'
 import AddContactToCampaign from '/imports/ui/contacts/add-to-campaign/add-one-modal'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
+import { LoadingBar } from '/imports/ui/lists/loading'
 
 const ContactPage = withSnackbar(React.createClass({
   propTypes: {
@@ -66,7 +67,20 @@ const ContactPage = withSnackbar(React.createClass({
   render () {
     const { contact, campaigns, campaign, user, masterlists, needToKnows, loading } = this.props
     const { editContactModalOpen, addToCampaignOpen } = this.state
-    if (!contact) return null
+
+    if (!contact) {
+      return <LoadingBar />
+    }
+
+    if (loading) {
+      return (
+        <div>
+          <ContactTopbar contact={contact} onAddToCampaignClick={this.toggleAddToCampaign} />
+          <LoadingBar />
+        </div>
+      )
+    }
+
     return (
       <div>
         <ContactTopbar contact={contact} onAddToCampaignClick={this.toggleAddToCampaign} />
