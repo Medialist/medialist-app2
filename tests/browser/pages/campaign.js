@@ -324,7 +324,7 @@ module.exports = {
 
       this.section.editPostModal
         .waitForElementVisible('@coverageInput')
-        .clear('@coverageInput')
+        .clearSlow('@coverageInput')
         .setValue('@coverageInput', text)
 
       const url = findUrl(text)

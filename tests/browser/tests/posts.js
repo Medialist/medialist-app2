@@ -130,11 +130,18 @@ const test = {
       })
 
       t.perform((done) => {
-        console.log(contact1)
         t.page.campaign()
           .navigate(campaign)
-          .addFeedbackPost(contact1, 'not-interested', 'test')
+          .addFeedbackPost(contact1, 'hot-lead', 'test')
           .section.activityFeed.assertHasFeedbackPostWith(contact1, campaign, {contactName: contact1.name})
+
+        done()
+      })
+
+      t.perform((done) => {
+        t.page.campaign()
+          .navigate(campaign)
+          .section.campaignContacts.assertContactHasStatus(contact1, 'Hot Lead')
 
         done()
       })
@@ -149,6 +156,7 @@ const test = {
 
       t.perform((done) => {
         t.page.campaign()
+          .navigate(campaign)
           .section.campaignContacts.assertContactHasStatus(contact2, 'Not Interested')
 
         done()
