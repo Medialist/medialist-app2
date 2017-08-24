@@ -133,7 +133,10 @@ function addIfCurrentlyEmpty (oldList = [], newList = []) {
 function addIfDistinct (property, oldList = [], newList = []) {
   const newItems = newList.reduce((list, newItem) => {
     var newValue = newItem[property].toLowerCase()
-    var exists = oldList.some(oldItem => oldItem[property].toLowerCase() === newValue)
+    var exists = oldList.some(oldItem => {
+      const oldValue = oldItem[property]
+      return !!oldValue && oldValue.toLowerCase() === newValue
+    })
     return exists ? list : list.concat(newItem)
   }, [])
   return oldList.concat(newItems)
