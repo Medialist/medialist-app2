@@ -4,8 +4,12 @@ import StatusLabel from '/imports/ui/feedback/status-label'
 
 export default ({campaign, contact}) => {
   let status = null
+
   if (contact && campaign.contacts) {
-    status = campaign.contacts.find(c => c.slug === contact.slug)
+    const campaignContact = campaign.contacts.find(c => c.slug === contact.slug)
+    if (campaignContact) {
+      status = campaignContact.status
+    }
   }
 
   return (
@@ -13,9 +17,11 @@ export default ({campaign, contact}) => {
       <div className='flex-auto pr3'>
         <CampaignPreview {...campaign} />
       </div>
-      <div className='flex-none' style={{width: 173}}>
-        <Status name={status} />
-      </div>
+      { !status ? null : (
+        <div className='flex-none' style={{width: 173}}>
+          <Status name={status} />
+        </div>
+      )}
     </div>
   )
 }
