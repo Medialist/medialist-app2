@@ -218,6 +218,7 @@ class EditTeamContainer extends React.Component {
 
   render () {
     const query = {
+      roles: 'team',
       '$or': [{
         'profile.name': {
           $regex: '$term',
@@ -235,7 +236,8 @@ class EditTeamContainer extends React.Component {
       'profile.name': 1,
       'profile.avatar': 1,
       'onCampaigns': 1,
-      'emails': 1
+      'emails': 1,
+      'roles': 1
     }
 
     return (
@@ -243,7 +245,7 @@ class EditTeamContainer extends React.Component {
         query={query}
         fields={fields}
         collection='users'
-        allItems={Meteor.users.find({}, {sort: {'profile.name': 1}}).fetch()}
+        allItems={Meteor.users.find({roles: 'team'}, {sort: {'profile.name': 1}}).fetch()}
         initialItems={this.props.campaign.team}
         onCancel={() => this.onCancel()}
         onSave={(teamMates, emails) => this.onSave(teamMates, emails)}

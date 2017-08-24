@@ -21,9 +21,23 @@ Accounts.onCreateUser((options, user) => {
   user.recentContactLists = []
   user.onCampaigns = 0
   user.createdAt = new Date()
+  user.roles = pickUserRoles(options.email)
 
   return user
 })
+
+function pickUserRoles (email) {
+  const { emailDomains, extraEmailDomains } = Meteor.settings.public.authentication
+  const domain = email.split('@').pop()
+  const roles = []
+  if (emailDomains && emailDomains.some(e => e === domain)) {
+    roles.push('team')
+  }
+  if (extraEmailDomains && extraEmailDomains.some(e => e === domain)) {
+    roles.push('support')
+  }
+  return roles
+}
 
 Accounts.urls.login = (token) => Meteor.absoluteUrl(`sign-in/${token}`)
 
