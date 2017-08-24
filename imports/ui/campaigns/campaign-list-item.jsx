@@ -3,7 +3,10 @@ import CampaignPreview from '/imports/ui/campaigns/campaign-preview'
 import StatusLabel from '/imports/ui/feedback/status-label'
 
 export default ({campaign, contact}) => {
-  const status = contact ? contact.status : null
+  let status = null
+  if (contact && campaign.contacts) {
+    status = campaign.contacts.find(c => c.slug === contact.slug)
+  }
 
   return (
     <div className='flex items-center'>

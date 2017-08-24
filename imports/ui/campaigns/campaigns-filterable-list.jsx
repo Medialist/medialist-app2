@@ -62,7 +62,7 @@ const CampaignsFilterableList = React.createClass({
               onClick={() => onFilter(item)}
               data-type='campaign-search-result'
               data-id={`campaign-${item.slug}`}>
-              <Campaign campaign={item} contact={item.contacts.find(c => c.slug === contact.slug)} />
+              <Campaign campaign={item} contact={contact} />
             </div>
           ))}
         </div>
