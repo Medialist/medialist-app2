@@ -181,11 +181,7 @@ class CampaignContactsPage extends React.Component {
   }
 
   render () {
-    const { campaign, contacts } = this.props
-
-    if (!campaign) {
-      return null
-    }
+    const { campaign, contacts, loading } = this.props
 
     const {
       selections,
@@ -201,6 +197,19 @@ class CampaignContactsPage extends React.Component {
       statusCounts,
       contactsAllCount
     } = this.props
+
+    if (!campaign) {
+      return <LoadingBar />
+    }
+
+    if (loading) {
+      return (
+        <div>
+          <CampaignTopbar campaign={campaign} onAddContactClick={this.onAddContactClick} />
+          <LoadingBar />
+        </div>
+      )
+    }
 
     return (
       <div>
@@ -290,10 +299,6 @@ CampaignContactsPage.contextTypes = {
 // I decode and encode the search options from the query string
 // and set up the subscriptions and collecton queries from those options.
 const CampaignContactsPageContainer = (props, context) => {
-  if (props.loading) {
-    return <LoadingBar />
-  }
-
   // API is like setState...
   // Pass an obj with the new params you want to set on the query string.
   // has to be in a container because createComponent does not give you access to context
@@ -387,12 +392,6 @@ export default createContainer(({location, params: { campaignSlug }}) => {
     Meteor.subscribe('contactCount')
   ]
   const loading = subs.some((s) => !s.ready())
-
-  if (loading) {
-    return {
-      loading: true
-    }
-  }
 
   const {
     sort,

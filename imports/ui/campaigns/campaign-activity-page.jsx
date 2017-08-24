@@ -17,7 +17,7 @@ import { createFeedbackPost, createCoveragePost } from '/imports/api/posts/metho
 import AddOrCreateContactModal from './add-or-create-contact'
 import EditTeam from '/imports/ui/campaigns/edit-team'
 import { CampaignContacts } from '/imports/ui/campaigns/collections'
-import Loading from '/imports/ui/lists/loading'
+import { LoadingBar } from '/imports/ui/lists/loading'
 
 const CampaignActivityPage = React.createClass({
   propTypes: {
@@ -98,8 +98,17 @@ const CampaignActivityPage = React.createClass({
       editTeamModalOpen
     } = this.state
 
+    if (!campaign) {
+      return <LoadingBar />
+    }
+
     if (loading) {
-      return <div className='center p4'><Loading /></div>
+      return (
+        <div>
+          <CampaignTopbar campaign={campaign} onAddContactClick={onAddContactClick} />
+          <LoadingBar />
+        </div>
+      )
     }
 
     return (
