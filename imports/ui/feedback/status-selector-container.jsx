@@ -34,7 +34,7 @@ class StatusSelectorContainer extends React.Component {
       compact,
       ...props
     } = this.props
-    const { status } = campaign && campaign.contacts.find(c => c.slug === contact.slug) || contact
+    const { status } = campaign && campaign.contacts && campaign.contacts.find(c => c.slug === contact.slug) || contact
     return (
       <StatusSelector
         {...props}
