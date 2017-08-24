@@ -184,7 +184,7 @@ module.exports = {
 
       this.getElementsText(suggestionsSelector, (texts) => {
         this.assert.ok(
-          texts.includes(value),
+          texts.indexOf(value) > -1,
           `"${value}"" was in suggestions`
         )
 
@@ -203,7 +203,7 @@ module.exports = {
 
       this.getElementsText(suggestionsSelector, (texts) => {
         this.assert.ok(
-          texts.includes(value),
+          texts.indexOf(value) > -1,
           `"${value}"" was in suggestions`
         )
 
