@@ -240,9 +240,16 @@ const AddContactContainer = withSnackbar(React.createClass({
     const { term, onCreate, campaignContacts, onTermChange } = this.props
     const myContacts = Meteor.user().myContacts
 
+    // Initial suggestions should be contacts not on this campaign.
+    // When searching we do include contacts on the campaign so we can let them know.
+    const searchOpts = { term }
+    if (!term) {
+      searchOpts.excludeSlugs = campaignContacts.map(c => c.slug)
+    }
+
     return (
       <SearchableAddContact
-        term={term}
+        {...searchOpts}
         campaignContacts={campaignContacts}
         myContacts={myContacts}
         onTermChange={onTermChange}
