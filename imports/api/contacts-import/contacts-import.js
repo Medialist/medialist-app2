@@ -41,7 +41,7 @@ export const ContactsImportSchema = new SimpleSchema({
 ContactsImportSchema.extend(CreatedAtSchema)
 
 const ContactsImport = new Mongo.Collection('contactsImport')
-ContactsImport.attachSchema(ContactsImportSchema)
+
 ContactsImport.allow(nothing)
 
 export default ContactsImport
