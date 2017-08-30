@@ -11,6 +11,7 @@ import Tags from '/imports/api/tags/tags'
 
 class TagSelector extends React.Component {
   static propTypes = {
+    title: PropTypes.string.isRequired,
     loading: PropTypes.bool.isRequired,
     selectedTags: PropTypes.array.isRequired,
     suggestedTags: PropTypes.array.isRequired,
@@ -24,6 +25,10 @@ class TagSelector extends React.Component {
     children: PropTypes.node
   }
 
+  static defaultProps = {
+    title: 'Tags'
+  }
+
   // TODO: if you type fast, this can occur before the state.searchTerm is updated, so we can end up submitting an empty value
   onKeyDown = (event) => {
     if (['Enter', 'Tab'].indexOf(event.key) === -1) {
@@ -32,9 +37,9 @@ class TagSelector extends React.Component {
     event.preventDefault()
     const {suggestedTags, searchTerm} = this.props
     if (suggestedTags.length) {
-      this.props.onAddTag(suggestedTags[0])
+      this.onAddTag(suggestedTags[0])
     } else {
-      this.props.onCreateTag(searchTerm)
+      this.onCreateTag(searchTerm)
     }
   }
 
@@ -57,33 +62,35 @@ class TagSelector extends React.Component {
   }
 
   render () {
-    const countField = `${this.props.type.toLowerCase()}Count`
+    const { type, title, children } = this.props
+    console.log({children})
+    const countField = `${type.toLowerCase()}Count`
     return (
       <div>
-        <div className='pt6 center f-xl normal'>Tags</div>
-        {this.props.children}
-        <div className='pt6 border-bottom border-gray80'>
-          <SearchBox
-            inputRef={(searchBox) => { this.searchBox = searchBox }}
-            style={{borderLeft: '0 none', borderRight: '0 none'}}
-            initialTerm={this.props.searchTerm}
-            onTermChange={this.props.onTermChange}
-            onKeyDown={this.onKeyDown}
-            placeholder={this.props.selectedTags.length ? '' : 'Search or create a new tag'}
-            data-id='tag-search-input'>
-            <div style={{marginBottom: -4}} >
-              {this.props.selectedTags.map((tag) =>
-                <Tag name={tag.name} count={tag[countField] || tag.count} key={tag.slug} onRemove={() => this.onRemoveTag(tag)} />
-              )}
-            </div>
-          </SearchBox>
-          <TagSuggester
-            loading={this.props.loading}
-            suggestedTags={this.props.suggestedTags}
-            searchTerm={this.props.searchTerm}
-            onCreateTag={this.onCreateTag}
-            onSelectTag={this.onAddTag} />
+        <div className='py6 center'>
+          <span className='f-xl'>{title}</span>
+          {children}
         </div>
+        <SearchBox
+          inputRef={(searchBox) => { this.searchBox = searchBox }}
+          style={{borderLeft: '0 none', borderRight: '0 none'}}
+          initialTerm={this.props.searchTerm}
+          onTermChange={this.props.onTermChange}
+          onKeyDown={this.onKeyDown}
+          placeholder={this.props.selectedTags.length ? '' : 'Search or create a new tag'}
+          data-id='tag-search-input'>
+          <div style={{marginBottom: -4}} >
+            {this.props.selectedTags.map((tag) =>
+              <Tag name={tag.name} count={tag[countField] || tag.count} key={tag.slug} onRemove={() => this.onRemoveTag(tag)} />
+            )}
+          </div>
+        </SearchBox>
+        <TagSuggester
+          loading={this.props.loading}
+          suggestedTags={this.props.suggestedTags}
+          searchTerm={this.props.searchTerm}
+          onCreateTag={this.onCreateTag}
+          onSelectTag={this.onAddTag} />
         <div className='p4 bg-white'>
           <div className='clearfix'>
             <button className='btn bg-completed white right' onClick={this.props.onSave} data-id='tag-selector-modal-save-button'>Save</button>
@@ -127,6 +134,7 @@ export default class TagSelectorContainer extends React.Component {
     onUpdateTags: PropTypes.func.isRequired,
     onDismiss: PropTypes.func.isRequired,
     children: PropTypes.node,
+    title: PropTypes.string,
     open: PropTypes.bool.isRequired,
     type: PropTypes.oneOf(['Contacts', 'Campaigns']).isRequired
   }
@@ -181,6 +189,7 @@ export default class TagSelectorContainer extends React.Component {
     if (!this.props.open) return null
     return (
       <TagSelectorDataContainer
+        title={this.props.title}
         open={this.props.open}
         type={this.props.type}
         searchTerm={this.state.searchTerm}
@@ -190,7 +199,8 @@ export default class TagSelectorContainer extends React.Component {
         onCreateTag={this.onCreateTag}
         onAddTag={this.onAddTag}
         onRemoveTag={this.onRemoveTag}
-        onDismiss={this.props.onDismiss} />
+        onDismiss={this.props.onDismiss}
+        children={this.props.children} />
     )
   }
 }

@@ -260,6 +260,7 @@ class CampaignContactsPage extends React.Component {
           <AbbreviatedAvatarList items={selections} maxTooltip={12} />
         </AddContactsToCampaign>
         <AddTagsModal
+          title='Tag these Contacts'
           type='Contacts'
           open={this.state.addTagsModal}
           onDismiss={this.hideModals}
