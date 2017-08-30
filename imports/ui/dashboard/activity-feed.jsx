@@ -12,11 +12,9 @@ import SubscriptionLimitContainer from '/imports/ui/navigation/subscription-limi
 
 const ActivityFeed = React.createClass({
   propTypes: {
-    campaigns: PropTypes.array,
     campaign: PropTypes.object,
     contact: PropTypes.object,
-    'data-id': PropTypes.string,
-    contacts: PropTypes.array
+    'data-id': PropTypes.string
   },
 
   getInitialState () {
@@ -42,7 +40,7 @@ const ActivityFeed = React.createClass({
 
   render () {
     const { onFilterChange, onCampaignFilterChange } = this
-    const { contact, campaign, contacts, campaigns } = this.props
+    const { contact, campaign } = this.props
     const { filterType, filterCampaign } = this.state
 
     return (
@@ -69,9 +67,7 @@ const ActivityFeed = React.createClass({
                   limit={limit}
                   filter={filterType}
                   campaign={filterCampaign || campaign}
-                  contact={contact}
-                  contacts={contacts}
-                  campaigns={campaigns} />
+                  contact={contact} />
               )}
             </SubscriptionLimitContainer>
           )}

@@ -211,7 +211,7 @@ export const updatePost = new ValidatedMethod({
 
       const moreRecentPost = Posts.findOne({
         _id: {$nin: [newPost._id]},
-        type: {$in: ['FeedbackPost', 'CoveragePost']},
+        type: {$in: ['FeedbackPost', 'CoveragePost', 'StatusUpdate']},
         'contacts.slug': newPost.contacts[0].slug,
         'campaigns.slug': newPost.campaigns[0].slug,
         'createdAt': {$gt: newPost.createdAt}
@@ -242,7 +242,7 @@ export const updatePost = new ValidatedMethod({
       // these changes will roll back changes for a replaced contact
       const mostRecentPreviousPost = Posts.findOne({
         _id: {$nin: [_id]},
-        type: {$in: ['FeedbackPost', 'CoveragePost']},
+        type: {$in: ['FeedbackPost', 'CoveragePost', 'StatusUpdate']},
         'contacts.slug': oldPost.contacts[0].slug,
         'campaigns.slug': oldPost.campaigns[0].slug
       }, {

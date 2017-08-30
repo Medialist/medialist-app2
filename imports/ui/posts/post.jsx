@@ -229,12 +229,12 @@ class Post extends React.Component {
           onDismiss={this.closeMenu}
         />
         <EditPostModal
+          contact={this.props.contact}
+          campaign={this.props.campaign}
           open={this.state.editOpen}
           post={this.props}
           onUpdate={this.updatePost}
           onDismiss={this.closeMenu}
-          selectableContacts={this.props.selectableContacts}
-          selectableCampaigns={this.props.selectableCampaigns}
         />
       </article>
     )
@@ -356,11 +356,11 @@ const FeedbackPostSummary = ({label, campaigns, contacts, status, contact, campa
   )
 }
 
-export const FeedbackPost = ({item, currentUser, contact, campaign, contacts, campaigns}) => (
+export const FeedbackPost = ({item, currentUser, contact, campaign}) => (
   <Post
     {...item}
-    selectableCampaigns={campaigns}
-    selectableContacts={contacts}
+    contact={contact}
+    campaign={campaign}
     currentUser={currentUser}
     icon={<FeedFeedbackIcon className='blue-dark' style={{verticalAlign: -2}} />}
     summary={<FeedbackPostSummary {...item} label='logged feedback' contact={contact} campaign={campaign} />}
@@ -374,15 +374,15 @@ export const FeedbackPost = ({item, currentUser, contact, campaign, contacts, ca
         ) : null}
       </div>
     }
-    editable
+    editable={!!contact || !!campaign}
   />
 )
 
-export const CoveragePost = ({item, currentUser, contact, campaign, contacts, campaigns}) => (
+export const CoveragePost = ({item, currentUser, contact, campaign}) => (
   <Post
     {...item}
-    selectableCampaigns={campaigns}
-    selectableContacts={contacts}
+    contact={contact}
+    campaign={campaign}
     currentUser={currentUser}
     icon={<FeedCoverageIcon className='blue' />}
     summary={<FeedbackPostSummary {...item} label='logged coverage' contact={contact} campaign={campaign} />}
@@ -396,7 +396,7 @@ export const CoveragePost = ({item, currentUser, contact, campaign, contacts, ca
         ) : null}
       </div>
     }
-    editable
+    editable={!!contact || !!campaign}
   />
 )
 
