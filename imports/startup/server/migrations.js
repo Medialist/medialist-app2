@@ -341,7 +341,7 @@ Migrations.add({
   version: 10,
   name: 'Add user roles',
   up: () => {
-    Meteor.users.find({}).forEach((doc) => {
+    Meteor.users.find({emails: {$exists: true}}).forEach((doc) => {
       const email = doc.emails[0].address
       const roles = pickUserRoles(email)
       Meteor.users.update({

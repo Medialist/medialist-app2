@@ -19,16 +19,10 @@ npm run watch
 {
 	"_id" : "CBdsCSdGr3X7pLwnJ",
 	"createdAt" : ISODate("2017-01-04T16:00:03.904Z"),
+	"emails": {
+		{ address: "unique@exampled.org", verified: true }
+	},
 	"services" : {
-		"twitter" : {
-			"id" : "271419228",
-			"screenName" : "richsilvo",
-			"accessToken" : "ncsoidjjpejfw0e9fjwepifjweifjwefoiwefow",
-			"accessTokenSecret" : "sdicnweoifweoinweoinweoviwneoiwneoiwenfow",
-			"profile_image_url" : "http://pbs.twimg.com/profile_images/780358752566439936/iP6RPCYM_normal.jpg",
-			"profile_image_url_https" : "https://pbs.twimg.com/profile_images/780358752566439936/iP6RPCYM_normal.jpg",
-			"lang" : "en"
-		},
 		"resume" : {
 			"loginTokens" : [
 				{
@@ -61,6 +55,7 @@ npm run watch
 			"updatedAt": ISODate("2017-01-04T15:38:14.882Z")
 		}
 	]
+	"roles": ['team']
 }
 ```
 
