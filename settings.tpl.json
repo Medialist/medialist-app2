@@ -28,8 +28,8 @@
       "appId": "${INTERCOM_APP_ID}"
     },
     "authentication": {
-      "emailDomains": ["localhost"],
-      "extraEmailDomains": []
+      "teamDomains": ["${CUSTOMER_AUTH_DOMAIN}"],
+      "supportDomains": ["medialist.io"]
     },
     "attachSchemasToDatabase": true
   },

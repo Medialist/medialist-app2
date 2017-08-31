@@ -93,7 +93,8 @@ export const UserSchema = new SimpleSchema({
     type: String
   },
   roles: {
-    type: Array
+    type: Array,
+    optional: true
   },
   'roles.$': {
     type: String

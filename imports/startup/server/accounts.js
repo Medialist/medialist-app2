@@ -1,43 +1,9 @@
 import { Meteor } from 'meteor/meteor'
-import { ServiceConfiguration } from 'meteor/service-configuration'
 import { Accounts } from 'meteor/accounts-base'
 import sendLoginLinkTemplate from '/imports/api/email/server/templates/send-login-link'
+import onCreateUser from '/imports/api/users/server/on-create-user'
 
-ServiceConfiguration.configurations.upsert({
-  service: 'twitter'
-}, {
-  $set: {
-    consumerKey: Meteor.settings.twitter.consumer_key,
-    secret: Meteor.settings.twitter.consumer_secret,
-    loginStyle: 'popup'
-  }
-})
-
-Accounts.onCreateUser((options, user) => {
-  user.profile = options.profile || {}
-  user.myCampaigns = []
-  user.myContacts = []
-  user.recentCampaignLists = []
-  user.recentContactLists = []
-  user.onCampaigns = 0
-  user.createdAt = new Date()
-  user.roles = pickUserRoles(options.email)
-
-  return user
-})
-
-function pickUserRoles (email) {
-  const { emailDomains, extraEmailDomains } = Meteor.settings.public.authentication
-  const domain = email.split('@').pop()
-  const roles = []
-  if (emailDomains && emailDomains.some(e => e === domain)) {
-    roles.push('team')
-  }
-  if (extraEmailDomains && extraEmailDomains.some(e => e === domain)) {
-    roles.push('support')
-  }
-  return roles
-}
+Accounts.onCreateUser(onCreateUser)
 
 Accounts.urls.login = (token) => Meteor.absoluteUrl(`sign-in/${token}`)
 

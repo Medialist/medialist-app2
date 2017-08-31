@@ -343,7 +343,7 @@ describe('Campaign add team members method', function () {
 
   it('should add team members by email', function () {
     Meteor.settings.public.authentication = {
-      emailDomains: [
+      teamDomains: [
         'example.com', 'example.net', 'example.org'
       ]
     }
@@ -369,7 +369,7 @@ describe('Campaign add team members method', function () {
 
   it('should add campaign to invited users favourites', function () {
     Meteor.settings.public.authentication = {
-      emailDomains: [
+      teamDomains: [
         'example.com', 'example.net', 'example.org'
       ]
     }

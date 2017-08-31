@@ -3,8 +3,10 @@ import { Meteor } from 'meteor/meteor'
 import { rules } from '@achingbrain/react-validation'
 import validator from 'validator'
 
-export const SIGNIN_EMAIL_DOMAIN_REGEX = new RegExp('^.+' + Meteor.settings.public.authentication.emailDomains
-  .concat(Meteor.settings.public.authentication.extraEmailDomains)
+const {teamDomains, supportDomains} = Meteor.settings.public.authentication
+
+export const SIGNIN_EMAIL_DOMAIN_REGEX = new RegExp('^.+' + teamDomains
+  .concat(supportDomains)
   .map(domain => `@${domain}`)
   .reduce((list, current, index) => {
     if (index > 0) {
@@ -13,17 +15,17 @@ export const SIGNIN_EMAIL_DOMAIN_REGEX = new RegExp('^.+' + Meteor.settings.publ
 
     list = `${list}${current}`
 
-    if (index === (Meteor.settings.public.authentication.emailDomains.length + Meteor.settings.public.authentication.extraEmailDomains.length) - 1) {
+    if (index === (teamDomains.length + supportDomains.length) - 1) {
       list = `${list})$`
     }
 
     return list
   }, '('))
 
-export const SIGNIN_EMAIL_DOMAIN_HINT = Meteor.settings.public.authentication.emailDomains
+export const SIGNIN_EMAIL_DOMAIN_HINT = teamDomains
   .map(domain => `@${domain}`)
   .reduce((list, current, index) => {
-    if (index > 0 && index === Meteor.settings.public.authentication.emailDomains.length - 1) {
+    if (index > 0 && index === teamDomains.length - 1) {
       list = list + ' or '
     } else if (list) {
       list += ', '
