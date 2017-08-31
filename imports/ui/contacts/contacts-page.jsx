@@ -287,7 +287,6 @@ class ContactsPage extends React.Component {
       contactsCount,
       masterListSlug,
       loading,
-      searching,
       searchTermActive,
       contacts,
       term,
@@ -310,7 +309,7 @@ class ContactsPage extends React.Component {
       selectionMode
     } = this.state
 
-    if (!loading && !searching && contactsCount === 0) {
+    if (!loading && allContactsCount === 0) {
       return <ContactListEmpty />
     }
 
@@ -409,6 +408,7 @@ class ContactsPage extends React.Component {
           onDismiss={this.hideModals}
           open={this.state.addContactsToCampaignModal} />
         <AddTagsModal
+          title='Tag these Contacts'
           type='Contacts'
           open={this.state.addTagsModal}
           onDismiss={this.hideModals}

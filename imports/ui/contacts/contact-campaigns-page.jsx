@@ -290,6 +290,7 @@ class ContactCampaignsPage extends React.Component {
           contact={contact}
         />
         <AddTagsModal
+          title='Tag these Campaigns'
           type='Campaigns'
           open={this.state.addTagsToCampaignsModal}
           onDismiss={this.hideModals}

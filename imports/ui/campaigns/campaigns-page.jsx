@@ -270,6 +270,7 @@ class CampaignsPage extends React.Component {
           onDeleteClick={() => this.showModal('deleteCampaignsModal')}
           onDeselectAllClick={this.clearSelection} />
         <AddTagsModal
+          title='Tag these Campaigns'
           type='Campaigns'
           open={this.state.addTagsToCampaignsModal}
           onDismiss={this.hideModals}

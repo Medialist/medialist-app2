@@ -25,7 +25,7 @@ export default ({loading, suggestedTags, searchTerm, onSelectTag, onCreateTag}) 
 
       {!loading && searchTerm ? (
         <TagListItem onClick={() => onCreateTag(searchTerm)} data-id='create-new-tag'>
-          Add tag "{searchTerm}"
+          Add new tag "{searchTerm}"
         </TagListItem>
       ) : null}
     </Scroll>

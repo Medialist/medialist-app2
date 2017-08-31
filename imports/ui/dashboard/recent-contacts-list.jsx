@@ -15,9 +15,9 @@ const ContactPreviewsList = (props) => {
           <span className='ml1'>My Recent Contacts</span>
         </h1>
       </header>
-      <div className='pb3 px3'>
+      <div className='p3'>
         {contacts.map((contact) => (
-          <Link to={`/contact/${contact.slug}`} key={contact.slug} className='block mt4'>
+          <Link to={`/contact/${contact.slug}`} key={contact.slug} className='block mb2'>
             <ContactPreview contact={contact} />
           </Link>
         ))}
