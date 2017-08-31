@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import SimpleSchema from 'simpl-schema'
-import StatusMap, { StatusValues } from '/imports/api/contacts/status'
+import { StatusValues } from '/imports/api/contacts/status'
 import { checkAllSlugsExist } from '/imports/lib/slug'
 import findUrl from '/imports/lib/find-url'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
@@ -9,8 +9,6 @@ import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
 import { IdSchema } from '/imports/lib/schema'
-import values from 'lodash.values'
-import moment from 'moment'
 
 let createEmbed = {
   run: () => {}
@@ -142,27 +140,13 @@ export const updatePost = new ValidatedMethod({
     message: {
       type: String,
       optional: true
-    },
-    status: {
-      type: String,
-      allowedValues: values(Contacts.status),
-      optional: true
-    },
-    contactSlug: {
-      type: String,
-      optional: true
-    },
-    campaignSlug: {
-      type: String,
-      optional: true
     }
   }).extend(IdSchema).validator(),
 
-  run ({ _id, message, status, contactSlug, campaignSlug }) {
+  run ({ _id, message }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
-
     const oldPost = Posts.findOne({ _id })
 
     if (!oldPost) {
@@ -173,15 +157,9 @@ export const updatePost = new ValidatedMethod({
       throw new Meteor.Error('You can only edit Posts you created')
     }
 
-    const userRef = findOneUserRef(this.userId)
-    const updatedAt = new Date()
+    const $set = {}
 
-    const $set = {
-      updatedAt,
-      updatedBy: userRef
-    }
-
-    if (message) {
+    if (message !== oldPost.message) {
       $set.message = message
 
       const embed = createEmbed.run.call({
@@ -193,92 +171,17 @@ export const updatePost = new ValidatedMethod({
       $set.embeds = embed ? [embed] : []
     }
 
-    if (status && oldPost.status !== status) $set.status = status
-    if (contactSlug && oldPost.contacts[0].slug !== contactSlug) $set.contacts = [Contacts.findOneRef(contactSlug)]
-    if (campaignSlug && oldPost.campaigns[0].slug !== campaignSlug) $set.campaigns = [Campaigns.findOneRef(campaignSlug)]
-
+    // Don't update the post if theres no changes.
     if (!Object.keys($set)) return
+
+    $set.userRef = findOneUserRef(this.userId)
+    $set.updatedAt = new Date()
 
     Posts.update({
       _id
     }, {
       $set: $set
     })
-
-    // do the work to update our denormalized references
-    if ($set.status || $set.contacts || $set.campaigns) {
-      const newPost = Posts.findOne({ _id })
-
-      const moreRecentPost = Posts.findOne({
-        _id: {$nin: [newPost._id]},
-        type: {$in: ['FeedbackPost', 'CoveragePost', 'StatusUpdate']},
-        'contacts.slug': newPost.contacts[0].slug,
-        'campaigns.slug': newPost.campaigns[0].slug,
-        'createdAt': {$gt: newPost.createdAt}
-      }, {
-        sort: {createdAt: -1},
-        limit: 1
-      })
-
-      if (!moreRecentPost) {
-        Campaigns.update({
-          _id: newPost.campaigns[0]._id,
-          'contacts.slug': newPost.contacts[0].slug
-        }, {
-          $set: {
-            'contacts.$': {
-              slug: newPost.contacts[0].slug,
-              status: newPost.status,
-              updatedAt: newPost.createdAt,
-              updatedBy: newPost.createdBy
-            }
-          }
-        })
-      }
-
-      // if only the status needs updating stop here
-      if (!$set.contacts && !$set.campaigns) return
-
-      // these changes will roll back changes for a replaced contact
-      const mostRecentPreviousPost = Posts.findOne({
-        _id: {$nin: [_id]},
-        type: {$in: ['FeedbackPost', 'CoveragePost', 'StatusUpdate']},
-        'contacts.slug': oldPost.contacts[0].slug,
-        'campaigns.slug': oldPost.campaigns[0].slug
-      }, {
-        sort: {createdAt: -1}
-      })
-
-      if (!mostRecentPreviousPost) {
-        Campaigns.update({
-          _id: oldPost.campaigns[0]._id,
-          'contacts.slug': oldPost.contacts[0].slug
-        }, {
-          $set: {
-            'contacts.$': {
-              slug: oldPost.contacts[0].slug,
-              status: StatusMap.toContact,
-              updatedAt: oldPost.createdAt,
-              updatedBy: oldPost.createdBy
-            }
-          }
-        })
-      } else if (moment(mostRecentPreviousPost.createdAt).isBefore(oldPost.createdAt)) {
-        Campaigns.update({
-          _id: oldPost.campaigns[0]._id,
-          'contacts.slug': oldPost.contacts[0].slug
-        }, {
-          $set: {
-            'contacts.$': {
-              slug: oldPost.contacts[0].slug,
-              status: mostRecentPreviousPost.status,
-              updatedAt: oldPost.createdAt,
-              updatedBy: oldPost.createdBy
-            }
-          }
-        })
-      }
-    }
   }
 })
 
