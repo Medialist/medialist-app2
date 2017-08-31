@@ -102,7 +102,7 @@ class PostBoxTextArea extends React.Component {
     return (
       <div>
         <Textarea
-          minRows={this.props.focused ? '3' : '1'}
+          minRows={this.props.focused ? 3 : 1}
           maxRows={10}
           className='textarea placeholder-gray60 caret-blue'
           style={{border: '0 none', overflowY: 'auto', resize: 'none', paddingLeft: '3px'}}

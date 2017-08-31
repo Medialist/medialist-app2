@@ -34,13 +34,20 @@ class StatusSelectorContainer extends React.Component {
       compact,
       ...props
     } = this.props
-
+    let status = null
+    if (contact && contact.status) {
+      status = contact.status
+    } else if (campaign && campaign.status) {
+      status = campaign.status
+    } else if (campaign && campaign.contacts && contact) {
+      status = campaign.contacts.find(c => c.slug === contact.slug)
+    }
     return (
       <StatusSelector
         {...props}
-        status={contact.status || campaign.status}
+        status={status}
         onChange={this.onStatusChange}
-        children={children(contact.status || campaign.status)}
+        children={children(status)}
         compact={compact}
         dropdown={this.props.dropdown}
       />

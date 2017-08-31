@@ -152,6 +152,17 @@ module.exports = {
         .waitForElementNotVisible('@createPostButton')
 
       return this
+    },
+    postFeedbackMessage: function (text) {
+      this
+        .waitForElementVisible('@feedbackTab')
+        .click('@feedbackTab')
+        .waitForElementVisible('@feedbackInput')
+        .setValue('@feedbackInput', text)
+        .waitForElementVisible('@createPostButton')
+        .click('@createPostButton')
+
+      return this
     }
   }]
 }

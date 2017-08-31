@@ -17,11 +17,11 @@ const test = {
       t.perform((done) => {
         t.page.campaign()
           .navigate(campaign)
-          .addFeedbackPost(contact, 'hot-lead', 'He\'s so hot right now')
-          .editFeedbackPost(contact, 'contacted', ' that Hansella!')
+          .addFeedbackPost(contact, 'hot-lead', 'He\'s so hot')
+          .editFeedbackPost(' right now')
           .section.activityFeed.assertHasFeedbackPostWith(contact, campaign, {
-            message: 'He\'s so hot right now that Hansella!',
-            contactStatus: 'CONTACTED'
+            message: 'He\'s so hot right now',
+            contactStatus: 'hot-lead'
           })
 
         t.page.main().logout()
@@ -58,7 +58,7 @@ const test = {
         t.page.campaign()
           .navigate(campaign)
           .addCoveragePost(contact, 'completed', 'https://www.test.com')
-          .editCoveragePost(contact, 'completed', 'update! http://medialist.io')
+          .editCoveragePost('update! http://medialist.io')
           .section.activityFeed.assertHasCoveragePostWith(contact, campaign, {message: 'update!'})
 
         done()
@@ -82,6 +82,92 @@ const test = {
           .addNeedToKnowPost(contact, 'Need to knows')
           .editNeedToKnowPost(contact, 'Kneed 2 Nose')
           .section.activityFeed.assertHasNeedToKnowPostWith(contact, campaign, {message: 'Kneed 2 Nose'})
+
+        done()
+      })
+
+      done()
+    })
+    t.page.main().logout()
+    t.end()
+  },
+  'Should be able to change the campaign feedback post on the contacts page': function (t) {
+    t.createDomain(['user', 'campaign', 'campaign', 'contact'], (user1, campaign1, campaign2, contact, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact], campaign1, () => done())
+      })
+
+      t.perform((done) => {
+        t.addContactsToCampaign([contact], campaign2, () => done())
+      })
+
+      t.perform((done) => {
+        t.page.contact()
+          .navigate(contact)
+          .addFeedbackPost(campaign2, 'hot-lead', 'test')
+          .section.activityFeed.assertHasFeedbackPostWith(contact, campaign2, {
+            campaignName: campaign2.name,
+            message: 'test'
+          })
+
+        done()
+      })
+
+      t.perform((done) => {
+        t.page.contact()
+          .editFeedbackPost(' woo woo')
+          .section.activityFeed.assertHasFeedbackPostWith(contact, campaign2, {
+            campaignName: campaign2.name,
+            message: 'test woo woo'
+          })
+
+        done()
+      })
+
+      done()
+    })
+    t.page.main().logout()
+    t.end()
+  },
+  'Should be able to change the contact feedback post on the campaign page': function (t) {
+    t.createDomain(['user', 'campaign', 'contact', 'contact'], (user1, campaign, contact1, contact2, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact1, contact2], campaign, () => done())
+      })
+
+      t.perform((done) => {
+        t.page.campaign()
+          .navigate(campaign)
+          .addFeedbackPost(contact1, 'hot-lead', 'test')
+          .section.activityFeed.assertHasFeedbackPostWith(contact1, campaign, {
+            contactName: contact1.name,
+            message: 'test'
+          })
+
+        done()
+      })
+
+      t.perform((done) => {
+        t.page.campaign()
+          .section.campaignContacts.assertContactHasStatus(contact1, 'Hot Lead')
+
+        done()
+      })
+
+      t.perform((done) => {
+        t.page.campaign()
+          .editFeedbackPost(' woo woo')
+          .section.activityFeed.assertHasFeedbackPostWith(contact1, campaign, {
+            contactName: contact1.name,
+            message: 'test woo woo'
+          })
+
+        done()
+      })
+
+      t.perform((done) => {
+        t.page.campaign()
+          .section.campaignContacts.assertContactHasStatus(contact1, 'Hot Lead')
 
         done()
       })
