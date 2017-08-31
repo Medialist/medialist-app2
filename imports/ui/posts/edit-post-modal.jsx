@@ -1,9 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { createContainer } from 'meteor/react-meteor-data'
-import { CampaignContacts } from '/imports/ui/campaigns/collections'
-import Campaigns from '/imports/api/campaigns/campaigns'
 import Modal from '/imports/ui/navigation/modal'
+import { updatePost } from '/imports/api/posts/methods'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import { NeedToKnowInput } from '/imports/ui/feedback/post-box'
 import FeedbackInput from '/imports/ui/feedback/input-feedback'
@@ -15,7 +13,6 @@ class EditPost extends React.Component {
     campaign: PropTypes.object,
     open: PropTypes.bool.isRequired,
     post: PropTypes.object.isRequired,
-    onUpdate: PropTypes.func.isRequired,
     onDismiss: PropTypes.func.isRequired
   }
 
@@ -28,9 +25,31 @@ class EditPost extends React.Component {
     this.setState({ value })
   }
 
+  onUpdatePost = ({ message }) => {
+    console.log('onUpdatePost', message)
+    const { post } = this.props
+
+    if (post.message === message) {
+      return this.props.onDismiss()
+    }
+
+    const update = {
+      _id: post._id,
+      message
+    }
+
+    updatePost.call(update, (err) => {
+      if (err) {
+        this.props.snackbar.error('update-post-failure')
+        return console.error(err)
+      }
+      this.props.onDismiss()
+    })
+  }
+
   render () {
     const { post } = this.props
-    const { _id, icon, type, contacts, campaigns } = post
+    const { icon, type, contacts, campaigns } = post
 
     const Component = {
       'FeedbackPost': FeedbackInput,
@@ -46,11 +65,9 @@ class EditPost extends React.Component {
         <div className='p3'>
           <Component
             {...post}
-            selectableContacts={this.props.selectableContacts}
-            selectableCampaigns={this.props.selectableCampaigns}
             contact={contacts && contacts[0]}
             campaign={campaigns && campaigns[0]}
-            onSubmit={this.props.onUpdate.bind(null, _id)}
+            onSubmit={this.onUpdatePost}
             focused
             isEdit />
         </div>
@@ -61,32 +78,4 @@ class EditPost extends React.Component {
 
 const EditPostWithSnackBar = withSnackbar(EditPost)
 
-const EditPostModal = Modal(EditPostWithSnackBar, { width: 675, overflowY: 'visible' })
-
-export default createContainer(({open, contact, campaign}) => {
-  if (!open) return {}
-
-  const data = {}
-
-  if (campaign) {
-    data.selectableContacts = CampaignContacts.find({
-      campaign: campaign.slug
-    }, {
-      sort: {
-        updatedAt: -1
-      }
-    }).fetch()
-  } else if (contact) {
-    data.selectableCampaigns = Campaigns.find({
-      slug: {
-        $in: contact.campaigns
-      }
-    }, {
-      sort: {
-        updatedAt: -1
-      }
-    }).fetch()
-  }
-
-  return data
-}, EditPostModal)
+export default Modal(EditPostWithSnackBar, { width: 675, overflowY: 'visible' })

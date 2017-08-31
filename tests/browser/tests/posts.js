@@ -18,10 +18,10 @@ const test = {
         t.page.campaign()
           .navigate(campaign)
           .addFeedbackPost(contact, 'hot-lead', 'He\'s so hot')
-          .editFeedbackPost(contact, 'contacted', ' right now')
+          .editFeedbackPost(' right now')
           .section.activityFeed.assertHasFeedbackPostWith(contact, campaign, {
             message: 'He\'s so hot right now',
-            contactStatus: 'CONTACTED'
+            contactStatus: 'hot-lead'
           })
 
         t.page.main().logout()
@@ -58,7 +58,7 @@ const test = {
         t.page.campaign()
           .navigate(campaign)
           .addCoveragePost(contact, 'completed', 'https://www.test.com')
-          .editCoveragePost(contact, 'completed', 'update! http://medialist.io')
+          .editCoveragePost('update! http://medialist.io')
           .section.activityFeed.assertHasCoveragePostWith(contact, campaign, {message: 'update!'})
 
         done()
@@ -105,15 +105,21 @@ const test = {
         t.page.contact()
           .navigate(contact)
           .addFeedbackPost(campaign2, 'hot-lead', 'test')
-          .section.activityFeed.assertHasFeedbackPostWith(contact, campaign2, {campaignName: campaign2.name})
+          .section.activityFeed.assertHasFeedbackPostWith(contact, campaign2, {
+            campaignName: campaign2.name,
+            message: 'test'
+          })
 
         done()
       })
 
       t.perform((done) => {
         t.page.contact()
-          .editFeedbackPost(campaign1)
-          .section.activityFeed.assertHasFeedbackPostWith(contact, campaign1, {campaignName: campaign1.name})
+          .editFeedbackPost(' woo woo')
+          .section.activityFeed.assertHasFeedbackPostWith(contact, campaign2, {
+            campaignName: campaign2.name,
+            message: 'test woo woo'
+          })
 
         done()
       })
@@ -133,7 +139,10 @@ const test = {
         t.page.campaign()
           .navigate(campaign)
           .addFeedbackPost(contact1, 'hot-lead', 'test')
-          .section.activityFeed.assertHasFeedbackPostWith(contact1, campaign, {contactName: contact1.name})
+          .section.activityFeed.assertHasFeedbackPostWith(contact1, campaign, {
+            contactName: contact1.name,
+            message: 'test'
+          })
 
         done()
       })
@@ -147,15 +156,18 @@ const test = {
 
       t.perform((done) => {
         t.page.campaign()
-          .editFeedbackPost(contact2, 'not-interested', '')
-          .section.activityFeed.assertHasFeedbackPostWith(contact2, campaign, {contactName: contact2.name})
+          .editFeedbackPost(' woo woo')
+          .section.activityFeed.assertHasFeedbackPostWith(contact1, campaign, {
+            contactName: contact1.name,
+            message: 'test woo woo'
+          })
 
         done()
       })
 
       t.perform((done) => {
         t.page.campaign()
-          .section.campaignContacts.assertContactHasStatus(contact2, 'Not Interested')
+          .section.campaignContacts.assertContactHasStatus(contact1, 'Hot Lead')
 
         done()
       })

@@ -17,8 +17,9 @@ const CampaignButton = (props) => {
   )
 }
 
-const CampaignSelector = React.createClass({
-  propTypes: {
+class CampaignSelector extends React.Component {
+  static propTypes = {
+    isEdit: PropTypes.bool,
     selectedStatus: PropTypes.string,
     contact: PropTypes.object.isRequired,
     campaigns: PropTypes.array.isRequired,
@@ -26,14 +27,19 @@ const CampaignSelector = React.createClass({
     onChange: PropTypes.func.isRequired,
     onOpen: PropTypes.func,
     onClose: PropTypes.func
-  },
-  getInitialState () {
-    return {
-      open: false,
-      campaign: this.props.campaign || (this.props.campaigns && this.props.campaigns[0])
-    }
-  },
-  openDropdown () {
+  }
+
+  static defaultProps = {
+    campaigns: [],
+    isEdit: false
+  }
+
+  state = {
+    open: false,
+    campaign: this.props.campaign || this.props.campaigns[0]
+  }
+
+  openDropdown = () => {
     this.setState({
       open: true
     })
@@ -41,8 +47,9 @@ const CampaignSelector = React.createClass({
     if (this.props.onOpen) {
       this.props.onOpen()
     }
-  },
-  closeDropdown () {
+  }
+
+  closeDropdown = () => {
     this.setState({
       open: false
     })
@@ -50,8 +57,9 @@ const CampaignSelector = React.createClass({
     if (this.props.onClose) {
       this.props.onClose()
     }
-  },
-  onLinkClick (campaign) {
+  }
+
+  onLinkClick = (campaign) => {
     this.setState({
       open: false,
       campaign: campaign
@@ -67,21 +75,22 @@ const CampaignSelector = React.createClass({
     if (this.props.onClose) {
       this.props.onClose()
     }
-  },
-  onClearFilter () {
+  }
+
+  onClearFilter = () => {
     this.props.onChange({
       target: {
         name: 'campaign',
         value: null
       }
     })
-  },
+  }
+
   render () {
     const { openDropdown, closeDropdown, onLinkClick, onClearFilter } = this
-    const { campaigns, contact, onChange, selectedStatus } = this.props
+    const { campaigns, contact, onChange, selectedStatus, isEdit } = this.props
     const { campaign, open } = this.state
     const status = selectedStatus || campaign.contacts.find(c => c.slug === contact.slug).status
-
     return (
       <div className='inline-block'>
         <div className='inline-block'>
@@ -89,7 +98,7 @@ const CampaignSelector = React.createClass({
             <button
               style={{padding: '6px 15px 6px'}}
               className='btn bg-transparent border-gray80' onClick={openDropdown}
-              disabled={!campaigns.length}
+              disabled={isEdit || !campaigns.length}
               data-id='select-campaign-button'>
               { campaign ? <CampaignButton campaign={campaign} /> : 'Select a Campaign' }
             </button>
@@ -108,13 +117,13 @@ const CampaignSelector = React.createClass({
             buttonStyle={{padding: '6px 15px 7px'}}
             status={status || this.props.selectedStatus}
             onChange={onChange}
-            disabled={!contact}>
+            disabled={isEdit || !contact}>
             <StatusLabel name={status} />
           </StatusSelector>
         </div>
       </div>
     )
   }
-})
+}
 
 export default CampaignSelector

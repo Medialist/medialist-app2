@@ -99,6 +99,7 @@ export default class CoverageInput extends Component {
           isEdit={isEdit} >
           {isCampaignPage ? (
             <ContactSelector
+              isEdit={isEdit}
               selectedContact={contact}
               selectedStatus={status}
               campaign={campaign}
@@ -109,7 +110,8 @@ export default class CoverageInput extends Component {
               onClose={onCloseDropDown} />
           ) : (
             <CampaignSelector
-              selectedContact={contact}
+              isEdit={isEdit}
+              campaign={campaign}
               selectedStatus={status}
               contact={contact}
               onChange={onFieldChange}

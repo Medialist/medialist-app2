@@ -277,7 +277,7 @@ module.exports = {
         .postFeedback(contact, contactStatus, text)
       return this
     },
-    editFeedbackPost: function (contact, contactStatus, text) {
+    editFeedbackPost: function (text) {
       this
         .waitForElementVisible('@openPostMenuButton')
         .click('@openPostMenuButton')
@@ -288,17 +288,6 @@ module.exports = {
       this.section.editPostModal
         .waitForElementVisible('@selectContactButton')
         .click('@selectContactButton')
-
-      this.section.editPostModal.section.dropdownMenu
-        .waitForElementVisible('@campaignContactSearchResult')
-        .selectContact(contact)
-
-      this.section.editPostModal
-        .waitForElementVisible('@contactStatusSelectorButton')
-        .click('@contactStatusSelectorButton')
-
-      this.section.editPostModal.section.dropdownMenu
-        .selectStatus(contactStatus)
 
       this.section.editPostModal
         .waitForElementVisible('@feedbackInput')
@@ -314,7 +303,7 @@ module.exports = {
         .postCoverage(contact, contactStatus, text)
       return this
     },
-    editCoveragePost: function (contact, contactStatus, text) {
+    editCoveragePost: function (text) {
       this
         .waitForElementVisible('@openPostMenuButton')
         .click('@openPostMenuButton')

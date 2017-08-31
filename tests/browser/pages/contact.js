@@ -101,7 +101,7 @@ module.exports = {
         .postNeedToKnow(contact, text)
       return this
     },
-    editFeedbackPost: function (campaign) {
+    editFeedbackPost: function (text) {
       this
         .waitForElementVisible('@openPostMenuButton')
         .click('@openPostMenuButton')
@@ -110,14 +110,8 @@ module.exports = {
         .waitForElementVisible(this.section.editPostModal.selector)
 
       this.section.editPostModal
-        .waitForElementVisible('@selectCampaignButton')
-        .click('@selectCampaignButton')
-
-      this.section.editPostModal.section.dropdownMenu
-        .waitForElementVisible('@campaignSearchResult')
-        .selectCampaign(campaign)
-
-      this.section.editPostModal
+        .waitForElementVisible('@feedbackInput')
+        .setValue('@feedbackInput', text)
         .waitForElementVisible('@createPostButton')
         .click('@createPostButton')
         .waitForElementNotPresent('@createPostButton')
