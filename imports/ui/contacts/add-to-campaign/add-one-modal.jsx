@@ -17,7 +17,6 @@ class AddContactToCampaign extends React.Component {
 
   renderCampaigns = (campaigns, onCampaignSelected) => {
     const {contact} = this.props
-    console.log(campaigns)
     campaigns.sort((a, b) => {
       const inA = contact.campaigns.indexOf(a.slug) > -1
       const inB = contact.campaigns.indexOf(b.slug) > -1
