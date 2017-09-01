@@ -1,15 +1,11 @@
 import { Meteor } from 'meteor/meteor'
 import { Accounts } from 'meteor/accounts-base'
 import findOrCreateUser from './find-or-create-user'
+import validateEmail from './validate-email'
 
 const sendEmailLogInLink = (email) => {
-  const domain = email.split('@').pop()
-  const validDomain = Meteor.settings.public.authentication.emailDomains
-    .concat(Meteor.settings.public.authentication.extraEmailDomains)
-    .some(validDomain => domain === validDomain)
-
-  if (!validDomain) {
-    console.warn(`User tried to log in with invalid email domain '${domain}'`)
+  if (!validateEmail(email)) {
+    console.warn(`User tried to log in with invalid email '${email}'`)
 
     throw new Meteor.Error('INVALID_EMAIL')
   }

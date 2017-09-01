@@ -5,6 +5,7 @@ import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
 import Tags from '/imports/api/tags/tags'
 import { EmbedSchema } from '/imports/api/embeds/schema'
+import {pickUserRoles} from '/imports/api/users/server/on-create-user'
 
 Migrations.add({
   version: 1,
@@ -333,6 +334,24 @@ Migrations.add({
           }
         })
       })
+  }
+})
+
+Migrations.add({
+  version: 10,
+  name: 'Add user roles',
+  up: () => {
+    Meteor.users.find({emails: {$exists: true}}).forEach((doc) => {
+      const email = doc.emails[0].address
+      const roles = pickUserRoles(email)
+      Meteor.users.update({
+        _id: doc._id
+      }, {
+        $set: {
+          roles: roles
+        }
+      })
+    })
   }
 })
 

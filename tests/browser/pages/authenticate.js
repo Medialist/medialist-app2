@@ -27,27 +27,28 @@ module.exports = {
 
       return this
     },
-    register: function () {
-      const user = {
-        email: faker.internet.email(null, null, 'test.medialist.io'),
-        password: faker.internet.password(),
-        name: faker.name.findName()
-      }
+    register: function (opts) {
+      opts = opts || {}
+      const email = opts.email || faker.internet.email(null, null, 'test.medialist.io')
+      const name = opts.name || faker.name.findName()
 
       this
         .ensureNoSession()
         .navigate()
         .waitForElementVisible('@emailField')
-        .setValue('@emailField', user.email)
+        .setValue('@emailField', email)
         .waitForElementVisible('@sendEmailButton')
         .click('@sendEmailButton')
         .waitForElementVisible('@onboardingNameField')
         .clear('@onboardingNameField')
-        .setValue('@onboardingNameField', user.name)
+        .setValue('@onboardingNameField', name)
         .waitForElementVisible('@onboardingCompleteButton')
         .click('@onboardingCompleteButton')
 
-      return user
+      return {
+        email: email,
+        name: name
+      }
     }
   }]
 }

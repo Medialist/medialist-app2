@@ -91,6 +91,13 @@ export const UserSchema = new SimpleSchema({
   },
   'recentContactLists.$': {
     type: String
+  },
+  roles: {
+    type: Array,
+    optional: true
+  },
+  'roles.$': {
+    type: String
   }
 })
 UserSchema.extend(IdSchema)

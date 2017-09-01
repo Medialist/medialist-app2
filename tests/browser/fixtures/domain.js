@@ -77,7 +77,8 @@ function user () {
     profile: {
       name: faker.name.findName(),
       avatar: faker.image.imageUrl()
-    }
+    },
+    roles: ['team']
   }
 }
 

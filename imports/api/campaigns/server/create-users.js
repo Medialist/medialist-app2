@@ -1,17 +1,12 @@
 import { Meteor } from 'meteor/meteor'
 import findOrCreateUser from '/imports/api/users/server/find-or-create-user'
+import validateEmail from '/imports/api/users/server/validate-email'
 
 const createUsers = (emails = []) => {
   // validate all emails
   return emails.map(email => {
-    const domain = email.split('@').pop()
-
-    const validDomain = Meteor.settings.public.authentication.emailDomains
-      .concat(Meteor.settings.public.authentication.extraEmailDomains)
-      .some(validDomain => domain === validDomain)
-
-    if (!validDomain) {
-      console.warn(`Tried to invite someone with an invalid email '${domain}'`)
+    if (!validateEmail(email)) {
+      console.warn(`Tried to invite someone with an invalid email '${email}'`)
 
       throw new Meteor.Error('INVALID_EMAIL')
     }
