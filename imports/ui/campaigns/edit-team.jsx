@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Meteor } from 'meteor/meteor'
 import Modal from '/imports/ui/navigation/modal'
 import { SearchBlueIcon, AddIcon, SelectedIcon, EmailIcon } from '/imports/ui/images/icons'
 import AvatarList from '/imports/ui/lists/avatar-list'
@@ -178,7 +177,6 @@ EditTeam.propTypes = {
   // SearchableTeamList
   term: PropTypes.string,
   items: PropTypes.array.isRequired,
-  allItems: PropTypes.array.isRequired,
   loading: PropTypes.bool.isRequired,
   searching: PropTypes.bool.isRequired,
   onTermChange: PropTypes.func.isRequired,
@@ -233,6 +231,7 @@ class EditTeamContainer extends React.Component {
     }
 
     const fields = {
+      '_id': 1,
       'profile.name': 1,
       'profile.avatar': 1,
       'onCampaigns': 1,
@@ -245,7 +244,6 @@ class EditTeamContainer extends React.Component {
         query={query}
         fields={fields}
         collection='users'
-        allItems={Meteor.users.find({roles: 'team'}, {sort: {'profile.name': 1}}).fetch()}
         initialItems={this.props.campaign.team}
         onCancel={() => this.onCancel()}
         onSave={(teamMates, emails) => this.onSave(teamMates, emails)}
@@ -277,7 +275,7 @@ class TeamMatesList extends React.Component {
   render () {
     if (!this.props.teamMates.length) {
       return (
-        <div className='px4 py8'>
+        <div className='px4 py8' data-id='team-mates-table-empty'>
           <div className='center pt4 pb6'><SearchBlueIcon style={{height: '50px', width: '50px'}} /></div>
           <div className='center'><strong>None of your teammates match your search.</strong></div>
           <div className='center mt3'>Please check your search or you can invite them via email address below</div>
@@ -367,7 +365,7 @@ const UnselectabledTeamMember = ({teamMember}) => {
 
 const TeamMember = ({ teamMember, campaign, style, highlighted, ...props }) => {
   return (
-    <div style={{lineHeight: 1.3, ...style}} {...props}>
+    <div style={{lineHeight: 1.3, ...style}} {...props} data-id={teamMember._id}>
       <CircleAvatar className='inline-block' size={38} avatar={teamMember.profile.avatar} name={teamMember.profile.name} />
       <div className='inline-block align-top pl3' style={{width: 220}}>
         <div className='flex items-center'>
