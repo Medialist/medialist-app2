@@ -39,7 +39,38 @@ module.exports = {
         coverageInput: '[data-id=coverage-input]',
         needToKnowInput: '[data-id=need-to-know-input]',
         createPostButton: '[data-id=create-post-button]',
-        contactStatusSelectorButton: '[data-id=contact-status-selector-button]'
+        contactStatusSelectorButton: '[data-id=contact-status-selector-button]',
+        selectCampaignButton: '[data-id=select-campaign-button]'
+      },
+      sections: {
+        dropdownMenu: {
+          selector: '[data-id=dropdown-menu]',
+          elements: {
+            campaignSearchResult: '[data-type=campaign-search-result]'
+          },
+          commands: [
+            {
+              selectCampaign: function (campaign) {
+                const selector = `[data-id=edit-post-modal] [data-id=campaign-${campaign.slug}]`
+
+                this
+                  .waitForElementVisible(selector)
+                  .click(selector)
+                return this
+              }
+            },
+            {
+              selectStatus: function (status) {
+                const selector = `[data-id=edit-post-modal] [data-id=contact-status-${status}]`
+
+                this
+                  .waitForElementVisible(selector)
+                  .click(selector)
+                return this
+              }
+            }
+          ]
+        }
       }
     },
     activityFeed: activityFeed('contact'),
@@ -62,9 +93,31 @@ module.exports = {
 
       return this
     },
+    addFeedbackPost: function (campaign, status, text) {
+      this.section.postBox
+        .postFeedback(campaign, {}, status, text)
+      return this
+    },
     addNeedToKnowPost: function (contact, text) {
       this.section.postBox
         .postNeedToKnow(contact, text)
+      return this
+    },
+    editFeedbackPost: function (text) {
+      this
+        .waitForElementVisible('@openPostMenuButton')
+        .click('@openPostMenuButton')
+        .waitForElementVisible('@editPostButton')
+        .click('@editPostButton')
+        .waitForElementVisible(this.section.editPostModal.selector)
+
+      this.section.editPostModal
+        .waitForElementVisible('@feedbackInput')
+        .setValue('@feedbackInput', text)
+        .waitForElementVisible('@createPostButton')
+        .click('@createPostButton')
+        .waitForElementNotPresent('@createPostButton')
+
       return this
     },
     editNeedToKnowPost: function (contact, text) {

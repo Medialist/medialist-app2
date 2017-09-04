@@ -8,6 +8,7 @@ import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
+import { IdSchema } from '/imports/lib/schema'
 
 let createEmbed = {
   run: () => {}
@@ -134,44 +135,31 @@ export const createFeedbackPost = new ValidatedMethod({
 
 export const updatePost = new ValidatedMethod({
   name: 'updatePost',
+
   validate: new SimpleSchema({
-    _id: {
-      type: String
-    },
     message: {
       type: String,
       optional: true
-    },
-    status: {
-      type: String,
-      allowedValues: StatusValues,
-      optional: true
     }
-  }).validator(),
-  run ({ _id, message, status }) {
+  }).extend(IdSchema).validator(),
+
+  run ({ _id, message }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
+    const oldPost = Posts.findOne({ _id })
 
-    const post = Posts.findOne({ _id })
-
-    if (!post) {
-      throw new Meteor.Error('Can\'t find post')
+    if (!oldPost) {
+      throw new Meteor.Error('Can\'t find Post')
     }
 
-    if (this.userId !== post.createdBy._id) {
-      throw new Meteor.Error('You can only edit posts you created')
+    if (this.userId !== oldPost.createdBy._id) {
+      throw new Meteor.Error('You can only edit Posts you created')
     }
 
-    const userRef = findOneUserRef(this.userId)
-    const updatedAt = new Date()
+    const $set = {}
 
-    const $set = {
-      updatedBy: userRef,
-      updatedAt
-    }
-
-    if (message) {
+    if (message !== oldPost.message) {
       $set.message = message
 
       const embed = createEmbed.run.call({
@@ -183,47 +171,17 @@ export const updatePost = new ValidatedMethod({
       $set.embeds = embed ? [embed] : []
     }
 
-    if (status) {
-      $set.status = status
-    }
+    // Don't update the post if theres no changes.
+    if (!Object.keys($set)) return
+
+    $set.userRef = findOneUserRef(this.userId)
+    $set.updatedAt = new Date()
 
     Posts.update({
       _id
     }, {
       $set: $set
     })
-
-    if (status !== post.status) {
-      post.campaigns.forEach((campaign) => {
-        Campaigns.update({
-          slug: campaign.slug,
-          'contacts.slug': {
-            $in: post.contacts.map(c => c.slug)
-          }
-        }, {
-          $set: {
-            'contacts.$.status': status,
-            'contacts.$.updatedAt': updatedAt,
-            'contacts.$.updatedBy': userRef,
-            updatedBy: userRef,
-            updatedAt
-          }
-        })
-      })
-    }
-
-    if (post.type === 'NeedToKnowPost') {
-      post.contacts.forEach((contact) => {
-        Contacts.update({
-          slug: contact.slug
-        }, {
-          $set: {
-            updatedBy: userRef,
-            updatedAt
-          }
-        })
-      })
-    }
   }
 })
 

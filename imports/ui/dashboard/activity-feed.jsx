@@ -42,6 +42,7 @@ const ActivityFeed = React.createClass({
     const { onFilterChange, onCampaignFilterChange } = this
     const { contact, campaign } = this.props
     const { filterType, filterCampaign } = this.state
+
     return (
       <div data-id={this.props['data-id']}>
         <div className='flex justify-start items-center pb3'>
@@ -62,7 +63,11 @@ const ActivityFeed = React.createClass({
           {(nearBottom) => (
             <SubscriptionLimitContainer wantMore={nearBottom}>
               {(limit) => (
-                <ActivityListContainer limit={limit} filter={filterType} campaign={filterCampaign || campaign} contact={contact} />
+                <ActivityListContainer
+                  limit={limit}
+                  filter={filterType}
+                  campaign={filterCampaign || campaign}
+                  contact={contact} />
               )}
             </SubscriptionLimitContainer>
           )}

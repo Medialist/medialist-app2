@@ -1,14 +1,13 @@
+/* global describe beforeEach it */
 import { Meteor } from 'meteor/meteor'
-import { Random } from 'meteor/random'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
 import assert from 'assert'
 import faker from 'faker'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
-import Embeds from '/imports/api/embeds/embeds'
 import { createFeedbackPost, createCoveragePost, createNeedToKnowPost, updatePost } from '/imports/api/posts/methods'
-import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists, createTestEmbeds } from '/tests/fixtures/server-domain'
+import { createTestUsers, createTestContacts, createTestCampaigns, createTestEmbeds } from '/tests/fixtures/server-domain'
 import { batchUpdateStatus, addContactsToCampaign } from '/imports/api/contacts/methods'
 import toUserRef from '/imports/lib/to-user-ref'
 import StatusMap from '/imports/api/contacts/status'
@@ -307,7 +306,7 @@ describe('updateFeedbackPost', function () {
 
     users = createTestUsers(2)
     contacts = createTestContacts(2)
-    campaigns = createTestCampaigns(1)
+    campaigns = createTestCampaigns(2)
   })
 
   it('should require the user to be logged in', function () {
@@ -315,7 +314,7 @@ describe('updateFeedbackPost', function () {
   })
 
   it('should require the user updating to be the creator of the post', function () {
-    const postId = createNeedToKnowPost.run.call({
+    const postId = createFeedbackPost.run.call({
       userId: users[0]._id
     }, {
       contactSlug: contacts[0].slug,
@@ -323,48 +322,42 @@ describe('updateFeedbackPost', function () {
     })
 
     assert.throws(() => updatePost.run.call({
-      userId: users[1]
+      userId: users[1]._id
     }, {
       _id: postId,
       message: 'this will throw'
-    }), /You can only edit posts you created/)
+    }), /You can only edit Posts you created/)
   })
 
-  it('should let users update a post and cascade updates to campaign contacts status', function () {
+  it('should update the message', function () {
     addContactsToCampaign.run.call({
       userId: users[0]._id
     }, {
-      contactSlugs: [contacts[0].slug, contacts[1].slug],
+      contactSlugs: [contacts[0].slug],
       campaignSlug: campaigns[0].slug
     })
 
-    const _id = createCoveragePost.run.call({
+    const postId = createFeedbackPost.run.call({
       userId: users[0]._id
     }, {
       contactSlug: contacts[0].slug,
       campaignSlug: campaigns[0].slug,
+      status: StatusMap.contacted,
       message: faker.lorem.paragraph()
     })
 
     updatePost.run.call({
       userId: users[0]._id
     }, {
-      _id,
-      message: 'test update2',
-      status: StatusMap.contacted
+      _id: postId,
+      message: 'woo woo'
     })
 
-    const updatedPost = Posts.findOne({ _id })
-    const campaign = Campaigns.findOne({slug: campaigns[0].slug})
-    assert.equal(campaign.contacts.find((c) => c.slug === contacts[0].slug).status, StatusMap.contacted)
-    assert.equal(campaign.contacts.find((c) => c.slug === contacts[0].slug).updatedAt.getTime(), updatedPost.updatedAt.getTime())
-    assert.deepEqual(campaign.contacts.find((c) => c.slug === contacts[0].slug).updatedBy, toUserRef(users[0]))
-
-    // not in post, should remain unchanged
-    assert.equal(campaign.contacts.find((c) => c.slug === contacts[1].slug).status, StatusMap.toContact)
-
-    assert.equal(updatedPost.status, StatusMap.contacted)
-    assert.equal(updatedPost.message, 'test update2')
+    const updatedPost = Posts.findOne({ _id: postId })
+    assert.equal(updatedPost.message, 'woo woo', 'post message should be updated')
+    assert.equal(updatedPost.status, StatusMap.contacted, 'post status should be unchanged')
+    assert.equal(updatedPost.contacts[0].slug, contacts[0].slug, 'post contacts should be unchanged')
+    assert.equal(updatedPost.campaigns[0].slug, campaigns[0].slug, 'post campaigns should be unchanged')
   })
 })
 

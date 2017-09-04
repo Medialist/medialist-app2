@@ -4,8 +4,9 @@ import { SearchIcon } from '/imports/ui/images/icons'
 import debounce from 'lodash.debounce'
 import Loading from './loading'
 
-const SearchBox = React.createClass({
-  propTypes: {
+class SearchBox extends React.Component {
+  static propTypes = {
+    inputRef: PropTypes.func,
     placeholder: PropTypes.string,
     initialTerm: PropTypes.string,
     onTermChange: PropTypes.func.isRequired,
@@ -13,37 +14,33 @@ const SearchBox = React.createClass({
     children: PropTypes.node,
     style: PropTypes.object,
     'data-id': PropTypes.string
-  },
+  }
 
-  getDefaultProps () {
-    return { initialTerm: '', placeholder: 'Search...' }
-  },
+  static defaultProps = {
+    initialTerm: '',
+    placeholder: 'Search...'
+  }
 
-  getInitialState () {
-    return { term: this.props.initialTerm, isFocused: false }
-  },
+  state = {
+    isFocused: false
+  }
 
-  onChange (e) {
-    const value = e.target.value
-    this.setState({ term: value })
-    this.onTermChange(value)
-  },
+  onChange = debounce(value => this.props.onTermChange(value), 200, {maxWait: 600})
 
-  componentWillMount () {
-    this.onTermChange = debounce(this.props.onTermChange, 200, {maxWait: 600})
-  },
-
-  focus () {
-    this.textInput.focus()
-  },
-
-  clear () {
-    this.setState({term: ''})
-  },
+  componentDidMount () {
+    const {initialTerm, inputRef} = this.props
+    this.inputEl.focus()
+    if (initialTerm) {
+      this.inputEl.value = initialTerm
+    }
+    if (inputRef) {
+      inputRef(this.inputEl)
+    }
+  }
 
   render () {
     const { placeholder, children, onKeyDown, style } = this.props
-    const { term, isFocused } = this.state
+    const { isFocused } = this.state
     return (
       <div
         style={{paddingLeft: 45, ...style}}
@@ -56,22 +53,21 @@ const SearchBox = React.createClass({
             {children}
           </div>
           <input
-            ref={(input) => { this.textInput = input }}
+            ref={el => { this.inputEl = el }}
             type='search'
             style={{outline: 'none', height: 30, lineHeight: 30, backgroundColor: 'transparent'}}
             className='flex-auto f-lg normal gray20 placeholder-gray60'
-            onChange={this.onChange}
+            onChange={e => this.onChange(e.target.value)}
             onKeyDown={onKeyDown}
             onFocus={() => this.setState({isFocused: true})}
             onBlur={() => this.setState({isFocused: false})}
-            value={term}
             placeholder={placeholder}
             data-id={this.props['data-id']} />
         </div>
       </div>
     )
   }
-})
+}
 
 export default SearchBox
 

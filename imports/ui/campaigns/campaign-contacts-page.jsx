@@ -10,10 +10,9 @@ import CampaignTopbar from '/imports/ui/campaigns/campaign-topbar'
 import CampaignSummary from '/imports/ui/campaigns/campaign-summary'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
-import { CreateContactModal } from '../contacts/edit-contact'
-import AddContactModal from '/imports/ui/campaigns/add-contact'
+import AddOrCreateContactModal from '/imports/ui/campaigns/add-or-create-contact'
 import RemoveContactModal from '/imports/ui/campaigns/remove-contact'
-import AddContactsToCampaign from '/imports/ui/contacts/add-contacts-to-campaign'
+import AddContactsToCampaign from '/imports/ui/contacts/add-to-campaign/add-many-modal'
 import AddTagsModal from '/imports/ui/tags/add-tags-modal'
 import AddToMasterListModal from '/imports/ui/master-lists/add-to-master-list-modal'
 import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
@@ -47,7 +46,6 @@ class CampaignContactsPage extends React.Component {
     selectionMode: 'include',
     isDropdownOpen: false,
     addContactModal: false,
-    createContactModal: false,
     addContactsToCampaignModal: false,
     addTagsModal: false,
     addToMasterListsModal: false,
@@ -55,11 +53,7 @@ class CampaignContactsPage extends React.Component {
   }
 
   onAddContactClick = () => {
-    if (this.props.contactsAllCount) {
-      this.showModal('addContactModal')
-    } else {
-      this.showModal('createContactModal')
-    }
+    this.showModal('addContactModal')
   }
 
   onFavouriteAll = () => {
@@ -140,14 +134,6 @@ class CampaignContactsPage extends React.Component {
     this.setState({selectionMode})
   }
 
-  onShowCreateContact = (data) => {
-    this.setState({
-      contactPrefillData: data
-    })
-
-    this.showModal('createContactModal')
-  }
-
   onSortChange = (sort) => {
     this.props.setQuery({ sort })
   }
@@ -187,7 +173,6 @@ class CampaignContactsPage extends React.Component {
   hideModals = () => {
     this.setState({
       addContactModal: false,
-      createContactModal: false,
       addContactsToCampaignModal: false,
       addTagsModal: false,
       addToMasterListsModal: false,
@@ -196,16 +181,12 @@ class CampaignContactsPage extends React.Component {
   }
 
   render () {
-    const { campaign, contacts } = this.props
-
-    if (!campaign) {
-      return null
-    }
+    const { campaign, contacts, loading } = this.props
 
     const {
-      contactPrefillData,
       selections,
-      selectionMode
+      selectionMode,
+      addContactModal
     } = this.state
 
     let {
@@ -213,8 +194,29 @@ class CampaignContactsPage extends React.Component {
       sort,
       term,
       status,
-      statusCounts
+      statusCounts,
+      contactsAllCount
     } = this.props
+
+    if (!campaign) {
+      return <LoadingBar />
+    }
+
+    if (loading) {
+      return (
+        <div>
+          <CampaignTopbar campaign={campaign} onAddContactClick={this.onAddContactClick} />
+          <LoadingBar />
+        </div>
+      )
+    }
+
+    let contactSearch = null
+    if (selectionMode === 'all') {
+      contactSearch = {
+        campaignSlugs: [campaign.slug]
+      }
+    }
 
     return (
       <div>
@@ -251,25 +253,22 @@ class CampaignContactsPage extends React.Component {
           onDeleteClick={() => this.showModal('removeContactsModal')}
           onDeselectAllClick={this.clearSelection}
           onExportToCsvClick={this.onExportToCsv} />
-        <CreateContactModal
-          open={this.state.createContactModal}
+        <AddOrCreateContactModal
+          open={addContactModal}
           onDismiss={this.hideModals}
           campaign={campaign}
-          prefill={contactPrefillData} />
-        <AddContactModal
-          open={this.state.addContactModal}
-          onDismiss={this.hideModals}
-          onCreate={this.onShowCreateContact}
-          campaign={campaign}
-          campaignContacts={contacts} />
+          campaignContacts={contacts}
+          allContactsCount={contactsAllCount} />
         <AddContactsToCampaign
           title='Add these Contacts to a Campaign'
-          contacts={this.state.selections}
+          contacts={selections}
+          contactsCount={selections.length}
+          contactSearch={contactSearch}
+          selectionMode={selectionMode}
           onDismiss={this.hideModals}
-          open={this.state.addContactsToCampaignModal}>
-          <AbbreviatedAvatarList items={selections} maxTooltip={12} />
-        </AddContactsToCampaign>
+          open={this.state.addContactsToCampaignModal} />
         <AddTagsModal
+          title='Tag these Contacts'
           type='Contacts'
           open={this.state.addTagsModal}
           onDismiss={this.hideModals}
@@ -309,10 +308,6 @@ CampaignContactsPage.contextTypes = {
 // I decode and encode the search options from the query string
 // and set up the subscriptions and collecton queries from those options.
 const CampaignContactsPageContainer = (props, context) => {
-  if (props.loading) {
-    return <LoadingBar />
-  }
-
   // API is like setState...
   // Pass an obj with the new params you want to set on the query string.
   // has to be in a container because createComponent does not give you access to context
@@ -406,12 +401,6 @@ export default createContainer(({location, params: { campaignSlug }}) => {
     Meteor.subscribe('contactCount')
   ]
   const loading = subs.some((s) => !s.ready())
-
-  if (loading) {
-    return {
-      loading: true
-    }
-  }
 
   const {
     sort,

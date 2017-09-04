@@ -217,8 +217,17 @@ class ContactCampaignsPage extends React.Component {
       selections
     } = this.state
 
-    if (!contact || loading) {
+    if (!contact) {
       return <LoadingBar />
+    }
+
+    if (loading) {
+      return (
+        <div>
+          <ContactTopbar contact={contact} onAddToCampaignClick={this.toggleAddToCampaign} />
+          <LoadingBar />
+        </div>
+      )
     }
 
     return (
@@ -281,6 +290,7 @@ class ContactCampaignsPage extends React.Component {
           contact={contact}
         />
         <AddTagsModal
+          title='Tag these Campaigns'
           type='Campaigns'
           open={this.state.addTagsToCampaignsModal}
           onDismiss={this.hideModals}
@@ -313,10 +323,6 @@ class ContactCampaignsPage extends React.Component {
 // I decode and encode the search options from the query string
 // and set up the subscriptions and collecton queries from those options.
 const ContactCampaignsPageContainer = (props, context) => {
-  if (props.loading) {
-    return <LoadingBar />
-  }
-
   // API is like setState...
   // Pass an obj with the new params you want to set on the query string.
   // has to be in a container because createComponent does not give you access to context
@@ -412,12 +418,6 @@ export default createContainer(({location, params: { contactSlug }}) => {
     })
   ]
   const loading = subs.some((s) => !s.ready())
-
-  if (loading) {
-    return {
-      loading: true
-    }
-  }
 
   const {
     sort,

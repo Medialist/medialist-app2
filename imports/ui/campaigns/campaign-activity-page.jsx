@@ -14,11 +14,10 @@ import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import { createFeedbackPost, createCoveragePost } from '/imports/api/posts/methods'
-import { CreateContactModal } from '/imports/ui/contacts/edit-contact'
-import AddContact from '/imports/ui/campaigns/add-contact'
+import AddOrCreateContactModal from './add-or-create-contact'
 import EditTeam from '/imports/ui/campaigns/edit-team'
 import { CampaignContacts } from '/imports/ui/campaigns/collections'
-import Loading from '/imports/ui/lists/loading'
+import { LoadingBar } from '/imports/ui/lists/loading'
 
 const CampaignActivityPage = React.createClass({
   propTypes: {
@@ -33,32 +32,14 @@ const CampaignActivityPage = React.createClass({
 
   getInitialState () {
     return {
-      createContactModalOpen: false,
       addContactModalOpen: false,
       editModalOpen: false,
-      contactPrefillData: null,
       editTeamModalOpen: false
     }
   },
 
   onAddContactClick () {
-    const { contactsAllCount } = this.props
-
-    if (contactsAllCount) {
-      const addContactModalOpen = !this.state.addContactModalOpen
-      this.setState({ addContactModalOpen })
-    } else {
-      const createContactModalOpen = !this.state.createContactModalOpen
-      this.setState({ createContactModalOpen })
-    }
-  },
-
-  onCreateContactModalDismiss () {
-    this.setState({
-      createContactModalOpen: false,
-      contactPrefillData: null,
-      addContactModalOpen: true
-    })
+    this.setState({ addContactModalOpen: true })
   },
 
   onAddContactModalDismiss () {
@@ -91,36 +72,43 @@ const CampaignActivityPage = React.createClass({
     createCoveragePost.call({contactSlug, campaignSlug, message, status}, cb)
   },
 
-  onShowCreateContact (data) {
-    this.setState({
-      addContactModalOpen: false,
-      createContactModalOpen: true,
-      contactPrefillData: data
-    })
-  },
-
   render () {
     const {
       onAddContactClick,
-      onCreateContactModalDismiss,
       onAddContactModalDismiss,
       toggleEditModal,
       toggleEditTeamModal,
       onFeedback,
-      onCoverage,
-      onShowCreateContact
+      onCoverage
     } = this
-    const { campaign, contacts, contactsCount, teamMates, loading, user } = this.props
+
     const {
-      createContactModalOpen,
+      campaign,
+      contacts,
+      contactsCount,
+      teamMates,
+      loading,
+      user,
+      contactsAllCount
+    } = this.props
+
+    const {
       addContactModalOpen,
       editModalOpen,
-      editTeamModalOpen,
-      contactPrefillData
+      editTeamModalOpen
     } = this.state
 
+    if (!campaign) {
+      return <LoadingBar />
+    }
+
     if (loading) {
-      return <div className='center p4'><Loading /></div>
+      return (
+        <div>
+          <CampaignTopbar campaign={campaign} onAddContactClick={onAddContactClick} />
+          <LoadingBar />
+        </div>
+      )
     }
 
     return (
@@ -156,16 +144,12 @@ const CampaignActivityPage = React.createClass({
             <CampaignContactList contacts={contacts.slice(0, 7)} contactsCount={contactsCount} campaign={campaign} onAddContactClick={onAddContactClick} />
           </div>
         </div>
-        <CreateContactModal
-          open={createContactModalOpen}
-          onDismiss={onCreateContactModalDismiss}
-          prefill={contactPrefillData} />
-        <AddContact
+        <AddOrCreateContactModal
           open={addContactModalOpen}
           onDismiss={onAddContactModalDismiss}
-          onCreate={onShowCreateContact}
           campaign={campaign}
-          campaignContacts={contacts} />
+          campaignContacts={contacts}
+          allContactsCount={contactsAllCount} />
       </div>
     )
   }
