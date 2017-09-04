@@ -58,7 +58,7 @@ describe('Campaigns/batchFavouriteCampaigns', function () {
   })
 })
 
-describe('Campaign update method', function () {
+describe.only('Campaign update method', function () {
   beforeEach(function () {
     resetDatabase()
   })
@@ -139,6 +139,37 @@ describe('Campaign update method', function () {
 
     assert.equal(updatedUser.myCampaigns.length, 1)
     assert.equal(updatedUser.myCampaigns[0]._id, _id)
+  })
+
+  it('shoud not duplicate users in the campaign team list', function () {
+    const users = createTestUsers(2)
+    const creatorId = users[0]._id
+    const editorId = users[1]._id
+    const campaignSlug = createCampaign.run.call({
+      userId: creatorId
+    }, campaign())
+    const _id = Campaigns.findOne({ slug: campaignSlug })._id
+
+    updateCampaign.run.call({
+      userId: editorId
+    }, {
+      _id,
+      avatar: 'http://example.org/new_image.jpg'
+    })
+
+    updateCampaign.run.call({
+      userId: editorId
+    }, {
+      _id,
+      name: 'A new name'
+    })
+
+    const team = Campaigns.findOne({_id}).team
+
+    // No dupes please, just the creating and editing user expected.
+    assert.equal(team.length, 2, 'both users in list')
+    assert.equal(team[0]._id, creatorId, 'Creating user is first')
+    assert.equal(team[1]._id, editorId, 'Editing user is second')
   })
 
   it('should update campaign refs when updating campaign details', function () {
