@@ -11,7 +11,7 @@ test('should convert csv data into rows and cols', (t) => {
   ]
   const expectedRows = [
     ['First Name', 'Last Name', 'Job Title', 'Outlet', 'Phone', 'Email Address', 'Twitter handle', 'Feedback'],
-    ['Lizzy', 'Anderson', 'Business Editor', 'The Independent', '+44 (0)20 7931 2753', 'elizabeth.anderson@inews.co.uk', '', 'Spoke to Lizzy on the phone, she isn\'t interested in this one but wants an interveiw with Jeff Bezos for a feature piece on the UK\'s position as the global leader in ecommerce']
+    ['Übergine', 'Andersôn', 'Business Editor', 'The Independent', '+44 (0)20 7931 2753', 'elizabeth.anderson@inews.co.uk', '', 'Spoke to Lizzy on the phone, she isn\'t interested in this one but wants an interveiw with Jeff Bezos for a feature piece on the UK\'s position as the global leader in ecommerce']
   ]
   const csv = fs.readFileSync('./small-business-journalists.csv', 'utf8')
   const res = papaparse.parse(csv, {skipEmptyLines: true})

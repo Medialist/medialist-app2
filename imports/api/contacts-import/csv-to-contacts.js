@@ -26,6 +26,7 @@ See: http://papaparse.com/docs for options.
 */
 export function importCsvFile (file, cb) {
   Csv.parse(file, {
+    encoding: 'utf8',
     skipEmptyLines: true,
     complete: ({data, errors, meta}, file) => {
       const err = errors.length ? errors : null
