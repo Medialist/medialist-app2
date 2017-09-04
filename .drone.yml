@@ -15,6 +15,7 @@ pipeline:
       SELENIUM_START: "false"
       SELENIUM_HOST: selenium
       SELENIUM_LAUNCH_URL: http://test:3000
+      ROOT_URL: http://test:3000
       MONGO_URL: mongodb://mongo/meteor
 
     commands:
