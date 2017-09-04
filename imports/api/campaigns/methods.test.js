@@ -58,7 +58,7 @@ describe('Campaigns/batchFavouriteCampaigns', function () {
   })
 })
 
-describe.only('Campaign update method', function () {
+describe('Campaign update method', function () {
   beforeEach(function () {
     resetDatabase()
   })
