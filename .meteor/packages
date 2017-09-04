@@ -32,3 +32,4 @@ aldeed:schema-deny
 jcbernack:reactive-aggregate
 meteorhacks:aggregate
 dynamic-import
+mdg:meteor-apm-agent
