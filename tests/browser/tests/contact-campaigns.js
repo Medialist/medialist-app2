@@ -47,7 +47,7 @@ const test = {
 
       contactCampaignsPage.section.toast.viewContacts()
 
-      t.assert.urlEquals(`${t.lauch_url}/contacts?campaign=${campaign.slug}`)
+      t.assert.urlEquals(`${t.launch_url}/contacts?campaign=${campaign.slug}`)
 
       t.page.contacts()
         .section.contactTable.isInResults(contact1)

@@ -92,7 +92,7 @@ ${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email
         .searchFor(contact.name)
         .clickRow(0)
 
-      t.assert.urlEquals(`${t.lauch_url}/contact/${contact.slug}`)
+      t.assert.urlEquals(`${t.launch_url}/contact/${contact.slug}`)
 
       done()
     })
