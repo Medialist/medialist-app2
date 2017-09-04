@@ -17,8 +17,19 @@ class AddContactToCampaign extends React.Component {
 
   renderCampaigns = (campaigns, onCampaignSelected) => {
     const {contact} = this.props
+    campaigns.sort((a, b) => {
+      const inA = contact.campaigns.indexOf(a.slug) > -1
+      const inB = contact.campaigns.indexOf(b.slug) > -1
+      if (inA && !inB) {
+        return 1
+      }
+      if (!inA && inB) {
+        return -1
+      }
+      return b.updatedAt.getTime() - a.updatedAt.getTime()
+    })
     return campaigns.map((campaign) => {
-      const alreadyInCampaign = !!campaign.contacts[contact.slug]
+      const alreadyInCampaign = contact.campaigns.indexOf(campaign.slug) > -1
       const ResultListItem = alreadyInCampaign ? CanNotJoinCampaignResult : CanJoinCampaignResult
       return <ResultListItem {...campaign} onSelect={onCampaignSelected} key={campaign._id} />
     })

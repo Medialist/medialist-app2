@@ -12,7 +12,7 @@ import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
 import AddOrCreateContactModal from '/imports/ui/campaigns/add-or-create-contact'
 import RemoveContactModal from '/imports/ui/campaigns/remove-contact'
-import AddContactsToCampaign from '/imports/ui/contacts/add-contacts-to-campaign'
+import AddContactsToCampaign from '/imports/ui/contacts/add-to-campaign/add-many-modal'
 import AddTagsModal from '/imports/ui/tags/add-tags-modal'
 import AddToMasterListModal from '/imports/ui/master-lists/add-to-master-list-modal'
 import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
@@ -211,6 +211,13 @@ class CampaignContactsPage extends React.Component {
       )
     }
 
+    let contactSearch = null
+    if (selectionMode === 'all') {
+      contactSearch = {
+        campaignSlugs: [campaign.slug]
+      }
+    }
+
     return (
       <div>
         <CampaignTopbar campaign={campaign} onAddContactClick={this.onAddContactClick} />
@@ -254,11 +261,12 @@ class CampaignContactsPage extends React.Component {
           allContactsCount={contactsAllCount} />
         <AddContactsToCampaign
           title='Add these Contacts to a Campaign'
-          contacts={this.state.selections}
+          contacts={selections}
+          contactsCount={selections.length}
+          contactSearch={contactSearch}
+          selectionMode={selectionMode}
           onDismiss={this.hideModals}
-          open={this.state.addContactsToCampaignModal}>
-          <AbbreviatedAvatarList items={selections} maxTooltip={12} />
-        </AddContactsToCampaign>
+          open={this.state.addContactsToCampaignModal} />
         <AddTagsModal
           title='Tag these Contacts'
           type='Contacts'
