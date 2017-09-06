@@ -49,7 +49,7 @@ const SigningInPage = React.createClass({
 
     const content = (
       <div className='bg-white max-width-2 mt6 p5 mx-auto shadow-2'>
-        <p className='semibold f-sm'>Signing you in...</p>
+        <p className='semibold f-sm gray10'>Signing you in...</p>
         <LoadingBar />
         <p className='gray40 f-sm'>Having trouble signing in? Please email us at <a href='mailto:feedback@medialist.io'>feedback@medialist.io</a></p>
       </div>
