@@ -41,6 +41,7 @@ class SearchBox extends React.Component {
   render () {
     const { placeholder, children, onKeyDown, style } = this.props
     const { isFocused } = this.state
+
     return (
       <div
         style={{paddingLeft: 45, ...style}}

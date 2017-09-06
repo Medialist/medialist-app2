@@ -36,7 +36,6 @@ const CampaignsFilterableList = React.createClass({
     const { filteredCampaigns, term } = this.state
     const allCampaignCount = this.props.campaigns.length
     const styleOverrides = {
-      backgroundColor: 'white',
       borderTop: 'solid 0px',
       borderRight: 'solid 0px',
       borderLeft: 'solid 0px'
@@ -50,11 +49,11 @@ const CampaignsFilterableList = React.createClass({
           style={styleOverrides}
           data-id='campaigns-filterable-list-search-input' />
         {!hideAllFilter &&
-          <div className='f-sm semibold p3 pointer hover-bg-gray90 hover-box-shadow-x-gray80' onClick={onClearFilter}>
+          <div className='f-sm semibold p3 pointer hover-bg-gray90 hover-box-shadow-x-gray80 mt2' onClick={onClearFilter}>
             All campaigns ({allCampaignCount})
           </div>
         }
-        <div style={{maxHeight: 278, overflowY: 'auto'}}>
+        <div style={{maxHeight: 278, overflowY: 'auto'}} className='mt2'>
           {filteredCampaigns.map((item, i) => (
             <div
               key={item._id}
