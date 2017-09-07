@@ -103,7 +103,21 @@ class EditTeam extends React.Component {
     this.setState((s) => immutable.set(s, name, value))
   }
 
+  anyChanges = () => {
+    const {selectedItems, emails} = this.state
+    const {initialItems} = this.props
+    if (emails !== '') {
+      return true
+    }
+    if (initialItems.length !== selectedItems.length) {
+      return true
+    }
+    // is evey initialItem in selectedItems
+    return !initialItems.every(x => selectedItems.some(y => x._id === y._id))
+  }
+
   render () {
+    const anyChanges = this.anyChanges()
     return (
       <Form data-id='edit-campaign-team-modal' onReset={(event) => this.onReset(event)} onSubmit={(event) => this.onSubmit(event)} ref={(form) => { this.form = form }}>
         <h1 className='f-xl regular center mt6'>Team</h1>
@@ -163,7 +177,7 @@ class EditTeam extends React.Component {
             className='btn bg-completed white px3'
             type='submit'
             data-id='edit-campaign-team-submit-button'
-            disabled={false}>Save</Button>
+            disabled={!anyChanges}>Save</Button>
         </div>
       </Form>
     )
