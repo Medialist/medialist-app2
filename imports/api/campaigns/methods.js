@@ -439,6 +439,11 @@ export const setTeamMates = new ValidatedMethod({
     const addedUserIds = userIds
       .filter(id => !existingUserIds.includes(id))
 
+    // no change, so bail early.
+    if (addedUserIds.length === 0 && removedUserIds.length === 0) {
+      return {numberAffected: 0}
+    }
+
     // update the team
     const result = Campaigns.update(campaign._id, {
       $set: {
