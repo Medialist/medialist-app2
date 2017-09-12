@@ -1,4 +1,4 @@
-FROM node:4.8.3 AS builder
+FROM node:4.8.4 AS builder
 MAINTAINER olizilla <oli@tableflip.io>
 
 WORKDIR /src
