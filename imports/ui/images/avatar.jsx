@@ -6,31 +6,32 @@ import Tooltip from '/imports/ui/navigation/tooltip'
 
 const defaultSize = 30
 
-const Avatar = React.createClass({
-  propTypes: {
+class Avatar extends React.Component {
+  static propTypes: {
     avatar: PropTypes.string,
     name: PropTypes.string,
+    email: PropTypes.string,
     className: PropTypes.string,
     style: PropTypes.object,
     size: PropTypes.number
-  },
+  }
 
-  getInitialState () {
-    return { imageLoadError: false }
-  },
+  state = {
+    imageLoadError: false
+  }
 
   componentWillReceiveProps ({ avatar }) {
     if (avatar !== this.props.avatar) this.setState({ imageLoadError: false })
-  },
+  }
 
-  onError () {
+  onError = () => {
     this.setState({ imageLoadError: true })
-  },
+  }
 
   resizeAvatar (url, size) {
     if (url.indexOf('ucarecdn') === -1) return url
     return `${url}-/scale_crop/${size}x${size}/center/`
-  },
+  }
 
   render () {
     const { imageLoadError } = this.state
@@ -51,11 +52,11 @@ const Avatar = React.createClass({
 
       element = (
         <div className={className} style={style}>
-          <img style={{width: '100%', height: '100%'}} src={src} alt={name} onError={this.onError} />
+          <img style={{width: '100%', height: '100%'}} src={src} alt={title} onError={this.onError} />
         </div>
       )
-    } else if (name) {
-      const initials = name
+    } else if (title) {
+      const initials = title
         .split(' ')
         .filter((n) => !!n)
         .map((n) => n[0].toUpperCase())
@@ -84,7 +85,7 @@ const Avatar = React.createClass({
       </Tooltip>
     )
   }
-})
+}
 
 export default Avatar
 
