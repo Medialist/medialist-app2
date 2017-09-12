@@ -8,7 +8,7 @@ pipeline:
       - /tmp/cache:/cache
 
   test:
-    image: node:4.8.3
+    image: node:4.8.4
     environment:
       LC_ALL: "POSIX"
       METEOR_ALLOW_SUPERUSER: "true"
@@ -17,12 +17,13 @@ pipeline:
       SELENIUM_LAUNCH_URL: http://test:3000
       ROOT_URL: http://test:3000
       MONGO_URL: mongodb://mongo/meteor
-
     commands:
       - curl -sL https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
       - meteor npm install --quiet
       - meteor npm run build --quiet
       - meteor npm run test:browser:ci
+    volumes:
+      - /tmp/medialist_test:/tmp/medialist_test
 
   rebuild-cache:
     image: drillster/drone-volume-cache
@@ -35,5 +36,7 @@ pipeline:
 services:
   selenium:
     image: selenium/standalone-chrome
+    volumes:
+      - /tmp/medialist_test:/tmp/medialist_test
   mongo:
-    image: mongo:3.4
+    image: mongo:3.4.7

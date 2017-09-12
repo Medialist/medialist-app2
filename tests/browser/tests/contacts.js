@@ -16,7 +16,9 @@ const test = {
   },
 
   'Should only import csv files': function (t) {
-    const file = tmp.fileSync()
+    const file = tmp.fileSync({
+      dir: '/tmp/medialist_test'
+    })
 
     t.page.contactImport()
       .navigate()
@@ -29,7 +31,10 @@ const test = {
   },
 
   'Should import contacts': function (t) {
+    // file is shared from test container to chrome container via docker volume mount.
+    // See .drone.yml
     const file = tmp.fileSync({
+      dir: '/tmp/medialist_test',
       postfix: '.csv'
     })
     const contents = `Name, Outlet, Email, Telephone
@@ -68,7 +73,7 @@ ${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email
         name: contact.name
       })
       .then((doc) => {
-        t.assert.urlEquals(`${t.api.launchUrl}/contact/${doc.slug}`)
+        t.assert.urlEquals(`${t.launch_url}/contact/${doc.slug}`)
 
         assertions.contactsAreEqual(t, contact, doc)
 
