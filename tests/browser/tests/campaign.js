@@ -362,7 +362,7 @@ const test = {
       })
 
       // make sure updateAt timestamps are different
-      t.pause(1000)
+      t.pause(1500)
 
       t.perform((done) => {
         const campaignPage = t.page.campaign()
@@ -382,6 +382,7 @@ const test = {
         })
         .then((updatedContact) => {
           // should have updated the contact updatedAt
+          console.log(updatedContact.updatedAt, originalContact.updatedAt)
           t.assert.ok(updatedContact.updatedAt.getTime() > originalContact.updatedAt.getTime())
 
           done()
