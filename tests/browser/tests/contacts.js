@@ -17,7 +17,8 @@ const test = {
 
   'Should only import csv files': function (t) {
     const file = tmp.fileSync({
-      dir: '/tmp/medialist_test'
+      dir: '/tmp/medialist_test',
+      mode: 0o666
     })
 
     t.page.contactImport()
@@ -35,7 +36,8 @@ const test = {
     // See .drone.yml
     const file = tmp.fileSync({
       dir: '/tmp/medialist_test',
-      postfix: '.csv'
+      postfix: '.csv',
+      mode: 0o666
     })
     const contents = `Name, Outlet, Email, Telephone
 ${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()}`
