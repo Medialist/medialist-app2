@@ -18,7 +18,7 @@ RUN npm run build \
     && npm install --production --quiet
 
 # ---- Container to run the app ------------------------------------------------
-FROM node:4.8.3-slim
+FROM node:4.8.4-slim
 
 # Add Tini a lightweight init system that properly handles running as PID 1.
 # A Node.js process running as PID 1 will not respond to SIGTERM (CTRL-C) and similar signals.
