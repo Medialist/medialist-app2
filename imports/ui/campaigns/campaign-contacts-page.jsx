@@ -432,6 +432,12 @@ export default createContainer(({location, params: { campaignSlug }}) => {
     sort
   })
   const contacts = cursor.fetch()
+  if (sort && sort.status) {
+    const dir = sort.status
+    contacts.sort((a, b) => {
+      return (StatusIndex[a.status] - StatusIndex[b.status]) * dir
+    })
+  }
   const contactsCount = cursor.count()
   const statusCounts = CampaignContactStatuses.find().fetch().pop()
   const campaign = Campaigns.findOne({
