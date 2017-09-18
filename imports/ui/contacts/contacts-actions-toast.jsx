@@ -26,7 +26,7 @@ class ContactsActionsToast extends React.Component {
     onFavouriteClick: PropTypes.func.isRequired,
     onTagClick: PropTypes.func.isRequired,
     onStatusClick: PropTypes.func,
-    onDeleteClick: PropTypes.func.isRequired,
+    onDeleteClick: PropTypes.func,
     onDeselectAllClick: PropTypes.func.isRequired,
     onExportToCsvClick: PropTypes.func.isRequired
   }
@@ -131,13 +131,15 @@ class ContactsActionsToast extends React.Component {
                   data-id={`contact-actions-export-csv`}
                   style={{width: '21px', height: '21px'}} />
               </Tooltip>
-              <Tooltip title={`${campaign ? 'Remove' : 'Delete'} Contact${contacts.length > 1 ? 's' : ''}`}>
-                <DeleteIcon
-                  className='mx3 pointer gray60 hover-red'
-                  onClick={() => onDeleteClick(contacts)}
-                  data-id={`contact-actions-${campaign ? 'remove' : 'delete'}`}
-                  style={{width: '21px', height: '21px'}} />
-              </Tooltip>
+              { !onDeleteClick ? null : (
+                <Tooltip title={`${campaign ? 'Remove' : 'Delete'} Contact${contacts.length > 1 ? 's' : ''}`}>
+                  <DeleteIcon
+                    className='mx3 pointer gray60 hover-red'
+                    onClick={() => onDeleteClick(contacts)}
+                    data-id={`contact-actions-${campaign ? 'remove' : 'delete'}`}
+                    style={{width: '21px', height: '21px'}} />
+                </Tooltip>
+              )}
             </div>
             <div className='flex-none'>
               <button className='btn btn-no-border bg-transparent grey40' onClick={() => onDeselectAllClick(contacts)}>Deselect all</button>
