@@ -219,7 +219,7 @@ ${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email
     t.end()
   },
 
-  'Should delete contacts from toast menu': function (t) {
+  'Should hide delete contacts option in toast menu': function (t) {
     t.createDomain(['contact'], (contact, done) => {
       const contactsPage = t.page.contacts()
         .navigate()
@@ -228,16 +228,8 @@ ${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email
         .searchFor(contact.name)
         .selectRow(0)
 
-      contactsPage.section.toast.openDeleteContactsModal()
-
-      contactsPage.section.deleteContactsModal
-        .confirm()
-
-      t.page.main().waitForSnackbarMessage('batch-delete-contacts-success')
-
-      contactsPage.section.contactTable
-        .assertNoResults()
-        .assertNotInSearchResults(contact)
+      contactsPage.waitForElementVisible(contactsPage.section.toast.selector)
+      contactsPage.section.toast.assert.elementNotPresent('@deleteContacts')
 
       done()
     })
