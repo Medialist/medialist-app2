@@ -105,14 +105,14 @@ const ContactsTable = React.createClass({
               </SortableHeader>
               <SortableHeader
                 className='left-align'
-                sortDirection={sort['outlets.value']}
-                onSortChange={(d) => onSortChange({ 'outlets.value': d })}>
+                sortDirection={sort['outlets.0.value']}
+                onSortChange={(d) => onSortChange({ 'outlets.0.value': d })}>
                 Title
               </SortableHeader>
               <SortableHeader
                 className='left-align'
-                sortDirection={sort['outlets.label']}
-                onSortChange={(d) => onSortChange({ 'outlets.label': d })}>
+                sortDirection={sort['outlets.0.label']}
+                onSortChange={(d) => onSortChange({ 'outlets.0.label': d })}>
                 Media Outlet
               </SortableHeader>
               <th className='left-align'>Email</th>
