@@ -19,8 +19,13 @@ import LogoutPage from '/imports/ui/users/logout-page'
 import SigningInPage from '/imports/ui/sign-in/signing-in-page'
 
 function handleUpdate () {
-  if (this.state.location.action === 'PUSH') {
-    window.scrollTo(0, 0)
+  const {location} = this.state
+  if (location.action === 'PUSH') {
+    if (location.state && location.state.scrollPos) {
+      window.scrollTo.apply(window, location.state.scrollPos)
+    } else {
+      window.scrollTo(0, 0)
+    }
     window.Intercom && window.Intercom('update')
   }
 }

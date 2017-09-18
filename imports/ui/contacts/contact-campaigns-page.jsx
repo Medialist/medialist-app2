@@ -54,7 +54,8 @@ class ContactCampaignsPage extends React.Component {
     selectedTags: PropTypes.array.isRequired,
     setQuery: PropTypes.func.isRequired,
     status: PropTypes.string,
-    statusCounts: PropTypes.object
+    statusCounts: PropTypes.object,
+    location: PropTypes.object
   }
 
   state = {

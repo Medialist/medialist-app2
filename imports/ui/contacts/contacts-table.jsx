@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Link } from 'react-router'
+import { Link, withRouter } from 'react-router'
 import SortableHeader from '/imports/ui/tables/sortable-header'
 import SelectableRow from '/imports/ui/tables/selectable-row'
 import Checkbox from '/imports/ui/tables/checkbox'
@@ -10,19 +10,34 @@ import { CircleAvatar } from '/imports/ui/images/avatar'
 import StatusLabel from '/imports/ui/feedback/status-label'
 import StatusSelectorContainer from '/imports/ui/feedback/status-selector-container'
 
-const ContactLink = ({contact, campaign}) => {
+const ContactLink = ({contact, onClick}) => {
   const {slug, name, avatar} = contact
-
   return (
-    <Link to={`/contact/${slug}`} className='nowrap' data-id='contact-link' data-contact={contact.slug}>
+    <Link onClick={onClick} to={`/contact/${slug}`} className='nowrap' data-id='contact-link' data-contact={slug}>
       <CircleAvatar avatar={avatar} name={name} />
       <span className='ml3 semibold'>{name}</span>
     </Link>
   )
 }
 
-const ContactsTable = React.createClass({
-  propTypes: {
+const DisplayEmail = ({ emails }) => {
+  if (!emails || !emails.length) {
+    return <span className='gray60'>No email</span>
+  }
+
+  return <a href={`mailto:${emails[0].value}`}>{emails[0].value}</a>
+}
+
+const DisplayPhone = ({ phones }) => {
+  if (!phones || !phones.length) {
+    return <span className='gray60'>No phone</span>
+  }
+
+  return <a href={`tel:${phones[0].value}`}>{phones[0].value}</a>
+}
+
+class ContactsTable extends React.Component {
+  static propTypes = {
     // e.g. { updatedAt: -1 }
     sort: PropTypes.object,
     // Callback when sort changes, passed e.g. { updatedAt: 1 }
@@ -42,10 +57,12 @@ const ContactsTable = React.createClass({
     // returns true while subscriptionts are still syncing data.
     loading: PropTypes.bool,
     // true if we are searching
-    searchTermActive: PropTypes.bool
-  },
+    searchTermActive: PropTypes.bool,
+    // used to stash the page state
+    router: PropTypes.object
+  }
 
-  onSelectAllChange () {
+  onSelectAllChange = () => {
     const { selectionMode } = this.props
     if (selectionMode === 'include') {
       this.props.onSelectionModeChange('all')
@@ -54,9 +71,9 @@ const ContactsTable = React.createClass({
       this.props.onSelectionModeChange('include')
       this.props.onSelectionsChange([])
     }
-  },
+  }
 
-  onSelectChange (contact) {
+  onSelectChange = (contact) => {
     let { selections, selectionMode } = this.props
     const index = selections.findIndex((c) => c._id === contact._id)
 
@@ -72,10 +89,33 @@ const ContactsTable = React.createClass({
     if (selectionMode === 'all') {
       this.props.onSelectionModeChange('include')
     }
-  },
+  }
+
+  onItemClick = (e) => {
+    console.log('onItemClick', {
+      target: e.currentTarget,
+      scrollPos: [0, window.scrollY],
+      contactSlug: e.currentTarget.getAttribute('data-contact')
+    })
+    this.props.router.replace({
+      pathname: this.props.location.pathname,
+      state: {
+        scrollPos: [0, window.scrollY],
+        contactSlug: e.currentTarget.dataset.contact
+      }
+    })
+  }
+
+  componentDidMount (prevProps, prevState) {
+    const {location, loading} = this.props
+    console.log('componentDidMount', {loading, location})
+    if (!loading && location.state && location.state.scrollPos) {
+      window.scrollTo.apply(window, location.state.scrollPos)
+    }
+  }
 
   render () {
-    const { sort, onSortChange, contacts, selections, selectionMode, campaign, loading, searchTermActive } = this.props
+    const { sort, onSortChange, contacts, selections, selectionMode, campaign, loading, searchTermActive, location } = this.props
 
     if (!loading && !contacts.length) {
       return <p className='p6 mt0 f-xl semibold center' data-id='contacts-table-empty'>No contacts found</p>
@@ -85,6 +125,9 @@ const ContactsTable = React.createClass({
       memo[selection._id] = selection
       return memo
     }, {})
+
+    const activeSlug = location.state && location.state.contactSlug
+    console.log('render', activeSlug)
 
     return (
       <div>
@@ -151,9 +194,16 @@ const ContactsTable = React.createClass({
               const contextualUpdatedBy = contactRef ? contactRef.updatedBy : (updatedBy || createdBy)
               const firstOutlet = (outlets && outlets.length && outlets[0]) || {}
               return (
-                <SelectableRow data={contact} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={slug} data-id={`contacts-table-row-${index}`} data-item={slug}>
+                <SelectableRow
+                  data={contact}
+                  active={activeSlug === slug}
+                  selected={!!selectionsById[_id]}
+                  onSelectChange={this.onSelectChange}
+                  key={slug}
+                  data-id={`contacts-table-row-${index}`}
+                  data-item={slug} >
                   <td className='left-align'>
-                    <ContactLink contact={contact} campaign={campaign} />
+                    <ContactLink contact={contact} onClick={this.onItemClick} />
                   </td>
                   <td className='left-align'>
                     {firstOutlet.value || <span className='gray60'>No title</span>}
@@ -190,22 +240,6 @@ const ContactsTable = React.createClass({
       </div>
     )
   }
-})
-
-const DisplayEmail = ({ emails }) => {
-  if (!emails || !emails.length) {
-    return <span className='gray60'>No email</span>
-  }
-
-  return <a href={`mailto:${emails[0].value}`}>{emails[0].value}</a>
 }
 
-const DisplayPhone = ({ phones }) => {
-  if (!phones || !phones.length) {
-    return <span className='gray60'>No phone</span>
-  }
-
-  return <a href={`tel:${phones[0].value}`}>{phones[0].value}</a>
-}
-
-export default ContactsTable
+export default withRouter(ContactsTable)
