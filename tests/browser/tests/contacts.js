@@ -18,7 +18,7 @@ const test = {
   'Should only import csv files': function (t) {
     const file = tmp.fileSync({
       dir: '/tmp/medialist_test',
-      mode: 0o666
+      mode: 0o644
     })
 
     t.page.contactImport()
@@ -37,7 +37,7 @@ const test = {
     const file = tmp.fileSync({
       dir: '/tmp/medialist_test',
       postfix: '.csv',
-      mode: 0o666
+      mode: 0o644
     })
     const contents = `Name, Outlet, Email, Telephone
 ${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()}`
