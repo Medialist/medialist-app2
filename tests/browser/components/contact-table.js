@@ -100,6 +100,14 @@ module.exports = {
       this.assert.visible(selector)
 
       return this
+    },
+    assertIndexIsActive: function (index) {
+      const selector = `[data-id=contacts-table-row-${index}][data-active=true]`
+
+      this.waitForElementVisible(selector)
+      this.assert.visible(selector)
+
+      return this
     }
   }]
 }

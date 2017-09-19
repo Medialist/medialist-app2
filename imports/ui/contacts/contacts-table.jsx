@@ -92,16 +92,15 @@ class ContactsTable extends React.Component {
   }
 
   onItemClick = (e) => {
-    console.log('onItemClick', {
-      target: e.currentTarget,
-      scrollPos: [0, window.scrollY],
-      contactSlug: e.currentTarget.getAttribute('data-contact')
-    })
-    this.props.router.replace({
-      pathname: this.props.location.pathname,
+    const {location, router} = this.props
+    const contactSlug = e.currentTarget.dataset.contact
+
+    router.replace({
+      pathname: location.pathname,
+      query: location.query,
       state: {
         scrollPos: [0, window.scrollY],
-        contactSlug: e.currentTarget.dataset.contact
+        contactSlug
       }
     })
   }
