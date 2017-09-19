@@ -406,7 +406,6 @@ button {
   border-spacing: 0;
   font-size: 14px;
 }
-.table tr.hover td,
 .table tr:hover td {
   background-color: var(--gray90);
 }

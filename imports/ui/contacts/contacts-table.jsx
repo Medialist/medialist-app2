@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Link, withRouter } from 'react-router'
+import { Link } from 'react-router'
 import SortableHeader from '/imports/ui/tables/sortable-header'
 import SelectableRow from '/imports/ui/tables/selectable-row'
 import Checkbox from '/imports/ui/tables/checkbox'
@@ -229,4 +229,4 @@ class ContactsTable extends React.Component {
   }
 }
 
-export default withRouter(ContactsTable)
+export default ContactsTable
