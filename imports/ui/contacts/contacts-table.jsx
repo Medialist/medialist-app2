@@ -58,8 +58,10 @@ class ContactsTable extends React.Component {
     loading: PropTypes.bool,
     // true if we are searching
     searchTermActive: PropTypes.bool,
-    // used to stash the page state
-    router: PropTypes.object
+    // Called before navigating to the contact profile
+    onContactClick: PropTypes.func,
+    // Draw the user attention to this contact
+    highlightSlug: PropTypes.string
   }
 
   onSelectAllChange = () => {
@@ -91,30 +93,19 @@ class ContactsTable extends React.Component {
     }
   }
 
-  onItemClick = (e) => {
-    const {location, router} = this.props
-    const contactSlug = e.currentTarget.dataset.contact
-
-    router.replace({
-      pathname: location.pathname,
-      query: location.query,
-      state: {
-        scrollPos: [0, window.scrollY],
-        contactSlug
-      }
-    })
-  }
-
-  componentDidMount (prevProps, prevState) {
-    const {location, loading} = this.props
-    console.log('componentDidMount', {loading, location})
-    if (!loading && location.state && location.state.scrollPos) {
-      window.scrollTo.apply(window, location.state.scrollPos)
-    }
-  }
-
   render () {
-    const { sort, onSortChange, contacts, selections, selectionMode, campaign, loading, searchTermActive, location } = this.props
+    const {
+      sort,
+      onSortChange,
+      contacts,
+      selections,
+      selectionMode,
+      campaign,
+      loading,
+      searchTermActive,
+      highlightSlug,
+      onContactClick
+     } = this.props
 
     if (!loading && !contacts.length) {
       return <p className='p6 mt0 f-xl semibold center' data-id='contacts-table-empty'>No contacts found</p>
@@ -124,9 +115,6 @@ class ContactsTable extends React.Component {
       memo[selection._id] = selection
       return memo
     }, {})
-
-    const activeSlug = location.state && location.state.contactSlug
-    console.log('render', activeSlug)
 
     return (
       <div>
@@ -195,14 +183,14 @@ class ContactsTable extends React.Component {
               return (
                 <SelectableRow
                   data={contact}
-                  active={activeSlug === slug}
+                  active={slug === highlightSlug}
                   selected={!!selectionsById[_id]}
                   onSelectChange={this.onSelectChange}
                   key={slug}
                   data-id={`contacts-table-row-${index}`}
                   data-item={slug} >
                   <td className='left-align'>
-                    <ContactLink contact={contact} onClick={this.onItemClick} />
+                    <ContactLink contact={contact} onClick={onContactClick} />
                   </td>
                   <td className='left-align'>
                     {firstOutlet.value || <span className='gray60'>No title</span>}

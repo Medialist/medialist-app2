@@ -42,6 +42,7 @@ class CampaignContactsPage extends React.Component {
   }
 
   state = {
+    ready: false,
     selections: [],
     selectionMode: 'include',
     isDropdownOpen: false,
@@ -50,6 +51,36 @@ class CampaignContactsPage extends React.Component {
     addTagsModal: false,
     addToMasterListsModal: false,
     removeContactsModal: false
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (this.state.ready) return
+    if (nextProps.loading === false) {
+      this.setState({ready: true})
+    }
+  }
+
+  componentDidUpdate (prevProps, prevState) {
+    if (this.state.ready === prevState.ready) return
+    const {location} = this.props
+    console.log('componentDidUpdate', location.state)
+    if (location.state && location.state.scrollPos) {
+      window.scrollTo.apply(window, location.state.scrollPos)
+    }
+  }
+
+  onContactClick = (e) => {
+    const {location, router} = this.props
+    const highlightContactSlug = e.currentTarget.dataset.contact
+
+    router.replace({
+      pathname: location.pathname,
+      query: location.query,
+      state: {
+        scrollPos: [0, window.scrollY],
+        highlightContactSlug
+      }
+    })
   }
 
   onAddContactClick = () => {
@@ -181,15 +212,11 @@ class CampaignContactsPage extends React.Component {
   }
 
   render () {
-    const { campaign, contacts, loading } = this.props
-
     const {
-      selections,
-      selectionMode,
-      addContactModal
-    } = this.state
-
-    let {
+      campaign,
+      contacts,
+      loading,
+      location,
       contactsTotal,
       sort,
       term,
@@ -197,6 +224,12 @@ class CampaignContactsPage extends React.Component {
       statusCounts,
       contactsAllCount
     } = this.props
+
+    const {
+      selections,
+      selectionMode,
+      addContactModal
+    } = this.state
 
     if (!campaign) {
       return <LoadingBar />
@@ -217,6 +250,8 @@ class CampaignContactsPage extends React.Component {
         campaignSlugs: [campaign.slug]
       }
     }
+
+    const highlightSlug = location.state && location.state.highlightContactSlug
 
     return (
       <div>
@@ -239,6 +274,8 @@ class CampaignContactsPage extends React.Component {
             onSelectionsChange={this.onSelectionsChange}
             onSelectionModeChange={this.onSelectionModeChange}
             searchTermActive={Boolean(term)}
+            onContactClick={this.onContactClick}
+            highlightSlug={highlightSlug}
           />
         </div>
         <ContactsActionsToast
@@ -372,7 +409,7 @@ CampaignContactsPageContainer.contextTypes = {
 
 const parseQuery = ({ query }) => {
   let sort = {
-    updatedAt: -1
+    'outlets.0.label': 1
   }
 
   if (query.sort) {

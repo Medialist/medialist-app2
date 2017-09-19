@@ -431,10 +431,8 @@ const test = {
           .navigate(campaign)
 
         // Ensure that we hightlight the row when using browser back button
-
         campaignPage.section.contactTable
-          .assertInPosition(contact3, 2)
-          .clickRow(2)
+          .clickContact(contact2)
 
         const contactPage = t.page.contact()
         contactPage
@@ -442,27 +440,20 @@ const test = {
 
         t.back()
 
-        campaignPage
-          .waitForElementVisible(campaignPage.section.contactTable.selector)
-          .section.contactTable
-          .assertInPosition(contact3, 2)
-          .assertIndexIsActive(2)
+        campaignPage.section.contactTable
+          .assertContactIsActive(contact2)
 
         // Ensure that we hightlight the row when using the in page back button
 
         campaignPage.section.contactTable
-          .assertInPosition(contact2, 1)
-          .clickRow(1)
+          .clickContact(contact3)
 
         contactPage
           .waitForElementVisible(contactPage.section.info.selector)
           .click('@backButton')
 
-        campaignPage
-          .waitForElementVisible(campaignPage.section.contactTable.selector)
-          .section.contactTable
-          .assertInPosition(contact2, 1)
-          .assertIndexIsActive(1)
+        campaignPage.section.contactTable
+          .assertContactIsActive(contact3)
 
         done()
       })

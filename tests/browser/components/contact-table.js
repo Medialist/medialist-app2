@@ -41,8 +41,25 @@ module.exports = {
 
       return this
     },
+    getContactSlugAt: function (index, cb) {
+      const rowSelector = `[data-id=contacts-table-row-${index}]`
+      this
+        .waitForElementVisible(rowSelector)
+
+      this.getAttribute(rowSelector, 'data-item', (res) => cb(res.value))
+    },
     clickRow: function (index) {
       const selector = `[data-id=contacts-table-row-${index}] [data-id=contact-link]`
+
+      this
+        .waitForElementVisible(selector)
+        .click(selector)
+        .waitForElementNotPresent(selector)
+
+      return this
+    },
+    clickContact: function (contact) {
+      const selector = `[data-item=${contact.slug}] [data-id=contact-link]`
 
       this
         .waitForElementVisible(selector)
@@ -99,6 +116,12 @@ module.exports = {
       this.waitForElementVisible(selector)
       this.assert.visible(selector)
 
+      return this
+    },
+    assertContactIsActive: function (contact) {
+      const selector = `[data-item=${contact.slug}][data-active=true]`
+      this.waitForElementVisible(selector)
+      this.assert.visible(selector)
       return this
     },
     assertIndexIsActive: function (index) {
