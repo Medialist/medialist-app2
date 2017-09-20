@@ -63,7 +63,6 @@ class CampaignContactsPage extends React.Component {
   componentDidUpdate (prevProps, prevState) {
     if (this.state.ready === prevState.ready) return
     const {location} = this.props
-    console.log('componentDidUpdate', location.state)
     if (location.state && location.state.scrollPos) {
       window.scrollTo.apply(window, location.state.scrollPos)
     }

@@ -183,7 +183,7 @@ class ContactsTable extends React.Component {
               return (
                 <SelectableRow
                   data={contact}
-                  active={slug === highlightSlug}
+                  highlight={slug === highlightSlug}
                   selected={!!selectionsById[_id]}
                   onSelectChange={this.onSelectChange}
                   key={slug}

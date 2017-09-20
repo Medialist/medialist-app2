@@ -118,14 +118,14 @@ module.exports = {
 
       return this
     },
-    assertContactIsActive: function (contact) {
-      const selector = `[data-item=${contact.slug}][data-active=true]`
+    assertContactIsHighlighted: function (contact) {
+      const selector = `[data-item=${contact.slug}][data-highlight=true]`
       this.waitForElementVisible(selector)
       this.assert.visible(selector)
       return this
     },
-    assertIndexIsActive: function (index) {
-      const selector = `[data-id=contacts-table-row-${index}][data-active=true]`
+    assertIndexIsHighlighted: function (index) {
+      const selector = `[data-id=contacts-table-row-${index}][data-highlight=true]`
 
       this.waitForElementVisible(selector)
       this.assert.visible(selector)

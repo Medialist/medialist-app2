@@ -366,6 +366,7 @@ const test = {
         done()
       })
 
+      // make sure updateAt timestamps are different
       t.pause(1500)
 
       t.perform((done) => {

@@ -441,7 +441,7 @@ const test = {
         t.back()
 
         campaignPage.section.contactTable
-          .assertContactIsActive(contact2)
+          .assertContactIsHighlighted(contact2)
 
         // Ensure that we hightlight the row when using the in page back button
 
@@ -453,7 +453,7 @@ const test = {
           .click('@backButton')
 
         campaignPage.section.contactTable
-          .assertContactIsActive(contact3)
+          .assertContactIsHighlighted(contact3)
 
         done()
       })
