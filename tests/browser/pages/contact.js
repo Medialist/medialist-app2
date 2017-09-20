@@ -10,6 +10,7 @@ const tagSelectorModal = require('../components/tag-selector-modal')
 module.exports = {
   url: 'http://localhost:3000/contacts',
   elements: {
+    backButton: '[data-id=back-button]',
     contactInfo: '[data-id=contact-info]',
     openPostMenuButton: '[data-id=open-post-menu-button]',
     editPostButton: '[data-id=edit-post-button]',
