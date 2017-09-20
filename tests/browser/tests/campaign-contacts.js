@@ -418,6 +418,51 @@ const test = {
 
     t.page.main().logout()
     t.end()
+  },
+
+  'Should highlight previously selected contact when navigating back to the page': function (t) {
+    t.createDomain(['campaign', 'contact', 'contact', 'contact'], (campaign, contact1, contact2, contact3, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact1, contact2, contact3], campaign, () => done())
+      })
+
+      t.perform((done) => {
+        const campaignPage = t.page.campaignContacts()
+          .navigate(campaign)
+
+        // Ensure that we hightlight the row when using browser back button
+        campaignPage.section.contactTable
+          .clickContact(contact2)
+
+        const contactPage = t.page.contact()
+        contactPage
+          .waitForElementVisible(contactPage.section.info.selector)
+
+        t.back()
+
+        campaignPage.section.contactTable
+          .assertContactIsHighlighted(contact2)
+
+        // Ensure that we hightlight the row when using the in page back button
+
+        campaignPage.section.contactTable
+          .clickContact(contact3)
+
+        contactPage
+          .waitForElementVisible(contactPage.section.info.selector)
+          .click('@backButton')
+
+        campaignPage.section.contactTable
+          .assertContactIsHighlighted(contact3)
+
+        done()
+      })
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   }
 }
 
