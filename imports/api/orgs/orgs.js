@@ -1,7 +1,7 @@
 import { Mongo } from 'meteor/mongo'
-import nothing from '/imports/lib/nothing'
+import everything from '/imports/lib/everything'
 
 const Orgs = new Mongo.Collection('orgs')
-Orgs.allow(nothing)
+Orgs.deny(everything)
 
 export default Orgs

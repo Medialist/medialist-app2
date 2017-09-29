@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { Counter } from 'meteor/natestrauser:publish-performant-counts'
-import nothing from '/imports/lib/nothing'
+import everything from '/imports/lib/everything'
 
 const Campaigns = new Mongo.Collection('campaigns')
-Campaigns.allow(nothing)
+Campaigns.deny(everything)
 
 if (Meteor.isServer) {
   Campaigns._ensureIndex({ slug: 1 })

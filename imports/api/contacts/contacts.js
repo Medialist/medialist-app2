@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { Counter } from 'meteor/natestrauser:publish-performant-counts'
 import values from 'lodash.values'
-import nothing from '/imports/lib/nothing'
+import everything from '/imports/lib/everything'
 import StatusMap from '/imports/api/contacts/status'
 
 const Contacts = new Mongo.Collection('contacts')
-Contacts.allow(nothing)
+Contacts.deny(everything)
 
 if (Meteor.isServer) {
   Contacts._ensureIndex({ slug: 1 })

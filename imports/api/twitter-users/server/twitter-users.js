@@ -1,9 +1,9 @@
 import { Mongo } from 'meteor/mongo'
-import nothing from '/imports/lib/nothing'
+import everything from '/imports/lib/everything'
 import Contacts from '/imports/api/contacts/server/contacts'
 
 const TwitterUsers = new Mongo.Collection('twitter_users')
-TwitterUsers.allow(nothing)
+TwitterUsers.deny(everything)
 
 TwitterUsers.find({}).observeChanges({
   changed: updateContact
