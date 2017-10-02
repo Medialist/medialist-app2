@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
-import nothing from '/imports/lib/nothing'
+import everything from '/imports/lib/everything'
 import { cleanSlug } from '/imports/lib/slug'
 
 const Tags = new Mongo.Collection('tags')
-Tags.allow(nothing)
+Tags.deny(everything)
 
 if (Meteor.isServer) {
   Tags._ensureIndex({slug: 1})

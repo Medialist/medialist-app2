@@ -1,7 +1,7 @@
 import { Mongo } from 'meteor/mongo'
-import nothing from '/imports/lib/nothing'
+import everything from '/imports/lib/everything'
 
 const Clients = new Mongo.Collection('clients')
-Clients.allow(nothing)
+Clients.deny(everything)
 
 export default Clients
