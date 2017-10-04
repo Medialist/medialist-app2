@@ -33,3 +33,5 @@ jcbernack:reactive-aggregate
 meteorhacks:aggregate
 dynamic-import@0.1.1
 mdg:meteor-apm-agent
+simple:json-routes
+simple:rest-json-error-handler

@@ -33,6 +33,7 @@
     "bcrypt": "^1.0.2",
     "classnames": "^2.2.5",
     "dasherize": "^2.0.0",
+    "dot-object": "^1.7.0",
     "html-metadata": "github:wikimedia/html-metadata",
     "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8",
