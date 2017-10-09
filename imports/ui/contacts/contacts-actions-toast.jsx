@@ -13,7 +13,8 @@ import {
   TagIcon,
   StatusUpdateIcon,
   DeleteIcon,
-  DownloadIcon
+  DownloadIcon,
+  MergeIcon
 } from '/imports/ui/images/icons'
 
 class ContactsActionsToast extends React.Component {
@@ -28,7 +29,8 @@ class ContactsActionsToast extends React.Component {
     onStatusClick: PropTypes.func,
     onDeleteClick: PropTypes.func,
     onDeselectAllClick: PropTypes.func.isRequired,
-    onExportToCsvClick: PropTypes.func.isRequired
+    onExportToCsvClick: PropTypes.func.isRequired,
+    onMergeClick: PropTypes.func.isRequired
   }
 
   state = {
@@ -59,7 +61,8 @@ class ContactsActionsToast extends React.Component {
       onTagClick,
       onDeleteClick,
       onDeselectAllClick,
-      onExportToCsvClick
+      onExportToCsvClick,
+      onMergeClick
     } = this.props
 
     return (
@@ -140,6 +143,13 @@ class ContactsActionsToast extends React.Component {
                     style={{width: '21px', height: '21px'}} />
                 </Tooltip>
               )}
+              <Tooltip title='Merge contacts'>
+                <MergeIcon
+                  className='mx3 pointer gray60 hover-blue'
+                  onClick={onMergeClick}
+                  data-id={`contact-actions-merge-contacts`}
+                  style={{width: '21px', height: '21px'}} />
+              </Tooltip>
             </div>
             <div className='flex-none'>
               <button className='btn btn-no-border bg-transparent grey40' onClick={() => onDeselectAllClick(contacts)}>Deselect all</button>
