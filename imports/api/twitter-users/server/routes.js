@@ -14,10 +14,13 @@ export function findTwitterSocials (contacts) {
 /*
   Sends batches of social objects to `influence` for enrichment.
 
-  [{
-    label: 'Twitter',
-    value: 'guardian'
-  }]
+  {
+    callbackUrl: 'https://bm.medialist.io',
+    socials: [{
+      label: 'Twitter',
+      value: 'guardian'
+    }]
+  }
 */
 export const sendForSocials = (contacts) => {
   const url = Meteor.settings.influnce.apiUrl + '/webhook/socials/lookup'
@@ -47,9 +50,8 @@ export const sendForSocials = (contacts) => {
 */
 export const handleSocialsUpdate = ({socials}) => {
   socials.forEach(s => {
-
-    // update previous enriched ones
-    const res1 = Contacts.update({
+    // update previously enriched ones
+    Contacts.update({
       'socials': {
         $elemMatch: {
           twitterId: s.twitterId
@@ -65,10 +67,8 @@ export const handleSocialsUpdate = ({socials}) => {
       multi: true
     })
 
-    console.log(res1)
-
     // We'd like to use an $or and do these updates in one shot, but the positional array operator does not like it.
-    const res2 = Contacts.update({
+    Contacts.update({
       'socials': {
         $elemMatch: {
           label: s.label,
@@ -85,8 +85,6 @@ export const handleSocialsUpdate = ({socials}) => {
     }, {
       multi: true
     })
-
-    console.log(res2)
   })
 }
 

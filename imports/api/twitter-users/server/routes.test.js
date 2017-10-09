@@ -80,7 +80,7 @@ describe.only('handleSocialsUpdate', function () {
       console.log(c.socials[0], testResponse.socials[0])
       assert.deepEqual(c.socials[0], testResponse.socials[0], 'Social info should be updated')
       assert.equal(c.bio, 'The need for independent journalism has never been greater. Become a Guardian supporter: http://gu.com/supporter/twitter')
-      assert.equal(c.avatar, 'https://pbs.twimg.com/profile_images/877153924637175809/deHwf3Qu_bigger.jpg')
+      assert.equal(c.avatar, 'https://pbs.twimg.com/profile_images/877153924637175809/deHwf3Qu_normal.jpg')
     })
 
     Contacts.find({
