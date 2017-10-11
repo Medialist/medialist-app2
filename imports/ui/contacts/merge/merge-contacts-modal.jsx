@@ -3,15 +3,50 @@ import PropTypes from 'prop-types'
 import Modal from '/imports/ui/navigation/modal'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
+import Checkbox from '/imports/ui/tables/checkbox'
+import Radio from '/imports/ui/tables/radio'
 
 class MergeContacts extends React.Component {
   static propTypes = {
-    contacts: PropTypes.array.isRequired
+    contacts: PropTypes.array.isRequired,
+    onDismiss: PropTypes.func.isRequired
+  }
+
+  constructor (props) {
+    super(props)
+    this.uniqueOutlets = this.getUniqueOutlets(props.contacts)
+    this.state = {
+      name: props.contacts[0].name,
+      selectedOutlets: [...this.uniqueOutlets]
+    }
+  }
+
+  toggleOutlet = (outlet) => {
+    if (this.state.selectedOutlets.includes(outlet)) {
+      this.setState(s => ({
+        selectedOutlets: s.selectedOutlets.filter(o => o !== outlet)
+      }))
+    } else {
+      this.setState(s => ({
+        selectedOutlets: s.selectedOutlets.concat(outlet)
+      }))
+    }
+  }
+
+  getUniqueOutlets (contacts) {
+    return Array.from(new Map(
+      contacts
+        .map(c => c.outlets)
+        .reduce((a, b) => a.concat(b))
+        .map(outlet => [`${outlet.label}, ${outlet.value}`, outlet])
+      ).values()
+    )
   }
 
   render () {
     const {
-      contacts
+      contacts,
+      onDismiss
     } = this.props
 
     return (
@@ -24,13 +59,31 @@ class MergeContacts extends React.Component {
           <label className='block gray40 semibold f-sm pt4 mb2'>
             {`You are merging ${contacts.length} contacts. Select the information you'd like to keep`}
           </label>
-          <label className='block gray40 semibold f-sm pt4 mb2'>Name</label>
-          <label className='block gray40 semibold f-sm pt4 mb2'>Jobs</label>
+          <label className='block gray40 semibold f-sm pt4 pb3'>Name</label>
+          {contacts.map(c =>
+            <div className='pb2' key={c._id}>
+              <Radio
+                name='name'
+                checked={c.name === this.state.name}
+                onChange={() => this.setState({name: c.name})}
+                label={c.name} />
+            </div>
+          )}
+          <label className='block gray40 semibold f-sm pt4 pb3'>Jobs</label>
+          {this.uniqueOutlets.map(outlet =>
+            <div className='pb3' key={outlet.label + outlet.value}>
+              <Checkbox
+                checked={this.state.selectedOutlets.includes(outlet)}
+                onChange={() => this.toggleOutlet(outlet)}
+                label={`${outlet.label}, ${outlet.value}`}
+                />
+            </div>
+          )}
         </div>
         <div className='flex p4 bg-white border-top border-gray80'>
           <div className='flex-auto flex order-last' style={{justifyContent: 'flex-end'}}>
-            <button className='btn bg-completed white order-last' onClick={this.props.onSubmit} data-id='merge-contacts-form-submit-button'>Save</button>
-            <button className='btn bg-transparent gray40 mr2' onClick={this.props.onCancel} data-id='merge-contacts-form-cancel-button'>Cancel</button>
+            <button className='btn bg-completed white order-last' onClick={onDismiss} data-id='merge-contacts-form-submit-button'>Save</button>
+            <button className='btn bg-transparent gray40 mr2' onClick={onDismiss} data-id='merge-contacts-form-cancel-button'>Cancel</button>
           </div>
           <div className='flex-auto'>
             <label className='btn bg-transparent red'>Merging contacts cannot be undone</label>
