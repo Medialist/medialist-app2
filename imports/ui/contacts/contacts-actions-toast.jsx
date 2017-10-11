@@ -143,13 +143,15 @@ class ContactsActionsToast extends React.Component {
                     style={{width: '21px', height: '21px'}} />
                 </Tooltip>
               )}
-              <Tooltip title='Merge contacts'>
-                <MergeIcon
-                  className='mx3 pointer gray60 hover-blue'
-                  onClick={onMergeClick}
-                  data-id={`contact-actions-merge-contacts`}
-                  style={{width: '21px', height: '21px'}} />
-              </Tooltip>
+              {(contactsCount > 1 && contactsCount < 4) ? (
+                <Tooltip title='Merge contacts'>
+                  <MergeIcon
+                    className='mx3 pointer gray60 hover-blue'
+                    onClick={onMergeClick}
+                    data-id={`contact-actions-merge-contacts`}
+                    style={{width: '21px', height: '21px'}} />
+                </Tooltip>
+              ) : null}
             </div>
             <div className='flex-none'>
               <button className='btn btn-no-border bg-transparent grey40' onClick={() => onDeselectAllClick(contacts)}>Deselect all</button>

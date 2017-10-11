@@ -410,7 +410,8 @@ class ContactsPage extends React.Component {
         </AddToMasterListModal>
         <MergeContactsModal
           contacts={this.state.selections}
-          open={this.state.mergeContactsModal} />
+          open={this.state.mergeContactsModal}
+          onDismiss={this.hideModals} />
       </div>
     )
   }
