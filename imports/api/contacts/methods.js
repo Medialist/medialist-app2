@@ -10,8 +10,9 @@ import slugify, { checkAllSlugsExist } from '/imports/lib/slug'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
-import Contacts from '/imports/api/contacts/contacts'
+import Contacts, { assignContacts } from '/imports/api/contacts/contacts'
 import { ContactCreateSchema, ContactSlugsOrSearchSchema } from '/imports/api/contacts/schema'
+import { LabelValueSchema } from '/imports/lib/schema'
 import { findOrValidateContactSlugs } from '/imports/api/contacts/queries'
 import { StatusValues } from '/imports/api/contacts/status'
 import MasterLists from '/imports/api/master-lists/master-lists'
@@ -641,5 +642,77 @@ export const exportContactsToCsv = new ValidatedMethod({
       filename: 'medialist.csv',
       data: csvStr
     }
+  }
+})
+
+export const mergeContacts = new ValidatedMethod({
+  name: 'mergeContacts',
+
+  validate: new SimpleSchema({
+    contactSlugs: {
+      type: Array,
+      min: 2,
+      max: 3
+    },
+    'contactSlugs.$': {
+      type: String
+    },
+    name: {
+      type: String
+    },
+    outlets: {
+      type: Array
+    },
+    'outlets.$': {
+      type: LabelValueSchema
+    }
+  }).validator(),
+
+  run ({contactSlugs, name, outlets}) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+    const [primarySlug, ...otherSlugs] = contactSlugs
+
+    // calulate the update to the first contact and apply it
+    // delete the other contacts
+
+    const primaryContact = Contacts.findOne({
+      slug: primarySlug
+    })
+
+    const otherContacts = Contacts.find({
+      slug: {
+        $in: otherSlugs
+      }
+    }).fetch()
+
+    const mergedContact = assignContacts([primaryContact, ...otherContacts])
+
+    // Set the user provided over-rides
+    mergedContact.name = name
+    mergedContact.outlets = outlets
+
+    // Update the primary
+    const details = ContactCreateSchema.clean(mergedContact)
+    updateContact._execute({userId: this.userId}, {contactId: primaryContact._id, details})
+
+    // Delete the others
+    batchRemoveContacts._execute({userId: this.userId}, {contactSlugs: otherSlugs})
+
+    // primaryContact.name
+
+    // Update the first contact with the info, and merge in all other fields
+
+    // Update all references to the first contact, with the new info if name or outlets changed.
+
+    // users.myContacts
+    // contacts
+    // campaigns.contacts
+    // posts.contacts
+    // masterlists
+    // tags
+
+    // Update all references to the other contacts, to refer to the new contact.
   }
 })

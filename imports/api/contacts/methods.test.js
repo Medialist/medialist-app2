@@ -4,6 +4,7 @@ import assert from 'assert'
 import faker from 'faker'
 import moment from 'moment'
 import babyparse from 'babyparse'
+import pick from 'lodash.pick'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
@@ -20,7 +21,8 @@ import {
   batchRemoveContacts,
   createContact,
   batchUpdateStatus,
-  exportContactsToCsv
+  exportContactsToCsv,
+  mergeContacts
 } from './methods'
 import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists } from '/tests/fixtures/server-domain'
 import toUserRef from '/imports/lib/to-user-ref'
@@ -660,5 +662,108 @@ describe('Export Contacts to CSV method', function () {
       assert.equal(row[5], contacts[i].updatedAt.toISOString())
       assert.equal(row[6], users[0].profile.name)
     })
+  })
+})
+
+describe.only('mergeContacts', function () {
+  let users
+
+  beforeEach(function () {
+    resetDatabase()
+    users = createTestUsers(1)
+  })
+
+  it('should require the user to be logged in', function () {
+    assert.throws(() => addContactsToCampaign.run.call({}, {}), /You must be logged in/)
+  })
+
+  it('should merge 2 contacts', function () {
+
+    const Xavier = {
+      name: 'Xavier',
+      avatar: 'http://example.org/2',
+      emails: [
+        { label: 'email', value: 'xavier@example.org'},
+        { label: 'email', value: 'x@tableflip.io'}
+      ],
+      phones: [
+        { label: 'phone', value: '123456' }
+      ],
+      socials: [
+        { label: 'Instagram', value: '@xav' }
+      ],
+      outlets: [
+        { label: 'Xavier House', value: 'executable' }
+      ],
+      addresses: [
+      ]
+    }
+
+    const Zavi = {
+      name: 'Zavi',
+      avatar: 'http://example.org/1',
+      emails: [
+        { label: 'email', value: 'zavi@example.org'},
+        { label: 'email', value: 'x@tableflip.io'}
+      ],
+      phones: [
+        { label: 'phone', value: '123456' }
+      ],
+      socials: [
+        { label: 'Twitter', value: '@xav' }
+      ],
+      outlets: [
+        { label: 'Zavi Org', value: 'zealot' }
+      ],
+      addresses: [
+      ]
+    }
+
+    const xavierSlug = createContact._execute({userId: users[0]._id}, {details: Xavier})
+
+    const zaviSlug = createContact._execute({userId: users[0]._id}, {details: Zavi})
+
+    const payload = {
+      contactSlugs: [xavierSlug, zaviSlug],
+      name: Xavier.name,
+      outlets: Xavier.outlets
+    }
+
+    // DO IT!
+    mergeContacts._execute({userId: users[0]._id}, payload)
+
+    const ExpectedMergedContact = {
+      // User provided name
+      name: payload.name,
+      // First (non-null) avatar, from contacts, in order of contactSlugs provided.
+      avatar: Xavier.avatar,
+      // Unique email values from all merged contacts
+      emails: [
+        { label: 'email', value: 'xavier@example.org'},
+        { label: 'email', value: 'x@tableflip.io'},
+        { label: 'email', value: 'zavi@example.org'}
+      ],
+      // Unique phone values from all merged contacts
+      phones: [
+        { label: 'phone', value: '123456' }
+      ],
+      // Unique social **labels** from all merged contacts
+      socials: [
+        { label: 'Instagram', value: '@xav' },
+        { label: 'Twitter', value: '@xav' }
+      ],
+      // User provided list
+      outlets: payload.outlets,
+
+      addresses: [
+      ]
+    }
+
+    Contacts.find({slug: xavierSlug}).forEach(d => {
+      const actual = pick(d, Object.keys(ExpectedMergedContact))
+      assert.deepEqual(actual, ExpectedMergedContact, 'The first contact has the expected merged fields')
+    })
+
+    assert.equal(Contacts.find({slug: zaviSlug}).count(), 0, 'The other contact is no longer available')
   })
 })
