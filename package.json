@@ -44,6 +44,8 @@
     "lodash.intersection": "^4.4.0",
     "lodash.isequal": "^4.5.0",
     "lodash.pick": "^4.4.0",
+    "lodash.union": "^4.6.0",
+    "lodash.uniq": "^4.5.0",
     "lodash.values": "^4.3.0",
     "meteor-node-stubs": "~0.2.0",
     "moment": "^2.15.1",
@@ -70,6 +72,7 @@
     "twitter": "^1.2.5",
     "twitter-screen-name": "^1.0.0",
     "underscore.string": "^3.3.4",
+    "uniq": "^1.0.1",
     "uploadcare": "^0.4.3",
     "uploadcare-widget": "^3.1.2",
     "validator": "^7.0.0"

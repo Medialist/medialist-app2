@@ -665,7 +665,7 @@ describe('Export Contacts to CSV method', function () {
   })
 })
 
-describe.only('mergeContacts', function () {
+describe('mergeContacts', function () {
   let users
 
   beforeEach(function () {
@@ -677,7 +677,7 @@ describe.only('mergeContacts', function () {
     assert.throws(() => addContactsToCampaign.run.call({}, {}), /You must be logged in/)
   })
 
-  it('should merge 2 contacts', function () {
+  it('should merge 3 contacts', function () {
 
     const Xavier = {
       name: 'Xavier',
@@ -716,15 +716,35 @@ describe.only('mergeContacts', function () {
         { label: 'Zavi Org', value: 'zealot' }
       ],
       addresses: [
+        { city: 'London' }
+      ]
+    }
+
+    const Xorg = {
+      name: 'Xorg',
+      avatar: 'http://example.org/3',
+      emails: [
+        { label: 'email', value: 'zavi@example.org'},
+      ],
+      phones: [
+        { label: 'phone', value: '123456' }
+      ],
+      socials: [
+        { label: 'Twitter', value: '@xav' }
+      ],
+      outlets: [
+        { label: 'Zavi Org', value: 'zealot' }
+      ],
+      addresses: [
       ]
     }
 
     const xavierSlug = createContact._execute({userId: users[0]._id}, {details: Xavier})
-
     const zaviSlug = createContact._execute({userId: users[0]._id}, {details: Zavi})
+    const xorgSlug = createContact._execute({userId: users[0]._id}, {details: Xorg})
 
     const payload = {
-      contactSlugs: [xavierSlug, zaviSlug],
+      contactSlugs: [xavierSlug, zaviSlug, xorgSlug],
       name: Xavier.name,
       outlets: Xavier.outlets
     }
@@ -756,6 +776,7 @@ describe.only('mergeContacts', function () {
       outlets: payload.outlets,
 
       addresses: [
+        { city: 'London' }
       ]
     }
 
@@ -764,6 +785,10 @@ describe.only('mergeContacts', function () {
       assert.deepEqual(actual, ExpectedMergedContact, 'The first contact has the expected merged fields')
     })
 
-    assert.equal(Contacts.find({slug: zaviSlug}).count(), 0, 'The other contact is no longer available')
+    assert.equal(Contacts.find({
+      slug: {
+        $in:[zaviSlug, xorgSlug]
+      }
+    }).count(), 0, 'The other contact is no longer available')
   })
 })

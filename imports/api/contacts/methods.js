@@ -4,6 +4,7 @@ import SimpleSchema from 'simpl-schema'
 import escapeRegExp from 'lodash.escaperegexp'
 import difference from 'lodash.difference'
 import intersection from 'lodash.intersection'
+import uniq from 'lodash.uniq'
 import moment from 'moment'
 import babyparse from 'babyparse'
 import slugify, { checkAllSlugsExist } from '/imports/lib/slug'
@@ -687,6 +688,15 @@ export const mergeContacts = new ValidatedMethod({
       }
     }).fetch()
 
+
+
+    // do any contacts appear on the same campaign?
+    const allCampaigns = [primaryContact, ...otherContacts].map(c => c.campaigns).map((a,b) => a.concat(b))
+    if (allCampaigns.length !== uniq(allCampaigns).length) {
+      // there is an overlap... bail.
+      throw new Meteor.Error('mergeContacts.campaignOverlap', 'One or more contacts appear on the same campaign, so we can\'t merge them.')
+    }
+
     const mergedContact = assignContacts([primaryContact, ...otherContacts])
 
     // Set the user provided over-rides
@@ -695,24 +705,67 @@ export const mergeContacts = new ValidatedMethod({
 
     // Update the primary
     const details = ContactCreateSchema.clean(mergedContact)
-    updateContact._execute({userId: this.userId}, {contactId: primaryContact._id, details})
+
+    // updateContact._execute({userId: this.userId}, {contactId: primaryContact._id, details})
+
+    // TODO: re-assign campaigns, master-lists, tags, myContacts, posts
+
+    // For every action... merge missing items into contact, update referenced entites with new, update referencerd entites to rmeove old
+
+
+
+    Campaigns.
 
     // Delete the others
     batchRemoveContacts._execute({userId: this.userId}, {contactSlugs: otherSlugs})
-
-    // primaryContact.name
-
-    // Update the first contact with the info, and merge in all other fields
-
-    // Update all references to the first contact, with the new info if name or outlets changed.
-
-    // users.myContacts
-    // contacts
-    // campaigns.contacts
-    // posts.contacts
-    // masterlists
-    // tags
-
-    // Update all references to the other contacts, to refer to the new contact.
   }
 })
+
+export function mergeContactsCampaigns(mergedContact, otherContacts) {
+  Campaigns.update({
+    _id: mergedContact._id
+  }, {
+
+  })
+}
+
+// Assume no overlaps in campaigns.
+function replaceContactOnCampaigns (primary, other) {
+  // replace the old contact slug on all campaigns that reference it.
+  Campaigns.update({
+    'contacts.slug': other.slug
+  }, {
+    $set: {
+      'contacts.$.slug': primary.slug
+    }
+  })
+
+  // return the new list of campaign slugs that the primary contact is on
+  return Campaigns.find({
+    'contacts.slug': primary.slug
+  }, {
+    fields: {
+      slug: true
+    }
+  }).map(c => c.slug)
+}
+
+// function replaceContactOnTags (primary, other) {
+//   Tags.update({
+//
+//   })
+// }
+//
+// function replaceContactOnMasterLists (primary, other) {
+//   MasterLists.update({
+//
+//   })
+// }
+//
+// function replaceContactOnUsers (primary, other) {
+//
+// }
+//
+// function replaceContactOnPosts (primary, other) {
+//
+// }

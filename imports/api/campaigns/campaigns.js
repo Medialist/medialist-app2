@@ -87,3 +87,23 @@ Campaigns.findOneRef = (campaignSlugOrId) => {
     }
   }))
 }
+
+Campaigns.replaceContact = (incoming, outgoing) => {
+  // replace the old contact slug on all campaigns that reference it.
+  Campaigns.update({
+    'contacts.slug': outgoing.slug
+  }, {
+    $set: {
+      'contacts.$.slug': incoming.slug
+    }
+  })
+
+  // return the new list of campaign slugs that the incoming contact is on
+  return Campaigns.find({
+    'contacts.slug': incoming.slug
+  }, {
+    fields: {
+      slug: 1
+    }
+  }).map(c => c.slug)
+}
