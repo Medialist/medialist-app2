@@ -54,6 +54,8 @@ const hideTextIfOnlyUrl = (item) => {
   for (let i = lines.length - 1; i >= 0; i--) {
     if (!lines[i].trim()) {
       lines.pop()
+    } else {
+      break
     }
   }
 
