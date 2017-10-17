@@ -688,10 +688,8 @@ export const mergeContacts = new ValidatedMethod({
       }
     }).fetch()
 
-
-
     // do any contacts appear on the same campaign?
-    const allCampaigns = [primaryContact, ...otherContacts].map(c => c.campaigns).map((a,b) => a.concat(b))
+    const allCampaigns = [primaryContact, ...otherContacts].map(c => c.campaigns).map((a, b) => a.concat(b))
     if (allCampaigns.length !== uniq(allCampaigns).length) {
       // there is an overlap... bail.
       throw new Meteor.Error('mergeContacts.campaignOverlap', 'One or more contacts appear on the same campaign, so we can\'t merge them.')
@@ -706,66 +704,11 @@ export const mergeContacts = new ValidatedMethod({
     // Update the primary
     const details = ContactCreateSchema.clean(mergedContact)
 
-    // updateContact._execute({userId: this.userId}, {contactId: primaryContact._id, details})
+    updateContact._execute({userId: this.userId}, {contactId: primaryContact._id, details})
 
-    // TODO: re-assign campaigns, master-lists, tags, myContacts, posts
-
-    // For every action... merge missing items into contact, update referenced entites with new, update referencerd entites to rmeove old
-
-
-
-    Campaigns.
+    
 
     // Delete the others
-    batchRemoveContacts._execute({userId: this.userId}, {contactSlugs: otherSlugs})
+    // batchRemoveContacts._execute({userId: this.userId}, {contactSlugs: otherSlugs})
   }
 })
-
-export function mergeContactsCampaigns(mergedContact, otherContacts) {
-  Campaigns.update({
-    _id: mergedContact._id
-  }, {
-
-  })
-}
-
-// Assume no overlaps in campaigns.
-function replaceContactOnCampaigns (primary, other) {
-  // replace the old contact slug on all campaigns that reference it.
-  Campaigns.update({
-    'contacts.slug': other.slug
-  }, {
-    $set: {
-      'contacts.$.slug': primary.slug
-    }
-  })
-
-  // return the new list of campaign slugs that the primary contact is on
-  return Campaigns.find({
-    'contacts.slug': primary.slug
-  }, {
-    fields: {
-      slug: true
-    }
-  }).map(c => c.slug)
-}
-
-// function replaceContactOnTags (primary, other) {
-//   Tags.update({
-//
-//   })
-// }
-//
-// function replaceContactOnMasterLists (primary, other) {
-//   MasterLists.update({
-//
-//   })
-// }
-//
-// function replaceContactOnUsers (primary, other) {
-//
-// }
-//
-// function replaceContactOnPosts (primary, other) {
-//
-// }

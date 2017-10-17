@@ -35,6 +35,8 @@ MasterLists.replaceContact = (incoming, outgoing) => {
     $addToSet: {
       'items': incoming._id
     }
+  }, {
+    multi: true
   })
 
   MasterLists.update({
@@ -43,6 +45,8 @@ MasterLists.replaceContact = (incoming, outgoing) => {
     $pull: {
       'items': outgoing._id
     }
+  }, {
+    multi: true
   })
 
   const mergedMasterListIds = union(

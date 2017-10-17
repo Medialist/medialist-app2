@@ -6,7 +6,7 @@ import { batchAddToContactLists } from './methods'
 import { createTestUsers, createTestContacts,createTestContactLists } from '/tests/fixtures/server-domain'
 import toUserRef from '/imports/lib/to-user-ref'
 
-describe('MasterLists.replaceContact', function () {
+describe.only('MasterLists.replaceContact', function () {
   let contacts = []
   let users = []
   let contactLists = []
@@ -19,15 +19,25 @@ describe('MasterLists.replaceContact', function () {
   })
 
   /*
-    take 2 contacts and add them both to the same masterList.
+    Take 2 contacts and add them both to the same masterList.
     Then add each one to it's own masterList.
 
-    alf: [1,2]
-    bob: [1,3]
+    listA: [0, 1]
+    listB: [0]
+    listC: [1]
+    listD: []
 
-    we expect alf to end up in the union of the two, and bob to be in none.
-    alf: [1,2,3]
-    bob: []
+    Then replace contact 1 with contact 0
+
+    listA: [0]
+    listB: [0]
+    listC: [0]
+    listD: []
+
+    We expect all reference to contact 1 to have been replaced with contact 1,
+    and no duplicates where both were on the same list.
+
+    Other lists should be unaffected.
   */
   it('should replace the contact', function () {
 

@@ -88,7 +88,7 @@ describe('Users.addToMyFavourites', function () {
   })
 })
 
-describe.only('Users.replaceContact', function () {
+describe('Users.replaceContact', function () {
   let users
   let contacts
 
@@ -99,13 +99,19 @@ describe.only('Users.replaceContact', function () {
     contacts = createTestContacts(2)
   })
 
-  // a: [0, 1]
-  // b: [0]
-  // c: [1]
+  // Set up:
   //
+  // user a: [0, 1]
+  // user b: [0]
+  // user c: [1]
+  //
+  // THen merge contact 0 into contact 1
+  //
+  // Expectation:
   // a: [1]
   // b: [1]
   // c: [1]
+  //
   it('should replace contacts in the users favourits', function () {
     assert.equal(0, Meteor.users.findOne(users[0]._id).myContacts.length)
 
@@ -137,7 +143,7 @@ describe.only('Users.replaceContact', function () {
 
     assert.equal(a.length, 1, '1 contacts on in myContacts user[0]')
     assert.deepEqual(pick(a[0], fields), pick(contacts[1], fields), 'users[0] now refs only contacts[1]')
-    assert.deepEqual(pick(a[1], fields), pick(contacts[1], fields), 'users[1] now refs only contacts[1]')
-    assert.deepEqual(pick(a[2], fields), pick(contacts[1], fields), 'users[2] now refs only contacts[1]')
+    assert.deepEqual(pick(b[0], fields), pick(contacts[1], fields), 'users[1] now refs only contacts[1]')
+    assert.deepEqual(pick(c[0], fields), pick(contacts[1], fields), 'users[2] now refs only contacts[1]')
   })
 })
