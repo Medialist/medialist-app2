@@ -8,10 +8,11 @@ import uniq from 'lodash.uniq'
 import moment from 'moment'
 import babyparse from 'babyparse'
 import slugify, { checkAllSlugsExist } from '/imports/lib/slug'
-import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
+import { addToMyFavourites, findOneUserRef, replaceContact as UsersReplaceContact } from '/imports/api/users/users'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
 import Contacts, { assignContacts } from '/imports/api/contacts/contacts'
+import Tags from '/imports/api/tags/tags'
 import { ContactCreateSchema, ContactSlugsOrSearchSchema } from '/imports/api/contacts/schema'
 import { LabelValueSchema } from '/imports/lib/schema'
 import { findOrValidateContactSlugs } from '/imports/api/contacts/queries'
@@ -649,6 +650,11 @@ export const exportContactsToCsv = new ValidatedMethod({
 export const mergeContacts = new ValidatedMethod({
   name: 'mergeContacts',
 
+  // Just don't even try, client.
+  applyOptions: {
+    returnStubValue: false
+  },
+
   validate: new SimpleSchema({
     contactSlugs: {
       type: Array,
@@ -673,6 +679,11 @@ export const mergeContacts = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
+
+    if (this.isSimulation) {
+      return
+    }
+
     const [primarySlug, ...otherSlugs] = contactSlugs
 
     // calulate the update to the first contact and apply it
@@ -697,18 +708,40 @@ export const mergeContacts = new ValidatedMethod({
 
     const mergedContact = assignContacts([primaryContact, ...otherContacts])
 
-    // Set the user provided over-rides
+    // Set the user provided overrides
     mergedContact.name = name
     mergedContact.outlets = outlets
 
     // Update the primary
     const details = ContactCreateSchema.clean(mergedContact)
 
-    updateContact._execute({userId: this.userId}, {contactId: primaryContact._id, details})
+    Contacts.update({
+      _id: primaryContact._id
+    }, {
+      $set: details
+    })
 
-    
+    const updatedContact = Contacts.findOne({slug: primarySlug})
+
+    otherContacts.forEach(outgoing => {
+      updatedContact.campaigns = Campaigns.replaceContact(updatedContact, outgoing)
+      updatedContact.masterLists = MasterLists.replaceContact(updatedContact, outgoing)
+      updatedContact.tags = Tags.replaceContact(updatedContact, outgoing)
+      Posts.replaceContact(updatedContact, outgoing)
+      UsersReplaceContact(updatedContact, outgoing)
+    })
+
+    Contacts.update({
+      _id: primaryContact._id
+    }, {
+      $set: {
+        campaigns: updatedContact.campaigns,
+        masterLists: updatedContact.masterLists,
+        tags: updatedContact.tags
+      }
+    })
 
     // Delete the others
-    // batchRemoveContacts._execute({userId: this.userId}, {contactSlugs: otherSlugs})
+    batchRemoveContacts._execute({userId: this.userId}, {contactSlugs: otherSlugs})
   }
 })

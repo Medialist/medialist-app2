@@ -84,7 +84,7 @@ export const addToMyFavourites = ({userId, contactSlugs = [], campaignSlugs = []
 
 // Remove refs to outgoing where both incoming and outgoing are in the same myContats list.
 // Update refs to outgoing to point to incoming where only outgoing in the myContacts list.
-export const updateContact = (incoming, outgoing) => {
+export const replaceContact = (incoming, outgoing) => {
   Meteor.users.update({
     $and: [
       {'myContacts._id': incoming._id},
