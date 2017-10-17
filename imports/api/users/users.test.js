@@ -11,7 +11,7 @@ import Embeds from '/imports/api/embeds/embeds'
 import { createFeedbackPost, createCoveragePost, createNeedToKnowPost, updatePost } from '/imports/api/posts/methods'
 import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists, createTestEmbeds } from '/tests/fixtures/server-domain'
 import { addContactsToCampaign } from '/imports/api/contacts/methods'
-import { addToMyFavourites, updateContact } from '/imports/api/users/users'
+import { addToMyFavourites, replaceContact } from '/imports/api/users/users'
 
 describe('Users.addToMyFavourites', function () {
   let users
@@ -130,7 +130,7 @@ describe('Users.replaceContact', function () {
       contactSlugs: [contacts[1].slug]
     })
 
-    const res = updateContact(
+    const res = replaceContact(
       Contacts.findOne({_id: contacts[1]._id}),
       Contacts.findOne({_id: contacts[0]._id})
     )

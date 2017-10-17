@@ -6,7 +6,7 @@ import { batchAddToContactLists } from './methods'
 import { createTestUsers, createTestContacts,createTestContactLists } from '/tests/fixtures/server-domain'
 import toUserRef from '/imports/lib/to-user-ref'
 
-describe.only('MasterLists.replaceContact', function () {
+describe('MasterLists.replaceContact', function () {
   let contacts = []
   let users = []
   let contactLists = []
