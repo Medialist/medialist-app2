@@ -93,7 +93,7 @@ function createContact (data, createdBy, importId) {
 }
 
 function mergeContact (data, contact, createdBy, importId) {
-  contact = Contacts.mergeProfiles([contact, data])
+  contact = Contacts.mergeInfo(contact, data)
   contact.imports.push(importId)
   contact.updatedBy = createdBy
   contact.updatedAt = new Date()

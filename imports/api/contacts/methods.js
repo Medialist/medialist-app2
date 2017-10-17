@@ -706,15 +706,19 @@ export const mergeContacts = new ValidatedMethod({
       throw new Meteor.Error('mergeContacts.campaignOverlap', 'One or more contacts appear on the same campaign, so we can\'t merge them.')
     }
 
-    const mergedContact = Contacts.mergeProfiles([primaryContact, ...otherContacts])
+    let mergedContact = primaryContact
+    // Merge in the profile info, using same logic as merge contact during import.
+    otherContacts.forEach(other => {
+      mergedContact = Contacts.mergeInfo(mergedContact, other)
+    })
 
     // Set the user provided overrides
     mergedContact.name = name
     mergedContact.outlets = outlets
 
-    // Update the primary
     const details = ContactCreateSchema.clean(mergedContact)
 
+    // Update the contact profile info in the db
     Contacts.update({
       _id: primaryContact._id
     }, {
@@ -723,6 +727,7 @@ export const mergeContacts = new ValidatedMethod({
 
     const updatedContact = Contacts.findOne({slug: primarySlug})
 
+    // Update all the references
     otherContacts.forEach(outgoing => {
       updatedContact.campaigns = Campaigns.replaceContact(updatedContact, outgoing)
       updatedContact.masterLists = MasterLists.replaceContact(updatedContact, outgoing)

@@ -107,16 +107,14 @@ Contacts.statusIndex = [].indexOf.bind(values(Contacts.status))
 
 export default Contacts
 
-// reduce many contacts into 1
-Contacts.mergeProfiles = (contacts) => {
-  return contacts.reduce((result, current) => {
-    result.emails = addIfDistinct('value', result.emails, current.emails)
-    result.phones = addIfDistinct('value', result.phones, current.phones)
-    result.outlets = addIfDistinct('label', result.outlets, current.outlets)
-    result.socials = addIfDistinct('label', result.socials, current.socials)
-    result.addresses = addIfCurrentlyEmpty(result.addresses, current.addresses)
-    return result
-  })
+// Merge contact info from `b` into `a`
+Contacts.mergeInfo = (a, b) => {
+  a.emails = addIfDistinct('value', a.emails, b.emails)
+  a.phones = addIfDistinct('value', a.phones, b.phones)
+  a.outlets = addIfDistinct('label', a.outlets, b.outlets)
+  a.socials = addIfDistinct('label', a.socials, b.socials)
+  a.addresses = addIfCurrentlyEmpty(a.addresses, b.addresses)
+  return a
 }
 
 function addIfCurrentlyEmpty (oldList = [], newList = []) {
