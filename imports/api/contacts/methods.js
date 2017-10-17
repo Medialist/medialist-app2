@@ -11,7 +11,7 @@ import slugify, { checkAllSlugsExist } from '/imports/lib/slug'
 import { addToMyFavourites, findOneUserRef, replaceContact as UsersReplaceContact } from '/imports/api/users/users'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
-import Contacts, { assignContacts } from '/imports/api/contacts/contacts'
+import Contacts from '/imports/api/contacts/contacts'
 import Tags from '/imports/api/tags/tags'
 import { ContactCreateSchema, ContactSlugsOrSearchSchema } from '/imports/api/contacts/schema'
 import { LabelValueSchema } from '/imports/lib/schema'
@@ -706,7 +706,7 @@ export const mergeContacts = new ValidatedMethod({
       throw new Meteor.Error('mergeContacts.campaignOverlap', 'One or more contacts appear on the same campaign, so we can\'t merge them.')
     }
 
-    const mergedContact = assignContacts([primaryContact, ...otherContacts])
+    const mergedContact = Contacts.mergeProfiles([primaryContact, ...otherContacts])
 
     // Set the user provided overrides
     mergedContact.name = name

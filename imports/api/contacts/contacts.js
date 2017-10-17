@@ -108,7 +108,7 @@ Contacts.statusIndex = [].indexOf.bind(values(Contacts.status))
 export default Contacts
 
 // reduce many contacts into 1
-export function assignContacts (contacts) {
+Contacts.mergeProfiles = (contacts) => {
   return contacts.reduce((result, current) => {
     result.emails = addIfDistinct('value', result.emails, current.emails)
     result.phones = addIfDistinct('value', result.phones, current.phones)

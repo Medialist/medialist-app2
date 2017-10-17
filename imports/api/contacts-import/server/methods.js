@@ -3,7 +3,7 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import SimpleSchema from 'simpl-schema'
 import slugify from '/imports/lib/slug'
 import { findOneUserRef } from '/imports/api/users/users'
-import Contacts, { assignContacts } from '/imports/api/contacts/contacts'
+import Contacts from '/imports/api/contacts/contacts'
 import { ContactCreateSchema } from '/imports/api/contacts/schema'
 import ContactsImport from '/imports/api/contacts-import/contacts-import'
 
@@ -93,7 +93,7 @@ function createContact (data, createdBy, importId) {
 }
 
 function mergeContact (data, contact, createdBy, importId) {
-  contact = assignContacts(contact, data)
+  contact = Contacts.mergeProfiles([contact, data])
   contact.imports.push(importId)
   contact.updatedBy = createdBy
   contact.updatedAt = new Date()
