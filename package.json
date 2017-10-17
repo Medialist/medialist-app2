@@ -74,7 +74,6 @@
     "twitter": "^1.2.5",
     "twitter-screen-name": "^1.0.0",
     "underscore.string": "^3.3.4",
-    "uniq": "^1.0.1",
     "uploadcare": "^0.4.3",
     "uploadcare-widget": "^3.1.2",
     "validator": "^7.0.0"
