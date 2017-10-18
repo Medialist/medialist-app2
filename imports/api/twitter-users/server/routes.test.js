@@ -7,8 +7,9 @@ import Contacts from '/imports/api/contacts/contacts'
 import testResponse from './socials.update.test.json'
 import {sendForSocials, handleSocialsUpdate} from './routes'
 import { createTestUsers, createTestContacts } from '/tests/fixtures/server-domain'
+import { HTTP } from 'meteor/http'
 
-describe.only('handleSocialsUpdate', function () {
+describe('handleSocialsUpdate', function () {
   let users
   let contacts
 
@@ -16,6 +17,15 @@ describe.only('handleSocialsUpdate', function () {
     resetDatabase()
     users = createTestUsers(1)
     contacts = createTestContacts(4)
+  })
+
+  it('should validate params', function () {
+    assert.throws(() => {
+      handleSocialsUpdate({socials: 'no scrubs'})
+    }, 'Throw scrubs')
+    assert.throws(() => {
+      handleSocialsUpdate({buster: ['also', 'known', 'as']})
+    }, 'Throw busters')
   })
 
   it('should update contacts with new social info', function () {
