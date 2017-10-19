@@ -1,4 +1,3 @@
-import { JsonRoutes, RestMiddleware } from 'meteor/simple:json-routes'
 import { HTTP } from 'meteor/http'
 import { Meteor } from 'meteor/meteor'
 import Contacts from '/imports/api/contacts/contacts'
@@ -23,7 +22,10 @@ export function findTwitterSocials (contacts) {
   }
 */
 export const sendForSocials = (contacts) => {
-  const url = Meteor.settings.influnce.apiUrl + '/webhook/socials/lookup'
+  if (Meteor.settings && !Meteor.settings.updateContactsFromTwitter) {
+    return console.log('NOT sending contacts for twitter lookup. `updateContactsFromTwitter = false`')
+  }
+  const url = Meteor.settings.influence.apiUrl + '/webhook/socials/lookup'
   const callbackUrl = Meteor.absoluteUrl('webhook/socials/update')
   const socials = findTwitterSocials(contacts)
   HTTP.post(url, {
@@ -56,7 +58,7 @@ export const handleSocialsUpdate = ({socials}) => {
 
   socials.forEach(s => {
     // update previously enriched ones
-    Contacts.update({
+    const res1 = Contacts.update({
       'socials': {
         $elemMatch: {
           twitterId: s.twitterId
@@ -73,11 +75,13 @@ export const handleSocialsUpdate = ({socials}) => {
     })
 
     // We'd like to use an $or and do these updates in one shot, but the positional array operator does not like it.
-    Contacts.update({
+    const res2 = Contacts.update({
       'socials': {
         $elemMatch: {
           label: s.label,
-          value: s.value,
+          value: {
+            $regex: new RegExp(s.value, 'i')
+          },
           twitterId: {$exists: false}
         }
       }
@@ -90,17 +94,9 @@ export const handleSocialsUpdate = ({socials}) => {
     }, {
       multi: true
     })
+
+    if (res1 + res2 === 0) {
+      console.log('No contact found with twitter social', s.value, s.twitterId)
+    }
   })
 }
-
-// Send sensible errors when route handler throws.
-JsonRoutes.ErrorMiddleware.use(RestMiddleware.handleErrorAsJson)
-
-JsonRoutes.add('post', '/webhook/socials/update', function (req, res, next) {
-  handleSocialsUpdate(req.body)
-
-  JsonRoutes.sendResult(res, {
-    code: 200,
-    headers: {}
-  })
-})
