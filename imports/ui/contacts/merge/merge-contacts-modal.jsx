@@ -16,7 +16,9 @@ class MergeContacts extends React.Component {
     hasConflicts: PropTypes.bool.isRequired,
     onDismiss: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
-    toggleOutlet: PropTypes.func.isRequired
+    onMerged: PropTypes.func.isRequired,
+    toggleOutlet: PropTypes.func.isRequired,
+    onChangeName: PropTypes.func.isRequired
   }
 
   render () {
@@ -28,7 +30,8 @@ class MergeContacts extends React.Component {
       hasConflicts,
       onDismiss,
       onSubmit,
-      toggleOutlet
+      toggleOutlet,
+      onChangeName
     } = this.props
 
     return (
@@ -48,7 +51,7 @@ class MergeContacts extends React.Component {
                 <Radio
                   name='name'
                   checked={name === this.props.name}
-                  onChange={() => this.setState({name: name})}
+                  onChange={() => onChangeName(name)}
                   label={name} />
               </div>
             )}
@@ -100,11 +103,12 @@ class MergeContactsContainer extends React.Component {
       name: this.state.name,
       outlets: this.state.selectedOutlets
     }, (err) => {
-      this.props.onDismiss()
       if (err) {
+        this.props.onDismiss()
         console.log(err)
         this.props.snackbar.error('merge-contacts-failure')
       } else {
+        this.props.onMerged()
         this.props.snackbar.show(<div>
           <span>Contacts merged into </span>
           <a href={`/contacts/${contacts[0].slug}`} className='semibold underline'>
@@ -113,6 +117,10 @@ class MergeContactsContainer extends React.Component {
         </div>)
       }
     })
+  }
+
+  onChangeName = (name) => {
+    this.setState({name})
   }
 
   toggleOutlet = (outlet) => {
@@ -153,6 +161,7 @@ class MergeContactsContainer extends React.Component {
         {...this.state}
         onSubmit={this.onSubmit}
         toggleOutlet={this.toggleOutlet}
+        onChangeName={this.onChangeName}
         uniqueNames={this.uniqueNames}
         uniqueOutlets={this.uniqueOutlets}
         hasConflicts={hasConflicts} />

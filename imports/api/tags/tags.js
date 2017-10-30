@@ -93,11 +93,11 @@ Tags.replaceContact = (incoming, outgoing) => {
   const outgoingTagSlugs = outgoing.tags.map(t => t.slug)
 
   // in both, so have been double counted.
-  const toDecriment = intersection(incomingTagSlugs, outgoingTagSlugs)
+  const toDecrement = intersection(incomingTagSlugs, outgoingTagSlugs)
 
   Tags.update({
     slug: {
-      $in: toDecriment
+      $in: toDecrement
     }
   }, {
     $inc: {

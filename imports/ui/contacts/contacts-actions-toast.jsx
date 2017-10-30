@@ -6,6 +6,7 @@ import dasherise from 'dasherize'
 import { Dropdown, DropdownMenu, DropdownMenuItem } from '/imports/ui/navigation/dropdown'
 import { StatusValues } from '/imports/api/contacts/status'
 import StatusLabel from '/imports/ui/feedback/status-label'
+import FancyMergeIcon from './merge/fancy-merge-icon'
 import {
   FeedCampaignIcon,
   FavouritesIcon,
@@ -13,8 +14,7 @@ import {
   TagIcon,
   StatusUpdateIcon,
   DeleteIcon,
-  DownloadIcon,
-  MergeIcon
+  DownloadIcon
 } from '/imports/ui/images/icons'
 
 class ContactsActionsToast extends React.Component {
@@ -143,12 +143,13 @@ class ContactsActionsToast extends React.Component {
                     style={{width: '21px', height: '21px'}} />
                 </Tooltip>
               )}
-              {(contactsCount > 1 && contactsCount < 4) ? (
+              {(onMergeClick && contactsCount > 1 && contactsCount < 4) ? (
                 <Tooltip title='Merge contacts'>
-                  <MergeIcon
+                  <FancyMergeIcon
+                    count={contactsCount}
                     className='mx3 pointer gray60 hover-blue'
                     onClick={onMergeClick}
-                    data-id={`contact-actions-merge-contacts`}
+                    data-id='contact-actions-merge-contacts'
                     style={{width: '21px', height: '21px'}} />
                 </Tooltip>
               ) : null}

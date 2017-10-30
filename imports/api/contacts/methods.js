@@ -702,7 +702,7 @@ export const mergeContacts = new ValidatedMethod({
     // do any contacts appear on the same campaign?
     const allCampaigns = [primaryContact, ...otherContacts].map(c => c.campaigns).map((a, b) => a.concat(b))
     if (allCampaigns.length !== uniq(allCampaigns).length) {
-      // there is an overlap... bail.
+      // Merging contacts that appear on the same campaign isn't supported yet.
       throw new Meteor.Error('mergeContacts.campaignOverlap', 'One or more contacts appear on the same campaign, so we can\'t merge them.')
     }
 

@@ -250,6 +250,11 @@ class ContactsPage extends React.Component {
     this.props.router.push(`/contact/${contactSlug}`)
   }
 
+  onContactsMerged = () => {
+    this.hideModals()
+    this.clearSelection()
+  }
+
   getSearchOrSlugs = () => {
     const {selectionMode} = this.state
     if (selectionMode === 'all') {
@@ -411,7 +416,8 @@ class ContactsPage extends React.Component {
         <MergeContactsModal
           contacts={this.state.selections}
           open={this.state.mergeContactsModal}
-          onDismiss={this.hideModals} />
+          onDismiss={this.hideModals}
+          onMerged={this.onContactsMerged} />
       </div>
     )
   }
