@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor'
 import React from 'react'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router'
 import deepEqual from 'deep-equal'
 import Modal from '/imports/ui/navigation/modal'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
@@ -102,7 +103,7 @@ class MergeContactsContainer extends React.Component {
       contactSlugs: contacts.map(c => c.slug),
       name: this.state.name,
       outlets: this.state.selectedOutlets
-    }, (err) => {
+    }, (err, contact) => {
       if (err) {
         this.props.onDismiss()
         console.log(err)
@@ -111,9 +112,9 @@ class MergeContactsContainer extends React.Component {
         this.props.onMerged()
         this.props.snackbar.show(<div>
           <span>Contacts merged into </span>
-          <a href={`/contacts/${contacts[0].slug}`} className='semibold underline'>
-            {contacts[0].name}
-          </a>
+          <Link to={`/contact/${contact.slug}`} className='semibold underline'>
+            {contact.name}
+          </Link>
         </div>)
       }
     })

@@ -748,5 +748,7 @@ export const mergeContacts = new ValidatedMethod({
 
     // Delete the others
     batchRemoveContacts._execute({userId: this.userId}, {contactSlugs: otherSlugs})
+
+    return Contacts.findOne({_id: primaryContact._id})
   }
 })
