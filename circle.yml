@@ -18,6 +18,7 @@ dependencies:
 
 test:
   override:
+    - meteor reset
     - meteor npm test
     - meteor npm run test:server:ci
     - meteor npm run test:browser:ci
