@@ -11,11 +11,8 @@
     "userAgent": "'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36'",
     "timeout": 10000
   },
-  "twitter": {
-    "consumer_key": "${TWITTER_CONSUMER_KEY}",
-    "consumer_secret": "${TWITTER_CONSUMER_SECRET}",
-    "access_token_key": "${TWITTER_ACCESS_TOKEN_KEY}",
-    "access_token_secret": "${TWITTER_ACCESS_TOKEN_SECRET}"
+  "influence": {
+    "apiUrl": "https://influence.medialist.io"
   },
   "public": {
     "uploadcare": {

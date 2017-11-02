@@ -6,6 +6,7 @@ import { findOneUserRef } from '/imports/api/users/users'
 import Contacts from '/imports/api/contacts/contacts'
 import { ContactCreateSchema } from '/imports/api/contacts/schema'
 import ContactsImport from '/imports/api/contacts-import/contacts-import'
+import { sendForSocials } from '/imports/api/influence/server/socials'
 
 export const importContacts = new ValidatedMethod({
   name: 'importContacts',
@@ -45,6 +46,22 @@ export const importContacts = new ValidatedMethod({
       console.time(label)
       processImport({_id, ...doc})
       console.timeEnd(label)
+
+      // send all imported contacts to influence for social enrichment.
+      const importDoc = ContactsImport.findOne({_id})
+      const {created, updated} = importDoc.results
+
+      const imported = Contacts.find({
+        _id: {
+          $in: [...created, ...updated]
+        }
+      }, {
+        fields: {
+          socials: 1
+        }
+      }).fetch()
+
+      sendForSocials(imported)
     })
 
     return _id

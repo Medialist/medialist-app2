@@ -1,8 +1,6 @@
 import '/imports/startup/server/accounts'
-import '/imports/startup/server/contacts-task'
 import '/imports/startup/server/mail-url'
 import '/imports/startup/server/migrations'
 import '/imports/startup/server/fix-refs'
 import '/imports/startup/server/validate'
 import '/imports/startup/server/schemas'
-import '/imports/startup/server/service-config'

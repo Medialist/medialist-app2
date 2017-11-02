@@ -97,7 +97,8 @@ export const ContactCreateSchema = new SimpleSchema({
     type: Array
   },
   'socials.$': {
-    type: SocialSchema
+    type: Object,
+    blackbox: true
   },
   addresses: {
     type: Array

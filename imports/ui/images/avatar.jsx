@@ -29,8 +29,22 @@ class Avatar extends React.Component {
   }
 
   resizeAvatar (url, size) {
-    if (url.indexOf('ucarecdn') === -1) return url
-    return `${url}-/scale_crop/${size}x${size}/center/`
+    if (url.indexOf('ucarecdn') > -1) {
+      return `${url}-/scale_crop/${size}x${size}/center/`
+    }
+
+    if (url.indexOf('twimg') > -1) {
+      let param = 'bigger' // 73x73px
+      if (size > 73) {
+        param = '200x200'
+      }
+      if (size > 200) {
+        param = '400x400'
+      }
+      return url.replace(/normal|bigger/, param)
+    }
+
+    return url
   }
 
   render () {

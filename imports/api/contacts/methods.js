@@ -18,6 +18,12 @@ import { findOrValidateContactSlugs } from '/imports/api/contacts/queries'
 import { StatusValues } from '/imports/api/contacts/status'
 import MasterLists from '/imports/api/master-lists/master-lists'
 
+let sendForSocials = () => ([])
+
+if (Meteor.isServer) {
+  sendForSocials = require('../influence/server/socials').sendForSocials
+}
+
 /*
  * Add mulitple Contacts to 1 Campaign
  * - Push all the contacts to the Campaign.contacts map
@@ -403,7 +409,11 @@ export const createContact = new ValidatedMethod({
     })
 
     // Save the contact
-    Contacts.insert(contact)
+    const _id = Contacts.insert(contact)
+
+    if (!this.isSimulation) {
+      sendForSocials([Contacts.findOne({_id})])
+    }
 
     addToMyFavourites({
       userId: this.userId,
@@ -453,6 +463,9 @@ export const updateContact = new ValidatedMethod({
     })
 
     const updatedContact = Contacts.findOne({_id: contactId})
+    if (!this.isSimulation) {
+      sendForSocials([updatedContact])
+    }
 
     // Update existing users' favourite contacts with new denormalised data
     Meteor.users.update({
