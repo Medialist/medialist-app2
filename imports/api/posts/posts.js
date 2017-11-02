@@ -1,4 +1,5 @@
 import { Mongo } from 'meteor/mongo'
+import dot from 'dot-object'
 import everything from '/imports/lib/everything'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
@@ -39,3 +40,32 @@ Posts.create = ({type, contactSlugs = [], campaignSlugs = [], message, status, e
 }
 
 export default Posts
+
+Posts.replaceContact = (incoming, outgoing) => {
+  // Remove outgoing where both are on the same post
+  Posts.update({
+    $and: [
+      {'contacts.slug': incoming.slug},
+      {'contacts.slug': outgoing.slug}
+    ]
+  }, {
+    $pull: {
+      'contacts': {
+        slug: outgoing.slug
+      }
+    }
+  }, {
+    multi: true
+  })
+
+  // Overwrite ougoing contactRefs with incoming contacRef
+  Posts.update({
+    'contacts.slug': outgoing._id
+  }, {
+    $set: dot.dot({
+      'contacts.$': Contacts.toRef(incoming)
+    })
+  }, {
+    mutli: true
+  })
+}
