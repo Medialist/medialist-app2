@@ -4,7 +4,6 @@ import SimpleSchema from 'simpl-schema'
 import escapeRegExp from 'lodash.escaperegexp'
 import difference from 'lodash.difference'
 import intersection from 'lodash.intersection'
-import uniq from 'lodash.uniq'
 import moment from 'moment'
 import babyparse from 'babyparse'
 import slugify, { checkAllSlugsExist } from '/imports/lib/slug'
@@ -693,17 +692,18 @@ export const mergeContacts = new ValidatedMethod({
       slug: primarySlug
     })
 
+    if (!primaryContact) {
+      throw new Meteor.Error('mergeContacts.primarySlugNotFound', `Failed to find ${primarySlug}`)
+    }
+
     const otherContacts = Contacts.find({
       slug: {
         $in: otherSlugs
       }
     }).fetch()
 
-    // do any contacts appear on the same campaign?
-    const allCampaigns = [primaryContact, ...otherContacts].map(c => c.campaigns).map((a, b) => a.concat(b))
-    if (allCampaigns.length !== uniq(allCampaigns).length) {
-      // Merging contacts that appear on the same campaign isn't supported yet.
-      throw new Meteor.Error('mergeContacts.campaignOverlap', 'One or more contacts appear on the same campaign, so we can\'t merge them.')
+    if (otherContacts.length !== otherSlugs.length) {
+      throw new Meteor.Error('mergeContacts.primarySlugNotFound', `Failed to find ${otherSlugs.join(', ')}`)
     }
 
     let mergedContact = primaryContact

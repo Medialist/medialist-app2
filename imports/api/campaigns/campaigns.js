@@ -89,6 +89,22 @@ Campaigns.findOneRef = (campaignSlugOrId) => {
 }
 
 Campaigns.replaceContact = (incoming, outgoing) => {
+  // Remove outgoing where both are on the same campaign
+  Campaigns.update({
+    $and: [
+      {'contacts.slug': incoming.slug},
+      {'contacts.slug': outgoing.slug}
+    ]
+  }, {
+    $pull: {
+      'contacts': {
+        slug: outgoing.slug
+      }
+    }
+  }, {
+    multi: true
+  })
+
   // replace the old contact slug on all campaigns that reference it.
   Campaigns.update({
     'contacts.slug': outgoing.slug
@@ -96,6 +112,8 @@ Campaigns.replaceContact = (incoming, outgoing) => {
     $set: {
       'contacts.$.slug': incoming.slug
     }
+  }, {
+    multi: true
   })
 
   // return the new list of campaign slugs that the incoming contact is on
