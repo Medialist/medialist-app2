@@ -31,6 +31,7 @@ import { addRecentContactList } from '/imports/api/users/methods'
 import createSearchQueryContainer from './search-query-container'
 import createSearchEnricher from './search-enricher'
 import { ContactSearchSchema } from '/imports/api/contacts/schema'
+import MergeContactsModal from '/imports/ui/contacts/merge/merge-contacts-modal'
 
 /*
  * ContactPage and ContactsPageContainer
@@ -76,7 +77,8 @@ class ContactsPage extends React.Component {
     addContactModal: false,
     addContactsToCampaignModal: false,
     addTagsModal: false,
-    addToMasterListsModal: false
+    addToMasterListsModal: false,
+    mergeContactsModal: false
   }
 
   componentDidMount () {
@@ -221,7 +223,8 @@ class ContactsPage extends React.Component {
       addContactModal: false,
       addContactsToCampaignModal: false,
       addTagsModal: false,
-      addToMasterListsModal: false
+      addToMasterListsModal: false,
+      mergeContactsModal: false
     })
   }
 
@@ -373,6 +376,7 @@ class ContactsPage extends React.Component {
           onSectorClick={() => this.showModal('addToMasterListsModal')}
           onFavouriteClick={() => this.onFavouriteAll()}
           onTagClick={() => this.showModal('addTagsModal')}
+          onMergeClick={() => this.showModal('mergeContactsModal')}
           onDeselectAllClick={() => this.clearSelection()}
           onExportToCsvClick={this.onExportToCsv} />
         <CreateContactModal
@@ -404,6 +408,11 @@ class ContactsPage extends React.Component {
           onSave={this.onAddAllToMasterLists}>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} total={selectionsLength} />
         </AddToMasterListModal>
+        <MergeContactsModal
+          contacts={this.state.selections}
+          open={this.state.mergeContactsModal}
+          onDismiss={this.hideModals}
+          onMerged={this.clearSelectionAndHideModals} />
       </div>
     )
   }

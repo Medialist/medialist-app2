@@ -6,6 +6,7 @@ import dasherise from 'dasherize'
 import { Dropdown, DropdownMenu, DropdownMenuItem } from '/imports/ui/navigation/dropdown'
 import { StatusValues } from '/imports/api/contacts/status'
 import StatusLabel from '/imports/ui/feedback/status-label'
+import FancyMergeIcon from './merge/fancy-merge-icon'
 import {
   FeedCampaignIcon,
   FavouritesIcon,
@@ -28,7 +29,8 @@ class ContactsActionsToast extends React.Component {
     onStatusClick: PropTypes.func,
     onDeleteClick: PropTypes.func,
     onDeselectAllClick: PropTypes.func.isRequired,
-    onExportToCsvClick: PropTypes.func.isRequired
+    onExportToCsvClick: PropTypes.func.isRequired,
+    onMergeClick: PropTypes.func.isRequired
   }
 
   state = {
@@ -59,7 +61,8 @@ class ContactsActionsToast extends React.Component {
       onTagClick,
       onDeleteClick,
       onDeselectAllClick,
-      onExportToCsvClick
+      onExportToCsvClick,
+      onMergeClick
     } = this.props
 
     return (
@@ -140,6 +143,16 @@ class ContactsActionsToast extends React.Component {
                     style={{width: '21px', height: '21px'}} />
                 </Tooltip>
               )}
+              {(onMergeClick && contactsCount > 1 && contactsCount < 4) ? (
+                <Tooltip title='Merge contacts'>
+                  <FancyMergeIcon
+                    count={contactsCount}
+                    className='mx3 pointer gray60 hover-blue'
+                    onClick={onMergeClick}
+                    data-id='contact-actions-merge-contacts'
+                    style={{width: '21px', height: '21px'}} />
+                </Tooltip>
+              ) : null}
             </div>
             <div className='flex-none'>
               <button className='btn btn-no-border bg-transparent grey40' onClick={() => onDeselectAllClick(contacts)}>Deselect all</button>

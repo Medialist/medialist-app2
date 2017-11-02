@@ -15,6 +15,7 @@ import RemoveContactModal from '/imports/ui/campaigns/remove-contact'
 import AddContactsToCampaign from '/imports/ui/contacts/add-to-campaign/add-many-modal'
 import AddTagsModal from '/imports/ui/tags/add-tags-modal'
 import AddToMasterListModal from '/imports/ui/master-lists/add-to-master-list-modal'
+import MergeContactsModal from '/imports/ui/contacts/merge/merge-contacts-modal'
 import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import { batchAddTags } from '/imports/api/tags/methods'
@@ -50,7 +51,8 @@ class CampaignContactsPage extends React.Component {
     addContactsToCampaignModal: false,
     addTagsModal: false,
     addToMasterListsModal: false,
-    removeContactsModal: false
+    removeContactsModal: false,
+    mergeContactsModal: false
   }
 
   componentWillReceiveProps (nextProps) {
@@ -206,7 +208,8 @@ class CampaignContactsPage extends React.Component {
       addContactsToCampaignModal: false,
       addTagsModal: false,
       addToMasterListsModal: false,
-      removeContactsModal: false
+      removeContactsModal: false,
+      mergeContactsModal: false
     })
   }
 
@@ -288,7 +291,8 @@ class CampaignContactsPage extends React.Component {
           onStatusClick={this.onBatchUpdateStatus}
           onDeleteClick={() => this.showModal('removeContactsModal')}
           onDeselectAllClick={this.clearSelection}
-          onExportToCsvClick={this.onExportToCsv} />
+          onExportToCsvClick={this.onExportToCsv}
+          onMergeClick={() => this.showModal('mergeContactsModal')} />
         <AddOrCreateContactModal
           open={addContactModal}
           onDismiss={this.hideModals}
@@ -326,6 +330,11 @@ class CampaignContactsPage extends React.Component {
           campaigns={[campaign]}
           contacts={this.state.selections}
           avatars={this.state.selections} />
+        <MergeContactsModal
+          contacts={this.state.selections}
+          open={this.state.mergeContactsModal}
+          onDismiss={this.hideModals}
+          onMerged={this.clearSelectionAndHideModals} />
       </div>
     )
   }

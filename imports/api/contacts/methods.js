@@ -7,11 +7,13 @@ import intersection from 'lodash.intersection'
 import moment from 'moment'
 import babyparse from 'babyparse'
 import slugify, { checkAllSlugsExist } from '/imports/lib/slug'
-import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
+import { addToMyFavourites, findOneUserRef, replaceContact as UsersReplaceContact } from '/imports/api/users/users'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
 import Contacts from '/imports/api/contacts/contacts'
+import Tags from '/imports/api/tags/tags'
 import { ContactCreateSchema, ContactSlugsOrSearchSchema } from '/imports/api/contacts/schema'
+import { LabelValueSchema } from '/imports/lib/schema'
 import { findOrValidateContactSlugs } from '/imports/api/contacts/queries'
 import { StatusValues } from '/imports/api/contacts/status'
 import MasterLists from '/imports/api/master-lists/master-lists'
@@ -654,5 +656,112 @@ export const exportContactsToCsv = new ValidatedMethod({
       filename: 'medialist.csv',
       data: csvStr
     }
+  }
+})
+
+export const mergeContacts = new ValidatedMethod({
+  name: 'mergeContacts',
+
+  // Just don't even try, client.
+  applyOptions: {
+    returnStubValue: false
+  },
+
+  validate: new SimpleSchema({
+    contactSlugs: {
+      type: Array,
+      min: 2,
+      max: 3
+    },
+    'contactSlugs.$': {
+      type: String
+    },
+    name: {
+      type: String
+    },
+    outlets: {
+      type: Array
+    },
+    'outlets.$': {
+      type: LabelValueSchema
+    }
+  }).validator(),
+
+  run ({contactSlugs, name, outlets}) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    if (this.isSimulation) {
+      return
+    }
+
+    const [primarySlug, ...otherSlugs] = contactSlugs
+
+    // calulate the update to the first contact and apply it
+    // delete the other contacts
+
+    const primaryContact = Contacts.findOne({
+      slug: primarySlug
+    })
+
+    if (!primaryContact) {
+      throw new Meteor.Error('mergeContacts.primarySlugNotFound', `Failed to find ${primarySlug}`)
+    }
+
+    const otherContacts = Contacts.find({
+      slug: {
+        $in: otherSlugs
+      }
+    }).fetch()
+
+    if (otherContacts.length !== otherSlugs.length) {
+      throw new Meteor.Error('mergeContacts.primarySlugNotFound', `Failed to find ${otherSlugs.join(', ')}`)
+    }
+
+    let mergedContact = primaryContact
+    // Merge in the profile info, using same logic as merge contact during import.
+    otherContacts.forEach(other => {
+      mergedContact = Contacts.mergeInfo(mergedContact, other)
+    })
+
+    // Set the user provided overrides
+    mergedContact.name = name
+    mergedContact.outlets = outlets
+
+    const details = ContactCreateSchema.clean(mergedContact)
+
+    // Update the contact profile info in the db
+    Contacts.update({
+      _id: primaryContact._id
+    }, {
+      $set: details
+    })
+
+    const updatedContact = Contacts.findOne({slug: primarySlug})
+
+    // Update all the references
+    otherContacts.forEach(outgoing => {
+      updatedContact.campaigns = Campaigns.replaceContact(updatedContact, outgoing)
+      updatedContact.masterLists = MasterLists.replaceContact(updatedContact, outgoing)
+      updatedContact.tags = Tags.replaceContact(updatedContact, outgoing)
+      Posts.replaceContact(updatedContact, outgoing)
+      UsersReplaceContact(updatedContact, outgoing)
+    })
+
+    Contacts.update({
+      _id: primaryContact._id
+    }, {
+      $set: {
+        campaigns: updatedContact.campaigns,
+        masterLists: updatedContact.masterLists,
+        tags: updatedContact.tags
+      }
+    })
+
+    // Delete the others
+    batchRemoveContacts._execute({userId: this.userId}, {contactSlugs: otherSlugs})
+
+    return Contacts.findOne({_id: primaryContact._id})
   }
 })

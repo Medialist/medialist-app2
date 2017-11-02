@@ -110,11 +110,7 @@ function createContact (data, createdBy, importId) {
 }
 
 function mergeContact (data, contact, createdBy, importId) {
-  contact.emails = addIfDistinct('value', contact.emails, data.emails)
-  contact.phones = addIfDistinct('value', contact.phones, data.phones)
-  contact.outlets = addIfDistinct('label', contact.outlets, data.outlets)
-  contact.socials = addIfDistinct('label', contact.socials, data.socials)
-  contact.addresses = addIfCurrentlyEmpty(contact.addresses, data.addresses)
+  contact = Contacts.mergeInfo(contact, data)
   contact.imports.push(importId)
   contact.updatedBy = createdBy
   contact.updatedAt = new Date()
@@ -137,24 +133,4 @@ function mergeContact (data, contact, createdBy, importId) {
       'results.updated': id
     }
   })
-}
-
-function addIfCurrentlyEmpty (oldList = [], newList = []) {
-  if (oldList.length > 0) {
-    return oldList
-  }
-
-  return oldList.concat(newList)
-}
-
-function addIfDistinct (property, oldList = [], newList = []) {
-  const newItems = newList.reduce((list, newItem) => {
-    var newValue = newItem[property].toLowerCase()
-    var exists = oldList.some(oldItem => {
-      const oldValue = oldItem[property]
-      return oldValue && oldValue.toLowerCase() === newValue
-    })
-    return exists ? list : list.concat(newItem)
-  }, [])
-  return oldList.concat(newItems)
 }

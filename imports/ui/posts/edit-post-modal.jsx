@@ -26,7 +26,6 @@ class EditPost extends React.Component {
   }
 
   onUpdatePost = ({ message }) => {
-    console.log('onUpdatePost', message)
     const { post } = this.props
 
     if (post.message === message) {
