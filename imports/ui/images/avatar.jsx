@@ -35,13 +35,13 @@ class Avatar extends React.Component {
 
     if (url.indexOf('twimg') > -1) {
       let param = 'bigger' // 73x73px
-      if (size > 40) {
+      if (size > 73) {
         param = '200x200'
       }
-      if (size > 100) {
+      if (size > 200) {
         param = '400x400'
       }
-      return url.replace('normal', param)
+      return url.replace(/normal|bigger/, param)
     }
 
     return url
