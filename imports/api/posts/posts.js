@@ -45,13 +45,13 @@ Posts.replaceContact = (incoming, outgoing) => {
   // Remove outgoing where both are on the same post
   Posts.update({
     $and: [
-      {'contacts.slug': incoming.slug},
-      {'contacts.slug': outgoing.slug}
+      {'contacts._id': incoming._id},
+      {'contacts._id': outgoing._id}
     ]
   }, {
     $pull: {
       'contacts': {
-        slug: outgoing.slug
+        _id: outgoing._id
       }
     }
   }, {
@@ -60,12 +60,12 @@ Posts.replaceContact = (incoming, outgoing) => {
 
   // Overwrite ougoing contactRefs with incoming contacRef
   Posts.update({
-    'contacts.slug': outgoing._id
+    'contacts._id': outgoing._id
   }, {
     $set: dot.dot({
       'contacts.$': Contacts.toRef(incoming)
     })
   }, {
-    mutli: true
+    multi: true
   })
 }
