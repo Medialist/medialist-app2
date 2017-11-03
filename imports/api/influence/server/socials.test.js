@@ -5,7 +5,7 @@ import { resetDatabase } from 'meteor/xolvio:cleaner'
 import assert from 'assert'
 import Contacts from '/imports/api/contacts/contacts'
 import testResponse from './socials.update.test.json'
-import {sendForSocials, handleSocialsUpdate} from './routes'
+import { sendForSocials, handleSocialsUpdate } from './socials'
 import { createTestUsers, createTestContacts } from '/tests/fixtures/server-domain'
 import { HTTP } from 'meteor/http'
 
