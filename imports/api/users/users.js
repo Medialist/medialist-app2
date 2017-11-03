@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor'
+import dot from 'dot-object'
 import toUserRef from '/imports/lib/to-user-ref'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
@@ -100,16 +101,25 @@ export const replaceContact = (incoming, outgoing) => {
     multi: true
   })
 
+  // Update old refs to incoming wih the latest info
+  Meteor.users.update({
+    'myContacts._id': incoming._id
+  }, {
+    $set: dot.dot({
+      'myContacts.$': Contacts.toRef(incoming)
+    })
+  }, {
+    multi: true
+  })
+
+  // Replace refs to ougoing with incoming
   Meteor.users.update({
     'myContacts._id': outgoing._id
   }, {
-    $set: {
-      'myContacts.$._id': incoming._id,
-      'myContacts.$.name': incoming.name,
-      'myContacts.$.slug': incoming.slug,
-      'myContacts.$.avatar': incoming.avatar
-    }
+    $set: dot.dot({
+      'myContacts.$': Contacts.toRef(incoming)
+    })
   }, {
-    mutli: true
+    multi: true
   })
 }

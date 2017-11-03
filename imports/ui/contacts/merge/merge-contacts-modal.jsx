@@ -43,10 +43,10 @@ class MergeContacts extends React.Component {
         </div>
         {hasConflicts && (
           <div className='border-top border-gray80 px7 pt3 pb6'>
-            <label className='block gray40 semibold f-sm pt4 mb2'>
+            <label className='block gray20 f-md pt4 mb2'>
               {`You are merging ${contacts.length} contacts. Select the information you want to keep`}
             </label>
-            <label className='block gray40 semibold f-sm pt4 pb3'>Name</label>
+            <label className='block gray20 f-md pt4 pb2'>Name</label>
             {uniqueNames.map(name =>
               <div className='pb2' key={name}>
                 <Radio
@@ -58,9 +58,9 @@ class MergeContacts extends React.Component {
             )}
             {uniqueOutlets.length > 0 ? (
               <div>
-                <label className='block gray40 semibold f-sm pt4 pb3'>Jobs</label>
+                <label className='block gray20 f-md pt4 pb2'>Jobs</label>
                 {uniqueOutlets.map(outlet =>
-                  <div className='pb3' key={outlet.label + outlet.value}>
+                  <div className='pb2' key={outlet.label + outlet.value}>
                     <Checkbox
                       checked={selectedOutlets.includes(outlet)}
                       onChange={() => toggleOutlet(outlet)}
@@ -74,7 +74,7 @@ class MergeContacts extends React.Component {
         )}
         <div className='flex p4 bg-white border-top border-gray80'>
           <div className='flex-auto flex order-last' style={{justifyContent: 'flex-end'}}>
-            <button className='btn bg-completed white order-last' onClick={onSubmit} data-id='merge-contacts-form-submit-button'>Save</button>
+            <button className='btn bg-completed white order-last' onClick={onSubmit} data-id='merge-contacts-form-submit-button'>Finish Merge</button>
             <button className='btn bg-transparent gray40 mr2' onClick={onDismiss} data-id='merge-contacts-form-cancel-button'>Cancel</button>
           </div>
           <div className='flex-auto'>
