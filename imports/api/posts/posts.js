@@ -58,6 +58,17 @@ Posts.replaceContact = (incoming, outgoing) => {
     multi: true
   })
 
+  // Update incoming contactRefs with new merged info
+  Posts.update({
+    'contacts._id': incoming._id
+  }, {
+    $set: dot.dot({
+      'contacts.$': Contacts.toRef(incoming)
+    })
+  }, {
+    multi: true
+  })
+
   // Overwrite ougoing contactRefs with incoming contacRef
   Posts.update({
     'contacts._id': outgoing._id

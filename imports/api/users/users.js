@@ -100,6 +100,18 @@ export const replaceContact = (incoming, outgoing) => {
     multi: true
   })
 
+  // Update old refs to incoming wih the latest info
+  Meteor.users.update({
+    'myContacts._id': incoming._id
+  }, {
+    $set: {
+      'myContacts.$.name': incoming.name
+    }
+  }, {
+    mutli: true
+  })
+
+  // Replace refs to ougoing with incoming
   Meteor.users.update({
     'myContacts._id': outgoing._id
   }, {
