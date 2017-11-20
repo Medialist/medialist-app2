@@ -21,7 +21,6 @@ import campaignsSearchQueryContainer from '/imports/ui/campaigns/campaign-search
 import CampaignLink from '/imports/ui/campaigns/campaign-link'
 import CampaignListLink from '/imports/ui/master-lists/campaign-list-link'
 import TagLink from '/imports/ui/campaigns/tag-link'
-import DeleteCampaignsModal from '/imports/ui/campaigns/delete-campaigns-modal'
 import { addRecentCampaignList } from '/imports/api/users/methods'
 import { CampaignSearchSchema } from '/imports/api/campaigns/schema'
 
@@ -46,8 +45,7 @@ class CampaignsPage extends React.Component {
     selectionMode: 'include',
     createCampaignModal: false,
     addTagsToCampaignsModal: false,
-    addToCampaignListsModal: false,
-    deleteCampaignsModal: false
+    addToCampaignListsModal: false
   }
 
   componentDidMount () {
@@ -95,8 +93,7 @@ class CampaignsPage extends React.Component {
     this.setState({
       createCampaignModal: false,
       addTagsToCampaignsModal: false,
-      addToCampaignListsModal: false,
-      deleteCampaignsModal: false
+      addToCampaignListsModal: false
     })
   }
 
@@ -267,7 +264,6 @@ class CampaignsPage extends React.Component {
           onSectorClick={() => this.showModal('addToCampaignListsModal')}
           onFavouriteClick={this.onFavouriteAll}
           onTagClick={() => this.showModal('addTagsToCampaignsModal')}
-          onDeleteClick={() => this.showModal('deleteCampaignsModal')}
           onDeselectAllClick={this.clearSelection} />
         <AddTagsModal
           title='Tag these Campaigns'
@@ -288,13 +284,6 @@ class CampaignsPage extends React.Component {
             items={this.state.selections}
             maxTooltip={12} shape='square' total={selectionsLength} />
         </AddToMasterListModal>
-        <DeleteCampaignsModal
-          open={this.state.deleteCampaignsModal}
-          campaigns={this.state.selections}
-          campaignsCount={selectionsLength}
-          onDelete={this.onDelete}
-          onDismiss={this.hideModals}
-        />
       </div>
     )
   }
