@@ -221,7 +221,7 @@ Get access to the Mongo Atlas account, or ask a friend for a recent DB snapshot.
 
 In the web ui, choose
 - "Backup"
-- <cluster you want>
+- [cluster you want]
 - "Restore or Download"
 - "Backup"
 - Provide your password
