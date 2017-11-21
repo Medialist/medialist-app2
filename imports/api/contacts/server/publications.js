@@ -219,9 +219,26 @@ Meteor.publish('contact-search-results', function ({sort, limit, ...contactSearc
 
   const query = createContactSearchQuery(contactSearch)
 
-  const cursor = Contacts.find(query, {sort, limit})
-
-  publishToCollection(this, 'contact-search-results', cursor)
+  if (sort && sort.hasOwnProperty('updatedAt')) {
+    // reactive: will publish changes as they happen.
+    const cursor = Contacts.find(query, {sort, limit})
+    publishToCollection(this, 'contact-search-results', cursor)
+  } else {
+    // non-reactive: result set won't change until you re-subscribe
+    const sub = this
+    Contacts.rawCollection()
+      .find(query)
+      .sort(sort)
+      .limit(limit)
+      .collation({locale: 'en', strength: 1, numericOrdering: true, alternate: 'shifted'})
+      .forEach(
+        doc => sub.added('contact-search-results', doc._id, doc),
+        err => {
+          if (err) return sub.error(err)
+          sub.ready()
+        }
+      )
+  }
 })
 
 Meteor.publish('contact-search-count-not-reactive', function (contactSearch) {

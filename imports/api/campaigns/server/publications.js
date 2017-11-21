@@ -184,9 +184,26 @@ Meteor.publish('campaign-search-results', function ({sort, limit, ...campaignSea
 
   const query = createCampaignSearchQuery(campaignSearch)
 
-  const cursor = Campaigns.find(query, {sort, limit})
-
-  publishToCollection(this, 'campaign-search-results', cursor)
+  if (sort && sort.hasOwnProperty('updatedAt')) {
+    // reactive: will publish changes as they happen.
+    const cursor = Campaigns.find(query, {sort, limit})
+    publishToCollection(this, 'campaign-search-results', cursor)
+  } else {
+    // non-reactive: result set won't change until you re-subscribe
+    const sub = this
+    Campaigns.rawCollection()
+      .find(query)
+      .sort(sort)
+      .limit(limit)
+      .collation({locale: 'en', strength: 1, numericOrdering: true, alternate: 'shifted'})
+      .forEach(
+        doc => sub.added('campaign-search-results', doc._id, doc),
+        err => {
+          if (err) return sub.error(err)
+          sub.ready()
+        }
+      )
+  }
 })
 
 Meteor.publish('campaign-search-count-not-reactive', function (campaignSearch) {
