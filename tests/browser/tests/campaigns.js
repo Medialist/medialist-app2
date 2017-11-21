@@ -203,39 +203,6 @@ const test = {
     t.end()
   },
 
-  'Should delete campaigns from toast menu': function (t) {
-    t.createDomain(['campaign'], (campaign, done) => {
-      const campaignsPage = t.page.campaigns()
-        .navigate()
-
-      campaignsPage.section.campaignTable
-        .searchFor(campaign.name)
-        .selectRow(0)
-
-      campaignsPage.section.toast.openDeleteCampaignsModal()
-
-      campaignsPage.section.deleteCampaignsModal
-        .confirm()
-
-      t.page.main().waitForSnackbarMessage('batch-delete-campaigns-success')
-
-      campaignsPage.section.campaignTable
-        .assertNoResults()
-        .assertNotInSearchResults(campaign)
-
-      const dashboardPage = t.page.dashboard()
-        .navigate()
-
-      dashboardPage.section.activityFeed
-        .assertHasNoPostsForCampaign(campaign)
-
-      done()
-    })
-
-    t.page.main().logout()
-    t.end()
-  },
-
   'Should filter campaigns by master list': function (t) {
     const domainArgs = Array(5).fill('campaign').concat(Array(5).fill('campaignList'))
 
