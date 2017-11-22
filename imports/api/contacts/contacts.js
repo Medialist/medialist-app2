@@ -14,7 +14,21 @@ if (Meteor.isServer) {
 
 Contacts.allContactsCount = () => Counter.get('contactCount')
 
-Contacts.toRef = ({_id, slug, name, avatar, outlets, updatedAt, createdAt}) => {
+Contacts.toRef = (contact) => {
+  if (!contact) {
+    return null
+  }
+
+  const {
+    _id,
+    slug,
+    name,
+    avatar,
+    outlets,
+    updatedAt,
+    createdAt
+  } = contact
+
   const ref = {
     _id,
     slug,

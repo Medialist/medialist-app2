@@ -18,8 +18,9 @@ const ContactButton = (props) => {
   )
 }
 
-const ContactSelector = React.createClass({
-  propTypes: {
+class ContactSelector extends React.Component {
+  static propTypes = {
+    isEdit: PropTypes.bool,
     selectedContact: PropTypes.object,
     selectedStatus: PropTypes.string,
     campaign: PropTypes.object.isRequired,
@@ -29,19 +30,20 @@ const ContactSelector = React.createClass({
     onStatusChange: PropTypes.func.isRequired,
     onOpen: PropTypes.func,
     onClose: PropTypes.func
-  },
-  getDefaultProps () {
-    return {
-      showStatus: true
-    }
-  },
-  getInitialState () {
-    return {
-      open: false,
-      term: ''
-    }
-  },
-  openDropdown () {
+  }
+
+  static defaultProps = {
+    isEdit: false,
+    showStatus: true,
+    contacts: []
+  }
+
+  state = {
+    open: false,
+    term: ''
+  }
+
+  openDropdown = () => {
     this.setState({
       open: true
     })
@@ -49,8 +51,9 @@ const ContactSelector = React.createClass({
     if (this.props.onOpen) {
       this.props.onOpen()
     }
-  },
-  closeDropdown () {
+  }
+
+  closeDropdown = () => {
     this.setState({
       open: false,
       term: ''
@@ -59,8 +62,9 @@ const ContactSelector = React.createClass({
     if (this.props.onClose) {
       this.props.onClose()
     }
-  },
-  onSelectContact (contact) {
+  }
+
+  onSelectContact = (contact) => {
     this.setState({
       open: false,
       term: ''
@@ -76,19 +80,21 @@ const ContactSelector = React.createClass({
     if (this.props.onClose) {
       this.props.onClose()
     }
-  },
-  onStatusChange (event) {
+  }
+
+  onStatusChange = (event) => {
     this.props.onStatusChange(event)
-  },
-  onTermChange (term) {
+  }
+
+  onTermChange = (term) => {
     this.setState({ term })
-  },
+  }
+
   render () {
     const { onSelectContact, onStatusChange, closeDropdown, onTermChange } = this
+    const { selectedContact, selectedStatus, contacts, campaign, showStatus, isEdit } = this.props
     const { open, term } = this.state
-    const { selectedContact, selectedStatus, contacts, campaign, showStatus } = this.props
     const filteredContacts = contacts.filter((contact) => contactMatchesTerm(contact, term))
-
     return (
       <div className='inline-block'>
         <div className='inline-block'>
@@ -96,7 +102,7 @@ const ContactSelector = React.createClass({
             <button
               className='btn bg-transparent border-gray80'
               style={{height: 34, padding: '0 12px', borderRadius: 2}}
-              onClick={this.openDropdown} disabled={!contacts || !contacts.length}
+              onClick={this.openDropdown} disabled={isEdit || !contacts.length}
               data-id='select-contact-button'>
               { selectedContact ? <ContactButton contact={selectedContact} /> : 'Select a Contact' }
             </button>
@@ -116,8 +122,7 @@ const ContactSelector = React.createClass({
               buttonStyle={{padding: '6px 15px 7px'}}
               status={selectedStatus}
               onChange={onStatusChange}
-              disabled={!selectedContact}
-            >
+              disabled={isEdit || !selectedContact} >
               <StatusLabel name={selectedStatus} />
             </StatusSelector>
           </div>
@@ -125,7 +130,7 @@ const ContactSelector = React.createClass({
       </div>
     )
   }
-})
+}
 
 export default ContactSelector
 

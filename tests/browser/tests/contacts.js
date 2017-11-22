@@ -3,6 +3,7 @@
 const faker = require('faker')
 const tmp = require('tmp')
 const fs = require('fs')
+const async = require('async')
 const domain = require('../fixtures/domain')
 const assertions = require('../fixtures/assertions')
 
@@ -15,7 +16,10 @@ const test = {
   },
 
   'Should only import csv files': function (t) {
-    const file = tmp.fileSync()
+    const file = tmp.fileSync({
+      dir: '/tmp/medialist_test',
+      mode: 0o644
+    })
 
     t.page.contactImport()
       .navigate()
@@ -28,8 +32,12 @@ const test = {
   },
 
   'Should import contacts': function (t) {
+    // file is shared from test container to chrome container via docker volume mount.
+    // See .drone.yml
     const file = tmp.fileSync({
-      postfix: '.csv'
+      dir: '/tmp/medialist_test',
+      postfix: '.csv',
+      mode: 0o644
     })
     const contents = `Name, Outlet, Email, Telephone
 ${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email()}, ${faker.phone.phoneNumber()}`
@@ -67,11 +75,14 @@ ${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email
         name: contact.name
       })
       .then((doc) => {
-        t.assert.urlEquals(`http://localhost:3000/contact/${doc.slug}`)
+        t.assert.urlEquals(`${t.launch_url}/contact/${doc.slug}`)
 
         assertions.contactsAreEqual(t, contact, doc)
 
         done()
+      })
+      .catch(error => {
+        throw error
       })
     })
 
@@ -88,7 +99,7 @@ ${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email
         .searchFor(contact.name)
         .clickRow(0)
 
-      t.assert.urlEquals(`http://localhost:3000/contact/${contact.slug}`)
+      t.assert.urlEquals(`${t.launch_url}/contact/${contact.slug}`)
 
       done()
     })
@@ -234,6 +245,202 @@ ${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email
       contactsPage.section.contactTable
         .assertNoResults()
         .assertNotInSearchResults(contact)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should filter contacts by master list': function (t) {
+    const domainArgs = Array(5).fill('contact').concat(Array(5).fill('contactList'))
+
+    t.createDomain(domainArgs, function () {
+      const args = Array.from(arguments)
+      const contacts = args.slice(0, 5)
+      const masterLists = args.slice(5, 10)
+      const done = args[10]
+
+      t.perform((done) => {
+        const tasks = contacts.map((c, i) => {
+          return (cb) => t.addContactsToContactLists([c], [masterLists[i]], cb)
+        })
+        async.parallel(tasks, done)
+      })
+
+      const contactsPage = t.page.contacts()
+        .navigate()
+
+      const masterListsSelector = contactsPage.section.masterListsSelector
+      const contactTable = contactsPage.section.contactTable
+
+      // Assert each campaign present/absent in each master list
+      masterLists.forEach((masterList, i) => {
+        masterListsSelector.clickMasterListBySlug(masterList.slug)
+
+        const assertResult = (resultCampaign) => {
+          contacts.forEach((campaign, i) => {
+            const selector = `[data-item='${campaign.slug}']`
+            if (campaign === resultCampaign) {
+              contactTable.waitForElementPresent(selector)
+            } else {
+              contactTable.waitForElementNotPresent(selector)
+            }
+          })
+        }
+
+        assertResult(contacts[i])
+      })
+
+      // Ensure we can click all/my and that they become selected
+      masterListsSelector
+        .assert.elementPresent('@all')
+        .clickMasterListBySlug('all')
+        .waitForElementPresent('@allSelected')
+        .assert.elementPresent('@my')
+        .clickMasterListBySlug('my')
+        .waitForElementPresent('@mySelected')
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should retain search query in search box after page refresh': function (t) {
+    t.createDomain(['contact'], (contact, done) => {
+      const contactsPage = t.page.main()
+        .navigateToContacts(t)
+
+      contactsPage.section.contactTable
+        .searchFor(contact.name)
+
+      t.refresh()
+
+      contactsPage.section.contactTable
+        .waitForElementVisible('@searchInput')
+        .assert.value('@searchInput', contact.name)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should suggest job title and company': function (t) {
+    t.createDomain(['contact'], (contact, done) => {
+      const contactsPage = t.page.main()
+        .navigateToContacts(t)
+
+      contactsPage
+        .waitForElementVisible('@newContactButton')
+        .click('@newContactButton')
+        .waitForElementVisible(contactsPage.section.editContactForm.selector)
+
+      const jobTitle = contact.outlets[0].value
+      const jobCompany = contact.outlets[0].label
+
+      contactsPage.section.editContactForm
+        .populateJobTitle(0, jobTitle)
+        .assertJobTitleSuggestion(0, jobTitle)
+
+      contactsPage.section.editContactForm
+        .populateJobCompany(0, jobCompany)
+        .assertJobCompanySuggestion(0, jobCompany)
+
+      // Dismiss the modal
+      t.keys(t.Keys.ENTER)
+      contactsPage.section.editContactForm.cancel()
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should not suggest the same job title/company multiple times': function (t) {
+    t.createDomain(['contact'], (contact1, done) => {
+      const contactsPage = t.page.main()
+        .navigateToContacts(t)
+
+      contactsPage
+        .waitForElementVisible('@newContactButton')
+        .click('@newContactButton')
+        .waitForElementVisible(contactsPage.section.editContactForm.selector)
+
+      const contact2 = domain.contact()
+
+      // Add a new contact with the same first outlet as contact1
+      contact2.outlets = contact1.outlets.slice(0, 1)
+
+      contactsPage.section.editContactForm
+        .populate(contact2)
+        .submit()
+
+      t.page.main().waitForSnackbarMessage('contact-create-success')
+      t.page.main().navigateToContacts(t)
+
+      contactsPage
+        .waitForElementVisible('@newContactButton')
+        .click('@newContactButton')
+        .waitForElementVisible(contactsPage.section.editContactForm.selector)
+
+      const jobTitle = contact1.outlets[0].value
+      const jobCompany = contact1.outlets[0].label
+
+      contactsPage.section.editContactForm
+        .populateJobTitle(0, jobTitle)
+        // (checks the value isn't seen twice in the list)
+        .assertJobTitleSuggestion(0, jobTitle)
+
+      contactsPage.section.editContactForm
+        .populateJobCompany(0, jobCompany)
+        // (checks the value isn't seen twice in the list)
+        .assertJobCompanySuggestion(0, jobCompany)
+
+      // Dismiss the modal
+      t.keys(t.Keys.ENTER)
+      contactsPage.section.editContactForm.cancel()
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should return contacts on any campaign searched for': function (t) {
+    t.createDomain(['contact', 'contact', 'campaign', 'campaign'], (contact1, contact2, campaign1, campaign2, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact1], campaign1, () => done())
+      })
+
+      t.perform((done) => {
+        t.addContactsToCampaign([contact2], campaign2, () => done())
+      })
+
+      const campaignsPage = t.page.main()
+        .navigateToCampaigns(t)
+
+      campaignsPage.section.campaignTable
+        .searchFor(campaign1.name)
+        .selectRow(0)
+
+      campaignsPage.section.campaignTable
+        .searchFor(campaign2.name)
+        .selectRow(0)
+
+      campaignsPage.section.toast.viewContacts()
+
+      t.page.contacts()
+        .section.contactTable.isInResults(contact1)
+
+      t.page.contacts()
+        .section.contactTable.isInResults(contact2)
 
       done()
     })

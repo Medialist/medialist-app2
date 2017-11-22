@@ -24,7 +24,6 @@ import findUrl from '/imports/lib/find-url'
 import DeletePostModal from './delete-post-modal'
 import EditPostModal from './edit-post-modal'
 import { GREY60 } from '/imports/ui/colours'
-import { updatePost } from '/imports/api/posts/methods'
 import { ContactAvatarList } from '/imports/ui/lists/avatar-list'
 
 const hideTextIfOnlyUrl = (item) => {
@@ -157,24 +156,21 @@ class Post extends React.Component {
     })
   }
 
-  updatePost = (_id, { message, status }) => {
-    this.setState({
-      editOpen: false
-    })
-    updatePost.call({ _id, message, status })
-  }
-
   render () {
     const data = {
-      'data-contact': this.props.contacts.map(contact => contact._id).join(' '),
-      'data-campaign': this.props.campaigns.map(campaigns => campaigns._id).join(' ')
+      'data-contact': this.props.contacts.map(contact => contact.slug).join(' '),
+      'data-campaign': this.props.campaigns.map(campaign => campaign.slug).join(' ')
     }
+
     const postTypeLabels = {
       'FeedbackPost': 'Feedback',
       'CoveragePost': 'Coverage',
       'NeedToKnowPost': 'Need-to-Knows'
     }
-    const canEditPost = this.props.createdBy._id === this.props.currentUser._id
+
+    const {deletable} = this.props
+
+    const editable = this.props.editable && (this.props.createdBy._id === this.props.currentUser._id)
 
     return (
       <article className={`flex rounded px4 pt3 pb2 mb2 shadow-2 ${this.props.bgClass}`} data-id={dasherise(this.props.type)} {...data}>
@@ -189,42 +185,47 @@ class Post extends React.Component {
             <span className='f-sm semibold gray60 flex-none'>
               <Time date={this.props.updatedAt || this.props.createdAt} />
             </span>
-            {this.props.editable && (
+            {(deletable || editable) ? (
               <Dropdown className='f-sm semibold gray60 flex-none' data-id='post-menu'>
                 <ChevronOpenDown onClick={this.openMenu} data-id='open-post-menu-button' className='ml1' style={{fill: GREY60}} />
                 <DropdownMenu width={180} left={-150} top={-2} arrowPosition='top' arrowAlign='right' arrowMarginRight='11px' open={this.state.menuOpen} onDismiss={this.closeMenu}>
                   <nav className='pt1'>
-                    {canEditPost &&
+                    {editable && (
                       <DropdownMenuItem
                         onClick={this.editPost}
                         data-id='edit-post-button'>
                         <span className='ml2 gray20 regular'>Edit {postTypeLabels[this.props.type]}</span>
                       </DropdownMenuItem>
-                    }
-                    <DropdownMenuItem
-                      onClick={this.deletePost}
-                      data-id='delete-post-button'>
-                      <span className='ml2 gray20 regular'>Delete</span>
-                    </DropdownMenuItem>
+                    )}
+                    {deletable && (
+                      <DropdownMenuItem
+                        onClick={this.deletePost}
+                        data-id='delete-post-button'>
+                        <span className='ml2 gray20 regular'>Delete</span>
+                      </DropdownMenuItem>
+                    )}
                   </nav>
                 </DropdownMenu>
               </Dropdown>
-            )}
+            ) : null}
           </header>
           {this.props.details}
         </div>
-        <DeletePostModal
-          open={this.state.deleteOpen}
-          post={{_id: this.props._id, type: this.props.type}}
-          onDelete={this.closeMenu}
-          onDismiss={this.closeMenu}
-        />
-        <EditPostModal
-          open={this.state.editOpen}
-          post={this.props}
-          onUpdate={this.updatePost}
-          onDismiss={this.closeMenu}
-        />
+        { deletable && (
+          <DeletePostModal
+            open={this.state.deleteOpen}
+            post={{_id: this.props._id, type: this.props.type}}
+            onDelete={this.closeMenu}
+            onDismiss={this.closeMenu} />
+        )}
+        { editable && (
+          <EditPostModal
+            contact={this.props.contact}
+            campaign={this.props.campaign}
+            open={this.state.editOpen}
+            post={this.props}
+            onDismiss={this.closeMenu} />
+        )}
       </article>
     )
   }
@@ -256,8 +257,8 @@ const ContactLink = ({contact, showOutlet = true, ...props}) => {
 
   let outlet = null
 
-  if (showOutlet && contact.outlets && contact.outlets.length && contact.outlets[0].value) {
-    outlet = <span className='gray10' data-id='contact-outlet'> ({contact.outlets[0].value})</span>
+  if (showOutlet && contact.outlets && contact.outlets.length && contact.outlets[0].label) {
+    outlet = <span className='gray10' data-id='contact-outlet'> ({contact.outlets[0].label})</span>
   }
 
   return (
@@ -269,8 +270,8 @@ const ContactLink = ({contact, showOutlet = true, ...props}) => {
 }
 
 const ContactName = ({contacts, contact, onContactPage}) => {
-  if (onContactPage) {
-    return <span data-id='contact-name'>{firstName(contacts[0])}</span>
+  if (onContactPage && contact) {
+    return <span data-id='contact-name'>{firstName(contact)}</span>
   }
 
   if (contacts.length > 1) {
@@ -348,6 +349,8 @@ const FeedbackPostSummary = ({label, campaigns, contacts, status, contact, campa
 export const FeedbackPost = ({item, currentUser, contact, campaign}) => (
   <Post
     {...item}
+    contact={contact}
+    campaign={campaign}
     currentUser={currentUser}
     icon={<FeedFeedbackIcon className='blue-dark' style={{verticalAlign: -2}} />}
     summary={<FeedbackPostSummary {...item} label='logged feedback' contact={contact} campaign={campaign} />}
@@ -362,12 +365,15 @@ export const FeedbackPost = ({item, currentUser, contact, campaign}) => (
       </div>
     }
     editable
+    deletable
   />
 )
 
 export const CoveragePost = ({item, currentUser, contact, campaign}) => (
   <Post
     {...item}
+    contact={contact}
+    campaign={campaign}
     currentUser={currentUser}
     icon={<FeedCoverageIcon className='blue' />}
     summary={<FeedbackPostSummary {...item} label='logged coverage' contact={contact} campaign={campaign} />}
@@ -382,6 +388,7 @@ export const CoveragePost = ({item, currentUser, contact, campaign}) => (
       </div>
     }
     editable
+    deletable
   />
 )
 
@@ -403,6 +410,7 @@ export const NeedToKnowPost = ({item, currentUser, contact}) => (
       </div>
     }
     editable
+    deletable
   />
 )
 

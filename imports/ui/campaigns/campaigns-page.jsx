@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { compose } from 'redux'
 import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
 import MasterLists from '/imports/api/master-lists/master-lists'
@@ -10,9 +11,9 @@ import CampaignsActionsToast from '/imports/ui/campaigns/campaigns-actions-toast
 import { CreateCampaignModal } from '/imports/ui/campaigns/edit-campaign'
 import CampaignListEmpty from '/imports/ui/campaigns/campaign-list-empty'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
-import { batchAddTags } from '/imports/api/tags/methods'
-import { batchFavouriteCampaigns } from '/imports/api/campaigns/methods'
-import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
+import { batchAddTagsToCampaigns } from '/imports/api/tags/methods'
+import { batchFavouriteCampaigns, removeCampaign } from '/imports/api/campaigns/methods'
+import { batchAddToCampaignLists } from '/imports/api/master-lists/methods'
 import AddTagsModal from '/imports/ui/tags/add-tags-modal'
 import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
 import AddToMasterListModal from '/imports/ui/master-lists/add-to-master-list-modal'
@@ -22,12 +23,14 @@ import CampaignListLink from '/imports/ui/master-lists/campaign-list-link'
 import TagLink from '/imports/ui/campaigns/tag-link'
 import DeleteCampaignsModal from '/imports/ui/campaigns/delete-campaigns-modal'
 import { addRecentCampaignList } from '/imports/api/users/methods'
+import { CampaignSearchSchema } from '/imports/api/campaigns/schema'
 
-const CampaignsPage = withSnackbar(withRouter(React.createClass({
-  propTypes: {
+class CampaignsPage extends React.Component {
+  static propTypes = {
     campaigns: PropTypes.arrayOf(PropTypes.object),
-    campaignCount: PropTypes.number,
-    selectedMasterListSlug: PropTypes.string,
+    campaignsCount: PropTypes.number,
+    allCampaignsCount: PropTypes.number,
+    masterListSlug: PropTypes.string,
     tagSlugs: PropTypes.arrayOf(PropTypes.string),
     selectedTags: PropTypes.arrayOf(PropTypes.object),
     loading: PropTypes.bool,
@@ -36,18 +39,16 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
     term: PropTypes.string,
     setQuery: PropTypes.func,
     snackbar: PropTypes.object.isRequired
-  },
+  }
 
-  getInitialState () {
-    return {
-      selections: [],
-      createCampaignModal: false,
-      addTagsToCampaignsModal: false,
-      addToCampaignListsModal: false,
-      deleteCampaignsModal: false,
-      resultsTotal: 0
-    }
-  },
+  state = {
+    selections: [],
+    selectionMode: 'include',
+    createCampaignModal: false,
+    addTagsToCampaignsModal: false,
+    addToCampaignListsModal: false,
+    deleteCampaignsModal: false
+  }
 
   componentDidMount () {
     const { location: { pathname, query }, router } = this.props
@@ -55,135 +56,175 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
       this.setState({
         createCampaignModal: true
       })
-
       router.replace(pathname)
     }
-  },
+  }
 
-  onMasterListChange (selectedMasterListSlug) {
-    addRecentCampaignList.call({ slug: selectedMasterListSlug })
+  onMasterListChange = (masterListSlug) => {
+    // Only if not pseudo lists
+    if (!['all', 'my'].includes(masterListSlug)) {
+      addRecentCampaignList.call({ slug: masterListSlug })
+    }
+    this.props.setQuery({ masterListSlug })
+    this.clearSelection()
+  }
 
-    this.props.setQuery({ selectedMasterListSlug })
-  },
-
-  onSelectionsChange (selections) {
+  onSelectionsChange = (selections) => {
     this.setState({ selections })
-  },
+  }
 
-  clearSelectionAndHideModals () {
+  clearSelectionAndHideModals = () => {
     this.hideModals()
     this.clearSelection()
-  },
+  }
 
-  clearSelection () {
+  clearSelection = () => {
     this.setState({
       selections: []
     })
-  },
+  }
 
-  showModal (modal) {
+  showModal = (modal) => {
     this.hideModals()
-
     this.setState((s) => ({
       [modal]: true
     }))
-  },
+  }
 
-  hideModals () {
+  hideModals = () => {
     this.setState({
       createCampaignModal: false,
       addTagsToCampaignsModal: false,
       addToCampaignListsModal: false,
       deleteCampaignsModal: false
     })
-  },
+  }
 
-  onViewSelection () {
+  onViewSelection = () => {
     this.props.router.push({
       pathname: '/contacts',
       query: {
-        campaign: this.state.selections.map((s) => s.slug)
+        campaign: this.state.selections.map((s) => s.slug).join(',')
       }
     })
-  },
+  }
 
-  onTagAll (tags) {
-    const slugs = this.state.selections.map((s) => s.slug)
-    const names = tags.map((t) => t.name)
-
-    batchAddTags.call({type: 'Campaigns', slugs, names}, (error) => {
+  onTagAll = (tags) => {
+    const opts = this.getSearchOrSlugs()
+    opts.names = tags.map((t) => t.name)
+    batchAddTagsToCampaigns.call(opts, (error, res) => {
       if (error) {
         console.log(error)
         return this.props.snackbar.error('campaigns-batch-tag-error')
       }
-
-      const name = slugs.length > 1 ? `${slugs.length} campaigns` : <CampaignLink campaign={this.state.selections[0]} linkClassName='semibold white underline' />
-      const tag = names.length > 1 ? `${names.length} tags` : <TagLink tag={names[0]} type='campaign' linkClassName='semibold white underline' />
-
-      this.props.snackbar.show(<span>Added {tag} to {name}</span>, 'campaigns-batch-tag-success')
+      const {snackbar} = this.props
+      const {slugCount, tagCount} = res
+      const name = slugCount > 1 ? `${slugCount} campaigns` : <CampaignLink campaign={this.state.selections[0]} linkClassName='semibold white underline' />
+      const tag = tagCount > 1 ? `${tagCount} tags` : <TagLink tag={opts.names[0]} type='campaign' linkClassName='semibold white underline' />
+      snackbar.show(<span>Added {tag} to {name}</span>, 'campaigns-batch-tag-success')
     })
-  },
+  }
 
-  onFavouriteAll () {
-    const campaignSlugs = this.state.selections.map((c) => c.slug)
-
-    batchFavouriteCampaigns.call({campaignSlugs}, (error) => {
+  onFavouriteAll = () => {
+    const opts = this.getSearchOrSlugs()
+    batchFavouriteCampaigns.call(opts, (error, res) => {
       if (error) {
         console.log(error)
         return this.props.snackbar.error('campaigns-batch-favourite-error')
       }
-
-      const name = campaignSlugs.length > 1 ? `${campaignSlugs.length} campaigns` : <CampaignLink campaign={this.state.selections[0]} linkClassName='semibold white underline' />
-
-      this.props.snackbar.show(<span>Favourited {name}</span>, 'campaigns-batch-favourite-success')
+      const {slugCount} = res
+      const {snackbar} = this.props
+      const name = slugCount > 1 ? `${slugCount} campaigns` : <CampaignLink campaign={this.state.selections[0]} linkClassName='semibold white underline' />
+      snackbar.show(<span>Favourited {name}</span>, 'campaigns-batch-favourite-success')
     })
-  },
+  }
 
-  onAddAllToMasterLists (masterLists) {
-    const slugs = this.state.selections.map((s) => s.slug)
-    const masterListIds = masterLists.map((m) => m._id)
-
-    batchAddToMasterLists.call({type: 'Campaigns', slugs, masterListIds}, (error) => {
+  onAddAllToMasterLists = (masterLists) => {
+    const opts = this.getSearchOrSlugs()
+    opts.masterListIds = masterLists.map((m) => m._id)
+    batchAddToCampaignLists.call(opts, (error, res) => {
       if (error) {
         console.log(error)
         return this.props.snackbar.error('campaigns-batch-add-to-campaign-list-failure')
       }
-
-      const name = slugs.length > 1 ? `${slugs.length} campaigns` : <CampaignLink campaign={this.state.selections[0]} linkClassName='semibold white underline' />
+      const {snackbar} = this.props
+      const {slugCount} = res
+      const name = slugCount > 1 ? `${slugCount} campaigns` : <CampaignLink campaign={this.state.selections[0]} linkClassName='semibold white underline' />
       const list = masterLists.length > 1 ? `${masterLists.length} Campaign Lists` : <CampaignListLink campaignList={masterLists[0]} linkClassName='semibold white underline' />
-
-      this.props.snackbar.show(<span>Added {name} to {list}</span>, 'campaigns-batch-add-to-campaign-list-success')
+      snackbar.show(<span>Added {name} to {list}</span>, 'campaigns-batch-add-to-campaign-list-success')
     })
-  },
+  }
 
-  onTagRemove (tag) {
+  onDelete = () => {
+    const opts = this.getSearchOrSlugs()
+    removeCampaign.call(opts, (error, res) => {
+      if (error) {
+        console.log(error)
+        this.props.snackbar.error('batch-delete-campaigns-failure')
+      } else {
+        const {snackbar} = this.props
+        const {slugCount} = res
+        const name = slugCount > 1 ? `${slugCount} Campaigns` : this.state.selections[0].name
+        snackbar.show(`Deleted ${name}`, 'batch-delete-campaigns-success')
+        this.clearSelectionAndHideModals()
+      }
+    })
+  }
+
+  onTagRemove = (tag) => {
     const { setQuery, tagSlugs } = this.props
     setQuery({
       tagSlugs: tagSlugs.filter((str) => str !== tag.slug)
     })
-  },
+  }
 
-  setResultsTotal (resultsTotal) {
-    if (!resultsTotal) return
-    this.setState({resultsTotal})
-  },
+  onSelectionModeChange = (selectionMode) => {
+    this.setState({selectionMode})
+  }
+
+  getSearchOrSlugs = () => {
+    const {selectionMode} = this.state
+    if (selectionMode === 'all') {
+      const campaignSearch = this.extractCampaignSearch(this.props)
+      return { campaignSearch }
+    } else {
+      const campaignSlugs = this.state.selections.map((s) => s.slug)
+      return { campaignSlugs }
+    }
+  }
+
+  extractCampaignSearch (props) {
+    return CampaignSearchSchema.clean({...props})
+  }
 
   render () {
-    const { campaignCount, campaigns, loading, sort, term, selectedTags, onTermChange, onSortChange, searching } = this.props
-    const { onSelectionsChange, onTagRemove } = this
-    const { selections, resultsTotal: total } = this.state
+    const {
+      allCampaignsCount,
+      campaignsCount,
+      campaigns,
+      loading,
+      sort,
+      term,
+      selectedTags,
+      masterListSlug,
+      userId,
+      onTermChange,
+      onSortChange,
+      searching
+    } = this.props
+    const { onSelectionsChange, onSelectionModeChange, onTagRemove } = this
+    const { selections, selectionMode, createCampaignModal } = this.state
 
-    if (!loading && campaignCount === 0) {
-      return (<div>
-        <CampaignListEmpty
-          onAddCampaign={() => this.showModal('createCampaignModal')}
-        />
-        <CreateCampaignModal
-          onDismiss={() => this.hideModals()}
-          open={this.state.createCampaignModal}
-        />
-      </div>)
+    if (!loading && allCampaignsCount === 0) {
+      return (
+        <div>
+          <CampaignListEmpty onAddCampaign={() => this.showModal('createCampaignModal')} />
+          <CreateCampaignModal onDismiss={this.hideModals} open={createCampaignModal} />
+        </div>
+      )
     }
+
+    const selectionsLength = selectionMode === 'all' ? campaignsCount : selections.length
 
     return (
       <div style={{paddingBottom: 100}}>
@@ -191,11 +232,10 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
           <div className='flex-auto border-right border-gray80'>
             <MasterListsSelectorContainer
               type='Campaigns'
-              userId={this.props.userId}
-              allCount={this.props.campaignCount}
-              selectedMasterListSlug={this.props.selectedMasterListSlug}
-              onChange={this.onMasterListChange}
-              setResultsTotal={this.setResultsTotal} />
+              userId={userId}
+              allCount={allCampaignsCount}
+              selectedMasterListSlug={masterListSlug}
+              onChange={this.onMasterListChange} />
           </div>
           <div className='flex-none bg-white center px4'>
             <button className='btn bg-completed white mx4' onClick={() => this.showModal('createCampaignModal')} data-id='create-campaign-button'>New Campaign</button>
@@ -208,62 +248,73 @@ const CampaignsPage = withSnackbar(withRouter(React.createClass({
           onTermChange,
           selectedTags,
           onTagRemove,
-          total,
           term,
           sort,
           campaigns,
+          campaignsCount,
           selections,
+          selectionMode,
           onSortChange,
           onSelectionsChange,
+          onSelectionModeChange,
           loading,
           searching
         }} />
         <CampaignsActionsToast
           campaigns={selections}
+          campaignsCount={selectionsLength}
           onViewClick={this.onViewSelection}
           onSectorClick={() => this.showModal('addToCampaignListsModal')}
           onFavouriteClick={this.onFavouriteAll}
           onTagClick={() => this.showModal('addTagsToCampaignsModal')}
           onDeleteClick={() => this.showModal('deleteCampaignsModal')}
-          onDeselectAllClick={() => this.clearSelection()} />
+          onDeselectAllClick={this.clearSelection} />
         <AddTagsModal
+          title='Tag these Campaigns'
           type='Campaigns'
           open={this.state.addTagsToCampaignsModal}
-          onDismiss={() => this.hideModals()}
+          onDismiss={this.hideModals}
           onUpdateTags={this.onTagAll}>
-          <AbbreviatedAvatarList items={this.state.selections} shape='square' />
+          <AbbreviatedAvatarList items={selections} shape='square' total={selectionsLength} />
         </AddTagsModal>
         <AddToMasterListModal
           type='Campaigns'
+          title='Add these campaigns to a list'
           items={this.state.selections}
           open={this.state.addToCampaignListsModal}
-          onDismiss={() => this.hideModals()}
+          onDismiss={this.hideModals}
           onSave={this.onAddAllToMasterLists}>
           <AbbreviatedAvatarList
             items={this.state.selections}
-            maxTooltip={12} shape='square' />
+            maxTooltip={12} shape='square' total={selectionsLength} />
         </AddToMasterListModal>
         <DeleteCampaignsModal
           open={this.state.deleteCampaignsModal}
           campaigns={this.state.selections}
-          onDelete={() => this.clearSelectionAndHideModals()}
-          onDismiss={() => this.hideModals()}
+          campaignsCount={selectionsLength}
+          onDelete={this.onDelete}
+          onDismiss={this.hideModals}
         />
       </div>
     )
   }
-})))
+}
 
 const MasterListsSelectorContainer = createContainer((props) => {
   const { selectedMasterListSlug, userId } = props
+
   const user = Meteor.user()
+
   const lists = MasterLists
     .find({
       type: 'Campaigns'
+    }, {
+      sort: { name: 1 }
     })
     .map(({slug, name, items}) => ({
       slug, name, count: items.length
     }))
+
   const items = [{
     slug: 'all',
     name: 'All',
@@ -273,19 +324,15 @@ const MasterListsSelectorContainer = createContainer((props) => {
     name: 'My Campaigns',
     count: user.myCampaigns.length
   }]
-    .concat(
-      user.recentCampaignLists
-        .map(slug => lists.find(list => list.slug === slug))
-        .filter(list => !!list)
-    )
-    .concat(
-      lists.filter(list => !user.recentCampaignLists
-        .find(slug => list.slug === slug))
-    )
+    .concat(lists)
 
   const selectedSlug = userId ? 'my' : selectedMasterListSlug
 
   return { ...props, items, selectedSlug }
 }, MasterListsSelector)
 
-export default campaignsSearchQueryContainer(CampaignsPage)
+export default compose(
+  campaignsSearchQueryContainer,
+  withSnackbar,
+  withRouter,
+)(CampaignsPage)

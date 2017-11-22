@@ -1,16 +1,16 @@
+/* global describe beforeEach it */
 import { Meteor } from 'meteor/meteor'
-import { Random } from 'meteor/random'
 import { resetDatabase } from 'meteor/xolvio:cleaner'
 import assert from 'assert'
 import faker from 'faker'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
-import Embeds from '/imports/api/embeds/embeds'
 import { createFeedbackPost, createCoveragePost, createNeedToKnowPost, updatePost } from '/imports/api/posts/methods'
-import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists, createTestEmbeds } from '/tests/fixtures/server-domain'
-import { addContactsToCampaign } from '/imports/api/contacts/methods'
+import { createTestUsers, createTestContacts, createTestCampaigns, createTestEmbeds } from '/tests/fixtures/server-domain'
+import { batchUpdateStatus, addContactsToCampaign } from '/imports/api/contacts/methods'
 import toUserRef from '/imports/lib/to-user-ref'
+import StatusMap from '/imports/api/contacts/status'
 
 describe('createFeedbackPost', function () {
   let users
@@ -32,7 +32,7 @@ describe('createFeedbackPost', function () {
   it('should validate the parameters', function () {
     assert.throws(() => createFeedbackPost.validate({contactSlug: contacts[0].slug}), /Campaign slug is required/)
     assert.throws(() => createFeedbackPost.validate({campaignSlug: campaigns[0].slug}), /Contact slug is required/)
-    assert.throws(() => createFeedbackPost.validate({contactSlug: [contacts[0].slug], campaignSlug: campaigns[0].slug}), /must be a string/)
+    assert.throws(() => createFeedbackPost.validate({contactSlug: [contacts[0].slug], campaignSlug: campaigns[0].slug}), /must be of type String/)
     assert.throws(() => createFeedbackPost.validate({
       contactSlug: contacts[0].slug,
       campaignSlug: campaigns[0].slug,
@@ -51,10 +51,19 @@ describe('createFeedbackPost', function () {
     const campaignSlug = campaigns[1].slug
     const contactSlug = contacts[0].slug
     const message = 'Tip top'
-    const status = 'Hot Lead'
+    const status = StatusMap.hotLead
     const user = Meteor.users.findOne()
 
-    const postId = createFeedbackPost.run.call({userId: users[0]._id}, {
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      campaignSlug,
+      contactSlugs: [contactSlug, contacts[1].slug]
+    })
+
+    const postId = createFeedbackPost.run.call({
+      userId: users[0]._id
+    }, {
       contactSlug, campaignSlug, message, status
     })
 
@@ -64,34 +73,37 @@ describe('createFeedbackPost', function () {
       _id: postId
     }, {
       fields: {
-        _id: 0,
-        createdAt: 0
+        _id: 0
       }
     })
     assert.deepEqual(post, {
       type: 'FeedbackPost',
       status,
       message,
-      campaigns: [Campaigns.toRef(campaigns[1])],
-      contacts: [Contacts.toRef(contacts[0])],
+      campaigns: [
+        Campaigns.findOneRef(campaigns[1]._id)
+      ],
+      contacts: [
+        Contacts.findOneRef(contacts[0]._id)
+      ],
       embeds: [],
-      createdBy: userRef
+      createdBy: userRef,
+      createdAt: post.createdAt
     })
 
     const campaign = Campaigns.findOne({slug: campaignSlug})
     assert.deepEqual(campaign.updatedBy, userRef)
-    assert.deepEqual(campaign.contacts, {
-      [contactSlug]: status
-    })
+    assert.equal(campaign.contacts.find((c) => c.slug === contactSlug).status, status)
+    assert.equal(campaign.contacts.find((c) => c.slug === contactSlug).updatedAt.getTime(), post.createdAt.getTime())
+    assert.deepEqual(campaign.contacts.find((c) => c.slug === contactSlug).updatedBy, userRef)
+
+    // should remain unchanged
+    assert.equal(campaign.contacts.find((c) => c.slug === contacts[1].slug).status, StatusMap.toContact)
 
     const contact = Contacts.findOne({slug: contactSlug})
     assert.deepEqual(contact.updatedBy, userRef)
-    assert.deepEqual(contact.campaigns, {
-      [campaignSlug]: {
-        updatedAt: contact.campaigns[campaignSlug].updatedAt
-      }
-    })
-    assert.ok(contact.campaigns[campaignSlug].updatedAt)
+    assert.equal(contact.campaigns.length, 1)
+    assert.equal(contact.campaigns[0], campaignSlug)
   })
 
   it('should not create a feedback post when there is no message and the contact already has the passed status', function () {
@@ -100,21 +112,30 @@ describe('createFeedbackPost', function () {
     const status = 'Hot Lead'
     const user = Meteor.users.findOne()
 
-    const campaign = Campaigns.update({slug: campaignSlug}, {
-      $set: {
-        contacts: {
-          [contactSlug]: status
-        }
-      }
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      campaignSlug,
+      contactSlugs: [contactSlug]
     })
 
-    assert.equal(Posts.find({}).count(), 3)
+    batchUpdateStatus.run.call({
+      userId: users[0]._id
+    }, {
+      campaignSlug: campaigns[1].slug,
+      contactSlugs: [contactSlug],
+      status: status
+    })
 
-    createFeedbackPost.run.call({userId: user._id}, {
+    assert.equal(Posts.find({}).count(), 5)
+
+    createFeedbackPost.run.call({
+      userId: user._id
+    }, {
       contactSlug, campaignSlug, status
     })
 
-    assert.equal(Posts.find({}).count(), 3)
+    assert.equal(Posts.find({}).count(), 5)
   })
 })
 
@@ -138,7 +159,7 @@ describe('createCoveragePost', function () {
   it('should validate the parameters', function () {
     assert.throws(() => createCoveragePost.validate({contactSlug: contacts[0].slug}), /Campaign slug is required/)
     assert.throws(() => createCoveragePost.validate({campaignSlug: campaigns[0].slug}), /Contact slug is required/)
-    assert.throws(() => createCoveragePost.validate({contactSlug: [contacts[0].slug], campaignSlug: campaigns[0].slug}), /must be a string/)
+    assert.throws(() => createCoveragePost.validate({contactSlug: [contacts[0].slug], campaignSlug: campaigns[0].slug}), /must be of type String/)
     assert.throws(() => createCoveragePost.validate({
       contactSlug: contacts[0].slug,
       campaignSlug: campaigns[0].slug,
@@ -159,6 +180,13 @@ describe('createCoveragePost', function () {
     const message = 'Tip top'
     const status = 'Hot Lead'
 
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      campaignSlug,
+      contactSlugs: [contactSlug]
+    })
+
     const postId = createCoveragePost.run.call({
       userId: users[0]._id
     }, {
@@ -171,34 +199,34 @@ describe('createCoveragePost', function () {
       _id: postId
     }, {
       fields: {
-        _id: 0,
-        createdAt: 0
+        _id: 0
       }
     })
     assert.deepEqual(post, {
       type: 'CoveragePost',
       status,
       message,
-      campaigns: [Campaigns.toRef(campaigns[1])],
-      contacts: [Contacts.toRef(contacts[0])],
+      campaigns: [
+        Campaigns.findOneRef(campaigns[1]._id)
+      ],
+      contacts: [
+        Contacts.findOneRef(contacts[0]._id)
+      ],
       embeds: [],
-      createdBy: userRef
+      createdBy: userRef,
+      createdAt: post.createdAt
     })
 
     const campaign = Campaigns.findOne({slug: campaignSlug})
     assert.deepEqual(campaign.updatedBy, userRef)
-    assert.deepEqual(campaign.contacts, {
-      [contactSlug]: status
-    })
+    assert.equal(campaign.contacts.find((c) => c.slug === contactSlug).status, status)
+    assert.equal(campaign.contacts.find((c) => c.slug === contactSlug).updatedAt.getTime(), post.createdAt.getTime())
+    assert.deepEqual(campaign.contacts.find((c) => c.slug === contactSlug).updatedBy, userRef)
 
     const contact = Contacts.findOne({slug: contactSlug})
     assert.deepEqual(contact.updatedBy, userRef)
-    assert.deepEqual(contact.campaigns, {
-      [campaignSlug]: {
-        updatedAt: contact.campaigns[campaignSlug].updatedAt
-      }
-    })
-    assert.ok(contact.campaigns[campaignSlug].updatedAt)
+    assert.equal(contact.campaigns.length, 1)
+    assert.equal(contact.campaigns[0], campaignSlug)
   })
 })
 
@@ -221,7 +249,7 @@ describe('createNeedToKnowPost', function () {
 
   it('should validate the parameters', function () {
     assert.throws(() => createNeedToKnowPost.validate({}), /Contact slug is required/)
-    assert.throws(() => createNeedToKnowPost.validate({contactSlug: ['a']}), /must be a string/)
+    assert.throws(() => createNeedToKnowPost.validate({contactSlug: ['a']}), /must be of type String/)
     assert.throws(() => createNeedToKnowPost.validate({
       campaignSlug: 'nope',
       contactSlug: 'a',
@@ -257,7 +285,9 @@ describe('createNeedToKnowPost', function () {
       message,
       campaigns: [],
       embeds: [],
-      contacts: [Contacts.toRef(contacts[0])],
+      contacts: [
+        Contacts.findOneRef(contacts[0]._id)
+      ],
       createdBy: userRef
     })
 
@@ -275,8 +305,8 @@ describe('updateFeedbackPost', function () {
     resetDatabase()
 
     users = createTestUsers(2)
-    contacts = createTestContacts(1)
-    campaigns = createTestCampaigns(1)
+    contacts = createTestContacts(2)
+    campaigns = createTestCampaigns(2)
   })
 
   it('should require the user to be logged in', function () {
@@ -284,7 +314,7 @@ describe('updateFeedbackPost', function () {
   })
 
   it('should require the user updating to be the creator of the post', function () {
-    const postId = createNeedToKnowPost.run.call({
+    const postId = createFeedbackPost.run.call({
       userId: users[0]._id
     }, {
       contactSlug: contacts[0].slug,
@@ -292,14 +322,14 @@ describe('updateFeedbackPost', function () {
     })
 
     assert.throws(() => updatePost.run.call({
-      userId: users[1]
+      userId: users[1]._id
     }, {
       _id: postId,
       message: 'this will throw'
-    }), /You can only edit posts you created/)
+    }), /You can only edit Posts you created/)
   })
 
-  it('should let users update a post and cascade updates to campaign contacts status', function () {
+  it('should update the message', function () {
     addContactsToCampaign.run.call({
       userId: users[0]._id
     }, {
@@ -307,28 +337,27 @@ describe('updateFeedbackPost', function () {
       campaignSlug: campaigns[0].slug
     })
 
-    const _id = createCoveragePost.run.call({
+    const postId = createFeedbackPost.run.call({
       userId: users[0]._id
     }, {
       contactSlug: contacts[0].slug,
       campaignSlug: campaigns[0].slug,
+      status: StatusMap.contacted,
       message: faker.lorem.paragraph()
     })
 
     updatePost.run.call({
       userId: users[0]._id
     }, {
-      _id,
-      message: 'test update2',
-      status: 'Contacted'
+      _id: postId,
+      message: 'woo woo'
     })
 
-    const updatedPost = Posts.findOne({ _id })
-    const campaign = Campaigns.findOne({slug: campaigns[0].slug})
-
-    assert.equal(updatedPost.status, 'Contacted')
-    assert.equal(updatedPost.message, 'test update2')
-    assert.equal(campaign.contacts[contacts[0].slug], 'Contacted')
+    const updatedPost = Posts.findOne({ _id: postId })
+    assert.equal(updatedPost.message, 'woo woo', 'post message should be updated')
+    assert.equal(updatedPost.status, StatusMap.contacted, 'post status should be unchanged')
+    assert.equal(updatedPost.contacts[0].slug, contacts[0].slug, 'post contacts should be unchanged')
+    assert.equal(updatedPost.campaigns[0].slug, campaigns[0].slug, 'post campaigns should be unchanged')
   })
 })
 
@@ -355,13 +384,20 @@ describe('updateCoveragePost', function () {
 
     this.timeout(60000)
 
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      contactSlugs: [contacts[0].slug],
+      campaignSlug: campaigns[0].slug
+    })
+
     const _id = createCoveragePost.run.call({
       userId: users[0]._id
     }, {
       contactSlug: contacts[0].slug,
       campaignSlug: campaigns[0].slug,
       message: faker.lorem.paragraph() + ' https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-      status: 'Hot Lead'
+      status: StatusMap.hotLead
     })
 
     const createdPost = Posts.findOne({

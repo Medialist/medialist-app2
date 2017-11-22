@@ -94,7 +94,7 @@ export default withSnackbar(React.createClass({
               containerClassName='inline-block w24'
               className='input placeholder-gray60 inline-block'
               errorClassName='error'
-              placeholder={`yourname@${Meteor.settings.public.authentication.emailDomains[0]}`}
+              placeholder={`yourname@${Meteor.settings.public.authentication.teamDomains[0]}`}
               value={user.emails[0].address}
               style={inputStyles}
               validations={['required']}

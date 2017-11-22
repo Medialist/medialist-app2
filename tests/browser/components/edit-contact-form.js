@@ -144,6 +144,76 @@ module.exports = {
 
       return this
     },
+    populateJobTitle: function (index, value) {
+      const selector = `[data-id=job-title-input-${index}]`
+
+      if (index > 0) {
+        this.ifElementNotPresent(selector, () => {
+          this.waitForElementVisible('@addJobButton')
+          this.click('@addJobButton')
+        })
+      }
+
+      this.waitForElementVisible(selector)
+      this.clear(selector)
+      this.setValue(selector, value)
+
+      return this
+    },
+    populateJobCompany: function (index, value) {
+      const selector = `[data-id=job-company-input-${index}]`
+
+      if (index > 0) {
+        this.ifElementNotPresent(selector, () => {
+          this.waitForElementVisible('@addJobButton')
+          this.click('@addJobButton')
+        })
+      }
+
+      this.waitForElementVisible(selector)
+      this.clear(selector)
+      this.setValue(selector, value)
+
+      return this
+    },
+    assertJobTitleSuggestion: function (index, value) {
+      const suggestion0Selector = `[data-id=job-title-input-${index}-suggestion-0]`
+      const suggestionsSelector = `[data-id^=job-title-input-${index}-suggestion]`
+
+      this.waitForElementVisible(suggestion0Selector)
+
+      this.getElementsText(suggestionsSelector, (texts) => {
+        this.assert.ok(
+          texts.indexOf(value) > -1,
+          `"${value}"" was in suggestions`
+        )
+
+        this.assert.equal(
+          texts.filter((t) => t !== value).length,
+          texts.length - 1,
+          `"${value}" was not repeated in list`
+        )
+      })
+    },
+    assertJobCompanySuggestion: function (index, value) {
+      const suggestion0Selector = `[data-id=job-company-input-${index}-suggestion-0]`
+      const suggestionsSelector = `[data-id^=job-company-input-${index}-suggestion]`
+
+      this.waitForElementVisible(suggestion0Selector)
+
+      this.getElementsText(suggestionsSelector, (texts) => {
+        this.assert.ok(
+          texts.indexOf(value) > -1,
+          `"${value}"" was in suggestions`
+        )
+
+        this.assert.equal(
+          texts.filter((t) => t !== value).length,
+          texts.length - 1,
+          `"${value}" was not repeated in list`
+        )
+      })
+    },
     submit: function () {
       this.click('@submitButton')
 

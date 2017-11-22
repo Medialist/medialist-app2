@@ -24,9 +24,16 @@
     "heapanalytics": {
       "appId": "${HEAPANALYTICS_APP_ID}"
     },
+    "intercom": {
+      "appId": "${INTERCOM_APP_ID}"
+    },
     "authentication": {
-      "emailDomains": ["localhost"],
-      "extraEmailDomains": []
-    }
-  }
+      "teamDomains": ["${CUSTOMER_AUTH_DOMAIN}"],
+      "supportDomains": ["medialist.io"]
+    },
+    "attachSchemasToDatabase": true
+  },
+  "attachSchemasToDatabase": true,
+  "validateDatabaseOnStartup": true,
+  "updateContactsFromTwitter": true
 }

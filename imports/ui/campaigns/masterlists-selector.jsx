@@ -16,12 +16,6 @@ class MasterListsSelector extends React.Component {
     this.resetState = this.resetState.bind(this)
   }
 
-  componentWillReceiveProps (props) {
-    this.resetState()
-    const resultTotal = calculateResultTotal(props)
-    this.props.setResultsTotal(resultTotal)
-  }
-
   resetState () {
     this.setState({
       hideItemsAfterIndex: null,
@@ -93,7 +87,7 @@ class MasterListsSelector extends React.Component {
     }
 
     return (
-      <nav className='block px4' ref={(el) => { this.containerEl = el }}>
+      <nav className='block px4' ref={(el) => { this.containerEl = el }} data-id='masterlists-selector'>
         <div className={`nowrap ${hideItemsAfterIndex === null ? 'opacity-0' : ''}`}>
           {moreItems.length === 0 &&
             <Link to={settingsUrl} className='right inline-block p4 align-middle f-xs underline gray40 hover-blue'>
@@ -117,7 +111,7 @@ class MasterListsSelector extends React.Component {
           {moreItems.length > 0 &&
             <Dropdown>
               <Item selected={showMoreOpen} onClick={() => this.setState({showMoreOpen: true})}>
-                <span className='pl2'>More <ChevronDown /></span>
+                <span className='pl2' data-id='more'>More <ChevronDown /></span>
               </Item>
               <DropdownMenu width={334} left={-200} top={-20} arrowAlign='right' arrowMarginRight='75px' open={showMoreOpen} onDismiss={() => this.setState({showMoreOpen: false})}>
                 <nav>
@@ -158,7 +152,8 @@ const Item = ({children, slug, count, selected, onClick}) => (
   <div
     className={`inline-block p4 semibold ${selected ? 'shadow-inset-blue' : 'pointer gray40'}`}
     data-slug={slug}
-    onClick={onClick}>
+    onClick={onClick}
+    data-selected={selected}>
     <div style={{maxWidth: 140}} className={`inline-block align-middle truncate f-sm ${selected ? 'blue' : 'gray40'}`}>
       {children}
     </div>

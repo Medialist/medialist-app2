@@ -16,10 +16,7 @@ class StatusSelector extends React.Component {
     }
   }
 
-  onLinkClick (event, status) {
-    event.preventDefault()
-    event.stopPropagation()
-
+  onLinkClick = (status) => {
     this.props.onChange({
       target: {
         name: 'status',
@@ -27,7 +24,7 @@ class StatusSelector extends React.Component {
       }
     })
 
-    this.closeDropdown(event)
+    this.closeDropdown()
   }
 
   openDropdown (event) {
@@ -102,7 +99,7 @@ class StatusSelector extends React.Component {
             <DropdownMenuItem
               key={item}
               selected={item === this.props.status}
-              onClick={(event) => this.onLinkClick(event, item)}
+              onClick={this.onLinkClick.bind(null, item)}
               data-id={`contact-status-${dasherise(item).replace(/\s/g, '')}`}>
               <StatusLabel name={item} className={`${item === this.props.status ? 'gray10 semibold' : 'gray20'}`} />
             </DropdownMenuItem>

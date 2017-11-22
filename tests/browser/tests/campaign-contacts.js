@@ -31,10 +31,13 @@ const test = {
         })
         .then((doc) => {
           t.assert.equal(Object.keys(doc.contacts).length, 2)
-          t.assert.equal(doc.contacts[contact1.slug], 'To Contact')
-          t.assert.equal(doc.contacts[contact2.slug], 'To Contact')
+          t.assert.equal(doc.contacts.find(c => c.slug === contact1.slug).status, 'To Contact')
+          t.assert.equal(doc.contacts.find(c => c.slug === contact2.slug).status, 'To Contact')
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -61,12 +64,15 @@ const test = {
 
         t.perform((done) => {
           t.db.findCampaign({
-            _id: campaign._id
+            slug: campaign.slug
           })
           .then((doc) => {
-            t.assert.equal(doc.contacts[contact1.slug], 'Hot Lead')
+            t.assert.equal(doc.contacts.find(c => c.slug === contact1.slug).status, 'Hot Lead')
 
             done()
+          })
+          .catch(error => {
+            throw error
           })
         })
 
@@ -303,14 +309,15 @@ const test = {
 
         t.perform((done) => {
           t.db.findContacts({
-            [`campaigns.${campaign.slug}`]: {
-              $exists: true
-            }
+            campaigns: campaign.slug
           })
           .then((docs) => {
             t.assert.equal(docs.length, 1)
 
             done()
+          })
+          .catch(error => {
+            throw error
           })
         })
 
@@ -326,6 +333,9 @@ const test = {
           t.assert.equal(doc.contacts[contact2._id], undefined)
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -361,12 +371,44 @@ const test = {
           })
           .then((doc) => {
             t.assert.equal(Object.keys(doc.contacts).length, 2)
-            t.assert.equal(doc.contacts[contact1.slug], 'To Contact')
-            t.assert.equal(doc.contacts[contact2.slug], 'To Contact')
+            t.assert.equal(doc.contacts.find((c) => c.slug === contact1.slug).status, 'To Contact')
+            t.assert.equal(doc.contacts.find((c) => c.slug === contact2.slug).status, 'To Contact')
 
             done()
           })
+          .catch(error => {
+            throw error
+          })
         })
+
+        done()
+      })
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should retain search query in search box after page refresh': function (t) {
+    t.createDomain(['campaign', 'contact', 'contact'], (campaign, contact1, contact2, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact1, contact2], campaign, () => done())
+      })
+
+      t.perform((done) => {
+        const campaignContactsPage = t.page.campaignContacts()
+          .navigate(campaign)
+
+        campaignContactsPage.section.contactTable
+          .searchFor(contact1.name)
+
+        t.refresh()
+
+        campaignContactsPage.section.contactTable
+          .waitForElementVisible('@searchInput')
+          .assert.value('@searchInput', contact1.name)
 
         done()
       })

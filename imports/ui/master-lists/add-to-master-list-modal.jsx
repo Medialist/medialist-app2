@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
-import { Meteor } from 'meteor/meteor'
 import Modal from '/imports/ui/navigation/modal'
 import { Check } from '/imports/ui/images/icons'
 import { createContainer } from 'meteor/react-meteor-data'
@@ -10,6 +9,7 @@ import Scroll from '/imports/ui/navigation/scroll'
 
 class AddToMasterList extends React.Component {
   static propTypes = {
+    title: PropTypes.string,
     open: PropTypes.bool.isRequired,
     onDismiss: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
@@ -47,11 +47,11 @@ class AddToMasterList extends React.Component {
 
     const { type, allMasterLists, children } = this.props
     const { selectedMasterLists } = this.state
-
+    const title = this.props.title || `${type.substring(0, type.length - 1)} Lists`
     return (
       <div data-id='add-to-list-modal'>
         <div className='py6 center border-bottom border-gray80'>
-          <span className='f-xl'>{type.substring(0, type.length - 1)} Lists</span>
+          <span className='f-xl'>{title}</span>
           {children}
         </div>
         <Scroll height={'calc(90vh - 250px)'} className='bg-gray90'>
@@ -81,16 +81,11 @@ const AddToMasterListContainer = createContainer(({open, type, ...props}) => {
   let allMasterLists = []
 
   if (open) {
-    const user = Meteor.user()
-    const lists = MasterLists.find({type}).fetch()
-
-    allMasterLists = user[`recent${type.substring(0, type.length - 1)}Lists`]
-      .map(slug => lists.find(list => list.slug === slug))
-      .filter(list => !!list)
-      .concat(
-        lists.filter(list => !user.recentCampaignLists
-          .find(slug => list.slug === slug))
-      )
+    allMasterLists = MasterLists.find({
+      type
+    }, {
+      sort: { name: 1 }
+    }).fetch()
   }
 
   return { open, type, allMasterLists, ...props }
@@ -114,7 +109,7 @@ const MasterListBtn = ({item, type, selected, onSelect, onDeselect}) => {
             style={{height: '100%'}}
             onClick={() => selected ? onDeselect(item) : onSelect(item)}
             data-id='master-list-button'
-            data-item={item._id}>
+            data-item={item.slug}>
             <label className='block mb1 pointer nowrap truncate'>{name}</label>
             <label style={{textTransform: 'lowercase'}} className={`display-none f-xxs pointer ${!selected && 'blue'} hover-display-block`}>
               {`${items.length} ${items.length === 1 ? type.substring(0, type.length - 1) : type}`}

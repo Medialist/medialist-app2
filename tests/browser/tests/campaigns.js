@@ -3,6 +3,7 @@
 const domain = require('../fixtures/domain')
 const assertions = require('../fixtures/assertions')
 const faker = require('faker')
+const async = require('async')
 
 const test = {
   '@tags': ['campaigns'],
@@ -33,7 +34,7 @@ const test = {
         name: campaign.name
       })
       .then(function (doc) {
-        t.assert.urlEquals(`http://localhost:3000/campaign/${doc.slug}`)
+        t.assert.urlEquals(`${t.launch_url}/campaign/${doc.slug}`)
 
         assertions.campaignsAreEqual(t, doc, campaign)
 
@@ -54,6 +55,9 @@ const test = {
 
         done()
       })
+      .catch(error => {
+        throw error
+      })
     })
 
     t.page.main().logout()
@@ -69,7 +73,7 @@ const test = {
         .searchFor(campaign.name)
         .clickRow(0)
 
-      t.assert.urlEquals(`http://localhost:3000/campaign/${campaign.slug}`)
+      t.assert.urlEquals(`${t.launch_url}/campaign/${campaign.slug}`)
 
       done()
     })
@@ -93,7 +97,7 @@ const test = {
 
       campaignsPage.section.toast.viewContacts()
 
-      t.assert.urlEquals(`http://localhost:3000/contacts?campaign=${campaign.slug}`)
+      t.assert.urlEquals(`${t.launch_url}/contacts?campaign=${campaign.slug}`)
 
       t.page.contacts()
         .section.contactTable.isInResults(contact1)
@@ -224,6 +228,83 @@ const test = {
 
       dashboardPage.section.activityFeed
         .assertHasNoPostsForCampaign(campaign)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should filter campaigns by master list': function (t) {
+    const domainArgs = Array(5).fill('campaign').concat(Array(5).fill('campaignList'))
+
+    t.createDomain(domainArgs, function () {
+      const args = Array.from(arguments)
+      const campaigns = args.slice(0, 5)
+      const masterLists = args.slice(5, 10)
+      const done = args[10]
+
+      t.perform((done) => {
+        const tasks = campaigns.map((c, i) => {
+          return (cb) => t.addCampaignsToCampaignLists([c], [masterLists[i]], cb)
+        })
+        async.parallel(tasks, done)
+      })
+
+      const campaignsPage = t.page.campaigns()
+        .navigate()
+
+      const masterListsSelector = campaignsPage.section.masterListsSelector
+      const campaignTable = campaignsPage.section.campaignTable
+
+      // Assert each campaign present/absent in each master list
+      masterLists.forEach((masterList, i) => {
+        masterListsSelector.clickMasterListBySlug(masterList.slug)
+
+        const assertResult = (resultCampaign) => {
+          campaigns.forEach((campaign, i) => {
+            const selector = `[data-item='${campaign.slug}']`
+            if (campaign === resultCampaign) {
+              campaignTable.waitForElementPresent(selector)
+            } else {
+              campaignTable.waitForElementNotPresent(selector)
+            }
+          })
+        }
+
+        assertResult(campaigns[i])
+      })
+
+      // Ensure we can click all/my and that they become selected
+      masterListsSelector
+        .assert.elementPresent('@all')
+        .clickMasterListBySlug('all')
+        .waitForElementPresent('@allSelected')
+        .assert.elementPresent('@my')
+        .clickMasterListBySlug('my')
+        .waitForElementPresent('@mySelected')
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should retain search query in search box after page refresh': function (t) {
+    t.createDomain(['campaign'], (campaign, done) => {
+      const campaignsPage = t.page.main()
+        .navigateToCampaigns(t)
+
+      campaignsPage.section.campaignTable
+        .searchFor(campaign.name)
+
+      t.refresh()
+
+      campaignsPage.section.campaignTable
+        .waitForElementVisible('@searchInput')
+        .assert.value('@searchInput', campaign.name)
 
       done()
     })

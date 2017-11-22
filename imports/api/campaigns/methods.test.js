@@ -2,7 +2,9 @@ import { Meteor } from 'meteor/meteor'
 import { Random } from 'meteor/random'
 import assert from 'assert'
 import faker from 'faker'
-import { createCampaign, updateCampaign, removeCampaign, setTeamMates, batchFavouriteCampaigns } from './methods'
+import babyparse from 'babyparse'
+import { createCampaign, updateCampaign, removeCampaign, setTeamMates, batchFavouriteCampaigns, exportCampaignToCsv } from './methods'
+import { batchUpdateStatus } from '/imports/api/contacts/methods'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
 import Clients from '/imports/api/clients/clients'
@@ -11,9 +13,10 @@ import MasterLists from '/imports/api/master-lists/master-lists'
 import Posts from '/imports/api/posts/posts'
 import toUserRef from '/imports/lib/to-user-ref'
 import { campaign, user } from '/tests/browser/fixtures/domain'
-import { createUser } from '/imports/api/users/publications'
 import { findOneUserRef } from '/imports/api/users/users'
 import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists } from '/tests/fixtures/server-domain'
+import { addContactsToCampaign } from '/imports/api/contacts/methods'
+import StatusMap from '/imports/api/contacts/status'
 
 describe('Campaigns/batchFavouriteCampaigns', function () {
   beforeEach(function () {
@@ -24,9 +27,9 @@ describe('Campaigns/batchFavouriteCampaigns', function () {
     assert.throws(() => batchFavouriteCampaigns.run.call({}, {}), /You must be logged in/)
   })
 
-  it('should validated the parameters', function () {
-    assert.throws(() => batchFavouriteCampaigns.validate({}), /Campaign slugs is required/)
-    assert.throws(() => batchFavouriteCampaigns.validate({campaignSlugs: [1]}), /must be a string/)
+  it('should validate the parameters', function () {
+    assert.throws(() => batchFavouriteCampaigns.validate({}), /Campaign search is required/)
+    assert.throws(() => batchFavouriteCampaigns.validate({campaignSlugs: [1]}), /must be of type String/)
     assert.doesNotThrow(() => batchFavouriteCampaigns.validate({campaignSlugs: ['a']}))
   })
 
@@ -61,7 +64,7 @@ describe('Campaign update method', function () {
   })
 
   it('should not allow update if not logged in', function () {
-    const userId = Meteor.users.insert(user())
+    const userId = createTestUsers(1)[0]._id
     const slug = createCampaign.run.call({ userId }, campaign())
 
     assert.throws(() => {
@@ -75,7 +78,7 @@ describe('Campaign update method', function () {
   })
 
   it('should throw if no fields to update', function () {
-    const userId = Meteor.users.insert(user())
+    const userId = createTestUsers(1)[0]._id
     const slug = createCampaign.run.call({ userId }, campaign())
 
     assert.throws(() => {
@@ -88,7 +91,7 @@ describe('Campaign update method', function () {
   })
 
   it('should update avatar', function () {
-    const userId = Meteor.users.insert(user())
+    const userId = createTestUsers(1)[0]._id
     const slug = createCampaign.run.call({ userId }, campaign())
     const _id = Campaigns.findOne({ slug })._id
     const updatedAvatarUrl = 'http://example.org/new_image.jpg'
@@ -105,8 +108,8 @@ describe('Campaign update method', function () {
   })
 
   it('should add a campaign to the myCampaigns list for the user', function () {
-    const userId = Meteor.users.insert(user())
-    const otherUserId = Meteor.users.insert(user())
+    const userId = createTestUsers(1)[0]._id
+    const otherUserId = createTestUsers(1)[0]._id
     const slug = createCampaign.run.call({ userId: otherUserId }, campaign())
     const _id = Campaigns.findOne({ slug })._id
 
@@ -124,8 +127,8 @@ describe('Campaign update method', function () {
   })
 
   it('should not duplicate campaigns in the myCampaigns list for the user', function () {
-    const userId = Meteor.users.insert(user())
-    const otherUserId = Meteor.users.insert(user())
+    const userId = createTestUsers(1)[0]._id
+    const otherUserId = createTestUsers(1)[0]._id
     const slug = createCampaign.run.call({ userId: otherUserId }, campaign())
     const _id = Campaigns.findOne({ slug })._id
 
@@ -137,6 +140,37 @@ describe('Campaign update method', function () {
     assert.equal(updatedUser.myCampaigns.length, 1)
     assert.equal(updatedUser.myCampaigns[0]._id, _id)
   })
+
+  it('should update campaign refs when updating campaign details', function () {
+    const users = createTestUsers(1)
+    const contacts = createTestContacts(1)
+
+    const slug = createCampaign.run.call({
+      userId: users[0]._id
+    }, campaign())
+    const _id = Campaigns.findOne({ slug })._id
+
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      campaignSlug: slug,
+      contactSlugs: contacts.map(contact => contact.slug)
+    })
+
+    const newName = faker.lorem.words(2)
+
+    updateCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      _id, name: newName
+    })
+
+    // updated favourite campaign refs
+    const updatedUser = Meteor.users.findOne({ _id: users[0]._id })
+    assert.equal(updatedUser.myCampaigns.length, 1)
+    assert.equal(updatedUser.myCampaigns[0]._id, _id)
+    assert.equal(updatedUser.myCampaigns[0].name, newName)
+  })
 })
 
 describe('Campaign create method', function () {
@@ -145,7 +179,7 @@ describe('Campaign create method', function () {
   })
 
   it('should not allow create if not logged in', function () {
-    const userId = Meteor.users.insert(user())
+    const userId = createTestUsers(1)[0]._id
     const slug = createCampaign.run.call({ userId }, campaign())
     const _id = Campaigns.findOne({ slug })._id
 
@@ -161,11 +195,11 @@ describe('Campaign create method', function () {
 
   it('should throw if required fields are missing', function () {
     assert.throws(() => createCampaign.validate({ clientName: 'foo' }), /campaign name is required/)
-    assert.throws(() => createCampaign.validate({ name: 123, clientName: 'boz' }), /campaign name must be a string/)
+    assert.throws(() => createCampaign.validate({ name: 123, clientName: 'boz' }), /campaign name must be of type String/)
   })
 
   it('should create a campaign', function () {
-    const userId = createUser(user())
+    const userId = createTestUsers(1)[0]._id
     const payload = { name: 'Foo' }
     const slug = createCampaign.run.call({ userId }, payload)
     const doc = Campaigns.findOne({ slug })
@@ -182,7 +216,7 @@ describe('Campaign create method', function () {
   })
 
   it('should create a campaign and client', function () {
-    const userId = createUser(user())
+    const userId = createTestUsers(1)[0]._id
     const payload = { name: 'Foo', clientName: 'Bar', purpose: 'Better!' }
     const slug = createCampaign.run.call({ userId }, payload)
     const doc = Campaigns.findOne({ slug })
@@ -192,7 +226,7 @@ describe('Campaign create method', function () {
   })
 
   it('should create a campaign and re-use existing client info', function () {
-    const userId = createUser(user())
+    const userId = createTestUsers(1)[0]._id
     const clientName = 'Marmite'
     Clients.insert({name: clientName})
     const payload = { name: 'Foo', purpose: 'Better!', clientName: 'marmite'}
@@ -205,7 +239,7 @@ describe('Campaign create method', function () {
   })
 
   it('should update the myCampaigns', function () {
-    const userId = createUser(user())
+    const userId = createTestUsers(1)[0]._id
     const payload = { name: 'Foo', clientName: 'Bar', purpose: 'Better!'}
     const slug = createCampaign.run.call({ userId }, payload)
     const doc = Campaigns.findOne({ slug })
@@ -224,7 +258,7 @@ describe('Campaign add team members method', function () {
   })
 
   it('should not allow addition of team members if not logged in', function () {
-    const userId = Meteor.users.insert(user())
+    const userId = createTestUsers(1)[0]._id
     const slug = createCampaign.run.call({ userId }, campaign())
     const _id = Campaigns.findOne({ slug })._id
 
@@ -237,7 +271,7 @@ describe('Campaign add team members method', function () {
   })
 
   it('should not add a non-existent user to a team', function () {
-    const userId = Meteor.users.insert(user())
+    const userId = createTestUsers(1)[0]._id
     const slug = createCampaign.run.call({ userId }, campaign())
     const _id = Campaigns.findOne({ slug })._id
     const payload = { _id, userIds: ['foobar'], emails: [] }
@@ -248,8 +282,8 @@ describe('Campaign add team members method', function () {
   })
 
   it('should allow the addition of multiple team members if logged in', function () {
-    const userId = Meteor.users.insert(user())
-    const userIds = [Meteor.users.insert(user()), Meteor.users.insert(user())]
+    const userId = createTestUsers(1)[0]._id
+    const userIds = [createTestUsers(1)[0]._id, createTestUsers(1)[0]._id]
     const slug = createCampaign.run.call({ userId }, campaign())
     const _id = Campaigns.findOne({ slug })._id
     const payload = { _id: _id, userIds, emails: [] }
@@ -260,8 +294,8 @@ describe('Campaign add team members method', function () {
   })
 
   it('should not duplicate team members', function () {
-    const userId = Meteor.users.insert(user())
-    const userIds = [userId, userId, Meteor.users.insert(user()), Meteor.users.insert(user())]
+    const userId = createTestUsers(1)[0]._id
+    const userIds = [userId, userId, createTestUsers(1)[0]._id, createTestUsers(1)[0]._id]
     const slug = createCampaign.run.call({ userId }, campaign())
     const _id = Campaigns.findOne({ slug })._id
     const payload = { _id: _id, userIds, emails: [] }
@@ -272,13 +306,23 @@ describe('Campaign add team members method', function () {
   })
 
   it('should update team member campaign counts', function () {
-    const users = Array(3).fill(0).map(() => user())
+    const users = createTestUsers(3)
 
     users[0].onCampaigns = 1
     users[1].onCampaigns = 1
     users[2].onCampaigns = 0
 
-    const userIds = users.map((user) => Meteor.users.insert(user))
+    users.forEach(user => {
+      Meteor.users.update({
+        _id: user._id
+      }, {
+        $set: {
+          onCampaigns: user.onCampaigns
+        }
+      })
+    })
+
+    const userIds = users.map((user) => user._id)
     const slug = createCampaign.run.call({ userId: userIds[0] }, campaign())
 
     assert.equal(Meteor.users.findOne(userIds[0]).onCampaigns, 2) // added, was 1
@@ -299,7 +343,7 @@ describe('Campaign add team members method', function () {
 
   it('should add team members by email', function () {
     Meteor.settings.public.authentication = {
-      emailDomains: [
+      teamDomains: [
         'example.com', 'example.net', 'example.org'
       ]
     }
@@ -307,7 +351,7 @@ describe('Campaign add team members method', function () {
       defaultFrom: 'foo@bar.com'
     }
 
-    const userId = Meteor.users.insert(user())
+    const userId = createTestUsers(1)[0]._id
     const slug = createCampaign.run.call({ userId }, campaign())
     const _id = Campaigns.findOne({ slug })._id
 
@@ -322,6 +366,46 @@ describe('Campaign add team members method', function () {
     const updatedCampaign = Campaigns.findOne(_id)
     assert.equal(updatedCampaign.team.length, 2)
   })
+
+  it('should add campaign to invited users favourites', function () {
+    Meteor.settings.public.authentication = {
+      teamDomains: [
+        'example.com', 'example.net', 'example.org'
+      ]
+    }
+    Meteor.settings.email = {
+      defaultFrom: 'foo@bar.com'
+    }
+
+    const users = createTestUsers(2)
+    const campaigns = createTestCampaigns(1)
+    const email = faker.internet.exampleEmail()
+
+    // current user
+    assert.equal(Meteor.users.findOne({_id: users[0]._id}).myCampaigns.find(ref => ref._id === campaigns[0]._id), undefined)
+
+    // existing user
+    assert.equal(Meteor.users.findOne({_id: users[1]._id}).myCampaigns.find(ref => ref._id === campaigns[0]._id), undefined)
+
+    const payload = {
+      _id: campaigns[0]._id,
+      userIds: [users[1]._id],
+      emails: [email]
+    }
+
+    setTeamMates.run.call({
+      userId: users[0]._id
+    }, payload)
+
+    // current user
+    assert.ok(Meteor.users.findOne({_id: users[0]._id}).myCampaigns.find(ref => ref._id === campaigns[0]._id))
+
+    // existing user
+    assert.ok(Meteor.users.findOne({_id: users[1]._id}).myCampaigns.find(ref => ref._id === campaigns[0]._id))
+
+    // invited-by-email user
+    assert.ok(Meteor.users.findOne({'emails.address': email}).myCampaigns.find(ref => ref._id === campaigns[0]._id))
+  })
 })
 
 describe('Campaign remove method', function () {
@@ -334,9 +418,9 @@ describe('Campaign remove method', function () {
   })
 
   it('should validate the parameters', function () {
-    assert.throws(() => removeCampaign.validate({}), /Ids is required/)
-    assert.throws(() => removeCampaign.validate({ _ids: 'foo' }), /must be an array/)
-    assert.doesNotThrow(() => removeCampaign.validate({ _ids: ['kKz46qgWmbGHrznJC'] }))
+    assert.throws(() => removeCampaign.validate({}), / Campaign search is required/)
+    assert.throws(() => removeCampaign.validate({ campaignSlugs: 'foo' }), /must be of type Array/)
+    assert.doesNotThrow(() => removeCampaign.validate({ campaignSlugs: ['kKz46qgWmbGHrznJC'] }))
   })
 
   it('should remove the campaign from Campaigns and all other places', function () {
@@ -344,21 +428,35 @@ describe('Campaign remove method', function () {
     const campaigns = createTestCampaigns(3)
     const contacts = createTestContacts(1)
 
-    setTeamMates.run.call({ userId: users[0]._id }, {
+    setTeamMates.run.call({
+      userId: users[0]._id
+    }, {
       _id: campaigns[0]._id,
       userIds: [users[0]._id, users[1]._id]
     })
-    setTeamMates.run.call({ userId: users[0]._id }, {
+    setTeamMates.run.call({
+      userId: users[0]._id
+    }, {
       _id: campaigns[1]._id,
       userIds: [users[0]._id]
     })
-    setTeamMates.run.call({ userId: users[0]._id }, {
+    setTeamMates.run.call({
+      userId: users[0]._id
+    }, {
       _id: campaigns[2]._id,
       userIds: [users[1]._id]
     })
 
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      campaignSlug: campaigns[0].slug,
+      contactSlugs: [contacts[0].slug]
+    })
+
     MasterLists.insert({
       createdBy: toUserRef(users[0]),
+      createdAt: new Date(),
       type: 'Campaigns',
       name: 'A master list',
       slug: faker.lorem.slug(),
@@ -372,41 +470,52 @@ describe('Campaign remove method', function () {
 
     const aPostWithCampaign0 = Posts.insert({
       createdBy: toUserRef(users[0]),
+      createdAt: new Date(),
       type: 'FeedbackPost',
       campaigns: [
         Campaigns.toRef(campaigns[0])
-      ]
+      ],
+      contacts: [],
+      embeds: []
     })
     const aPostWithCampaign1 = Posts.insert({
       createdBy: toUserRef(users[0]),
+      createdAt: new Date(),
       type: 'FeedbackPost',
       campaigns: [
         Campaigns.toRef(campaigns[1])
-      ]
+      ],
+      contacts: [],
+      embeds: []
     })
     const aPostWithCampaigns01And2 = Posts.insert({
       createdBy: toUserRef(users[0]),
+      createdAt: new Date(),
       type: 'CoveragePost',
       campaigns: [
         Campaigns.toRef(campaigns[0]),
         Campaigns.toRef(campaigns[1]),
         Campaigns.toRef(campaigns[2])
-      ]
+      ],
+      contacts: [],
+      embeds: []
     })
     const anUnrelatedPost = Posts.insert({
       createdBy: toUserRef(users[0]),
+      createdAt: new Date(),
       type: 'NeedToKnowPost',
       contacts: [
         Contacts.toRef(contacts[0])
       ],
-      campaigns: []
+      campaigns: [],
+      embeds: []
     })
 
     removeCampaign.run.call({
       userId: users[0]._id
     }, {
-      _ids: [
-        campaigns[0]._id, campaigns[2]._id
+      campaignSlugs: [
+        campaigns[0].slug, campaigns[2].slug
       ]
     })
 
@@ -423,6 +532,11 @@ describe('Campaign remove method', function () {
     assert.equal(list.items.length, 1)
     assert.deepEqual(list.items, [campaigns[1]._id])
 
+    const contact = Contacts.findOne({
+      _id: contacts[0]._id
+    })
+    assert.equal(contact.campaigns.length, 0)
+
     assert.equal(Campaigns.findOne({_id: campaigns[0]._id}), null)
     assert.ok(Campaigns.findOne({_id: campaigns[1]._id}))
     assert.equal(Campaigns.findOne({_id: campaigns[2]._id}), null)
@@ -435,4 +549,120 @@ describe('Campaign remove method', function () {
     assert.equal(postWithAllCampaigns.campaigns.length, 1)
     assert.deepEqual(postWithAllCampaigns.campaigns, [Campaigns.toRef(campaigns[1])])
   })
+})
+
+describe('Export Campaign to CSV method', function () {
+  beforeEach(function () {
+    resetDatabase()
+  })
+
+  it('should require the user to be logged in', function () {
+    assert.throws(() => exportCampaignToCsv.run.call({}, {}), /You must be logged in/)
+  })
+
+  it('should validate the parameters', function () {
+    assert.throws(() => exportCampaignToCsv.validate({}), / Campaign slug is required/)
+    assert.throws(() => exportCampaignToCsv.validate({ campaignSlug: 9 }), /must be of type String/)
+    assert.doesNotThrow(() => exportCampaignToCsv.validate({ campaignSlug: 'ohmy' }))
+  })
+
+  it('should return a valid csv', function () {
+    const users = createTestUsers(1)
+    const campaigns = createTestCampaigns(1)
+    const contacts = createTestContacts(3)
+
+    addContactsToCampaign.run.call({
+      userId: users[0]._id
+    }, {
+      campaignSlug: campaigns[0].slug,
+      contactSlugs: contacts.map(s => s.slug)
+    })
+
+    batchUpdateStatus.run.call({
+      userId: users[0]._id
+    }, {
+      campaignSlug: campaigns[0].slug,
+      contactSlugs: [contacts[0].slug, contacts[2].slug],
+      status: StatusMap.completed
+    })
+
+    const res = exportCampaignToCsv.run.call({
+      userId: users[0]._id
+    }, {
+      campaignSlug: campaigns[0].slug
+    })
+
+    assert.equal(res.filename, `${campaigns[0].slug}.csv`)
+
+    const csvObj = babyparse.parse(res.data, {header: false})
+    assert.equal(csvObj.data.length, 4)
+
+    const expectedHeader = ['Name', 'Title', 'Media Outlet', 'Email', 'Phone', 'Status', 'Updated At', 'Updated By']
+    assert.deepEqual(csvObj.data[0], expectedHeader)
+
+    const contactRows = csvObj.data.slice(1)
+    contactRows.forEach((row, i) => {
+      assert.equal(row[0], contacts[i].name)
+      assert.equal(row[1], contacts[i].outlets[0].value)
+      assert.equal(row[2], contacts[i].outlets[0].label)
+      assert.equal(row[3], contacts[i].emails[0].value)
+      assert.equal(row[4], contacts[i].phones[0].value)
+      assert.equal(row[7], users[0].profile.name)
+    })
+
+    assert.equal(contactRows[0][5], StatusMap.completed)
+    assert.equal(contactRows[1][5], StatusMap.toContact)
+    assert.equal(contactRows[2][5], StatusMap.completed)
+  })
+
+
+it('should return a csv with only the requested contacts in', function () {
+  const users = createTestUsers(1)
+  const campaigns = createTestCampaigns(1)
+  const contacts = createTestContacts(6)
+
+  addContactsToCampaign.run.call({
+    userId: users[0]._id
+  }, {
+    campaignSlug: campaigns[0].slug,
+    contactSlugs: contacts.slice(0, 5).map(c => c.slug)
+  })
+
+  batchUpdateStatus.run.call({
+    userId: users[0]._id
+  }, {
+    campaignSlug: campaigns[0].slug,
+    contactSlugs: [contacts[0].slug, contacts[2].slug],
+    status: StatusMap.completed
+  })
+
+  const res = exportCampaignToCsv.run.call({
+    userId: users[0]._id
+  }, {
+    campaignSlug: campaigns[0].slug,
+    contactSlugs: contacts.slice(0, 3).map(c => c.slug)
+  })
+
+  assert.equal(res.filename, `${campaigns[0].slug}.csv`)
+
+  const csvObj = babyparse.parse(res.data, {header: false})
+  assert.equal(csvObj.data.length, 4)
+
+  const expectedHeader = ['Name', 'Title', 'Media Outlet', 'Email', 'Phone', 'Status', 'Updated At', 'Updated By']
+  assert.deepEqual(csvObj.data[0], expectedHeader)
+
+  const contactRows = csvObj.data.slice(1)
+  contactRows.forEach((row, i) => {
+    assert.equal(row[0], contacts[i].name)
+    assert.equal(row[1], contacts[i].outlets[0].value)
+    assert.equal(row[2], contacts[i].outlets[0].label)
+    assert.equal(row[3], contacts[i].emails[0].value)
+    assert.equal(row[4], contacts[i].phones[0].value)
+    assert.equal(row[7], users[0].profile.name)
+  })
+
+  assert.equal(contactRows[0][5], StatusMap.completed)
+  assert.equal(contactRows[1][5], StatusMap.toContact)
+  assert.equal(contactRows[2][5], StatusMap.completed)
+})
 })

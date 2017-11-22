@@ -32,9 +32,9 @@ describe('User update method', function () {
   })
 
   it('should validate the parameters', function () {
-    assert.throws(() => updateUser.validate({name: ['a'], avatar: null}), /Name must be a string/)
+    assert.throws(() => updateUser.validate({name: ['a'], avatar: null}), /Name must be of type String/)
     assert.throws(() => updateUser.validate({name: null, avatar: ['a']}), /Name is required/)
-    assert.throws(() => updateUser.validate({name: 'hello', avatar: ['a']}), /Avatar must be a string/)
+    assert.throws(() => updateUser.validate({name: 'hello', avatar: ['a']}), /Avatar must be of type String/)
     assert.throws(() => updateUser.validate({name: 'hello', avatar: 'not a url'}), /Avatar must be a valid URL/)
     assert.doesNotThrow(() => updateUser.validate({name: faker.name.findName(), avatar: faker.image.imageUrl()}))
   })
@@ -200,7 +200,7 @@ describe('addRecentCampaignList', function () {
   })
 
   it('should validate the parameters', function () {
-    assert.throws(() => addRecentCampaignList.validate({slug: 5}), /Slug must be a string/)
+    assert.throws(() => addRecentCampaignList.validate({slug: 5}), /Slug must be of type String/)
     assert.throws(() => addRecentCampaignList.validate({}), /Slug is required/)
     assert.doesNotThrow(() => addRecentCampaignList.validate({slug: faker.lorem.slug()}))
   })
@@ -267,7 +267,7 @@ describe('addRecentContactList', function () {
   })
 
   it('should validate the parameters', function () {
-    assert.throws(() => addRecentContactList.validate({slug: 5}), /Slug must be a string/)
+    assert.throws(() => addRecentContactList.validate({slug: 5}), /Slug must be of type String/)
     assert.throws(() => addRecentContactList.validate({}), /Slug is required/)
     assert.doesNotThrow(() => addRecentContactList.validate({slug: faker.lorem.slug()}))
   })

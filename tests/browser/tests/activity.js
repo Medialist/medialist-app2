@@ -10,6 +10,79 @@ const test = {
       .register()
   },
 
+  'Should allow navigation to a campaign from the recent campaigns list': function (t) {
+    t.createDomain(['campaign'], (campaign, done) => {
+      // Ensure there is a `myCampaign` item to navigate to
+      const campaignPage = t.page.campaign()
+        .navigate(campaign)
+        .favouriteCampaign()
+
+      t.perform((done) => {
+        t.page.dashboard()
+          .navigate()
+          .clickRecentCampaignLink(campaign.slug)
+
+        campaignPage.section.info
+          .waitForElementVisible('@title')
+          .assert.containsText('@title', campaign.name)
+
+        done()
+      })
+      done()
+    })
+    // t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
+    //   t.perform((done) => {
+    //     t.addContactsToCampaign([contact], campaign, () => done())
+    //   })
+    //
+    //   t.perform((done) => {
+    //     const campaignPage = t.page.campaign()
+    //     campaignPage
+    //       .navigate(campaign)
+    //     campaignPage.section.campaignContacts
+    //       .updateStatus(contact, 'hot-lead')
+    //
+    //     const dashboardPage = t.page.dashboard()
+    //     dashboardPage
+    //       .navigate()
+    //
+    //     t.pause(1000)
+    //
+    //     dashboardPage
+    //       .clickRecentCampaignLink(campaign.slug)
+    //
+    //     campaignPage.section.info
+    //       .waitForElementVisible('@title')
+    //       .assert.containsText('@title', campaign.name)
+    //
+    //     done()
+    //   })
+    //   done()
+    // })
+  },
+
+  'Should allow navigation to a contact from recent contacts list': function (t) {
+    t.createDomain(['contact'], (contact, done) => {
+      // Ensure there is a `myCampaign` item to navigate to
+      const contactPage = t.page.contact()
+        .navigate(contact)
+        .favouriteContact()
+
+      t.perform((done) => {
+        t.page.dashboard()
+          .navigate()
+          .clickRecentContactLink(contact.slug)
+
+        contactPage.section.info
+          .waitForElementVisible('@name')
+          .assert.containsText('@name', contact.name)
+
+        done()
+      })
+      done()
+    })
+  },
+
   'Should display context sensitive posts when adding a contact to a campaign': function (t) {
     t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
       t.perform((done) => {

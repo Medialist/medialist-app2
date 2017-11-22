@@ -1,9 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Meteor } from 'meteor/meteor'
-import escapeRegExp from 'lodash.escaperegexp'
 import { createContainer } from 'meteor/react-meteor-data'
-import { StatusIndex } from '/imports/api/contacts/status'
+import fileDownload from 'react-file-download'
 import ContactsTable from '/imports/ui/contacts/contacts-table'
 import SearchBox from '/imports/ui/lists/search-box'
 import ContactsActionsToast from '/imports/ui/contacts/contacts-actions-toast'
@@ -11,39 +10,50 @@ import CampaignTopbar from '/imports/ui/campaigns/campaign-topbar'
 import CampaignSummary from '/imports/ui/campaigns/campaign-summary'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
-import { CreateContactModal } from '../contacts/edit-contact'
-import AddContactModal from '/imports/ui/campaigns/add-contact'
+import AddOrCreateContactModal from '/imports/ui/campaigns/add-or-create-contact'
 import RemoveContactModal from '/imports/ui/campaigns/remove-contact'
-import AddContactsToCampaign from '/imports/ui/contacts/add-contacts-to-campaign'
+import AddContactsToCampaign from '/imports/ui/contacts/add-to-campaign/add-many-modal'
 import AddTagsModal from '/imports/ui/tags/add-tags-modal'
 import AddToMasterListModal from '/imports/ui/master-lists/add-to-master-list-modal'
 import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import { batchAddTags } from '/imports/api/tags/methods'
 import { batchFavouriteContacts, batchUpdateStatus } from '/imports/api/contacts/methods'
+import { exportCampaignToCsv } from '/imports/api/campaigns/methods'
+import NearBottomContainer from '/imports/ui/navigation/near-bottom-container'
+import SubscriptionLimitContainer from '/imports/ui/navigation/subscription-limit-container'
+import { LoadingBar } from '/imports/ui/lists/loading'
+import querystring from 'querystring'
+import { StatusIndex } from '/imports/api/contacts/status'
+import escapeRegExp from 'lodash.escaperegexp'
+import { CampaignContacts, CampaignContactStatuses } from '/imports/ui/campaigns/collections'
+
+const minSearchLength = 3
 
 class CampaignContactsPage extends React.Component {
+  static propTypes = {
+    campaign: PropTypes.object.isRequired,
+    contacts: PropTypes.array.isRequired,
+    contactsCount: PropTypes.number.isRequired,
+    term: PropTypes.string,
+    setQuery: PropTypes.func.isRequired,
+    status: PropTypes.string,
+    statusCounts: PropTypes.object
+  }
 
   state = {
     selections: [],
+    selectionMode: 'include',
     isDropdownOpen: false,
     addContactModal: false,
-    createContactModal: false,
     addContactsToCampaignModal: false,
     addTagsModal: false,
     addToMasterListsModal: false,
-    removeContactsModal: false,
-    sort: { updatedAt: -1 },
-    term: '',
-    statusFilter: ''
+    removeContactsModal: false
   }
 
   onAddContactClick = () => {
-    if (this.props.contactsAllCount) {
-      this.showModal('addContactModal')
-    } else {
-      this.showModal('createContactModal')
-    }
+    this.showModal('addContactModal')
   }
 
   onFavouriteAll = () => {
@@ -88,7 +98,11 @@ class CampaignContactsPage extends React.Component {
 
   onBatchUpdateStatus = (contacts, status) => {
     const contactSlugs = contacts.map((c) => c.slug)
-    batchUpdateStatus.call({_id: this.props.campaign._id, contacts: contactSlugs, status}, (error) => {
+    batchUpdateStatus.call({
+      campaignSlug: this.props.campaign.slug,
+      contactSlugs: contactSlugs,
+      status
+    }, (error) => {
       if (error) {
         console.error(error)
         return this.context.snackbar.error('batch-update-status-failure')
@@ -98,20 +112,38 @@ class CampaignContactsPage extends React.Component {
     })
   }
 
-  onShowCreateContact = (data) => {
-    this.setState({
-      contactPrefillData: data
+  onExportToCsv = () => {
+    const {campaign} = this.props
+    const {selections, selectionMode} = this.state
+    const opts = {campaignSlug: campaign.slug}
+    if (selectionMode === 'include') {
+      opts.contactSlugs = selections.map(c => c.slug)
+    }
+    exportCampaignToCsv.call(opts, (error, res) => {
+      if (error) {
+        console.log(error)
+        this.context.snackbar.error('export-campaign-to-csv-failure')
+      } else {
+        fileDownload(res.data, res.filename, 'text/csv')
+        this.clearSelectionAndHideModals()
+      }
     })
+  }
 
-    this.showModal('createContactModal')
+  onSelectionModeChange = (selectionMode) => {
+    this.setState({selectionMode})
   }
 
   onSortChange = (sort) => {
-    this.setState({ sort })
+    this.props.setQuery({ sort })
   }
 
   onTermChange = (term) => {
-    this.setState({ term })
+    this.props.setQuery({ term })
+  }
+
+  onStatusFilterChange = (status) => {
+    this.props.setQuery({ status })
   }
 
   onSelectionsChange = (selections) => {
@@ -125,7 +157,8 @@ class CampaignContactsPage extends React.Component {
 
   clearSelection = () => {
     this.setState({
-      selections: []
+      selections: [],
+      selectionMode: 'include'
     })
   }
 
@@ -140,7 +173,6 @@ class CampaignContactsPage extends React.Component {
   hideModals = () => {
     this.setState({
       addContactModal: false,
-      createContactModal: false,
       addContactsToCampaignModal: false,
       addTagsModal: false,
       addToMasterListsModal: false,
@@ -149,77 +181,94 @@ class CampaignContactsPage extends React.Component {
   }
 
   render () {
-    const { campaign, contacts } = this.props
-
-    if (!campaign) {
-      return null
-    }
+    const { campaign, contacts, loading } = this.props
 
     const {
-      contactPrefillData,
-      sort,
-      term,
       selections,
-      statusFilter
+      selectionMode,
+      addContactModal
     } = this.state
 
-    let contactsTotal
+    let {
+      contactsTotal,
+      sort,
+      term,
+      status,
+      statusCounts,
+      contactsAllCount
+    } = this.props
 
-    if (statusFilter) {
-      contactsTotal = Object.keys(campaign.contacts).filter((slug) => campaign.contacts[slug] === statusFilter).length
-    } else {
-      contactsTotal = Object.keys(campaign.contacts).length
+    if (!campaign) {
+      return <LoadingBar />
+    }
+
+    if (loading) {
+      return (
+        <div>
+          <CampaignTopbar campaign={campaign} onAddContactClick={this.onAddContactClick} />
+          <LoadingBar />
+        </div>
+      )
+    }
+
+    let contactSearch = null
+    if (selectionMode === 'all') {
+      contactSearch = {
+        campaignSlugs: [campaign.slug]
+      }
     }
 
     return (
       <div>
         <CampaignTopbar campaign={campaign} onAddContactClick={this.onAddContactClick} />
-        <CampaignSummary campaign={campaign} statusFilter={statusFilter} onStatusClick={(statusFilter) => this.setState({statusFilter})} />
+        <CampaignSummary campaign={campaign} contacts={contacts} statusFilter={status} onStatusClick={this.onStatusFilterChange} statusCounts={statusCounts} />
         <div className='bg-white shadow-2 m4' data-id='contacts-table'>
           <div className='pt4 pl4 pr4 pb1 items-center'>
-            <SearchBox onTermChange={this.onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' style={{zIndex: 1}} />
-            <ContactsTotal searching={Boolean(term)} results={contacts} total={contactsTotal} />
+            <SearchBox initialTerm={term} onTermChange={this.onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' style={{zIndex: 1}} />
+            <div className='f-xs gray60' style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>{contactsTotal} contact{contactsTotal === 1 ? '' : 's'}</div>
           </div>
-          <ContactsTableContainer
+          <ContactsTable
             sort={sort}
             term={term}
             campaign={campaign}
+            contacts={contacts}
             selections={selections}
-            statusFilter={statusFilter}
+            selectionMode={selectionMode}
+            statusFilter={status}
             onSortChange={this.onSortChange}
             onSelectionsChange={this.onSelectionsChange}
-            searching={Boolean(term)}
+            onSelectionModeChange={this.onSelectionModeChange}
+            searchTermActive={Boolean(term)}
           />
         </div>
         <ContactsActionsToast
           campaign={campaign}
           contacts={selections}
+          contactsCount={selections.length}
           onCampaignClick={() => this.showModal('addContactsToCampaignModal')}
           onSectorClick={() => this.showModal('addToMasterListsModal')}
           onFavouriteClick={this.onFavouriteAll}
           onTagClick={() => this.showModal('addTagsModal')}
           onStatusClick={this.onBatchUpdateStatus}
           onDeleteClick={() => this.showModal('removeContactsModal')}
-          onDeselectAllClick={this.clearSelection} />
-        <CreateContactModal
-          open={this.state.createContactModal}
+          onDeselectAllClick={this.clearSelection}
+          onExportToCsvClick={this.onExportToCsv} />
+        <AddOrCreateContactModal
+          open={addContactModal}
           onDismiss={this.hideModals}
           campaign={campaign}
-          prefill={contactPrefillData} />
-        <AddContactModal
-          open={this.state.addContactModal}
-          onDismiss={this.hideModals}
-          onCreate={this.onShowCreateContact}
-          campaign={campaign}
-          campaignContacts={contacts} />
+          campaignContacts={contacts}
+          allContactsCount={contactsAllCount} />
         <AddContactsToCampaign
           title='Add these Contacts to a Campaign'
-          contacts={this.state.selections}
+          contacts={selections}
+          contactsCount={selections.length}
+          contactSearch={contactSearch}
+          selectionMode={selectionMode}
           onDismiss={this.hideModals}
-          open={this.state.addContactsToCampaignModal}>
-          <AbbreviatedAvatarList items={selections} maxTooltip={12} />
-        </AddContactsToCampaign>
+          open={this.state.addContactsToCampaignModal} />
         <AddTagsModal
+          title='Tag these Contacts'
           type='Contacts'
           open={this.state.addTagsModal}
           onDismiss={this.hideModals}
@@ -256,77 +305,148 @@ CampaignContactsPage.contextTypes = {
   snackbar: PropTypes.object
 }
 
-const ContactsTotal = ({ searching, results, total }) => {
-  const num = searching ? results.length : total
-  return <div className='f-xs gray60' style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>{num} contact{num === 1 ? '' : 's'}</div>
+// I decode and encode the search options from the query string
+// and set up the subscriptions and collecton queries from those options.
+const CampaignContactsPageContainer = (props, context) => {
+  // API is like setState...
+  // Pass an obj with the new params you want to set on the query string.
+  // has to be in a container because createComponent does not give you access to context
+  const setQuery = (opts) => {
+    const { location } = props
+    const { router } = context
+    const newQuery = {}
+
+    if (opts.sort) {
+      try {
+        newQuery.sort = JSON.stringify(opts.sort)
+      } catch (error) {
+        console.warn(error)
+      }
+    }
+
+    if (opts.hasOwnProperty('term')) {
+      newQuery.q = opts.term
+    }
+
+    if (opts.hasOwnProperty('status')) {
+      newQuery.status = opts.status
+    }
+
+    const query = Object.assign({}, location.query, newQuery)
+
+    if (query.q === '') {
+      delete query.q
+    }
+
+    if (opts.status === null) {
+      delete query.status
+    }
+
+    const qs = querystring.stringify(query)
+
+    if (!qs) {
+      return router.replace(`/campaign/${props.campaign.slug}/contacts`)
+    }
+
+    router.replace(`/campaign/${props.campaign.slug}/contacts?${qs}`)
+  }
+
+  return (
+    <NearBottomContainer>
+      {(nearBottom) => (
+        <SubscriptionLimitContainer wantMore={nearBottom}>
+          {(limit) => (
+            <CampaignContactsPage
+              limit={limit}
+              {...props}
+              setQuery={setQuery} />
+          )}
+        </SubscriptionLimitContainer>
+      )}
+    </NearBottomContainer>
+  )
+}
+CampaignContactsPageContainer.contextTypes = {
+  router: PropTypes.object
 }
 
-// dir is -1 or 1. Returns a sort functon.
-const contactStatusSort = ({contacts}, dir) => (a, b) => {
-  const statusA = contacts[a.slug]
-  const statusB = contacts[b.slug]
-  return (StatusIndex[statusA] - StatusIndex[statusB]) * dir
-}
+const parseQuery = ({ query }) => {
+  let sort = {
+    updatedAt: -1
+  }
 
-const ContactsTableContainer = createContainer((props) => {
-  const { campaign, term, sort, statusFilter } = props
-  const contactIds = campaign.contacts ? Object.keys(campaign.contacts) : []
-  let query = {
-    slug: {
-      $in: contactIds
+  if (query.sort) {
+    try {
+      sort = JSON.parse(query.sort)
+    } catch (error) {
+      console.warn(error)
     }
   }
 
-  if (term) {
-    const filterRegExp = new RegExp(escapeRegExp(term), 'gi')
-    query = {
-      $and: [{
-        slug: {
-          $in: contactIds
-        }
-      }, {
-        $or: [{
-          name: filterRegExp
-        }, {
-          'outlets.value': filterRegExp
-        }, {
-          'outlets.label': filterRegExp
-        }]
-      }]
-    }
+  const term = (query.q || '').trim()
+  const status = (query.status || '').trim()
+
+  return {
+    sort,
+    term,
+    status
   }
+}
 
-  let contacts = Contacts.find(query, {
-    sort
-  }).fetch()
-
-  if (statusFilter) {
-    contacts = contacts.filter((c) => campaign.contacts[c.slug] === statusFilter)
-  }
-
-  if (sort.status) {
-    contacts.sort(contactStatusSort(campaign, sort.status))
-  }
-
-  return { ...props, contacts }
-}, ContactsTable)
-
-export default createContainer((props) => {
-  const { campaignSlug } = props.params
-
+export default createContainer(({location, params: { campaignSlug }}) => {
   const subs = [
     Meteor.subscribe('campaign', campaignSlug),
-    Meteor.subscribe('contacts-by-campaign', campaignSlug),
+    Meteor.subscribe('campaign-contacts', campaignSlug),
+    Meteor.subscribe('campaign-contact-statuses', campaignSlug),
     Meteor.subscribe('contactCount')
   ]
   const loading = subs.some((s) => !s.ready())
 
-  return {
-    ...props,
-    loading,
-    campaign: Campaigns.findOne({ slug: campaignSlug }),
-    contacts: Contacts.find({campaigns: campaignSlug}, {sort: {updatedAt: -1}}).fetch(),
-    contactsAllCount: Contacts.allContactsCount(),
-    user: Meteor.user()
+  const {
+    sort,
+    term,
+    status
+  } = parseQuery(location)
+
+  const query = {
+    campaign: campaignSlug
   }
-}, CampaignContactsPage)
+
+  if (status && StatusIndex[status] > -1) {
+    query.status = status
+  }
+
+  if (term && term.length >= minSearchLength) {
+    const termRegExp = new RegExp(escapeRegExp(term), 'gi')
+
+    query.$or = [{
+      name: termRegExp
+    }, {
+      'outlets.value': termRegExp
+    }, {
+      'outlets.label': termRegExp
+    }]
+  }
+
+  const cursor = CampaignContacts.find(query, {
+    sort
+  })
+  const contacts = cursor.fetch()
+  const contactsCount = cursor.count()
+  const statusCounts = CampaignContactStatuses.find().fetch().pop()
+  const campaign = Campaigns.findOne({
+    slug: campaignSlug
+  })
+
+  return {
+    loading,
+    campaign,
+    contacts: contacts,
+    contactsTotal: contactsCount,
+    contactsAllCount: Contacts.allContactsCount(),
+    sort,
+    term,
+    status,
+    statusCounts
+  }
+}, CampaignContactsPageContainer)

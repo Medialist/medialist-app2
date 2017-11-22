@@ -5,6 +5,7 @@ import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
 import Tags from '/imports/api/tags/tags'
 import { EmbedSchema } from '/imports/api/embeds/schema'
+import {pickUserRoles} from '/imports/api/users/server/on-create-user'
 
 Migrations.add({
   version: 1,
@@ -269,6 +270,88 @@ Migrations.add({
           }
         })
       })
+  }
+})
+
+Migrations.add({
+  version: 9,
+  name: 'Make campaign contacts store the updated date and contact campaigns a lists of campaign slugs',
+  up: () => {
+    Campaigns.find()
+      .fetch()
+      .forEach(campaign => {
+        const contacts = []
+
+        Object.keys(campaign.contacts).forEach(slug => {
+          const contact = Contacts.findOne({
+            slug: slug
+          })
+
+          if (!contact) {
+            console.warn(`Could not find contact with slug ${slug}`)
+
+            return
+          }
+
+          let updatedAt = campaign.updatedAt
+          let updatedBy = campaign.updatedBy
+
+          if (contact.campaigns[campaign.slug]) {
+            if (contact.campaigns[campaign.slug].updatedAt) {
+              updatedAt = contact.campaigns[campaign.slug].updatedAt
+            }
+
+            if (contact.campaigns[campaign.slug].updatedBy) {
+              updatedBy = contact.campaigns[campaign.slug].updatedBy
+            }
+          }
+
+          contacts.push({
+            slug: contact.slug,
+            status: campaign.contacts[slug],
+            updatedAt,
+            updatedBy
+          })
+        })
+
+        Campaigns.update({
+          _id: campaign._id
+        }, {
+          $set: {
+            contacts: contacts
+          }
+        })
+      })
+
+    Contacts.find()
+      .fetch()
+      .forEach(contact => {
+        Contacts.update({
+          _id: contact._id
+        }, {
+          $set: {
+            campaigns: Object.keys(contact.campaigns)
+          }
+        })
+      })
+  }
+})
+
+Migrations.add({
+  version: 10,
+  name: 'Add user roles',
+  up: () => {
+    Meteor.users.find({emails: {$exists: true}}).forEach((doc) => {
+      const email = doc.emails[0].address
+      const roles = pickUserRoles(email)
+      Meteor.users.update({
+        _id: doc._id
+      }, {
+        $set: {
+          roles: roles
+        }
+      })
+    })
   }
 })
 

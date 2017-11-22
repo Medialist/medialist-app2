@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
+import { Session } from 'meteor/session'
 import { createFeedbackPost, createCoveragePost, createNeedToKnowPost } from '/imports/api/posts/methods'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
@@ -16,6 +17,7 @@ import ActivityFeed from '/imports/ui/dashboard/activity-feed'
 import { EditContactModal } from '/imports/ui/contacts/edit-contact'
 import AddContactToCampaign from '/imports/ui/contacts/add-to-campaign/add-one-modal'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
+import { LoadingBar } from '/imports/ui/lists/loading'
 
 const ContactPage = withSnackbar(React.createClass({
   propTypes: {
@@ -65,7 +67,20 @@ const ContactPage = withSnackbar(React.createClass({
   render () {
     const { contact, campaigns, campaign, user, masterlists, needToKnows, loading } = this.props
     const { editContactModalOpen, addToCampaignOpen } = this.state
-    if (!contact) return null
+
+    if (!contact) {
+      return <LoadingBar />
+    }
+
+    if (loading) {
+      return (
+        <div>
+          <ContactTopbar contact={contact} onAddToCampaignClick={this.toggleAddToCampaign} />
+          <LoadingBar />
+        </div>
+      )
+    }
+
     return (
       <div>
         <ContactTopbar contact={contact} onAddToCampaignClick={this.toggleAddToCampaign} />
@@ -111,7 +126,8 @@ const ContactPage = withSnackbar(React.createClass({
 }))
 
 export default createContainer((props) => {
-  const { contactSlug, campaignSlug } = props.params
+  const { contactSlug } = props.params
+  const campaignSlug = Session.get('lastCampaignVisitedSlug')
   const subs = [
     Meteor.subscribe('contact-page', contactSlug),
     Meteor.subscribe('need-to-knows', {
@@ -127,7 +143,7 @@ export default createContainer((props) => {
   })
   const campaigns = contact ? Campaigns.find({
     slug: {
-      $in: Object.keys(contact.campaigns)
+      $in: contact.campaigns
     }
   }, {
     sort: {

@@ -11,10 +11,19 @@ const findMany = (db, collection, query) => {
 }
 
 const find = (db, collection, method, query) => {
-  return retry((retry) => {
+  return retry({
+    retries: 5,
+    factor: 1,
+    minTimeout: 1000,
+    maxTimeout: 1000
+  }, (retry, number) => {
     return new Promise((resolve, reject) => {
       db.collection(collection)[method](query, (error, doc) => {
         if (!error && !doc) {
+          if (number > 5) {
+            console.warn('no doc found for', query, 'in', collection)
+          }
+
           error = new Error('Could not find doc(s)')
         }
 
@@ -37,6 +46,7 @@ module.exports = (url) => {
     findCampaign: findOne.bind(null, db, 'campaigns'),
     findCampaigns: findMany.bind(null, db, 'campaigns'),
     findUser: findOne.bind(null, db, 'users'),
+    findUsers: findMany.bind(null, db, 'users'),
     findContact: findOne.bind(null, db, 'contacts'),
     findContacts: findMany.bind(null, db, 'contacts'),
     findCampaignList: findOne.bind(null, db, 'MasterLists'),

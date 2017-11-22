@@ -23,7 +23,7 @@ const test = {
         .searchFor(campaign.name)
         .clickRow(0)
 
-      t.assert.urlEquals(`http://localhost:3000/campaign/${campaign.slug}`)
+      t.assert.urlEquals(`${t.launch_url}/campaign/${campaign.slug}`)
 
       done()
     })
@@ -47,7 +47,7 @@ const test = {
 
       contactCampaignsPage.section.toast.viewContacts()
 
-      t.assert.urlEquals(`http://localhost:3000/contacts?campaign=${campaign.slug}`)
+      t.assert.urlEquals(`${t.launch_url}/contacts?campaign=${campaign.slug}`)
 
       t.page.contacts()
         .section.contactTable.isInResults(contact1)
@@ -194,14 +194,15 @@ const test = {
 
       t.perform((done) => {
         t.db.findContacts({
-          campaigns: {
-            $in: [campaign.slug]
-          }
+          campaigns: campaign.slug
         })
         .then((docs) => {
           t.assert.equal(docs.length, 0)
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -213,6 +214,9 @@ const test = {
           t.assert.equal(doc.contacts[contact._id], undefined)
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -239,17 +243,45 @@ const test = {
 
         t.perform((done) => {
           t.db.findCampaign({
-            _id: campaign._id
+            slug: campaign.slug
           })
           .then((doc) => {
-            t.assert.equal(doc.contacts[contact.slug], 'Hot Lead')
+            t.assert.equal(doc.contacts.find(c => c.slug === contact.slug).status, 'Hot Lead')
 
             done()
+          })
+          .catch(error => {
+            throw error
           })
         })
 
         done()
       })
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should retain search query in search box after page refresh': function (t) {
+    t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact], campaign, () => done())
+      })
+
+      const contactCampaignsPage = t.page.contactCampaigns()
+        .navigateToCampaignList(contact)
+
+      contactCampaignsPage.section.campaignTable
+        .searchFor(campaign.name)
+
+      t.refresh()
+
+      contactCampaignsPage.section.campaignTable
+        .waitForElementVisible('@searchInput')
+        .assert.value('@searchInput', campaign.name)
 
       done()
     })

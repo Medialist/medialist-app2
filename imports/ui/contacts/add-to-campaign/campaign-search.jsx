@@ -46,6 +46,7 @@ class CampaignSearch extends React.Component {
     return (
       <div>
         <SearchBox
+          initialTerm={term}
           onTermChange={onTermChange}
           onKeyDown={this.onKeyPress}
           placeholder='Search campaigns'
@@ -72,7 +73,7 @@ class CampaignSearchContainer extends React.Component {
   }
 
   render () {
-    return <WrappedCampaignSearch {...this.props} term={this.state.term} onTermChange={this.onTermChange} />
+    return <WrappedCampaignSearch {...this.props} limit={20} term={this.state.term} onTermChange={this.onTermChange} />
   }
 }
 

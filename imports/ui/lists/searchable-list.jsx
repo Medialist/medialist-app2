@@ -33,7 +33,7 @@ const replaceTerm = (object, query) => {
 * - `term` - The Search term
 * - `sort` - A mongo sort sort specifier
 * - `limit` - Maximum number of docs to fetch.
-* - `campaingSlugs` - Array of campaigns ot search in.
+* - `campaignSlugs` - Array of campaigns ot search in.
 * - `masterListSlug` - To search a in a specific list
 * - `userId` to search in the `myContacts` for a given user
 *
@@ -53,8 +53,7 @@ export default (Component, opts = {}) => {
       sort: PropTypes.oneOfType([ PropTypes.object, PropTypes.array ]),
       query: PropTypes.object.isRequired,
       fields: PropTypes.object.isRequired,
-      collection: PropTypes.string.isRequired,
-      allItems: PropTypes.array
+      collection: PropTypes.string.isRequired
     },
 
     getDefaultProps () {
@@ -87,11 +86,8 @@ export default (Component, opts = {}) => {
       const collection = Meteor.connection._stores[this.props.collection]._getCollection()
 
       let query = {}
-
-      if (this.state.term) {
-        query = JSON.parse(JSON.stringify(this.props.query))
-        query = replaceTerm(query, escapeRegExp(this.state.term))
-      }
+      query = JSON.parse(JSON.stringify(this.props.query))
+      query = replaceTerm(query, escapeRegExp(this.state.term))
 
       const items = collection.find(query, this.props.fields).fetch()
 

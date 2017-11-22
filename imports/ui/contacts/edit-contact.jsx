@@ -425,7 +425,7 @@ const EditContact = withSnackbar(React.createClass({
 
         <div className='flex p4 bg-white border-top border-gray80'>
           <div className='flex-auto flex order-last' style={{justifyContent: 'flex-end'}}>
-            <Button className='btn bg-completed white order-last' data-id='edit-contact-form-submit-button' disabled={false}>Save Changes</Button>
+            <Button className='btn bg-completed white order-last' data-id='edit-contact-form-submit-button' disabled={false}>Save</Button>
             <button className='btn bg-transparent gray40 mr2' onClick={this.props.onCancel} data-id='edit-contact-form-cancel-button'>Cancel</button>
           </div>
           {this.props.onDelete && <Dropdown className='flex-auto'>
@@ -453,6 +453,8 @@ const EditContactForm = withRouter(withSnackbar(React.createClass({
   },
 
   onSubmit (details) {
+    details = ContactCreateSchema.clean(details)
+
     updateContact.call({details, contactId: this.props.contact._id}, (error, id) => {
       if (error) {
         console.log(error)
@@ -468,7 +470,7 @@ const EditContactForm = withRouter(withSnackbar(React.createClass({
   onDelete (event) {
     event.preventDefault()
 
-    batchRemoveContacts.call({_ids: [this.props.contact._id]}, (error) => {
+    batchRemoveContacts.call({contactSlugs: [this.props.contact.slug]}, (error) => {
       if (error) {
         console.log(error)
 
@@ -494,20 +496,21 @@ const EditContactForm = withRouter(withSnackbar(React.createClass({
 
 const CreateContactForm = withRouter(withSnackbar(React.createClass({
   propTypes: {
-    prefill: PropTypes.object
+    prefill: PropTypes.object,
+    onContactCreated: PropTypes.func
   },
 
   onSubmit (details) {
+    details = ContactCreateSchema.clean(details)
+
     createContact.call({details}, (error, slug) => {
       if (error) {
         console.log(error)
 
         return this.props.snackbar.error('contact-create-failure')
       }
-
       this.props.snackbar.show(`Created ${details.name.split(' ')[0]}`, 'contact-create-success')
-      this.props.router.push(`/contact/${slug}`)
-      this.props.onDismiss()
+      this.props.onContactCreated(slug)
     })
   },
 

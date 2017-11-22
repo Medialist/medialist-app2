@@ -22,14 +22,15 @@ const test = {
 
       t.perform((done) => {
         t.db.findUser({
-          profile: {
-            name: this.user.name
-          }
+          'profile.name': this.user.name
         })
         .then((doc) => {
           t.assert.ok(doc.myContacts.find(c => c._id === contact._id))
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -39,14 +40,15 @@ const test = {
 
       t.perform((done) => {
         t.db.findUser({
-          profile: {
-            name: this.user.name
-          }
+          'profile.name': this.user.name
         })
         .then((doc) => {
           t.assert.ok(!doc.myContacts.find(c => c._id === contact._id))
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -77,9 +79,12 @@ const test = {
           name: updated.name
         })
         .then((doc) => {
-          assertions.contactsAreEqual(t, updated, doc)
+          assertions.contactsAreEqual(t, doc, updated)
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -144,6 +149,9 @@ const test = {
 
           done()
         })
+        .catch(error => {
+          throw error
+        })
       })
 
       done()
@@ -165,7 +173,7 @@ const test = {
 
       t.page.main().waitForSnackbarMessage('contact-delete-success')
 
-      t.assert.urlEquals('http://localhost:3000/contacts')
+      t.assert.urlEquals(t.launch_url + '/contacts')
 
       t.page.contacts().section.contactTable
         .searchForWithoutFinding(contact.name)

@@ -1,5 +1,6 @@
 'use strict'
 
+const masterListsSelector = require('../components/masterlists-selector')
 const editCampaignForm = require('../components/edit-campaign-form')
 const campaignTable = require('../components/campaign-table')
 const addtoListsModal = require('../components/add-to-lists-modal')
@@ -16,6 +17,7 @@ module.exports = {
     myCampaignsButton: '[data-slug=my]'
   },
   sections: {
+    masterListsSelector: masterListsSelector,
     editCampaignForm: editCampaignForm,
     campaignTable: campaignTable,
     toast: {
@@ -71,7 +73,7 @@ module.exports = {
   },
   commands: [{
     navigateToCampaignList: function (campaignList) {
-      this.api.url('http://localhost:3000/campaigns?list=' + campaignList.slug)
+      this.api.url(this.api.launchUrl + '/campaigns?list=' + campaignList.slug)
       this.waitForElementVisible(this.section.campaignTable.selector)
 
       return this
@@ -85,7 +87,7 @@ module.exports = {
       return this
     },
     navigateToTag: function (tag) {
-      this.api.url(`http://localhost:3000/campaigns?tag=${tag}`)
+      this.api.url(`${this.api.launchUrl}/campaigns?tag=${tag}`)
       this.waitForElementVisible(this.section.campaignTable.selector)
 
       return this

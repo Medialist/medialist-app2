@@ -3,15 +3,22 @@ import { resetDatabase } from 'meteor/xolvio:cleaner'
 import assert from 'assert'
 import faker from 'faker'
 import Contacts from '/imports/api/contacts/contacts'
-import { searchCampaigns } from '/imports/api/campaigns/queries'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import { campaign, user, contact } from '/tests/browser/fixtures/domain'
 import { findOneUserRef } from '/imports/api/users/users'
 import { createCampaign } from '/imports/api/campaigns/methods'
-import { createContact, addContactsToCampaign } from '/imports/api/contacts/methods'
+import { createContact } from '/imports/api/contacts/methods'
+import { addContactsToCampaign } from '/imports/api/contacts/methods'
 import { batchFavouriteCampaigns } from '/imports/api/campaigns/methods'
 import { batchAddToMasterLists, createMasterList } from '/imports/api/master-lists/methods'
 import MasterLists from '/imports/api/master-lists/master-lists'
+import { createTestUsers, createTestContacts, createTestCampaigns, createTestCampaignLists, createTestContactLists } from '/tests/fixtures/server-domain'
+import createCampaignSearchQuery from './queries'
+
+function searchCampaigns ({sort, limit, ...queryOpts}) {
+  const query = createCampaignSearchQuery(queryOpts)
+  return Campaigns.find(query, {sort, limit})
+}
 
 describe('searchCampaigns', function () {
   let users
@@ -22,36 +29,25 @@ describe('searchCampaigns', function () {
   beforeEach(function () {
     resetDatabase()
 
-    users = Array(2).fill(0)
-      .map(() => Meteor.users.insert(user()))
-      .map((_id) => Meteor.users.findOne(_id))
+    users = createTestUsers(2)
+    contacts = createTestContacts(3)
+    campaigns = createTestCampaigns(3)
+    masterLists = createTestCampaignLists(2)
 
-    const userId = Meteor.users.insert(user())
-
-    contacts = Array(3).fill(0)
-      .map(() => createContact.run.call({ userId: users[0]._id }, { details: contact() }))
-      .map((slug) => Contacts.findOne({slug}))
-
-    campaigns = Array(3).fill(0)
-      .map(() => {
-        const details = campaign()
-        details.name += ' name'
-
-        return createCampaign.run.call({ userId: users[0]._id }, details)
+    campaigns.forEach(campaign => {
+      Campaigns.update({
+        _id: campaign._id
+      }, {
+        $set: {
+          name: campaign.name + ' name'
+        }
       })
-      .map((slug) => Campaigns.findOne({slug}))
+    })
 
     addContactsToCampaign.run.call({ userId: users[0]._id }, {
       contactSlugs: [contacts[1].slug],
       campaignSlug: campaigns[0].slug
     })
-
-    masterLists = Array(2).fill(0)
-      .map(() => createMasterList.run.call({ userId: users[0]._id }, {
-        type: 'Campaigns',
-        name: faker.lorem.word()
-      }))
-      .map((_id) => MasterLists.findOne({_id}))
 
     batchAddToMasterLists.run.call({ userId: users[0]._id }, {
       type: 'Campaigns',
@@ -65,6 +61,7 @@ describe('searchCampaigns', function () {
   })
 
   it('should search for campaigns', function () {
+
     const termSearch1Res = searchCampaigns({term: campaigns[1].name, sort: {name: -1}}).fetch()
     assert.equal(termSearch1Res.length, 1)
     assert.equal(termSearch1Res[0]._id, campaigns[1]._id)

@@ -3,8 +3,7 @@ import PropTypes from 'prop-types'
 import { CSSTransitionGroup } from 'react-transition-group'
 import { Close } from '/imports/ui/images/icons'
 
-// ten seconds
-const MESSAGE_VISIBILITY_DURATION = 10000
+const MESSAGE_VISIBILITY_DURATION_MS = 6000
 
 /*
  * SnackbarItem - a self-dismissing notification.
@@ -28,7 +27,7 @@ const SnackbarItem = React.createClass({
       return
     }
 
-    return { dismissTimer: setTimeout(this.props.onDismiss, MESSAGE_VISIBILITY_DURATION) }
+    return { dismissTimer: setTimeout(this.props.onDismiss, MESSAGE_VISIBILITY_DURATION_MS) }
   },
   stopDismissTimer ({dismissTimer}) {
     if (!dismissTimer) {
@@ -128,7 +127,7 @@ const Snackbar = React.createClass({
         <div className='snackbars' style={{
           position: 'fixed',
           bottom: 0,
-          right: 20
+          left: 20
         }}>
           <CSSTransitionGroup
             transitionName='snackbar'
@@ -137,7 +136,7 @@ const Snackbar = React.createClass({
             transitionEnterTimeout={350}
             transitionLeaveTimeout={350}>
             {this.state.items.map((item, index) => (
-              <div className='mb4 right-align' key={item.id}>
+              <div className='mb4 left-align' key={item.id}>
                 <SnackbarItem onDismiss={() => this.remove(item.id)} error={item.error} type={item.type}>
                   {item.message}
                 </SnackbarItem>

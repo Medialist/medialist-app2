@@ -12,7 +12,7 @@ module.exports = {
     searchFor: function (query) {
       this
         .waitForElementVisible('@searchInput')
-        .clear('@searchInput')
+        .clearSlow('@searchInput')
         .waitForElementVisible('@unfilteredList')
         .setValue('@searchInput', query)
         .waitForElementVisible('@searchResults')
@@ -22,7 +22,7 @@ module.exports = {
     searchForWithoutFinding: function (query) {
       this
         .waitForElementVisible('@searchInput')
-        .clear('@searchInput')
+        .clearSlow('@searchInput')
         .waitForElementVisible('@unfilteredList')
         .setValue('@searchInput', query)
         .waitForElementVisible('@noResults')
@@ -34,6 +34,7 @@ module.exports = {
       const checkboxSelector = `[data-id=contacts-table-row-${index}-checkbox-label]`
 
       this
+        .waitForElementVisible(rowSelector)
         .moveToElement(rowSelector, 10, 10)
         .waitForElementVisible(checkboxSelector)
         .click(checkboxSelector)
@@ -51,8 +52,8 @@ module.exports = {
       return this
     },
     updateStatus: function (contact, status) {
-      const buttonSelector = `[data-item='${contact._id}'] [data-id=contact-status-selector-button]`
-      const statusSelector = `[data-item='${contact._id}'] [data-id=contact-status-${status}]`
+      const buttonSelector = `[data-item='${contact.slug}'] [data-id=contact-status-selector-button]`
+      const statusSelector = `[data-item='${contact.slug}'] [data-id=contact-status-${status}]`
 
       this
         .waitForElementVisible(buttonSelector)
@@ -64,33 +65,38 @@ module.exports = {
       return this
     },
     isInResults: function (contact) {
-      this.assert.elementPresent(`[data-id=contact-link][data-contact='${contact._id}']`)
+      const selector = `[data-id=contact-link][data-contact='${contact.slug}']`
+      this.waitForElementPresent(selector)
+      this.assert.elementPresent(selector)
     },
     isNotInResults: function (contact) {
-      this.assert.elementNotPresent(`[data-id=contact-link][data-contact='${contact._id}']`)
+      this.assert.elementNotPresent(`[data-id=contact-link][data-contact='${contact.slug}']`)
     },
     assertInSearchResults: function (contact) {
-      const selector = `[data-item='${contact._id}']`
+      const selector = `[data-item='${contact.slug}']`
 
+      this.waitForElementVisible(selector)
       this.assert.visible(selector)
 
       return this
     },
     assertNotInSearchResults: function (contact) {
-      const selector = `[data-item='${contact._id}']`
+      const selector = `[data-item='${contact.slug}']`
 
       this.assert.elementNotPresent(selector)
 
       return this
     },
     assertNoResults: function () {
+      this.waitForElementVisible('@noResults')
       this.assert.visible('@noResults')
 
       return this
     },
     assertInPosition: function (contact, index) {
-      const selector = `[data-id=contacts-table-row-${index}][data-item='${contact._id}']`
+      const selector = `[data-id=contacts-table-row-${index}][data-item='${contact.slug}']`
 
+      this.waitForElementVisible(selector)
       this.assert.visible(selector)
 
       return this

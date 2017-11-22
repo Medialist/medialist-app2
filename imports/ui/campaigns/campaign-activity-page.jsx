@@ -14,9 +14,10 @@ import Campaigns from '/imports/api/campaigns/campaigns'
 import Contacts from '/imports/api/contacts/contacts'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import { createFeedbackPost, createCoveragePost } from '/imports/api/posts/methods'
-import { CreateContactModal } from '/imports/ui/contacts/edit-contact'
-import AddContact from '/imports/ui/campaigns/add-contact'
+import AddOrCreateContactModal from './add-or-create-contact'
 import EditTeam from '/imports/ui/campaigns/edit-team'
+import { CampaignContacts } from '/imports/ui/campaigns/collections'
+import { LoadingBar } from '/imports/ui/lists/loading'
 
 const CampaignActivityPage = React.createClass({
   propTypes: {
@@ -31,32 +32,14 @@ const CampaignActivityPage = React.createClass({
 
   getInitialState () {
     return {
-      createContactModalOpen: false,
       addContactModalOpen: false,
       editModalOpen: false,
-      contactPrefillData: null,
       editTeamModalOpen: false
     }
   },
 
   onAddContactClick () {
-    const { contactsAllCount } = this.props
-
-    if (contactsAllCount) {
-      const addContactModalOpen = !this.state.addContactModalOpen
-      this.setState({ addContactModalOpen })
-    } else {
-      const createContactModalOpen = !this.state.createContactModalOpen
-      this.setState({ createContactModalOpen })
-    }
-  },
-
-  onCreateContactModalDismiss () {
-    this.setState({
-      createContactModalOpen: false,
-      contactPrefillData: null,
-      addContactModalOpen: true
-    })
+    this.setState({ addContactModalOpen: true })
   },
 
   onAddContactModalDismiss () {
@@ -89,35 +72,44 @@ const CampaignActivityPage = React.createClass({
     createCoveragePost.call({contactSlug, campaignSlug, message, status}, cb)
   },
 
-  onShowCreateContact (data) {
-    this.setState({
-      addContactModalOpen: false,
-      createContactModalOpen: true,
-      contactPrefillData: data
-    })
-  },
-
   render () {
     const {
       onAddContactClick,
-      onCreateContactModalDismiss,
       onAddContactModalDismiss,
       toggleEditModal,
       toggleEditTeamModal,
       onFeedback,
-      onCoverage,
-      onShowCreateContact
+      onCoverage
     } = this
-    const { campaign, contacts, contactsCount, teamMates, loading, user } = this.props
+
     const {
-      createContactModalOpen,
+      campaign,
+      contacts,
+      contactsCount,
+      teamMates,
+      loading,
+      user,
+      contactsAllCount
+    } = this.props
+
+    const {
       addContactModalOpen,
       editModalOpen,
-      editTeamModalOpen,
-      contactPrefillData
+      editTeamModalOpen
     } = this.state
 
-    if (!campaign) return null
+    if (!campaign) {
+      return <LoadingBar />
+    }
+
+    if (loading) {
+      return (
+        <div>
+          <CampaignTopbar campaign={campaign} onAddContactClick={onAddContactClick} />
+          <LoadingBar />
+        </div>
+      )
+    }
 
     return (
       <div>
@@ -152,16 +144,12 @@ const CampaignActivityPage = React.createClass({
             <CampaignContactList contacts={contacts.slice(0, 7)} contactsCount={contactsCount} campaign={campaign} onAddContactClick={onAddContactClick} />
           </div>
         </div>
-        <CreateContactModal
-          open={createContactModalOpen}
-          onDismiss={onCreateContactModalDismiss}
-          prefill={contactPrefillData} />
-        <AddContact
+        <AddOrCreateContactModal
           open={addContactModalOpen}
           onDismiss={onAddContactModalDismiss}
-          onCreate={onShowCreateContact}
           campaign={campaign}
-          campaignContacts={contacts} />
+          campaignContacts={contacts}
+          allContactsCount={contactsAllCount} />
       </div>
     )
   }
@@ -172,7 +160,7 @@ export default createContainer((props) => {
 
   const subs = [
     Meteor.subscribe('campaign', campaignSlug),
-    Meteor.subscribe('contacts-by-campaign', campaignSlug),
+    Meteor.subscribe('campaign-contacts', campaignSlug),
     Meteor.subscribe('contactCount'),
     Meteor.subscribe('clients')
   ]
@@ -181,26 +169,22 @@ export default createContainer((props) => {
     slug: campaignSlug
   })
 
+  const cursor = CampaignContacts.find({
+    campaign: campaignSlug
+  }, {
+    sort: {
+      updatedAt: -1
+    }
+  })
+
   return {
     ...props,
     loading,
     campaign,
-    contacts: Contacts.find({
-      [`campaigns.${campaignSlug}`]: {
-        $exists: true
-      }
-    }, {
-      sort: {
-        [`campaigns.${campaignSlug}.updatedAt`]: -1
-      }
-    }).fetch(),
-    contactsCount: Contacts.find({
-      [`campaigns.${campaignSlug}`]: {
-        $exists: true
-      }
-    }).count(),
+    contacts: cursor.fetch(),
+    contactsCount: cursor.count(),
     contactsAllCount: Contacts.allContactsCount(),
-    teamMates: campaign && campaign.team,
+    teamMates: (campaign && campaign.team) || [],
     user: Meteor.user(),
     clients: Clients.find({}).fetch(),
     masterlists: MasterLists.find({type: 'Campaigns'}).fetch()

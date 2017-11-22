@@ -13,12 +13,14 @@ Meteor.publish(null, function () {
     _id: this.userId
   }, {
     fields: {
+      createdAt: 1,
       myCampaigns: 1,
       myContacts: 1,
       onCampaigns: 1,
       emails: 1,
       recentCampaignLists: 1,
-      recentContactLists: 1
+      recentContactLists: 1,
+      roles: 1
     }
   })
 })
@@ -42,7 +44,8 @@ Meteor.publish('users', function (opts = {}) {
       'profile.name': 1,
       'profile.avatar': 1,
       'onCampaigns': 1,
-      'emails': 1
+      'emails': 1,
+      'roles': 1
     },
     sort: { createdAt: -1 },
     limit: opts.limit || DEFAULT_LIMIT
@@ -95,7 +98,3 @@ Meteor.publish('users-by-id', function (opts = {}) {
   }
   return Meteor.users.find(query, options)
 })
-
-export const createUser = (details) => {
-  return Meteor.users.insert(details)
-}

@@ -6,11 +6,16 @@ import { Logo, MenuActivityIcon, MenuCampaignIcon, MenuContactIcon } from '/impo
 
 const linkStyle = { padding: '19px 25px 20px', display: 'inline-block' }
 
-const NavBar = React.createClass({
-  propTypes: {
-    user: PropTypes.object
-  },
+class NavBar extends React.PureComponent {
+  static propTypes = {
+    name: PropTypes.string,
+    avatar: PropTypes.string,
+    email: PropTypes.string
+  }
   render () {
+    const { user } = this.props
+    const { name, avatar } = user.profile
+    const email = user.emails[0].address
     return (
       <div className='navbar bg-gray10 clearfix'>
         <nav className='inline-block align-top'>
@@ -31,11 +36,11 @@ const NavBar = React.createClass({
           </Link>
         </nav>
         <div className='inline-block right'>
-          <UserInfo user={this.props.user} />
+          <UserInfo name={name} avatar={avatar} email={email} />
         </div>
       </div>
     )
   }
-})
+}
 
 export default NavBar

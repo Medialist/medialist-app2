@@ -10,6 +10,53 @@ const test = {
       .register()
   },
 
+  'Should add only suggest team members': function (t) {
+    t.createDomain(['user', 'user', 'campaign'], (user1, user2, campaign, done) => {
+      t.perform((done) => {
+        // user2 is a support user, it shouldn't appear in the edit team modal
+        t.db.connection.collection('users').update({
+          _id: user2._id
+        }, {
+          $set: {
+            'profile.name': 'TEST SUPPORT',
+            roles: ['support']
+          }
+        }, (err) => {
+          if (err) throw err
+          done()
+        })
+      })
+
+      const campaignPage = t.page.campaign().navigate(campaign)
+
+      campaignPage
+        .editTeam()
+
+      // ensure user2 isn't in the initial suggestions or in the search results
+      campaignPage.section.editTeamMembersForm
+        .waitForElementVisible('[data-id=team-mates-table-unfiltered]')
+        .assert.elementNotPresent(`[data-id=${user2._id}]`)
+        .clear('@searchInput')
+        .setValue('@searchInput', 'TEST SUPPORT')
+        .waitForElementVisible('[data-id=team-mates-table-search-results],[data-id=team-mates-table-empty]')
+        .assert.elementNotPresent(`[data-id=${user2._id}]`)
+
+      // ensure user1 is in the search results
+      campaignPage.section.editTeamMembersForm
+        .clear('@searchInput')
+        .setValue('@searchInput', user1.profile.name)
+        .waitForElementVisible('@searchResults')
+        .assert.elementPresent(`[data-id=${user1._id}]`)
+
+      campaignPage
+        .cancelTeamEdit()
+
+      done()
+    })
+    t.page.main().logout()
+    t.end()
+  },
+
   'Should add team members to a campaign': function (t) {
     t.createDomain(['user', 'user', 'campaign'], (user1, user2, campaign, done) => {
       const campaignPage = t.page.campaign()
@@ -33,6 +80,9 @@ const test = {
           t.assert.equal(doc.team.find(member => member._id === user2._id)._id, user2._id)
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 
@@ -64,6 +114,9 @@ const test = {
 
           done()
         })
+        .catch(error => {
+          throw error
+        })
       })
 
       done()
@@ -87,7 +140,7 @@ const test = {
           t.page.onboarding()
             .onboard(name)
 
-          t.assert.urlEquals(`http://localhost:3000/campaign/${campaign.slug}`)
+          t.assert.urlEquals(`${t.launch_url}/campaign/${campaign.slug}`)
 
           done()
         })
@@ -127,6 +180,9 @@ const test = {
 
           done()
         })
+        .catch(error => {
+          throw error
+        })
       })
 
       done()
@@ -161,6 +217,9 @@ const test = {
           t.assert.equal(doc.team.find(member => member._id === user2._id)._id, user2._id)
 
           done()
+        })
+        .catch(error => {
+          throw error
         })
       })
 

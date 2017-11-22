@@ -12,6 +12,7 @@ class AddContactsToCampaign extends React.Component {
   static propTypes = {
     title: PropTypes.string,
     contacts: PropTypes.array.isRequired,
+    contactsCount: PropTypes.number.isRequired,
     onCampaignSelected: PropTypes.func.isRequired
   }
 
@@ -19,6 +20,7 @@ class AddContactsToCampaign extends React.Component {
     const {
       title,
       contacts,
+      contactsCount,
       onCampaignSelected
     } = this.props
 
@@ -26,7 +28,7 @@ class AddContactsToCampaign extends React.Component {
       <div data-id='add-contacts-to-campaign-form'>
         <div className='f-xl regular center mt6'>{title}</div>
         <div className='mb6'>
-          <AbbreviatedAvatarList items={contacts} maxTooltip={12} />
+          <AbbreviatedAvatarList items={contacts} maxTooltip={12} total={contactsCount} />
         </div>
         <CampaignSearch onCampaignSelected={onCampaignSelected} />
       </div>
@@ -39,43 +41,60 @@ class AddManyContactsToCampaignContainer extends React.Component {
     onDismiss: PropTypes.func.isRequired,
     contacts: PropTypes.array.isRequired,
     snackbar: PropTypes.object.isRequired,
-    onContactPage: PropTypes.bool
+    selectionMode: PropTypes.string.isRequired,
+    contactSearch: PropTypes.object,
+    contactsCount: PropTypes.number
   }
 
   onCampaignSelected = (item) => {
-    const {contacts, onDismiss} = this.props
+    const {contacts, selectionMode, contactSearch, onDismiss} = this.props
+    const contactsCount = this.props.contactsCount || contacts.length
     const campaignSlug = item.slug
-    const contactSlugs = contacts.map((c) => c.slug)
-    addContactsToCampaign.call({contactSlugs, campaignSlug}, (error) => {
-      if (error) {
-        console.log(error)
-        return this.props.snackbar.error('batch-add-contacts-to-campaign-success')
-      }
 
-      onDismiss()
+    onDismiss()
 
-      let label
+    if (contactsCount > 20) {
+      this.props.snackbar.show('Adding contacts to campaign...')
+    }
 
-      if (contacts.length === 1) {
-        const contact = contacts[0]
-        label = (
-          <Link to={`/contact/${contact.slug}`} className='underline semibold'>
-            {contact.name}
-          </Link>
-        )
+    setTimeout(() => {
+      const opts = {campaignSlug}
+
+      if (selectionMode === 'include') {
+        opts.contactSlugs = contacts.map((c) => c.slug)
       } else {
-        label = `${contacts.length} contacts`
+        opts.contactSearch = contactSearch
       }
 
-      return this.props.snackbar.show((
-        <div>
-          <span>Added {label} to </span>
-          <Link to={`/campaign/${item.slug}`} className='underline semibold'>
-            {item.name}
-          </Link>
-        </div>
-      ), 'batch-add-contacts-to-campaign-success')
-    })
+      addContactsToCampaign.call(opts, (error, res) => {
+        if (error) {
+          console.log(error)
+          return this.props.snackbar.error('batch-add-contacts-to-campaign-failure')
+        }
+
+        let label
+
+        if (contacts.length === 1) {
+          const contact = contacts[0]
+          label = (
+            <Link to={`/contact/${contact.slug}`} className='underline semibold'>
+              {contact.name}
+            </Link>
+          )
+        } else {
+          label = `${res.numContactsAdded} new contacts`
+        }
+
+        return this.props.snackbar.show((
+          <div>
+            <span>Added {label} to </span>
+            <Link to={`/campaign/${item.slug}`} className='underline semibold'>
+              {item.name}
+            </Link>
+          </div>
+        ), 'batch-add-contacts-to-campaign-success')
+      })
+    }, 1)
   }
 
   render () {
@@ -88,4 +107,3 @@ class AddManyContactsToCampaignContainer extends React.Component {
 export default withSnackbar(Modal(AddManyContactsToCampaignContainer, {
   'data-id': 'campaign-selector-modal'
 }))
-
