@@ -78,9 +78,9 @@ export default (Component) => createContainer((props) => {
 
   const subs = [Meteor.subscribe('contact-search-results', searchOpts)]
 
-  let sortSpec = getCustomSortSpec(sort)
+  const sortSpec = getCustomSortSpec(sort)
 
-  const contacts = ContactSearchResults.find({}, {sort: sortSpec}).fetch()
+  const contacts = ContactSearchResults.find({}, {limit, sort: sortSpec}).fetch()
 
   const loading = props.loading || subs.some((s) => !s.ready())
 

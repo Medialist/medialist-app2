@@ -80,7 +80,7 @@ export default (Component, opts = {}) => {
 
       const sortSpec = getCustomSortSpec(sort, contactSlug)
 
-      const campaigns = CampaignSearchResults.find({}, {sort: sortSpec}).fetch()
+      const campaigns = CampaignSearchResults.find({}, {limit, sort: sortSpec}).fetch()
 
       const allCampaignsCount = Campaigns.allCampaignsCount()
 
