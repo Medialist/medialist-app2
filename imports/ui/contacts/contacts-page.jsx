@@ -18,7 +18,7 @@ import { FeedContactIcon } from '/imports/ui/images/icons'
 import createSearchContainer, { createSearchCountContainer } from '/imports/ui/contacts/search-container'
 import AddContactsToCampaign from '/imports/ui/contacts/add-to-campaign/add-many-modal'
 import CountTag, { AvatarTag } from '/imports/ui/tags/tag'
-import { batchFavouriteContacts, batchRemoveContacts, exportContactsToCsv } from '/imports/api/contacts/methods'
+import { batchFavouriteContacts, exportContactsToCsv } from '/imports/api/contacts/methods'
 import { batchAddTagsToContacts } from '/imports/api/tags/methods'
 import { batchAddToContactLists } from '/imports/api/master-lists/methods'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
@@ -26,12 +26,12 @@ import AddTagsModal from '/imports/ui/tags/add-tags-modal'
 import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
 import AddToMasterListModal from '/imports/ui/master-lists/add-to-master-list-modal'
 import createLimitContainer from '/imports/ui/navigation/increase-limit-on-scroll-container'
-import {LoadingBar} from '/imports/ui/lists/loading'
-import DeleteContactsModal from '/imports/ui/contacts/delete-contacts-modal'
+import { LoadingBar } from '/imports/ui/lists/loading'
 import { addRecentContactList } from '/imports/api/users/methods'
 import createSearchQueryContainer from './search-query-container'
 import createSearchEnricher from './search-enricher'
 import { ContactSearchSchema } from '/imports/api/contacts/schema'
+import MergeContactsModal from '/imports/ui/contacts/merge/merge-contacts-modal'
 
 /*
  * ContactPage and ContactsPageContainer
@@ -78,7 +78,7 @@ class ContactsPage extends React.Component {
     addContactsToCampaignModal: false,
     addTagsModal: false,
     addToMasterListsModal: false,
-    deleteContactsModal: false
+    mergeContactsModal: false
   }
 
   componentDidMount () {
@@ -159,22 +159,6 @@ class ContactsPage extends React.Component {
     })
   }
 
-  onDelete = () => {
-    const opts = this.getSearchOrSlugs()
-    batchRemoveContacts.call(opts, (error, res) => {
-      if (error) {
-        console.log(error)
-        this.props.snackbar.error('batch-delete-contacts-failure')
-      } else {
-        const {snackbar} = this.props
-        const {slugCount} = res
-        const name = slugCount > 1 ? `${slugCount} Contacts` : this.state.selections[0].name
-        snackbar.show(`Deleted ${name}`, 'batch-delete-contacts-success')
-        this.clearSelectionAndHideModals()
-      }
-    })
-  }
-
   onExportToCsv = () => {
     const opts = this.getSearchOrSlugs()
     exportContactsToCsv.call(opts, (error, res) => {
@@ -240,7 +224,7 @@ class ContactsPage extends React.Component {
       addContactsToCampaignModal: false,
       addTagsModal: false,
       addToMasterListsModal: false,
-      deleteContactsModal: false
+      mergeContactsModal: false
     })
   }
 
@@ -392,7 +376,7 @@ class ContactsPage extends React.Component {
           onSectorClick={() => this.showModal('addToMasterListsModal')}
           onFavouriteClick={() => this.onFavouriteAll()}
           onTagClick={() => this.showModal('addTagsModal')}
-          onDeleteClick={() => this.showModal('deleteContactsModal')}
+          onMergeClick={() => this.showModal('mergeContactsModal')}
           onDeselectAllClick={() => this.clearSelection()}
           onExportToCsvClick={this.onExportToCsv} />
         <CreateContactModal
@@ -424,12 +408,11 @@ class ContactsPage extends React.Component {
           onSave={this.onAddAllToMasterLists}>
           <AbbreviatedAvatarList items={selections} maxTooltip={12} total={selectionsLength} />
         </AddToMasterListModal>
-        <DeleteContactsModal
-          open={this.state.deleteContactsModal}
+        <MergeContactsModal
           contacts={this.state.selections}
-          contactsCount={selectionsLength}
-          onDelete={this.onDelete}
-          onDismiss={this.hideModals} />
+          open={this.state.mergeContactsModal}
+          onDismiss={this.hideModals}
+          onMerged={this.clearSelectionAndHideModals} />
       </div>
     )
   }

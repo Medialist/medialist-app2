@@ -23,7 +23,7 @@ export const jsonLdTitleFinder = (metadata) => {
 
 export const jsonLdImageFinder = (metadata) => {
   return withJsonLd(metadata, 'NewsArticle', entry => {
-    if (entry.image) {
+    if (entry.image && entry.image.url) {
       if (!entry.image.url.startsWith('http')) {
         return undefined
       }

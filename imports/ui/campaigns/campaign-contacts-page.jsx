@@ -15,6 +15,7 @@ import RemoveContactModal from '/imports/ui/campaigns/remove-contact'
 import AddContactsToCampaign from '/imports/ui/contacts/add-to-campaign/add-many-modal'
 import AddTagsModal from '/imports/ui/tags/add-tags-modal'
 import AddToMasterListModal from '/imports/ui/master-lists/add-to-master-list-modal'
+import MergeContactsModal from '/imports/ui/contacts/merge/merge-contacts-modal'
 import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import { batchAddTags } from '/imports/api/tags/methods'
@@ -42,6 +43,7 @@ class CampaignContactsPage extends React.Component {
   }
 
   state = {
+    ready: false,
     selections: [],
     selectionMode: 'include',
     isDropdownOpen: false,
@@ -49,7 +51,37 @@ class CampaignContactsPage extends React.Component {
     addContactsToCampaignModal: false,
     addTagsModal: false,
     addToMasterListsModal: false,
-    removeContactsModal: false
+    removeContactsModal: false,
+    mergeContactsModal: false
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (this.state.ready) return
+    if (nextProps.loading === false) {
+      this.setState({ready: true})
+    }
+  }
+
+  componentDidUpdate (prevProps, prevState) {
+    if (this.state.ready === prevState.ready) return
+    const {location} = this.props
+    if (location.state && location.state.scrollPos) {
+      window.scrollTo.apply(window, location.state.scrollPos)
+    }
+  }
+
+  onContactClick = (e) => {
+    const {location, router} = this.props
+    const highlightContactSlug = e.currentTarget.dataset.contact
+
+    router.replace({
+      pathname: location.pathname,
+      query: location.query,
+      state: {
+        scrollPos: [0, window.scrollY],
+        highlightContactSlug
+      }
+    })
   }
 
   onAddContactClick = () => {
@@ -176,20 +208,17 @@ class CampaignContactsPage extends React.Component {
       addContactsToCampaignModal: false,
       addTagsModal: false,
       addToMasterListsModal: false,
-      removeContactsModal: false
+      removeContactsModal: false,
+      mergeContactsModal: false
     })
   }
 
   render () {
-    const { campaign, contacts, loading } = this.props
-
     const {
-      selections,
-      selectionMode,
-      addContactModal
-    } = this.state
-
-    let {
+      campaign,
+      contacts,
+      loading,
+      location,
       contactsTotal,
       sort,
       term,
@@ -197,6 +226,12 @@ class CampaignContactsPage extends React.Component {
       statusCounts,
       contactsAllCount
     } = this.props
+
+    const {
+      selections,
+      selectionMode,
+      addContactModal
+    } = this.state
 
     if (!campaign) {
       return <LoadingBar />
@@ -217,6 +252,8 @@ class CampaignContactsPage extends React.Component {
         campaignSlugs: [campaign.slug]
       }
     }
+
+    const highlightSlug = location.state && location.state.highlightContactSlug
 
     return (
       <div>
@@ -239,6 +276,8 @@ class CampaignContactsPage extends React.Component {
             onSelectionsChange={this.onSelectionsChange}
             onSelectionModeChange={this.onSelectionModeChange}
             searchTermActive={Boolean(term)}
+            onContactClick={this.onContactClick}
+            highlightSlug={highlightSlug}
           />
         </div>
         <ContactsActionsToast
@@ -252,7 +291,8 @@ class CampaignContactsPage extends React.Component {
           onStatusClick={this.onBatchUpdateStatus}
           onDeleteClick={() => this.showModal('removeContactsModal')}
           onDeselectAllClick={this.clearSelection}
-          onExportToCsvClick={this.onExportToCsv} />
+          onExportToCsvClick={this.onExportToCsv}
+          onMergeClick={() => this.showModal('mergeContactsModal')} />
         <AddOrCreateContactModal
           open={addContactModal}
           onDismiss={this.hideModals}
@@ -290,6 +330,11 @@ class CampaignContactsPage extends React.Component {
           campaigns={[campaign]}
           contacts={this.state.selections}
           avatars={this.state.selections} />
+        <MergeContactsModal
+          contacts={this.state.selections}
+          open={this.state.mergeContactsModal}
+          onDismiss={this.hideModals}
+          onMerged={this.clearSelectionAndHideModals} />
       </div>
     )
   }
@@ -372,7 +417,7 @@ CampaignContactsPageContainer.contextTypes = {
 
 const parseQuery = ({ query }) => {
   let sort = {
-    updatedAt: -1
+    'outlets.0.label': 1
   }
 
   if (query.sort) {
@@ -432,6 +477,12 @@ export default createContainer(({location, params: { campaignSlug }}) => {
     sort
   })
   const contacts = cursor.fetch()
+  if (sort && sort.status) {
+    const dir = sort.status
+    contacts.sort((a, b) => {
+      return (StatusIndex[a.status] - StatusIndex[b.status]) * dir
+    })
+  }
   const contactsCount = cursor.count()
   const statusCounts = CampaignContactStatuses.find().fetch().pop()
   const campaign = Campaigns.findOne({

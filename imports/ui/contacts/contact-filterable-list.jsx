@@ -5,7 +5,6 @@ import CampaignContacts from '/imports/ui/campaigns/campaign-contacts'
 
 const ContactFilterableList = ({ term, onTermChange, campaign, contacts, onSelectContact }) => {
   const styleOverrides = {
-    backgroundColor: 'white',
     borderTop: 'solid 0px',
     borderRight: 'solid 0px',
     borderLeft: 'solid 0px'
@@ -19,7 +18,7 @@ const ContactFilterableList = ({ term, onTermChange, campaign, contacts, onSelec
         style={styleOverrides}
         placeholder='Search contacts'
         data-id='contacts-filterable-list-search-input' />
-      <div style={{maxHeight: 299, overflowY: 'scroll'}}>
+      <div className='mt2' style={{maxHeight: 299, overflowY: 'scroll'}}>
         <CampaignContacts campaign={campaign} contacts={contacts} onSelectContact={onSelectContact} />
       </div>
     </div>

@@ -41,6 +41,7 @@ class SearchBox extends React.Component {
   render () {
     const { placeholder, children, onKeyDown, style } = this.props
     const { isFocused } = this.state
+
     return (
       <div
         style={{paddingLeft: 45, ...style}}
@@ -56,7 +57,7 @@ class SearchBox extends React.Component {
             ref={el => { this.inputEl = el }}
             type='search'
             style={{outline: 'none', height: 30, lineHeight: 30, backgroundColor: 'transparent'}}
-            className='flex-auto f-lg normal gray20 placeholder-gray60'
+            className='flex-auto f-md normal gray20 placeholder-gray60'
             onChange={e => this.onChange(e.target.value)}
             onKeyDown={onKeyDown}
             onFocus={() => this.setState({isFocused: true})}

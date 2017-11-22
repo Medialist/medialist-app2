@@ -367,19 +367,7 @@ export const setMasterLists = new ValidatedMethod({
       multi: true
     })
 
-    const masterListRefs = MasterLists
-      .find({
-        _id: {
-          $in: masterLists
-        }
-      }, {
-        fields: {
-          _id: 1,
-          name: 1,
-          slug: 1
-        }
-      })
-      .fetch()
+    const masterListRefs = MasterLists.findRefs(masterLists)
 
     refCollection.update({
       _id: item

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
-import nothing from '/imports/lib/nothing'
+import everything from '/imports/lib/everything'
 
 const Embeds = new Mongo.Collection('embeds')
-Embeds.allow(nothing)
+Embeds.deny(everything)
 
 export default Embeds
 

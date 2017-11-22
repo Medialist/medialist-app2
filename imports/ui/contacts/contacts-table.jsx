@@ -10,19 +10,34 @@ import { CircleAvatar } from '/imports/ui/images/avatar'
 import StatusLabel from '/imports/ui/feedback/status-label'
 import StatusSelectorContainer from '/imports/ui/feedback/status-selector-container'
 
-const ContactLink = ({contact, campaign}) => {
+const ContactLink = ({contact, onClick}) => {
   const {slug, name, avatar} = contact
-
   return (
-    <Link to={`/contact/${slug}`} className='nowrap' data-id='contact-link' data-contact={contact.slug}>
+    <Link onClick={onClick} to={`/contact/${slug}`} className='nowrap' data-id='contact-link' data-contact={slug}>
       <CircleAvatar avatar={avatar} name={name} />
       <span className='ml3 semibold'>{name}</span>
     </Link>
   )
 }
 
-const ContactsTable = React.createClass({
-  propTypes: {
+const DisplayEmail = ({ emails }) => {
+  if (!emails || !emails.length) {
+    return <span className='gray60'>No email</span>
+  }
+
+  return <a href={`mailto:${emails[0].value}`}>{emails[0].value}</a>
+}
+
+const DisplayPhone = ({ phones }) => {
+  if (!phones || !phones.length) {
+    return <span className='gray60'>No phone</span>
+  }
+
+  return <a href={`tel:${phones[0].value}`}>{phones[0].value}</a>
+}
+
+class ContactsTable extends React.Component {
+  static propTypes = {
     // e.g. { updatedAt: -1 }
     sort: PropTypes.object,
     // Callback when sort changes, passed e.g. { updatedAt: 1 }
@@ -42,10 +57,14 @@ const ContactsTable = React.createClass({
     // returns true while subscriptionts are still syncing data.
     loading: PropTypes.bool,
     // true if we are searching
-    searchTermActive: PropTypes.bool
-  },
+    searchTermActive: PropTypes.bool,
+    // Called before navigating to the contact profile
+    onContactClick: PropTypes.func,
+    // Draw the user attention to this contact
+    highlightSlug: PropTypes.string
+  }
 
-  onSelectAllChange () {
+  onSelectAllChange = () => {
     const { selectionMode } = this.props
     if (selectionMode === 'include') {
       this.props.onSelectionModeChange('all')
@@ -54,9 +73,9 @@ const ContactsTable = React.createClass({
       this.props.onSelectionModeChange('include')
       this.props.onSelectionsChange([])
     }
-  },
+  }
 
-  onSelectChange (contact) {
+  onSelectChange = (contact) => {
     let { selections, selectionMode } = this.props
     const index = selections.findIndex((c) => c._id === contact._id)
 
@@ -72,10 +91,21 @@ const ContactsTable = React.createClass({
     if (selectionMode === 'all') {
       this.props.onSelectionModeChange('include')
     }
-  },
+  }
 
   render () {
-    const { sort, onSortChange, contacts, selections, selectionMode, campaign, loading, searchTermActive } = this.props
+    const {
+      sort,
+      onSortChange,
+      contacts,
+      selections,
+      selectionMode,
+      campaign,
+      loading,
+      searchTermActive,
+      highlightSlug,
+      onContactClick
+     } = this.props
 
     if (!loading && !contacts.length) {
       return <p className='p6 mt0 f-xl semibold center' data-id='contacts-table-empty'>No contacts found</p>
@@ -105,14 +135,14 @@ const ContactsTable = React.createClass({
               </SortableHeader>
               <SortableHeader
                 className='left-align'
-                sortDirection={sort['outlets.value']}
-                onSortChange={(d) => onSortChange({ 'outlets.value': d })}>
+                sortDirection={sort['outlets.0.value']}
+                onSortChange={(d) => onSortChange({ 'outlets.0.value': d })}>
                 Title
               </SortableHeader>
               <SortableHeader
                 className='left-align'
-                sortDirection={sort['outlets.label']}
-                onSortChange={(d) => onSortChange({ 'outlets.label': d })}>
+                sortDirection={sort['outlets.0.label']}
+                onSortChange={(d) => onSortChange({ 'outlets.0.label': d })}>
                 Media Outlet
               </SortableHeader>
               <th className='left-align'>Email</th>
@@ -151,9 +181,16 @@ const ContactsTable = React.createClass({
               const contextualUpdatedBy = contactRef ? contactRef.updatedBy : (updatedBy || createdBy)
               const firstOutlet = (outlets && outlets.length && outlets[0]) || {}
               return (
-                <SelectableRow data={contact} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={slug} data-id={`contacts-table-row-${index}`} data-item={slug}>
+                <SelectableRow
+                  data={contact}
+                  highlight={slug === highlightSlug}
+                  selected={!!selectionsById[_id]}
+                  onSelectChange={this.onSelectChange}
+                  key={slug}
+                  data-id={`contacts-table-row-${index}`}
+                  data-item={slug} >
                   <td className='left-align'>
-                    <ContactLink contact={contact} campaign={campaign} />
+                    <ContactLink contact={contact} onClick={onContactClick} />
                   </td>
                   <td className='left-align'>
                     {firstOutlet.value || <span className='gray60'>No title</span>}
@@ -190,22 +227,6 @@ const ContactsTable = React.createClass({
       </div>
     )
   }
-})
-
-const DisplayEmail = ({ emails }) => {
-  if (!emails || !emails.length) {
-    return <span className='gray60'>No email</span>
-  }
-
-  return <a href={`mailto:${emails[0].value}`}>{emails[0].value}</a>
-}
-
-const DisplayPhone = ({ phones }) => {
-  if (!phones || !phones.length) {
-    return <span className='gray60'>No phone</span>
-  }
-
-  return <a href={`tel:${phones[0].value}`}>{phones[0].value}</a>
 }
 
 export default ContactsTable

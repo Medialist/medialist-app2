@@ -1,6 +1,6 @@
 import SimpleSchema from 'simpl-schema'
 import { Mongo } from 'meteor/mongo'
-import nothing from '/imports/lib/nothing'
+import everything from '/imports/lib/everything'
 import { CreatedAtSchema } from '/imports/lib/schema'
 import { ContactCreateSchema } from '/imports/api/contacts/schema'
 
@@ -42,6 +42,6 @@ ContactsImportSchema.extend(CreatedAtSchema)
 
 const ContactsImport = new Mongo.Collection('contactsImport')
 
-ContactsImport.allow(nothing)
+ContactsImport.deny(everything)
 
 export default ContactsImport

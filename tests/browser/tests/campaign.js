@@ -324,16 +324,6 @@ const test = {
       })
 
       t.perform((done) => {
-        const campaignContactsPage = t.page.campaignContacts()
-          .navigate(campaign)
-
-        // should be at the bottom of the table
-        campaignContactsPage.section.contactTable.assertInPosition(contact1, 1)
-
-        done()
-      })
-
-      t.perform((done) => {
         t.db.findContact({
           name: contact1.name
         })
@@ -362,7 +352,7 @@ const test = {
       })
 
       // make sure updateAt timestamps are different
-      t.pause(1000)
+      t.pause(1500)
 
       t.perform((done) => {
         const campaignPage = t.page.campaign()
@@ -376,12 +366,16 @@ const test = {
         done()
       })
 
+      // make sure updateAt timestamps are different
+      t.pause(1500)
+
       t.perform((done) => {
         t.db.findContact({
           name: contact1.name
         })
         .then((updatedContact) => {
           // should have updated the contact updatedAt
+          console.log(updatedContact.updatedAt, originalContact.updatedAt)
           t.assert.ok(updatedContact.updatedAt.getTime() > originalContact.updatedAt.getTime())
 
           done()
@@ -410,16 +404,6 @@ const test = {
         .catch(error => {
           throw error
         })
-      })
-
-      t.perform((done) => {
-        const campaignContactsPage = t.page.campaignContacts()
-          .navigate(campaign)
-
-        // should be at the top of the table
-        campaignContactsPage.section.contactTable.assertInPosition(contact1, 0)
-
-        done()
       })
 
       done()

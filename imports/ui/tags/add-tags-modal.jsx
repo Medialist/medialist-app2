@@ -91,7 +91,7 @@ class TagSelector extends React.Component {
           searchTerm={this.props.searchTerm}
           onCreateTag={this.onCreateTag}
           onSelectTag={this.onAddTag} />
-        <div className='p4 bg-white'>
+        <div className='p4 bg-white border-top border-gray80'>
           <div className='clearfix'>
             <button className='btn bg-completed white right' onClick={this.props.onSave} data-id='tag-selector-modal-save-button'>Save</button>
             <button className='btn bg-transparent gray40 right mr2' onClick={this.props.onDismiss} data-id='tag-selector-modal-cancel-button'>Cancel</button>

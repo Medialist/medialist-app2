@@ -54,15 +54,15 @@ class UserInfo extends React.PureComponent {
             </div>
           </div>
           <nav className='block border-top border-gray80' style={{width: 225}}>
-            <Link to='/settings' className='block px3 py2 f-md normal gray20 hover-bg-gray90' activeClassName='active' onClick={this.onLinkClick} data-id='settings-link'>
+            <Link to='/settings' className='block px3 py2 f-md normal gray20 hover-bg-gray90 hover-box-shadow-x-gray80' activeClassName='active' onClick={this.onLinkClick} data-id='settings-link'>
               <SettingsIcon className='gray60' />
               <span className='ml2'>Settings</span>
             </Link>
-            <a href='http://docs.medialist.io/' className='block px3 py2 f-md normal gray20 hover-bg-gray90' target='_blank'>
+            <a href='http://docs.medialist.io/' className='block px3 py2 f-md normal gray20 hover-bg-gray90 hover-box-shadow-x-gray80' target='_blank'>
               <QuestionMark className='gray60' />
               <span className='ml2'>Help Center</span>
             </a>
-            <Link to='/logout' className='block px3 py2 f-md normal gray20 hover-bg-gray90' activeClassName='active' data-id='logout-link'>
+            <Link to='/logout' className='block px3 py2 f-md normal gray20 hover-bg-gray90 hover-box-shadow-x-gray80' activeClassName='active' data-id='logout-link'>
               <ExitIcon className='gray60' />
               <span className='ml2'>Logout</span>
             </Link>

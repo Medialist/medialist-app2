@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor'
+import dot from 'dot-object'
 import toUserRef from '/imports/lib/to-user-ref'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
@@ -79,5 +80,46 @@ export const addToMyFavourites = ({userId, contactSlugs = [], campaignSlugs = []
     _id: userId
   }, {
     $addToSet
+  })
+}
+
+// Remove refs to outgoing where both incoming and outgoing are in the same myContats list.
+// Update refs to outgoing to point to incoming where only outgoing in the myContacts list.
+export const replaceContact = (incoming, outgoing) => {
+  Meteor.users.update({
+    $and: [
+      {'myContacts._id': incoming._id},
+      {'myContacts._id': outgoing._id}
+    ]
+  }, {
+    $pull: {
+      'myContacts': {
+        _id: outgoing._id
+      }
+    }
+  }, {
+    multi: true
+  })
+
+  // Update old refs to incoming wih the latest info
+  Meteor.users.update({
+    'myContacts._id': incoming._id
+  }, {
+    $set: dot.dot({
+      'myContacts.$': Contacts.toRef(incoming)
+    })
+  }, {
+    multi: true
+  })
+
+  // Replace refs to ougoing with incoming
+  Meteor.users.update({
+    'myContacts._id': outgoing._id
+  }, {
+    $set: dot.dot({
+      'myContacts.$': Contacts.toRef(incoming)
+    })
+  }, {
+    multi: true
   })
 }

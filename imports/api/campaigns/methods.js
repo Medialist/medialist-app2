@@ -124,7 +124,9 @@ export const updateCampaign = new ValidatedMethod({
       throw new Error('Missing fields to update')
     }
 
-    if (!Campaigns.find({ _id }).count()) {
+    const oldCampaign = Campaigns.findOne({ _id }, {fields: {team: 1}})
+
+    if (!oldCampaign) {
       throw new Meteor.Error('Medialist not found')
     }
 
@@ -136,24 +138,23 @@ export const updateCampaign = new ValidatedMethod({
     data.updatedBy = userRef
     data.updatedAt = new Date()
 
-    const result = Campaigns.update({
-      _id
-    }, {
-      $set: data
-    })
+    const update = {
+      $set: data,
+      $push: {
+        team: userRef
+      }
+    }
+
+    // UserRef objects in the team array should be unique.
+    if (oldCampaign.team.some(t => t._id === userRef._id)) {
+      delete update.$push
+    }
+
+    const result = Campaigns.update({_id}, update)
 
     if (Meteor.isServer) {
       Uploadcare.store(data.avatar)
     }
-
-    // Add this user to the updated campaign's team if required
-    Campaigns.update({
-      _id
-    }, {
-      $push: {
-        team: userRef
-      }
-    })
 
     const updatedCampaign = Campaigns.findOne({ _id })
 
@@ -437,6 +438,11 @@ export const setTeamMates = new ValidatedMethod({
     // who was added to the team
     const addedUserIds = userIds
       .filter(id => !existingUserIds.includes(id))
+
+    // no change, so bail early.
+    if (addedUserIds.length === 0 && removedUserIds.length === 0) {
+      return {numberAffected: 0}
+    }
 
     // update the team
     const result = Campaigns.update(campaign._id, {

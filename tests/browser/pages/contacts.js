@@ -5,7 +5,6 @@ const editContactForm = require('../components/edit-contact-form')
 const contactTable = require('../components/contact-table')
 const addtoListsModal = require('../components/add-to-lists-modal')
 const tagSelectorModal = require('../components/tag-selector-modal')
-const deleteModal = require('../components/delete-modal')
 const campaignSelectorModal = require('../components/campaign-selector-modal')
 
 module.exports = {
@@ -69,8 +68,7 @@ module.exports = {
     },
     campaignSelectorModal: campaignSelectorModal,
     contactListsModal: addtoListsModal('add-to-list-modal'),
-    tagSelectorModal: tagSelectorModal('tag-selector-modal'),
-    deleteContactsModal: deleteModal('delete-contacts-modal')
+    tagSelectorModal: tagSelectorModal('tag-selector-modal')
   },
   commands: [{
     navigateToContactList: function (contactList) {

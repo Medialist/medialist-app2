@@ -1,10 +1,12 @@
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
-import nothing from '/imports/lib/nothing'
+import intersection from 'lodash.intersection'
+import union from 'lodash.union'
+import everything from '/imports/lib/everything'
 import { cleanSlug } from '/imports/lib/slug'
 
 const Tags = new Mongo.Collection('tags')
-Tags.allow(nothing)
+Tags.deny(everything)
 
 if (Meteor.isServer) {
   Tags._ensureIndex({slug: 1})
@@ -83,6 +85,32 @@ Tags.findRefsForContacts = ({tagSlugs}) => {
       contactsCount: 1
     }
   }).map(Tags.toRef)
+}
+
+// Update Tags collection to deal with 1 contact being merged into another.
+Tags.replaceContact = (incoming, outgoing) => {
+  const incomingTagSlugs = incoming.tags.map(t => t.slug)
+  const outgoingTagSlugs = outgoing.tags.map(t => t.slug)
+
+  // in both, so have been double counted.
+  const toDecrement = intersection(incomingTagSlugs, outgoingTagSlugs)
+
+  Tags.update({
+    slug: {
+      $in: toDecrement
+    }
+  }, {
+    $inc: {
+      contactsCount: -1
+    }
+  }, {
+    multi: true
+  })
+
+  // Return the new tag refs as a contact might want them
+  return Tags.findRefsForContacts({
+    tagSlugs: union(incomingTagSlugs, outgoingTagSlugs)
+  })
 }
 
 export default Tags

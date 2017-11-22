@@ -13,7 +13,9 @@ npm run watch
 
 ## Data model
 
-**User**
+Example documents from our collections
+
+### Users
 
 ```js
 {
@@ -59,7 +61,7 @@ npm run watch
 }
 ```
 
-**Contact**
+### Contacts
 
 ```js
 {
@@ -108,7 +110,7 @@ npm run watch
 }
 ```
 
-**Campaigns**
+### Campaigns
 
 ```js
 {
@@ -151,7 +153,7 @@ npm run watch
 }
 ```
 
-**Post**
+### Post
 
 ```js
 {
@@ -180,7 +182,7 @@ npm run watch
 }
 ```
 
-**MasterList**
+### MasterList
 
 ```js
 {
@@ -194,7 +196,7 @@ npm run watch
 }
 ```
 
-**ContactsImport**
+### ContactsImport
 
 ```js
 {
@@ -213,13 +215,13 @@ npm run watch
 }
 ```
 
-### Use real data when developing
+## Getting a db dump from Mongo Atlas
 
 Get access to the Mongo Atlas account, or ask a friend for a recent DB snapshot.
 
 In the web ui, choose
 - "Backup"
-- <cluster you want>
+- [cluster you want]
 - "Restore or Download"
 - "Backup"
 - Provide your password

@@ -12,6 +12,7 @@ module.exports = {
     return this.api.launchUrl + '/contacts'
   },
   elements: {
+    backButton: '[data-id=back-button]',
     contactInfo: '[data-id=contact-info]',
     openPostMenuButton: '[data-id=open-post-menu-button]',
     editPostButton: '[data-id=edit-post-button]',
