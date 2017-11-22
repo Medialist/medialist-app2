@@ -8,6 +8,7 @@ import { ContactSearchSchema } from '/imports/api/contacts/schema'
 import StatusMap from '/imports/api/contacts/status'
 import { createContactSearchQuery } from '/imports/api/contacts/queries'
 import publishToCollection from '/imports/lib/publish-to-collection'
+import { getMongoCollationOpts } from '/imports/lib/collation'
 
 const contactCounter = new Counter('contactCount', Contacts.find({}), 3000)
 
@@ -226,18 +227,24 @@ Meteor.publish('contact-search-results', function ({sort, limit, ...contactSearc
   } else {
     // non-reactive: result set won't change until you re-subscribe
     const sub = this
-    Contacts.rawCollection()
+
+    const rawCursor = Contacts.rawCollection()
       .find(query)
       .sort(sort)
       .limit(limit)
-      .collation({locale: 'en', strength: 1, numericOrdering: true, alternate: 'shifted'})
-      .forEach(
+      .collation(getMongoCollationOpts())
+
+    const addToSub = Meteor.wrapAsync(function (cb) {
+      rawCursor.forEach(
         doc => sub.added('contact-search-results', doc._id, doc),
-        err => {
-          if (err) return sub.error(err)
-          sub.ready()
-        }
+        cb
       )
+    })
+
+    addToSub(err => {
+      if (err) return sub.error(err)
+      sub.ready()
+    })
   }
 })
 

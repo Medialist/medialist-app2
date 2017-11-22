@@ -6,7 +6,7 @@ import Tags from '/imports/api/tags/tags'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import { CampaignSearchResults, CampaignSearchCount } from './collections'
 import { StatusIndex } from '/imports/api/contacts/status'
-import collationSort from '/imports/lib/collationSort'
+import { collationSort } from '/imports/lib/collation'
 
 // dir is -1 or 1. Returns a sort functon.
 const campaignStatusSort = (contactSlug, dir) => (a, b) => {

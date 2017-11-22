@@ -8,6 +8,7 @@ import StatusMap from '/imports/api/contacts/status'
 import publishToCollection from '/imports/lib/publish-to-collection'
 import createCampaignSearchQuery from '/imports/api/campaigns/queries'
 import { CampaignSearchSchema } from '/imports/api/campaigns/schema'
+import { getMongoCollationOpts } from '/imports/lib/collation'
 
 const campaignCounter = new Counter('campaignCount', Campaigns.find({}))
 
@@ -191,18 +192,24 @@ Meteor.publish('campaign-search-results', function ({sort, limit, ...campaignSea
   } else {
     // non-reactive: result set won't change until you re-subscribe
     const sub = this
-    Campaigns.rawCollection()
+
+    const rawCursor = Campaigns.rawCollection()
       .find(query)
       .sort(sort)
       .limit(limit)
-      .collation({locale: 'en', strength: 1, numericOrdering: true, alternate: 'shifted'})
-      .forEach(
+      .collation(getMongoCollationOpts())
+
+    const addToSub = Meteor.wrapAsync(function (cb) {
+      rawCursor.forEach(
         doc => sub.added('campaign-search-results', doc._id, doc),
-        err => {
-          if (err) return sub.error(err)
-          sub.ready()
-        }
+        cb
       )
+    })
+
+    addToSub(err => {
+      if (err) return sub.error(err)
+      sub.ready()
+    })
   }
 })
 

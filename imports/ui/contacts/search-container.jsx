@@ -3,7 +3,7 @@ import { createContainer } from 'meteor/react-meteor-data'
 import { createContactSearchQuery } from '/imports/api/contacts/queries'
 import { ContactSearchCount, ContactSearchResults } from './collections'
 import Contacts from '/imports/api/contacts/contacts'
-import collationSort from '/imports/lib/collationSort'
+import { collationSort } from '/imports/lib/collation'
 
 function extractQueryOpts (props) {
   const {
