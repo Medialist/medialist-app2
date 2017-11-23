@@ -442,68 +442,74 @@ ${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email
   },
 
   'Should case-insensitive sort by name': function (t) {
-    t.createDomain(['contact', 'contact', 'contact', 'contact'], (contact1, contact2, contact3, contact4, done) => {
-      t.perform((done) => {
-        async.parallel([
-          cb => t.db.connection.collection('contacts').update({
-            _id: contact1._id
-          }, {
-            $set: {
-              'name': 'albert'
-            }
-          }, cb),
+    // clear out contacts, as we're testing ordering.
+    t.db.connection.collection('contacts').remove({}, function (err) {
+      if (err) throw err
+      t.createDomain(['contact', 'contact', 'contact', 'contact'], (contact1, contact2, contact3, contact4, done) => {
+        t.perform((done) => {
+          async.parallel([
+            cb => t.db.connection.collection('contacts').update({
+              _id: contact1._id
+            }, {
+              $set: {
+                'name': 'albert'
+              }
+            }, cb),
 
-          cb => t.db.connection.collection('contacts').update({
-            _id: contact2._id
-          }, {
-            $set: {
-              'name': 'Alfonzo'
-            }
-          }, cb),
+            cb => t.db.connection.collection('contacts').update({
+              _id: contact2._id
+            }, {
+              $set: {
+                'name': 'Alfonzo'
+              }
+            }, cb),
 
-          cb => t.db.connection.collection('contacts').update({
-            _id: contact3._id
-          }, {
-            $set: {
-              'name': 'Alan'
-            }
-          }, cb),
+            cb => t.db.connection.collection('contacts').update({
+              _id: contact3._id
+            }, {
+              $set: {
+                'name': 'Alan'
+              }
+            }, cb),
 
-          cb => t.db.connection.collection('contacts').update({
-            _id: contact3._id
-          }, {
-            $set: {
-              'name': 'alan'
-            }
-          }, cb)
-        ], done)
-      })
-
-      const contactsPage = t.page.main()
-        .navigateToContacts(t)
-
-      // Expect case-insensitive name sort:  Alan, alan, albert, Alfonzo
-      contactsPage.section.contactTable
-        .sortBy('name', 1, function (_, self) {
-          self
-            .assertInPosition(contact3, 0)
-            .assertInPosition(contact4, 1)
-            .assertInPosition(contact1, 2)
-            .assertInPosition(contact2, 3)
+            cb => t.db.connection.collection('contacts').update({
+              _id: contact4._id
+            }, {
+              $set: {
+                'name': 'alan'
+              }
+            }, cb)
+          ], done)
         })
 
-      // // Expect case-insensitive name sort:  Alfonzo, albert, alan, Alan
-      // contactsPage.section.contactTable
-      //   .sortBy('name', -1)
-      //   .assertInPosition(contact2, 0)
-      //   .assertInPosition(contact1, 1)
-      //   .assertInPosition(contact4, 2)
-      //   .assertInPosition(contact3, 2)
+        const contactsPage = t.page.main()
+          .navigateToContacts(t)
 
-      done()
+        // Expect case-insensitive name sort:  Alan, alan, albert, Alfonzo
+        contactsPage.section.contactTable
+          .sortBy('name', 1, function (_, self) {
+            self
+              .assertInPosition(contact3, 0)
+              .assertInPosition(contact4, 1)
+              .assertInPosition(contact1, 2)
+              .assertInPosition(contact2, 3)
+          })
+
+        // Expect case-insensitive name sort:  Alfonzo, albert, alan, Alan
+        contactsPage.section.contactTable
+          .sortBy('name', -1, function (_, self) {
+            self
+              .assertInPosition(contact2, 0)
+              .assertInPosition(contact1, 1)
+              .assertInPosition(contact4, 2)
+              .assertInPosition(contact3, 3)
+          })
+
+        done()
+      })
+      t.page.main().logout()
+      t.end()
     })
-    t.page.main().logout()
-    t.end()
   }
 }
 

@@ -3,9 +3,10 @@ import { intlToMongo } from 'intl-to-mongo-collation'
 
 export const getIntlCollationOpts = () => ({
   usage: 'sort',
-  sensitivity: 'base',
+  sensitivity: 'case',
   ignorePunctuation: true,
-  numeric: true
+  numeric: true,
+  caseFirst: 'upper'
 })
 
 export const getMongoCollationOpts = (locale = 'en') => intlToMongo(getIntlCollationOpts(), locale)

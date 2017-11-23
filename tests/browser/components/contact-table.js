@@ -138,8 +138,8 @@ module.exports = {
       this.waitForElementVisible(selector)
       this.getAttribute(selector, 'data-dir', function (res) {
         const currentDir = parseInt(res.value)
-        console.log('sortBy', currentDir, dir)
         if (currentDir === dir) return cb(null, self)
+        // Dir isn't what we want yet so click it and try again.
         self.click(selector)
         self.sortBy(propName, dir, cb)
       })
