@@ -1,3 +1,12 @@
+services:
+  selenium:
+    image: selenium/standalone-chrome
+    volumes:
+      - /tmp/medialist_test:/tmp/medialist_test
+  mongo:
+    image: mongo:3.4.10
+
+
 pipeline:
   restore-cache:
     image: drillster/drone-volume-cache
@@ -33,10 +42,7 @@ pipeline:
     volumes:
       - /tmp/cache:/cache
 
-services:
-  selenium:
-    image: selenium/standalone-chrome
-    volumes:
-      - /tmp/medialist_test:/tmp/medialist_test
-  mongo:
-    image: mongo:3.4.10
+  slack:
+    image: plugins/slack
+    webhook: https://hooks.slack.com/services/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
+    channel: engineering
