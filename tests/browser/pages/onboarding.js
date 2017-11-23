@@ -3,7 +3,9 @@
 const faker = require('faker')
 
 module.exports = {
-  url: 'http://localhost:3000/',
+  url: function () {
+    return this.api.launchUrl
+  },
   elements: {
     nameField: '[data-id=onboarding-name-field]',
     completeButton: '[data-id=onboarding-save-button]'

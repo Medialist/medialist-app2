@@ -1,4 +1,4 @@
-# MEDIALIST [![CircleCI](https://circleci.com/gh/Medialist/medialist-app2.svg?style=svg&circle-token=5cb724706595e5ba9e317dab3184ebfe221ba2ac)](https://circleci.com/gh/Medialist/medialist-app2)
+# MEDIALIST [![DroneCI](https://drone.medialist.io/api/badges/Medialist/medialist-app2/status.svg)](https://drone.medialist.io/Medialist/medialist-app2)
 
 Make your PR team smarter and faster with media lists that capture intelligence, cut admin hours and keep campaigns in sync.
 
@@ -389,6 +389,19 @@ npm run test:browser -- \
 --test tests/browser/tests/activity.js \
 --testcase "Should prevent multiple postings of the same activity"
 ```
+
+## Infrastructure and Deployment
+
+You can build and run medialist as Docker container.
+
+```sh
+docker build -t medialist .
+```
+
+```sh
+docker run -p 3000:3000 -e "MONGO_URL=mongodb://<db url here>" -e "ROOT_URL=<deploy url here>" -e "METEOR_SETTINGS=$(cat settings.json)" medialist
+```
+
 
 [Basscss]: http://www.basscss.com/
 [postcss]: http://postcss.org/

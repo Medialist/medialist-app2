@@ -4,7 +4,9 @@ const listsTable = require('../components/lists-table')
 const deleteModal = require('../components/delete-modal')
 
 module.exports = {
-  url: 'http://localhost:3000/settings',
+  url: function () {
+    return this.api.launchUrl + '/settings'
+  },
   elements: {
     profileSettingsButton: '[data-id=profile-settings-button]',
     campaignListsButton: '[data-id=campaign-lists-button]',

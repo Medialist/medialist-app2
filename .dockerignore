@@ -1,0 +1,8 @@
+.git
+.gitignore
+.meteor/local
+.reports
+node_modules
+circle.yml
+README.md
+settings.tpl.json

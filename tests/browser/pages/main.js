@@ -1,7 +1,9 @@
 'use strict'
 
 module.exports = {
-  url: 'http://localhost:3000/',
+  url: function () {
+    return this.api.launchUrl
+  },
   elements: {
     campaignsTab: '[data-id=campaigns-tab]',
     contactsTab: '[data-id=contacts-tab]',
