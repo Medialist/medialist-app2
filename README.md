@@ -1,4 +1,4 @@
-# MEDIALIST [![CircleCI](https://circleci.com/gh/Medialist/medialist-app2.svg?style=svg&circle-token=5cb724706595e5ba9e317dab3184ebfe221ba2ac)](https://circleci.com/gh/Medialist/medialist-app2)
+# MEDIALIST [![DroneCI](https://drone.medialist.io/api/badges/Medialist/medialist-app2/status.svg)](https://drone.medialist.io/Medialist/medialist-app2)
 
 Make your PR team smarter and faster with media lists that capture intelligence, cut admin hours and keep campaigns in sync.
 
