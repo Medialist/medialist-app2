@@ -3,8 +3,6 @@ MAINTAINER olizilla <oli@tableflip.io>
 
 WORKDIR /src
 
-RUN npm install npm@4.6.1 --global --quiet
-
 ENV METEOR_ALLOW_SUPERUSER=true
 RUN curl -sL https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
 

@@ -39,4 +39,4 @@ services:
     volumes:
       - /tmp/medialist_test:/tmp/medialist_test
   mongo:
-    image: mongo:3.4.7
+    image: mongo:3.4.10
