@@ -1,7 +1,9 @@
 const faker = require('faker')
 
 module.exports = {
-  url: 'http://localhost:3000/',
+  url: function () {
+    return this.api.launchUrl
+  },
   elements: {
     emailField: '[data-id=authenticate-email-field]',
     invalidDomainErrorMessage: '[data-id=error-message-invalid-domain]',

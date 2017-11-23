@@ -34,7 +34,7 @@ const test = {
         name: campaign.name
       })
       .then(function (doc) {
-        t.assert.urlEquals(`http://localhost:3000/campaign/${doc.slug}`)
+        t.assert.urlEquals(`${t.launch_url}/campaign/${doc.slug}`)
 
         assertions.campaignsAreEqual(t, doc, campaign)
 
@@ -73,7 +73,7 @@ const test = {
         .searchFor(campaign.name)
         .clickRow(0)
 
-      t.assert.urlEquals(`http://localhost:3000/campaign/${campaign.slug}`)
+      t.assert.urlEquals(`${t.launch_url}/campaign/${campaign.slug}`)
 
       done()
     })
@@ -97,7 +97,7 @@ const test = {
 
       campaignsPage.section.toast.viewContacts()
 
-      t.assert.urlEquals(`http://localhost:3000/contacts?campaign=${campaign.slug}`)
+      t.assert.urlEquals(`${t.launch_url}/contacts?campaign=${campaign.slug}`)
 
       t.page.contacts()
         .section.contactTable.isInResults(contact1)
@@ -195,39 +195,6 @@ const test = {
 
       campaignsPage.section.campaignTable
         .assertInSearchResults(campaign)
-
-      done()
-    })
-
-    t.page.main().logout()
-    t.end()
-  },
-
-  'Should delete campaigns from toast menu': function (t) {
-    t.createDomain(['campaign'], (campaign, done) => {
-      const campaignsPage = t.page.campaigns()
-        .navigate()
-
-      campaignsPage.section.campaignTable
-        .searchFor(campaign.name)
-        .selectRow(0)
-
-      campaignsPage.section.toast.openDeleteCampaignsModal()
-
-      campaignsPage.section.deleteCampaignsModal
-        .confirm()
-
-      t.page.main().waitForSnackbarMessage('batch-delete-campaigns-success')
-
-      campaignsPage.section.campaignTable
-        .assertNoResults()
-        .assertNotInSearchResults(campaign)
-
-      const dashboardPage = t.page.dashboard()
-        .navigate()
-
-      dashboardPage.section.activityFeed
-        .assertHasNoPostsForCampaign(campaign)
 
       done()
     })

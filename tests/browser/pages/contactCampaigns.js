@@ -6,7 +6,9 @@ const tagSelectorModal = require('../components/tag-selector-modal')
 const deleteModal = require('../components/delete-modal')
 
 module.exports = {
-  url: 'http://localhost:3000/contacts',
+  url: function () {
+    return this.api.launchUrl + '/contacts'
+  },
   elements: {
     newCampaignButton: '[data-id=create-campaign-button]',
     editCampaignButton: '[data-id=edit-campaign-button]',
@@ -67,13 +69,13 @@ module.exports = {
   },
   commands: [{
     navigateToCampaignList: function (contact) {
-      this.api.url(`http://localhost:3000/contact/${contact.slug}/campaigns`)
+      this.api.url(`${this.api.launchUrl}/contact/${contact.slug}/campaigns`)
       this.waitForElementVisible(this.section.campaignTable.selector)
 
       return this
     },
     navigateToTag: function (contact, tag) {
-      this.api.url(`http://localhost:3000/contact/${contact.slug}/campaigns?tag=${tag}`)
+      this.api.url(`${this.api.launchUrl}/contact/${contact.slug}/campaigns?tag=${tag}`)
       this.waitForElementVisible(this.section.campaignTable.selector)
 
       return this

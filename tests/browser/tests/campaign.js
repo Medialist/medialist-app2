@@ -107,7 +107,7 @@ const test = {
 
       t.page.main().waitForSnackbarMessage('campaign-delete-success')
 
-      t.assert.urlEquals('http://localhost:3000/campaigns')
+      t.assert.urlEquals(t.launch_url + '/campaigns')
 
       t.page.campaigns().section.campaignTable
         .searchForWithoutFinding(campaign.name)

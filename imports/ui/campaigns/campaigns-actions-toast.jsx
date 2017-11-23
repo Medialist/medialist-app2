@@ -6,7 +6,6 @@ import {
   FavouritesIcon,
   ListIcon,
   TagIcon,
-  DeleteIcon,
   ViewIcon
 } from '/imports/ui/images/icons'
 
@@ -30,7 +29,6 @@ class CampaignsActionsToast extends React.Component {
       onSectorClick,
       onFavouriteClick,
       onTagClick,
-      onDeleteClick,
       onDeselectAllClick
     } = this.props
 
@@ -69,13 +67,6 @@ class CampaignsActionsToast extends React.Component {
                   className='mx3 pointer gray60 hover-blue'
                   onClick={() => onTagClick(campaigns)}
                   data-id='campaign-actions-add-tags'
-                  style={{width: '21px', height: '21px'}} />
-              </Tooltip>
-              <Tooltip title='Delete Campaigns'>
-                <DeleteIcon
-                  className='mx3 pointer gray60 hover-red'
-                  onClick={() => onDeleteClick(campaigns)}
-                  data-id='campaign-actions-delete'
                   style={{width: '21px', height: '21px'}} />
               </Tooltip>
             </div>

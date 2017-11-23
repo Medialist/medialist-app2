@@ -3,11 +3,11 @@ const login = require('ddp-login')
 const faker = require('faker')
 const async = require('async')
 
-module.exports = (t) => {
+module.exports = (opts) => (t) => {
   return new Promise((resolve, reject) => {
     const client = new Ddp({
-      host: 'localhost',
-      port: 3000
+      host: opts.host,
+      port: opts.port
     })
 
     async.auto({

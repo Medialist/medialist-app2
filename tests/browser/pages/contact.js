@@ -8,7 +8,9 @@ const addToListsModal = require('../components/add-to-lists-modal')
 const tagSelectorModal = require('../components/tag-selector-modal')
 
 module.exports = {
-  url: 'http://localhost:3000/contacts',
+  url: function () {
+    return this.api.launchUrl + '/contacts'
+  },
   elements: {
     backButton: '[data-id=back-button]',
     contactInfo: '[data-id=contact-info]',
@@ -79,7 +81,7 @@ module.exports = {
   },
   commands: [{
     navigate: function (contact) {
-      this.api.url('http://localhost:3000/contact/' + contact.slug)
+      this.api.url(this.api.launchUrl + '/contact/' + contact.slug)
       this.waitForElementVisible(this.section.info.selector)
 
       return this

@@ -1,6 +1,8 @@
 
 module.exports = {
-  url: 'http://localhost:3000/contacts/import',
+  url: function () {
+    return this.api.launchUrl + '/contacts/import'
+  },
   elements: {
     importContactsButton: '[data-id=import-contacts-button]',
     saveAndImportContactsButton: '[data-id=save-and-import-contacts-button]',

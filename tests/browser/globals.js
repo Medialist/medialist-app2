@@ -1,11 +1,20 @@
 'use strict'
 
+const http = require('http')
+const url = require('url')
+
+const APP_URL = process.env.SELENIUM_LAUNCH_URL || 'http://localhost:3000'
+const APP_HOST = url.parse(APP_URL).hostname
+const APP_PORT = url.parse(APP_URL).port
+const MONGO_URL = process.env.MONGO_URL || `mongodb://${APP_HOST}:3001/meteor`
+
 const app = require('./fixtures/app')
 const mongo = require('./fixtures/mongo')
-const ddp = require('./fixtures/ddp')
-const http = require('http')
-const APP_URL = 'http://localhost:3000'
-const MONGO_URL = 'mongodb://localhost:3001/meteor'
+const ddp = require('./fixtures/ddp')({
+  host: APP_HOST,
+  port: APP_PORT
+})
+
 let server
 
 module.exports = {

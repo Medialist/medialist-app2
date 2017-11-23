@@ -23,7 +23,7 @@ const test = {
         .searchFor(campaign.name)
         .clickRow(0)
 
-      t.assert.urlEquals(`http://localhost:3000/campaign/${campaign.slug}`)
+      t.assert.urlEquals(`${t.launch_url}/campaign/${campaign.slug}`)
 
       done()
     })
@@ -47,7 +47,7 @@ const test = {
 
       contactCampaignsPage.section.toast.viewContacts()
 
-      t.assert.urlEquals(`http://localhost:3000/contacts?campaign=${campaign.slug}`)
+      t.assert.urlEquals(`${t.launch_url}/contacts?campaign=${campaign.slug}`)
 
       t.page.contacts()
         .section.contactTable.isInResults(contact1)
