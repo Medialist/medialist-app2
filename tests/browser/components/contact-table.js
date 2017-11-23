@@ -131,6 +131,18 @@ module.exports = {
       this.assert.visible(selector)
 
       return this
+    },
+    sortBy: function (propName, dir, cb) {
+      const self = this
+      const selector = `[data-id=sort-by-${propName}]`
+      this.waitForElementVisible(selector)
+      this.getAttribute(selector, 'data-dir', function (res) {
+        const currentDir = parseInt(res.value)
+        console.log('sortBy', currentDir, dir)
+        if (currentDir === dir) return cb(null, self)
+        self.click(selector)
+        self.sortBy(propName, dir, cb)
+      })
     }
   }]
 }

@@ -20,8 +20,7 @@ const SortableHeader = React.createClass({
     onSortChange(sortDirection > 0 ? -1 : 1)
   },
 
-  getClassName () {
-    const { className, sortDirection } = this.props
+  getClassName (className, sortDirection) {
     return classnames(className, {
       pointer: true,
       sortable: true,
@@ -31,10 +30,14 @@ const SortableHeader = React.createClass({
   },
 
   render () {
-    const { children, sortDirection } = this.props
-    const style = Object.assign({}, this.props.style, {whiteSpace: 'nowrap', overflowX: 'hidden'})
+    const { children, sortDirection, style, className, ...otherProps } = this.props
+    const styles = Object.assign({}, style, {whiteSpace: 'nowrap', overflowX: 'hidden'})
     return (
-      <th className={this.getClassName()} onClick={this.onClick} style={style}>
+      <th
+        className={this.getClassName(className, sortDirection)}
+        onClick={this.onClick}
+        style={styles}
+        {...otherProps}>
         <span className='mr1'>{children}</span>
         <SortIcon direction={sortDirection} />
       </th>
