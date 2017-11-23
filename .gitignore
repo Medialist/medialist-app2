@@ -7,4 +7,3 @@ imports/ui/images/icons/*
 .reports
 *.log
 version.json
-package-lock.json
