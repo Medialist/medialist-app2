@@ -33,16 +33,22 @@ class AddContact extends React.Component {
     this.props.onTermChange(term)
   }
 
-  onKeyDown = (e) => {
+  onKeyPress = (e) => {
     if (e.key !== 'Enter') return
 
-    const { term, contacts, onAdd } = this.props
+    const { term, contacts, onAdd, onCreate } = this.props
     if (!term) return
 
     const contact = contacts[0]
 
-    if (!contact || this.props.isSelected(contact)) return
+    if (!contact) {
+      // Go create a new contact
+      return onCreate({ name: term })
+    }
 
+    if (this.props.isSelected(contact)) return
+
+    // add contact at top of list and clear search
     onAdd(contact)
     e.target.value = ''
   }
@@ -59,7 +65,7 @@ class AddContact extends React.Component {
       contacts
     } = this.props
 
-    const { onTermChange, onKeyDown } = this
+    const { onTermChange, onKeyPress } = this
 
     return (
       <div data-id='add-contacts-to-campaign-modal'>
@@ -68,7 +74,7 @@ class AddContact extends React.Component {
         <SearchBox
           initialTerm={term}
           onTermChange={onTermChange}
-          onKeyDown={onKeyDown}
+          onKeyPress={onKeyPress}
           placeholder='Search or create a new contact'
           data-id='search-contacts-input'
         />
@@ -167,20 +173,20 @@ class AddContactContainer extends React.Component {
     onCreate: PropTypes.func.isRequired,
     onDismiss: PropTypes.func.isRequired,
     campaign: PropTypes.object.isRequired,
-    campaignContacts: PropTypes.array
+    campaignContacts: PropTypes.array,
+    selectedContacts: PropTypes.array.isRequired,
+    onAddContact: PropTypes.func.isRequired,
+    onRemoveContact: PropTypes.func.isRequired,
+    onClearContacts: PropTypes.func.isRequired
   }
 
   static defaultProps = {
     campaignContacts: []
   }
 
-  state = {
-    selectedContacts: []
-  }
-
   // Is the contact in the campaign or in selected contacts list?
   isSelected = (contact) => {
-    return this.state.selectedContacts.some((c) => c.slug === contact.slug)
+    return this.props.selectedContacts.some((c) => c.slug === contact.slug)
   }
 
   // Is the contact not on the campaign already
@@ -188,16 +194,10 @@ class AddContactContainer extends React.Component {
     return !this.props.campaignContacts.some((c) => c.slug === contact.slug)
   }
 
-  onAdd = (contact) => {
-    this.setState({
-      selectedContacts: this.state.selectedContacts.concat(contact)
-    })
-  }
-
   onSubmit = (event) => {
     event.preventDefault()
 
-    const contactSlugs = this.state.selectedContacts.map((c) => c.slug)
+    const contactSlugs = this.props.selectedContacts.map((c) => c.slug)
     const campaignSlug = this.props.campaign.slug
 
     if (contactSlugs.length > 0) {
@@ -214,31 +214,18 @@ class AddContactContainer extends React.Component {
     this.onReset()
   }
 
-  onRemove = (contact) => {
-    this.setState({
-      selectedContacts: this.state.selectedContacts.filter((c) => c._id !== contact._id)
-    })
-  }
-
   onReset = () => {
     this.props.onDismiss()
-    this.deselectAll()
-  }
-
-  deselectAll = () => {
-    this.setState({ selectedContacts: [] })
+    this.props.onClearContacts()
   }
 
   render () {
     const {
-      onAdd,
-      onRemove,
       onReset,
       onSubmit
     } = this
 
-    const { selectedContacts } = this.state
-    const { term, onCreate, campaignContacts, onTermChange } = this.props
+    const { term, onCreate, campaignContacts, selectedContacts, onTermChange, onAddContact, onRemoveContact } = this.props
     const myContacts = Meteor.user().myContacts
 
     // Initial suggestions should be contacts not on this campaign.
@@ -256,8 +243,8 @@ class AddContactContainer extends React.Component {
         onTermChange={onTermChange}
         isSelected={this.isSelected}
         isSelectable={this.isSelectable}
-        onAdd={onAdd}
-        onRemove={onRemove}
+        onAdd={onAddContact}
+        onRemove={onRemoveContact}
         onCreate={onCreate}
         onReset={onReset}
         onSubmit={onSubmit}

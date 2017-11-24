@@ -48,7 +48,7 @@ class CampaignSearch extends React.Component {
         <SearchBox
           initialTerm={term}
           onTermChange={onTermChange}
-          onKeyDown={this.onKeyPress}
+          onKeyPress={this.onKeyPress}
           placeholder='Search campaigns'
           data-id='search-input' />
         <div style={{height: '413px', overflowY: 'auto'}}>

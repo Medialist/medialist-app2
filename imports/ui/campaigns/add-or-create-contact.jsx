@@ -9,7 +9,11 @@ class AddOrCreateContact extends React.Component {
     onDismiss: PropTypes.func.isRequired,
     campaign: PropTypes.object.isRequired,
     campaignContacts: PropTypes.array.isRequired,
-    allContactsCount: PropTypes.number.isRequired
+    selectedContacts: PropTypes.array.isRequired,
+    allContactsCount: PropTypes.number.isRequired,
+    addContact: PropTypes.func.isRequired,
+    removeContact: PropTypes.func.isRequired,
+    clearContacts: PropTypes.func.isRequired
   }
 
   state = {
@@ -25,6 +29,7 @@ class AddOrCreateContact extends React.Component {
     this.setState({
       term: ''
     })
+    this.props.clearContacts()
     this.props.onDismiss()
   }
 
@@ -40,9 +45,14 @@ class AddOrCreateContact extends React.Component {
     })
   }
 
-  onContactCreated = (slug) => {
+  onContactCreated = (slug, details) => {
     this.setState({
-      activeModal: 'add'
+      activeModal: 'add',
+      term: ''
+    })
+    this.props.addContact({
+      slug: slug,
+      ...details
     })
   }
 
@@ -53,7 +63,7 @@ class AddOrCreateContact extends React.Component {
   }
 
   render () {
-    const {open, campaign, campaignContacts} = this.props
+    const {open, campaign, campaignContacts, selectedContacts, addContact, removeContact, clearContacts} = this.props
     const {term, activeModal} = this.state
     return (
       <div>
@@ -62,9 +72,14 @@ class AddOrCreateContact extends React.Component {
           term={term}
           campaign={campaign}
           campaignContacts={campaignContacts}
+          selectedContacts={selectedContacts}
           onDismiss={this.onDismissAddModal}
           onCreate={this.onCreateNew}
-          onTermChange={this.onTermChange} />
+          onTermChange={this.onTermChange}
+          onAddContact={addContact}
+          onRemoveContact={removeContact}
+          onClearContacts={clearContacts}
+        />
         <CreateContactModal
           open={open && activeModal === 'create'}
           onDismiss={this.onDismissCreateModal}
@@ -77,4 +92,38 @@ class AddOrCreateContact extends React.Component {
   }
 }
 
-export default AddOrCreateContact
+const withSelectedContacts = (Component) => {
+  return class SelectedContactsContainer extends React.Component {
+    state = {
+      selectedContacts: []
+    }
+
+    addContact = (contact) => {
+      this.setState({
+        selectedContacts: this.state.selectedContacts.concat(contact)
+      })
+    }
+
+    removeContact = (contact) => {
+      this.setState({
+        selectedContacts: this.state.selectedContacts.filter((c) => c.slug !== contact.slug)
+      })
+    }
+
+    clearContacts = () => {
+      this.setState({ selectedContacts: [] })
+    }
+
+    render () {
+      return <Component
+        {...this.props}
+        selectedContacts={this.state.selectedContacts}
+        addContact={this.addContact}
+        removeContact={this.removeContact}
+        clearContacts={this.clearContacts}
+      />
+    }
+  }
+}
+
+export default withSelectedContacts(AddOrCreateContact)

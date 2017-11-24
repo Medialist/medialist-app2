@@ -508,15 +508,13 @@ const CreateContactForm = withRouter(withSnackbar(React.createClass({
 
   onSubmit (details) {
     details = ContactCreateSchema.clean(details)
-
     createContact.call({details}, (error, slug) => {
       if (error) {
         console.log(error)
-
         return this.props.snackbar.error('contact-create-failure')
       }
       this.props.snackbar.show(`Created ${details.name.split(' ')[0]}`, 'contact-create-success')
-      this.props.onContactCreated(slug)
+      this.props.onContactCreated(slug, details)
     })
   },
 

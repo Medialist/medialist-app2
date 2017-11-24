@@ -10,7 +10,7 @@ class SearchBox extends React.Component {
     placeholder: PropTypes.string,
     initialTerm: PropTypes.string,
     onTermChange: PropTypes.func.isRequired,
-    onKeyDown: PropTypes.func,
+    onKeyPress: PropTypes.func,
     children: PropTypes.node,
     style: PropTypes.object,
     'data-id': PropTypes.string
@@ -39,7 +39,7 @@ class SearchBox extends React.Component {
   }
 
   render () {
-    const { placeholder, children, onKeyDown, style } = this.props
+    const { placeholder, children, onKeyPress, style } = this.props
     const { isFocused } = this.state
 
     return (
@@ -59,7 +59,7 @@ class SearchBox extends React.Component {
             style={{outline: 'none', height: 30, lineHeight: 30, backgroundColor: 'transparent'}}
             className='flex-auto f-md normal gray20 placeholder-gray60'
             onChange={e => this.onChange(e.target.value)}
-            onKeyDown={onKeyDown}
+            onKeyPress={onKeyPress}
             onFocus={() => this.setState({isFocused: true})}
             onBlur={() => this.setState({isFocused: false})}
             placeholder={placeholder}
