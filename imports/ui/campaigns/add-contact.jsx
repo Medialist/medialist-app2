@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
 import Modal from '/imports/ui/navigation/modal'
-import { SearchBlueIcon, AddIcon, SelectedIcon } from '/imports/ui/images/icons'
+import { AddIcon, SelectedIcon } from '/imports/ui/images/icons'
 import AvatarList from '/imports/ui/lists/avatar-list'
 import CampaignContact from '/imports/ui/campaigns/campaign-contact'
 import createSearchContainer from '/imports/ui/contacts/search-container'
@@ -11,6 +11,7 @@ import { addContactsToCampaign } from '/imports/api/contacts/methods'
 import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 import { BLUE } from '/imports/ui/colours'
 import Scroll from '/imports/ui/navigation/scroll'
+import SearchBox from '/imports/ui/lists/search-box'
 
 const AddContact = React.createClass({
   propTypes: {
@@ -27,14 +28,14 @@ const AddContact = React.createClass({
     contacts: PropTypes.array.isRequired // Search results
   },
 
-  onChange (e) {
-    this.props.onTermChange(e.target.value)
+  onTermChange (term) {
+    this.props.onTermChange(term)
   },
 
-  onKeyPress (e) {
+  onKeyDown (e) {
     if (e.key !== 'Enter') return
 
-    const { term, contacts, onAdd, onTermChange } = this.props
+    const { term, contacts, onAdd } = this.props
     if (!term) return
 
     const contact = contacts[0]
@@ -42,11 +43,7 @@ const AddContact = React.createClass({
     if (!contact || this.props.isSelected(contact)) return
 
     onAdd(contact)
-    onTermChange('')
-  },
-
-  componentDidMount () {
-    this.inputEl.focus()
+    e.target.value = ''
   },
 
   render () {
@@ -61,16 +58,18 @@ const AddContact = React.createClass({
       contacts
     } = this.props
 
-    const { onChange, onKeyPress } = this
+    const { onTermChange, onKeyDown } = this
 
     return (
       <div data-id='add-contacts-to-campaign-modal'>
         <h1 className='f-xl regular center mt6'>Add Contacts to this Campaign</h1>
         <AvatarList items={selectedContacts} onRemove={onRemove} className='my4 px4' />
-        <div className='py3 pl4 flex border-top border-bottom border-gray80'>
-          <SearchBlueIcon className='flex-none' />
-          <input ref={(el) => { this.inputEl = el }} className='flex-auto f-lg pa2 mx2 placeholder-gray60' placeholder='Find a contact...' onChange={onChange} style={{outline: 'none'}} onKeyPress={onKeyPress} value={term} data-id='search-contacts-input' />
-        </div>
+        <SearchBox
+          onTermChange={onTermChange}
+          onKeyDown={onKeyDown}
+          placeholder='Find a contact...'
+          data-id='search-contacts-input'
+        />
         <Scroll height={'calc(95vh - 250px)'}>
           <ContactsList
             isSelected={this.props.isSelected}
