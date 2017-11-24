@@ -45,6 +45,10 @@ const AddContact = React.createClass({
     onTermChange('')
   },
 
+  componentDidMount () {
+    this.inputEl.focus()
+  },
+
   render () {
     const {
       term,
@@ -65,7 +69,7 @@ const AddContact = React.createClass({
         <AvatarList items={selectedContacts} onRemove={onRemove} className='my4 px4' />
         <div className='py3 pl4 flex border-top border-bottom border-gray80'>
           <SearchBlueIcon className='flex-none' />
-          <input className='flex-auto f-lg pa2 mx2 placeholder-gray60' placeholder='Find a contact...' onChange={onChange} style={{outline: 'none'}} onKeyPress={onKeyPress} value={term} data-id='search-contacts-input' />
+          <input ref={(el) => { this.inputEl = el }} className='flex-auto f-lg pa2 mx2 placeholder-gray60' placeholder='Find a contact...' onChange={onChange} style={{outline: 'none'}} onKeyPress={onKeyPress} value={term} data-id='search-contacts-input' />
         </div>
         <Scroll height={'calc(95vh - 250px)'}>
           <ContactsList

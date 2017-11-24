@@ -141,7 +141,7 @@ export const DropdownMenu = ({open, width, left, top = 0, arrowHeight = 12, arro
       <MenuPosition width={width} left={left}>
         {arrowPosition === 'top' && <MenuArrowUp height={arrowHeight} align={arrowAlign} marginLeft={arrowMarginLeft} marginRight={arrowMarginRight} />}
         <Menu>
-          {children}
+          {open ? children : null}
         </Menu>
         {arrowPosition === 'bottom' && <MenuArrowDown height={arrowHeight} align={arrowAlign} marginLeft={arrowMarginLeft} marginRight={arrowMarginRight} />}
       </MenuPosition>
