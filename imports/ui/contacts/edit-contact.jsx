@@ -91,7 +91,13 @@ const EditContact = withSnackbar(React.createClass({
   },
 
   componentDidMount () {
-    this.nameInput.focus()
+    const {nameInput} = this
+    nameInput.focus()
+    setTimeout(() => {
+      const {length} = this.state.name
+      // move caret to end of the input
+      nameInput.wrapped.element.setSelectionRange(length, length)
+    }, 1)
   },
 
   onSubmit (evt) {

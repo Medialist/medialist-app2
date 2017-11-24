@@ -15,7 +15,7 @@ import Scroll from '/imports/ui/navigation/scroll'
 import SearchBox from '/imports/ui/lists/search-box'
 
 class AddContact extends React.Component {
-  propTypes = {
+  static propTypes = {
     term: PropTypes.string,
     onTermChange: PropTypes.func.isRequired,
     onAdd: PropTypes.func.isRequired,
@@ -66,6 +66,7 @@ class AddContact extends React.Component {
         <h1 className='f-xl regular center mt6'>Add Contacts to this Campaign</h1>
         <AvatarList items={selectedContacts} onRemove={onRemove} className='my4 px4' />
         <SearchBox
+          initialTerm={term}
           onTermChange={onTermChange}
           onKeyDown={onKeyDown}
           placeholder='Search or create a new contact'
@@ -159,45 +160,41 @@ class ContactSortContainer extends React.Component {
 
 const SearchableAddContact = createSearchContainer(ContactSortContainer)
 
-const AddContactContainer = withSnackbar(React.createClass({
-  propTypes: {
+class AddContactContainer extends React.Component {
+  static propTypes = {
     term: PropTypes.string.isRequired,
     onTermChange: PropTypes.func.isRequired,
     onCreate: PropTypes.func.isRequired,
     onDismiss: PropTypes.func.isRequired,
     campaign: PropTypes.object.isRequired,
     campaignContacts: PropTypes.array
-  },
+  }
 
-  getDefaultProps () {
-    return {
-      campaignContacts: []
-    }
-  },
+  static defaultProps = {
+    campaignContacts: []
+  }
 
-  getInitialState () {
-    return {
-      selectedContacts: []
-    }
-  },
+  state = {
+    selectedContacts: []
+  }
 
   // Is the contact in the campaign or in selected contacts list?
-  isSelected (contact) {
+  isSelected = (contact) => {
     return this.state.selectedContacts.some((c) => c.slug === contact.slug)
-  },
+  }
 
   // Is the contact not on the campaign already
-  isSelectable (contact) {
+  isSelectable = (contact) => {
     return !this.props.campaignContacts.some((c) => c.slug === contact.slug)
-  },
+  }
 
-  onAdd (contact) {
+  onAdd = (contact) => {
     this.setState({
       selectedContacts: this.state.selectedContacts.concat(contact)
     })
-  },
+  }
 
-  onSubmit (event) {
+  onSubmit = (event) => {
     event.preventDefault()
 
     const contactSlugs = this.state.selectedContacts.map((c) => c.slug)
@@ -215,22 +212,22 @@ const AddContactContainer = withSnackbar(React.createClass({
     }
 
     this.onReset()
-  },
+  }
 
-  onRemove (contact) {
+  onRemove = (contact) => {
     this.setState({
       selectedContacts: this.state.selectedContacts.filter((c) => c._id !== contact._id)
     })
-  },
+  }
 
-  onReset () {
+  onReset = () => {
     this.props.onDismiss()
     this.deselectAll()
-  },
+  }
 
-  deselectAll () {
+  deselectAll = () => {
     this.setState({ selectedContacts: [] })
-  },
+  }
 
   render () {
     const {
@@ -267,12 +264,12 @@ const AddContactContainer = withSnackbar(React.createClass({
         selectedContacts={selectedContacts} />
     )
   }
-}))
+}
 
-export default Modal(AddContactContainer)
+export default Modal(withSnackbar(AddContactContainer))
 
 class ContactsList extends React.Component {
-  propTypes = {
+  static propTypes = {
     isSelected: PropTypes.func.isRequired,
     isSelectable: PropTypes.func.isRequired,
     onAdd: PropTypes.func.isRequired,
