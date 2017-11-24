@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
+import { MouseHoveringDetection } from 'react-detect-mouse-over'
 import Modal from '/imports/ui/navigation/modal'
 import { AddIcon, SelectedIcon } from '/imports/ui/images/icons'
 import AvatarList from '/imports/ui/lists/avatar-list'
@@ -13,8 +14,8 @@ import { BLUE } from '/imports/ui/colours'
 import Scroll from '/imports/ui/navigation/scroll'
 import SearchBox from '/imports/ui/lists/search-box'
 
-const AddContact = React.createClass({
-  propTypes: {
+class AddContact extends React.Component {
+  propTypes = {
     term: PropTypes.string,
     onTermChange: PropTypes.func.isRequired,
     onAdd: PropTypes.func.isRequired,
@@ -26,13 +27,13 @@ const AddContact = React.createClass({
     isSelectable: PropTypes.func.isRequired,
     selectedContacts: PropTypes.array.isRequired,
     contacts: PropTypes.array.isRequired // Search results
-  },
+  }
 
-  onTermChange (term) {
+  onTermChange = (term) => {
     this.props.onTermChange(term)
-  },
+  }
 
-  onKeyDown (e) {
+  onKeyDown = (e) => {
     if (e.key !== 'Enter') return
 
     const { term, contacts, onAdd } = this.props
@@ -44,7 +45,7 @@ const AddContact = React.createClass({
 
     onAdd(contact)
     e.target.value = ''
-  },
+  }
 
   render () {
     const {
@@ -67,11 +68,11 @@ const AddContact = React.createClass({
         <SearchBox
           onTermChange={onTermChange}
           onKeyDown={onKeyDown}
-          placeholder='Find a contact...'
+          placeholder='Search or create a new contact'
           data-id='search-contacts-input'
         />
         <Scroll height={'calc(95vh - 250px)'}>
-          <ContactsList
+          <ContactListWithHoverDetect
             isSelected={this.props.isSelected}
             isSelectable={this.props.isSelectable}
             onAdd={onAdd}
@@ -94,7 +95,7 @@ const AddContact = React.createClass({
       </div>
     )
   }
-})
+}
 
 class ContactSortContainer extends React.Component {
   addToCampaignSort = (a, b) => {
@@ -270,24 +271,30 @@ const AddContactContainer = withSnackbar(React.createClass({
 
 export default Modal(AddContactContainer)
 
-const ContactsList = React.createClass({
-  propTypes: {
+class ContactsList extends React.Component {
+  propTypes = {
     isSelected: PropTypes.func.isRequired,
     isSelectable: PropTypes.func.isRequired,
     onAdd: PropTypes.func.isRequired,
     onRemove: PropTypes.func.isRequired,
     contacts: PropTypes.array.isRequired,
-    searching: PropTypes.bool.isRequired
-  },
+    searching: PropTypes.bool.isRequired,
+    isHoveringOver: PropTypes.bool.isRequired
+  }
 
-  onContactClick (contact, isSelected) {
+  onContactClick = (contact, isSelected) => {
     return isSelected ? this.props.onRemove(contact) : this.props.onAdd(contact)
-  },
+  }
 
   render () {
+    const {
+      searching,
+      contacts,
+      isHoveringOver
+    } = this.props
     return (
-      <div data-id={`contacts-table-${this.props.searching ? 'search-results' : 'unfiltered'}`}>
-        {this.props.contacts.map((contact) => {
+      <div data-id={`contacts-table-${searching ? 'search-results' : 'unfiltered'}`}>
+        {contacts.map((contact, i) => {
           const isSelected = this.props.isSelected(contact)
           const isSelectable = this.props.isSelectable(contact)
 
@@ -296,7 +303,7 @@ const ContactsList = React.createClass({
           }
 
           if (isSelectable) {
-            return <SelectableContact contact={contact} onContactClick={this.onContactClick} key={contact.slug} />
+            return <SelectableContact contact={contact} onContactClick={this.onContactClick} key={contact.slug} hover={!isHoveringOver && i === 0} />
           }
 
           return <UnselectabledContact contact={contact} key={contact.slug} />
@@ -304,7 +311,9 @@ const ContactsList = React.createClass({
       </div>
     )
   }
-})
+}
+
+const ContactListWithHoverDetect = MouseHoveringDetection(ContactsList)
 
 const CreateContactButton = ({ term, onCreate }) => {
   if (!term) return null
@@ -318,20 +327,22 @@ const CreateContactButton = ({ term, onCreate }) => {
   )
 }
 
-const SelectableContact = ({contact, onContactClick}) => {
+const SelectableContact = ({contact, onContactClick, hover}) => {
   const campaigns = Object.keys(contact.campaigns).length
 
   return (
-    <div className='flex items-center border-bottom border-gray80 py2 pl4 pointer hover-bg-gray90 hover-color-trigger hover-opacity-trigger'
-      onClick={() => onContactClick(contact, false)}>
-      <div className='flex-auto'>
-        <CampaignContact contact={contact} />
-      </div>
-      <div className='flex-none px4 f-sm gray40 hover-gray20'>
-        {`${campaigns} ${campaigns === 1 ? 'campaign' : 'campaigns'}`}
-      </div>
-      <div className='flex-none px4 opacity-0 hover-opacity-100'>
-        <AddIcon data-id='add-button' style={{fill: BLUE}} />
+    <div className={`hover-color-trigger hover-opacity-trigger hover-bg-trigger ${hover && 'hover'}`}>
+      <div className='flex items-center border-bottom border-gray80 py2 pl4 pointer hover-bg-gray90'
+        onClick={() => onContactClick(contact, false)}>
+        <div className='flex-auto'>
+          <CampaignContact contact={contact} />
+        </div>
+        <div className='flex-none px4 f-sm gray40 hover-gray20'>
+          {`${campaigns} ${campaigns === 1 ? 'campaign' : 'campaigns'}`}
+        </div>
+        <div className='flex-none px4 opacity-0 hover-opacity-100'>
+          <AddIcon data-id='add-button' style={{fill: BLUE}} />
+        </div>
       </div>
     </div>
   )
