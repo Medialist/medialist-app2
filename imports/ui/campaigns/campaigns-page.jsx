@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { compose } from 'redux'
 import { withRouter } from 'react-router'
 import { Meteor } from 'meteor/meteor'
+import { DataDam } from 'react-data-dam'
 import MasterLists from '/imports/api/master-lists/master-lists'
 import { createContainer } from 'meteor/react-meteor-data'
 import CampaignSearch from '/imports/ui/campaigns/campaign-search'
@@ -23,6 +24,7 @@ import CampaignListLink from '/imports/ui/master-lists/campaign-list-link'
 import TagLink from '/imports/ui/campaigns/tag-link'
 import { addRecentCampaignList } from '/imports/api/users/methods'
 import { CampaignSearchSchema } from '/imports/api/campaigns/schema'
+import ShowUpdatesButton from '/imports/ui/navigation/show-updates-button'
 
 class CampaignsPage extends React.Component {
   static propTypes = {
@@ -224,67 +226,72 @@ class CampaignsPage extends React.Component {
     const selectionsLength = selectionMode === 'all' ? campaignsCount : selections.length
 
     return (
-      <div style={{paddingBottom: 100}}>
-        <div style={{height: 58}} className='flex items-center justify-end bg-white width-100 shadow-inset-2 mb8'>
-          <div className='flex-auto border-right border-gray80'>
-            <MasterListsSelectorContainer
+      <DataDam data={campaigns} flowing={loading}>
+        {(campaigns, diff, release) => (
+          <div style={{paddingBottom: 100}}>
+            <div style={{height: 58}} className='flex items-center justify-end bg-white width-100 shadow-inset-2 mb8'>
+              <div className='flex-auto border-right border-gray80'>
+                <MasterListsSelectorContainer
+                  type='Campaigns'
+                  userId={userId}
+                  allCount={allCampaignsCount}
+                  selectedMasterListSlug={masterListSlug}
+                  onChange={this.onMasterListChange} />
+              </div>
+              <div className='flex-none bg-white center px4'>
+                <button className='btn bg-completed white mx4' onClick={() => this.showModal('createCampaignModal')} data-id='create-campaign-button'>New Campaign</button>
+              </div>
+            </div>
+            <CreateCampaignModal
+              onDismiss={() => this.hideModals()}
+              open={this.state.createCampaignModal} />
+            <CampaignSearch {...{
+              onTermChange,
+              selectedTags,
+              onTagRemove,
+              term,
+              sort,
+              campaigns,
+              campaignsCount,
+              selections,
+              selectionMode,
+              onSortChange,
+              onSelectionsChange,
+              onSelectionModeChange,
+              loading,
+              searching
+            }} />
+            <CampaignsActionsToast
+              campaigns={selections}
+              campaignsCount={selectionsLength}
+              onViewClick={this.onViewSelection}
+              onSectorClick={() => this.showModal('addToCampaignListsModal')}
+              onFavouriteClick={this.onFavouriteAll}
+              onTagClick={() => this.showModal('addTagsToCampaignsModal')}
+              onDeselectAllClick={this.clearSelection} />
+            <AddTagsModal
+              title='Tag these Campaigns'
               type='Campaigns'
-              userId={userId}
-              allCount={allCampaignsCount}
-              selectedMasterListSlug={masterListSlug}
-              onChange={this.onMasterListChange} />
+              open={this.state.addTagsToCampaignsModal}
+              onDismiss={this.hideModals}
+              onUpdateTags={this.onTagAll}>
+              <AbbreviatedAvatarList items={selections} shape='square' total={selectionsLength} />
+            </AddTagsModal>
+            <AddToMasterListModal
+              type='Campaigns'
+              title='Add these campaigns to a list'
+              items={this.state.selections}
+              open={this.state.addToCampaignListsModal}
+              onDismiss={this.hideModals}
+              onSave={this.onAddAllToMasterLists}>
+              <AbbreviatedAvatarList
+                items={this.state.selections}
+                maxTooltip={12} shape='square' total={selectionsLength} />
+            </AddToMasterListModal>
+            <ShowUpdatesButton total={diff.total.changes} onClick={release} />
           </div>
-          <div className='flex-none bg-white center px4'>
-            <button className='btn bg-completed white mx4' onClick={() => this.showModal('createCampaignModal')} data-id='create-campaign-button'>New Campaign</button>
-          </div>
-        </div>
-        <CreateCampaignModal
-          onDismiss={() => this.hideModals()}
-          open={this.state.createCampaignModal} />
-        <CampaignSearch {...{
-          onTermChange,
-          selectedTags,
-          onTagRemove,
-          term,
-          sort,
-          campaigns,
-          campaignsCount,
-          selections,
-          selectionMode,
-          onSortChange,
-          onSelectionsChange,
-          onSelectionModeChange,
-          loading,
-          searching
-        }} />
-        <CampaignsActionsToast
-          campaigns={selections}
-          campaignsCount={selectionsLength}
-          onViewClick={this.onViewSelection}
-          onSectorClick={() => this.showModal('addToCampaignListsModal')}
-          onFavouriteClick={this.onFavouriteAll}
-          onTagClick={() => this.showModal('addTagsToCampaignsModal')}
-          onDeselectAllClick={this.clearSelection} />
-        <AddTagsModal
-          title='Tag these Campaigns'
-          type='Campaigns'
-          open={this.state.addTagsToCampaignsModal}
-          onDismiss={this.hideModals}
-          onUpdateTags={this.onTagAll}>
-          <AbbreviatedAvatarList items={selections} shape='square' total={selectionsLength} />
-        </AddTagsModal>
-        <AddToMasterListModal
-          type='Campaigns'
-          title='Add these campaigns to a list'
-          items={this.state.selections}
-          open={this.state.addToCampaignListsModal}
-          onDismiss={this.hideModals}
-          onSave={this.onAddAllToMasterLists}>
-          <AbbreviatedAvatarList
-            items={this.state.selections}
-            maxTooltip={12} shape='square' total={selectionsLength} />
-        </AddToMasterListModal>
-      </div>
+        )}
+      </DataDam>
     )
   }
 }
