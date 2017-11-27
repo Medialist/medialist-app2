@@ -30,7 +30,7 @@ class TagSelector extends React.Component {
   }
 
   // TODO: if you type fast, this can occur before the state.searchTerm is updated, so we can end up submitting an empty value
-  onKeyDown = (event) => {
+  onKeyPress = (event) => {
     if (['Enter', 'Tab'].indexOf(event.key) === -1) {
       return
     }
@@ -76,7 +76,7 @@ class TagSelector extends React.Component {
           style={{borderLeft: '0 none', borderRight: '0 none'}}
           initialTerm={this.props.searchTerm}
           onTermChange={this.props.onTermChange}
-          onKeyDown={this.onKeyDown}
+          onKeyPress={this.onKeyPress}
           placeholder={this.props.selectedTags.length ? '' : 'Search or create a new tag'}
           data-id='tag-search-input'>
           <div style={{marginBottom: -4}} >

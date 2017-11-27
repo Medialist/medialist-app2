@@ -581,9 +581,11 @@ button {
 .hover-opacity-trigger:hover .hover-opacity-50 {
   opacity: 0.5;
 }
+
 .active-opacity-100.active,
 .hover-opacity-100:hover,
-.hover-opacity-trigger:hover .hover-opacity-100 {
+.hover-opacity-trigger:hover .hover-opacity-100,
+.hover-opacity-trigger.hover  .hover-opacity-100 {
   opacity: 1;
 }
 .hover-white:hover,
@@ -599,7 +601,8 @@ button {
   color: var(--gray50) !important;
 }
 .hover-gray20:hover,
-.hover-color-trigger:hover .hover-gray20{
+.hover-color-trigger:hover .hover-gray20,
+.hover-color-trigger.hover .hover-gray20 {
   color: var(--gray20) !important;
 }
 .hover-blue:hover,
@@ -623,7 +626,9 @@ button {
   color: var(--white) !important;
   background-color: var(--blue);
 }
-.hover-bg-gray90:hover {
+.hover-bg-gray90:hover,
+.hover-bg-trigger:hover .hover-bg-gray90,
+.hover-bg-trigger.hover .hover-bg-gray90 {
   background-color: var(--gray90);
 }
 
@@ -654,6 +659,10 @@ button {
 
 .hover-display-trigger:hover .hover-display-block {
   display: block !important;
+}
+
+.first-child-color-trigger {
+
 }
 
 .active-bg-green-light.active {
