@@ -6,6 +6,7 @@ import Tags from '/imports/api/tags/tags'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import { CampaignSearchResults, CampaignSearchCount } from './collections'
 import { StatusIndex } from '/imports/api/contacts/status'
+import { collationSort } from '/imports/lib/collation'
 
 // dir is -1 or 1. Returns a sort functon.
 const campaignStatusSort = (contactSlug, dir) => (a, b) => {
@@ -53,6 +54,7 @@ export default (Component, opts = {}) => {
 
     getMeteorData () {
       const { term, tagSlugs, masterListSlug, userId, contactSlug, sort, limit } = this.props
+
       const queryOpts = {
         tagSlugs,
         masterListSlug,
@@ -76,12 +78,9 @@ export default (Component, opts = {}) => {
         Meteor.subscribe('campaign-search-results', searchOpts)
       ]
 
-      const campaigns = CampaignSearchResults.find({}, {sort, limit}).fetch()
+      const sortSpec = getCustomSortSpec(sort, contactSlug)
 
-      if (sort.status && contactSlug) {
-        const byStatus = campaignStatusSort(contactSlug, sort.status)
-        campaigns.sort(byStatus)
-      }
+      const campaigns = CampaignSearchResults.find({}, {limit, sort: sortSpec}).fetch()
 
       const allCampaignsCount = Campaigns.allCampaignsCount()
 
@@ -112,4 +111,18 @@ export default (Component, opts = {}) => {
       return <Component {...this.props} {...this.data} />
     }
   })
+}
+
+// returns a sort compator fn or mongo sort specifier
+function getCustomSortSpec (sort, contactSlug) {
+  if (sort.status && contactSlug) {
+    return campaignStatusSort(contactSlug, sort.status)
+  }
+  // Use collation Sort if is a text field
+  const nonTextFields = ['updatedAt']
+  const sortKey = Object.keys(sort)[0]
+  if (nonTextFields.indexOf(sortKey) === -1) {
+    return collationSort(sort)
+  }
+  return sort
 }

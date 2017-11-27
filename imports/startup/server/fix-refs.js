@@ -7,6 +7,8 @@ import Posts from '/imports/api/posts/posts'
 import Tags from '/imports/api/tags/tags'
 
 Meteor.startup(() => {
+  if (!Meteor.settings.fixRefsOnStartup) return
+
   Campaigns.find().fetch().forEach(campaign => {
     validateListOfRefs(campaign, 'contacts', Campaigns, Contacts, 'campaign', 'contact')
     validateListOfRefs(campaign, 'team', Campaigns, Meteor.users, 'campaign', 'teammate')

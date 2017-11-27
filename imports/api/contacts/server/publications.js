@@ -8,6 +8,7 @@ import { ContactSearchSchema } from '/imports/api/contacts/schema'
 import StatusMap from '/imports/api/contacts/status'
 import { createContactSearchQuery } from '/imports/api/contacts/queries'
 import publishToCollection from '/imports/lib/publish-to-collection'
+import { getMongoCollationOpts } from '/imports/lib/collation'
 
 const contactCounter = new Counter('contactCount', Contacts.find({}), 3000)
 
@@ -219,9 +220,32 @@ Meteor.publish('contact-search-results', function ({sort, limit, ...contactSearc
 
   const query = createContactSearchQuery(contactSearch)
 
-  const cursor = Contacts.find(query, {sort, limit})
+  if (sort && sort.hasOwnProperty('updatedAt')) {
+    // reactive: will publish changes as they happen.
+    const cursor = Contacts.find(query, {sort, limit})
+    publishToCollection(this, 'contact-search-results', cursor)
+  } else {
+    // non-reactive: result set won't change until you re-subscribe
+    const sub = this
 
-  publishToCollection(this, 'contact-search-results', cursor)
+    const rawCursor = Contacts.rawCollection()
+      .find(query)
+      .sort(sort)
+      .limit(limit)
+      .collation(getMongoCollationOpts())
+
+    const addToSub = Meteor.wrapAsync(function (cb) {
+      rawCursor.forEach(
+        doc => sub.added('contact-search-results', doc._id, doc),
+        cb
+      )
+    })
+
+    addToSub(err => {
+      if (err) return sub.error(err)
+      sub.ready()
+    })
+  }
 })
 
 Meteor.publish('contact-search-count-not-reactive', function (contactSearch) {

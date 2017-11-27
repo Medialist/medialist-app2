@@ -25,9 +25,10 @@
       "teamDomains": ["test.medialist.io"],
       "supportDomains": ["medialist.io"]
     },
-    "attachSchemasToDatabase": true
+    "attachSchemasToDatabase": false
   },
-  "attachSchemasToDatabase": true,
+  "attachSchemasToDatabase": false,
   "validateDatabaseOnStartup": false,
-  "updateContactsFromTwitter": false
+  "updateContactsFromTwitter": false,
+  "fixRefsOnStartup": false
 }

@@ -3,6 +3,7 @@ import { createContainer } from 'meteor/react-meteor-data'
 import { createContactSearchQuery } from '/imports/api/contacts/queries'
 import { ContactSearchCount, ContactSearchResults } from './collections'
 import Contacts from '/imports/api/contacts/contacts'
+import { collationSort } from '/imports/lib/collation'
 
 function extractQueryOpts (props) {
   const {
@@ -77,7 +78,9 @@ export default (Component) => createContainer((props) => {
 
   const subs = [Meteor.subscribe('contact-search-results', searchOpts)]
 
-  const contacts = ContactSearchResults.find({}, {sort}).fetch()
+  const sortSpec = getCustomSortSpec(sort)
+
+  const contacts = ContactSearchResults.find({}, {limit, sort: sortSpec}).fetch()
 
   const loading = props.loading || subs.some((s) => !s.ready())
 
@@ -120,3 +123,14 @@ export const createSearchCountContainer = (Component) => createContainer((props)
 
   return { allContactsCount, contactsCount, loading }
 }, Component)
+
+// returns a sort compator fn or mongo sort specifier
+function getCustomSortSpec (sort, contactSlug) {
+  // Use collation Sort if is a text field
+  const nonTextFields = ['updatedAt']
+  const sortKey = Object.keys(sort)[0]
+  if (nonTextFields.indexOf(sortKey) === -1) {
+    return collationSort(sort)
+  }
+  return sort
+}

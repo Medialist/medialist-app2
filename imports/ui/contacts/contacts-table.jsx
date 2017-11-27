@@ -127,6 +127,8 @@ class ContactsTable extends React.Component {
                   onChange={this.onSelectAllChange} />
               </th>
               <SortableHeader
+                data-id='sort-by-name'
+                data-dir={sort['name'] || 0}
                 className='left-align'
                 sortDirection={sort['name']}
                 style={{borderLeft: '0 none'}}

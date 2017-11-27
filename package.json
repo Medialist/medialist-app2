@@ -35,6 +35,7 @@
     "deep-equal": "^1.0.1",
     "dot-object": "^1.7.0",
     "html-metadata": "github:wikimedia/html-metadata",
+    "intl-to-mongo-collation": "^0.1.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8",
     "lodash.difference": "^4.5.0",
