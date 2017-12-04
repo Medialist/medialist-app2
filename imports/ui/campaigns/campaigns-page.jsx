@@ -24,7 +24,8 @@ import CampaignListLink from '/imports/ui/master-lists/campaign-list-link'
 import TagLink from '/imports/ui/campaigns/tag-link'
 import { addRecentCampaignList } from '/imports/api/users/methods'
 import { CampaignSearchSchema } from '/imports/api/campaigns/schema'
-import ShowUpdatesButton from '/imports/ui/navigation/show-updates-button'
+import ShowUpdatesButton from '/imports/ui/lists/show-updates-button'
+import { updatedByUserAutoRelease } from '/imports/ui/lists/data-dam'
 
 class CampaignsPage extends React.Component {
   static propTypes = {
@@ -226,7 +227,7 @@ class CampaignsPage extends React.Component {
     const selectionsLength = selectionMode === 'all' ? campaignsCount : selections.length
 
     return (
-      <DataDam data={campaigns} flowing={loading}>
+      <DataDam data={campaigns} flowing={loading} autoRelease={updatedByUserAutoRelease}>
         {(campaigns, diff, release) => (
           <div style={{paddingBottom: 100}}>
             <div style={{height: 58}} className='flex items-center justify-end bg-white width-100 shadow-inset-2 mb8'>
@@ -288,7 +289,7 @@ class CampaignsPage extends React.Component {
                 items={this.state.selections}
                 maxTooltip={12} shape='square' total={selectionsLength} />
             </AddToMasterListModal>
-            <ShowUpdatesButton total={diff.total.changes} onClick={release} />
+            <ShowUpdatesButton data={campaigns} diff={diff} onClick={release} />
           </div>
         )}
       </DataDam>

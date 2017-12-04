@@ -33,7 +33,8 @@ import createSearchQueryContainer from './search-query-container'
 import createSearchEnricher from './search-enricher'
 import { ContactSearchSchema } from '/imports/api/contacts/schema'
 import MergeContactsModal from '/imports/ui/contacts/merge/merge-contacts-modal'
-import ShowUpdatesButton from '/imports/ui/navigation/show-updates-button'
+import ShowUpdatesButton from '/imports/ui/lists/show-updates-button'
+import { updatedByUserAutoRelease } from '/imports/ui/lists/data-dam'
 
 /*
  * ContactPage and ContactsPageContainer
@@ -303,7 +304,7 @@ class ContactsPage extends React.Component {
     const selectionsLength = selectionMode === 'all' ? contactsCount : selections.length
 
     return (
-      <DataDam data={contacts} flowing={loading}>
+      <DataDam data={contacts} flowing={loading} autoRelease={updatedByUserAutoRelease}>
         {(contacts, diff, release) => (
           <div style={{paddingBottom: 100}}>
             <div style={{height: 58}} className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
@@ -417,7 +418,7 @@ class ContactsPage extends React.Component {
               open={this.state.mergeContactsModal}
               onDismiss={this.hideModals}
               onMerged={this.clearSelectionAndHideModals} />
-            <ShowUpdatesButton total={diff.total.changes} onClick={release} />
+            <ShowUpdatesButton data={contacts} diff={diff} onClick={release} />
           </div>
         )}
       </DataDam>
