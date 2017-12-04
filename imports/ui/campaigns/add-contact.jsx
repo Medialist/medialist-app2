@@ -315,7 +315,7 @@ const SelectableContact = ({contact, onContactClick, hover}) => {
   const campaigns = Object.keys(contact.campaigns).length
 
   return (
-    <div className={`hover-color-trigger hover-opacity-trigger hover-bg-trigger ${hover && 'hover'}`}>
+    <div className={`hover-color-trigger hover-opacity-trigger hover-bg-trigger ${hover ? 'hover' : ''}`}>
       <div className='flex items-center border-bottom border-gray80 py2 pl4 pointer hover-bg-gray90'
         onClick={() => onContactClick(contact, false)}>
         <div className='flex-auto'>

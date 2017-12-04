@@ -661,10 +661,6 @@ button {
   display: block !important;
 }
 
-.first-child-color-trigger {
-
-}
-
 .active-bg-green-light.active {
   background-color: var(--green-light);
 }
