@@ -137,15 +137,9 @@ class ContactsTable extends React.Component {
               </SortableHeader>
               <SortableHeader
                 className='left-align'
-                sortDirection={sort['outlets.0.value']}
-                onSortChange={(d) => onSortChange({ 'outlets.0.value': d })}>
-                Title
-              </SortableHeader>
-              <SortableHeader
-                className='left-align'
                 sortDirection={sort['outlets.0.label']}
                 onSortChange={(d) => onSortChange({ 'outlets.0.label': d })}>
-                Media Outlet
+                Outlet
               </SortableHeader>
               <th className='left-align'>Email</th>
               <th className='left-align'>Phone</th>
@@ -195,10 +189,17 @@ class ContactsTable extends React.Component {
                     <ContactLink contact={contact} onClick={onContactClick} />
                   </td>
                   <td className='left-align'>
-                    {firstOutlet.value || <span className='gray60'>No title</span>}
-                  </td>
-                  <td className='left-align'>
-                    {firstOutlet.label || <span className='gray60'>No outlet</span>}
+                    {firstOutlet.label ? (
+                      <div className='f-sm truncate'>{firstOutlet.label}</div>
+                    ) : (
+                      <div className='f-sm gray60'>No outlet</div>
+                    )}
+                    {firstOutlet.value ? (
+                      <div className='f-xs truncate'>{firstOutlet.value}</div>
+                    ) : null }
+                    {!firstOutlet.value && firstOutlet.label ? (
+                      <div className='f-xs gray60'>No title</div>
+                    ) : null }
                   </td>
                   <td className='left-align'>
                     <DisplayEmail emails={emails} />
