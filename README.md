@@ -19,45 +19,45 @@ Example documents from our collections
 
 ```js
 {
-	"_id" : "CBdsCSdGr3X7pLwnJ",
-	"createdAt" : ISODate("2017-01-04T16:00:03.904Z"),
-	"emails": {
-		{ address: "unique@exampled.org", verified: true }
-	},
-	"services" : {
-		"resume" : {
-			"loginTokens" : [
-				{
-					"when" : ISODate("2017-01-04T16:00:03.913Z"),
-					"hashedToken" : "osidnsoidvsodivsdoinsndoifjsdofijsjdf="
-				}
-			]
-		}
-	},
-	"profile" : {
-		"name" : "Richard Silverton",
-		"avatar": "http://path/to/image.png"
-	},
-	"myCampaigns": [
-		{
-			"_id": "eoriwoerijgworigjw409jgw4",
-			"name": "The Next Big Thing",
-			"slug": "next-big-thing",
-			"avatar": "https://example.com/image.png",
-			"clientName": "ABC Corp.",
-			"updatedAt": ISODate("2017-01-04T15:38:14.882Z")
-		}
-	],
-	"myContacts": [
-		{
-			"_id": "3rohu349f840fj3049j34g",
-			"name": "Andrea Person",
-			"slug": "andrea-person",
-			"avatar": "https://example.com/avatar.png",
-			"updatedAt": ISODate("2017-01-04T15:38:14.882Z")
-		}
-	]
-	"roles": ['team']
+  "_id" : "CBdsCSdGr3X7pLwnJ",
+  "createdAt" : ISODate("2017-01-04T16:00:03.904Z"),
+  "emails": {
+    { address: "unique@exampled.org", verified: true }
+  },
+  "services" : {
+    "resume" : {
+      "loginTokens" : [
+        {
+          "when" : ISODate("2017-01-04T16:00:03.913Z"),
+          "hashedToken" : "osidnsoidvsodivsdoinsndoifjsdofijsjdf="
+        }
+      ]
+    }
+  },
+  "profile" : {
+    "name" : "Richard Silverton",
+    "avatar": "http://path/to/image.png"
+  },
+  "myCampaigns": [
+    {
+      "_id": "eoriwoerijgworigjw409jgw4",
+      "name": "The Next Big Thing",
+      "slug": "next-big-thing",
+      "avatar": "https://example.com/image.png",
+      "clientName": "ABC Corp.",
+      "updatedAt": ISODate("2017-01-04T15:38:14.882Z")
+    }
+  ],
+  "myContacts": [
+    {
+      "_id": "3rohu349f840fj3049j34g",
+      "name": "Andrea Person",
+      "slug": "andrea-person",
+      "avatar": "https://example.com/avatar.png",
+      "updatedAt": ISODate("2017-01-04T15:38:14.882Z")
+    }
+  ]
+  "roles": ['team']
 }
 ```
 
@@ -70,43 +70,43 @@ Example documents from our collections
   "name" : "Steve Rose",
   "avatar" : "https://pbs.twimg.com/profile_images/530735370120331264/25YBKDB-_normal.jpeg",
   "outlets" : [
-		{ "label": "the Guardian", "value": "Freelance" },
-		{ "label": "the Guardian - g2 (supplement)", "value": "Features" }
-	],
-	"emails" : [
-		{ "label" : "Email", "value" : "steverose7@gmail.com" }
-	],
-	"socials" : [
-		{ "label" : "Twitter", "value" : "steverose7", "twitterId" : "109295079" }
-	],
-	"phones" : [
-		{ "label" : "Mobile", "value" : "+44 (0)7980 327 310" }
-	],
-	"address" : "53 Athenlay Road, London, SE15 3EN, United Kingdom",
-	"campaigns" : [
-		"campaign-slug-1", "campaign-slug-2"
-	],
-	"tags": [
-		{ "_id": "xyz", "slug": "nice", "name": "Nice", "count": 9 }
-	],
-	"masterLists": [
-		{ "_id": "123", "slug": "tech", "name": "Tech" }
-	],
-	"imports": [
-		"contact-import-id"
-	]
-	"createdAt" : ISODate("2016-02-26T13:12:53.456Z"),
-	"createdBy" : {
-		"_id" : "hNc2ArK9TcAWyEXqQ",
-		"name" : "Olly Gilbert",
-		"avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
-	},
-	"updatedAt" : ISODate("2016-02-26T13:12:53.456Z"),
-	"updatedBy" : {
-		"_id" : "hNc2ArK9TcAWyEXqQ",
-		"name" : "Olly Gilbert",
-		"avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
-	}
+    { "label": "the Guardian", "value": "Freelance" },
+    { "label": "the Guardian - g2 (supplement)", "value": "Features" }
+  ],
+  "emails" : [
+    { "label" : "Email", "value" : "steverose7@gmail.com" }
+  ],
+  "socials" : [
+    { "label" : "Twitter", "value" : "steverose7", "twitterId" : "109295079" }
+  ],
+  "phones" : [
+    { "label" : "Mobile", "value" : "+44 (0)7980 327 310" }
+  ],
+  "address" : "53 Athenlay Road, London, SE15 3EN, United Kingdom",
+  "campaigns" : [
+    "campaign-slug-1", "campaign-slug-2"
+  ],
+  "tags": [
+    { "_id": "xyz", "slug": "nice", "name": "Nice", "count": 9 }
+  ],
+  "masterLists": [
+    { "_id": "123", "slug": "tech", "name": "Tech" }
+  ],
+  "imports": [
+    "contact-import-id"
+  ]
+  "createdAt" : ISODate("2016-02-26T13:12:53.456Z"),
+  "createdBy" : {
+    "_id" : "hNc2ArK9TcAWyEXqQ",
+    "name" : "Olly Gilbert",
+    "avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
+  },
+  "updatedAt" : ISODate("2016-02-26T13:12:53.456Z"),
+  "updatedBy" : {
+    "_id" : "hNc2ArK9TcAWyEXqQ",
+    "name" : "Olly Gilbert",
+    "avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
+  }
 }
 ```
 
@@ -114,42 +114,42 @@ Example documents from our collections
 
 ```js
 {
-	"_id" : "54gbNST2YBuqbrB4T",
+  "_id" : "54gbNST2YBuqbrB4T",
   "slug" : "amazonecho",
-	"name" : "Amazon Echo",
-	"client" : {
-		"name" : "Amazon",
-		"_id" : "iYurjZ3HbvmMbuRYr"
-	},
-	"purpose" : "Amazon is good for the UK",
-	"contacts" : [
-		{
-			"slug": "eleanor-harding",
-			"status": "To Contact",
-			"updatedAt": ISODate("2016-02-24T22:26:39.782Z"),
-			"updatedBy": {
-				"_id" : "hNc2ArK9TcAWyEXqQ",
-				"name" : "Olly Gilbert",
-				"avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
-			}
-		}
-	],
-	"tags": [
-		{ "_id": "xyz", "slug": "nice", "name": "Nice", "count": 9 }
-	],
-	"masterLists": [
-		{ "_id": "123", "slug": "tech", "name": "Tech" }
-	],
-	"createdAt" : ISODate("2016-02-24T22:26:39.782Z"),
-	"createdBy" : {
-		"_id" : "hNc2ArK9TcAWyEXqQ",
-		"name" : "Olly Gilbert"
-	},
-	"updatedAt" : ISODate("2016-09-29T12:30:02.895Z"),
-	"updatedBy" : {
-		"_id" : "hNc2ArK9TcAWyEXqQ",
-		"name" : "Olly Gilbert"
-	}
+  "name" : "Amazon Echo",
+  "client" : {
+    "name" : "Amazon",
+    "_id" : "iYurjZ3HbvmMbuRYr"
+  },
+  "purpose" : "Amazon is good for the UK",
+  "contacts" : [
+    {
+      "slug": "eleanor-harding",
+      "status": "To Contact",
+      "updatedAt": ISODate("2016-02-24T22:26:39.782Z"),
+      "updatedBy": {
+        "_id" : "hNc2ArK9TcAWyEXqQ",
+        "name" : "Olly Gilbert",
+        "avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
+      }
+    }
+  ],
+  "tags": [
+    { "_id": "xyz", "slug": "nice", "name": "Nice", "count": 9 }
+  ],
+  "masterLists": [
+    { "_id": "123", "slug": "tech", "name": "Tech" }
+  ],
+  "createdAt" : ISODate("2016-02-24T22:26:39.782Z"),
+  "createdBy" : {
+    "_id" : "hNc2ArK9TcAWyEXqQ",
+    "name" : "Olly Gilbert"
+  },
+  "updatedAt" : ISODate("2016-09-29T12:30:02.895Z"),
+  "updatedBy" : {
+    "_id" : "hNc2ArK9TcAWyEXqQ",
+    "name" : "Olly Gilbert"
+  }
 }
 ```
 
@@ -157,28 +157,28 @@ Example documents from our collections
 
 ```js
 {
-	"_id" : "2EnrcJ7r5i94JTmwZ",
+  "_id" : "2EnrcJ7r5i94JTmwZ",
   "type" : "campaigns changed",
-	"details" : {
-		"action" : "added"
-	}
-	"message" : "added Eleanor to #activeschools",
-	"contacts" : [
-		{
-			"slug" : "EleanorHarding",
-			"name" : "Eleanor Harding",
-			"avatar" : "https://pbs.twimg.com/profile_images/674213477477691392/63oxEK6E_normal.jpg"
-		}
-	],
-	"campaigns" : [
-		"activeschools"
-	],
-	"createdBy" : {
-		"_id" : "hNc2ArK9TcAWyEXqQ",
-		"name" : "Olly Gilbert",
-		"avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
-	},
-	"createdAt" : ISODate("2016-03-08T11:14:22.670Z"),
+  "details" : {
+    "action" : "added"
+  }
+  "message" : "added Eleanor to #activeschools",
+  "contacts" : [
+    {
+      "slug" : "EleanorHarding",
+      "name" : "Eleanor Harding",
+      "avatar" : "https://pbs.twimg.com/profile_images/674213477477691392/63oxEK6E_normal.jpg"
+    }
+  ],
+  "campaigns" : [
+    "activeschools"
+  ],
+  "createdBy" : {
+    "_id" : "hNc2ArK9TcAWyEXqQ",
+    "name" : "Olly Gilbert",
+    "avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
+  },
+  "createdAt" : ISODate("2016-03-08T11:14:22.670Z"),
 }
 ```
 
@@ -200,18 +200,18 @@ Example documents from our collections
 
 ```js
 {
-	"data": [/* ContactCreateSchema valid objects */]
-	"results": {
-		created: ["contact-id"],
-		updated: ["contact-id"],
-		failed: [/* ContactCreateSchema valid objects */]
-	}
-	"createdBy" : {
-		"_id" : "hNc2ArK9TcAWyEXqQ",
-		"name" : "Olly Gilbert",
-		"avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
-	},
-	"createdAt" : ISODate("2016-03-08T11:14:22.670Z"),
+  "data": [/* ContactCreateSchema valid objects */]
+  "results": {
+    created: ["contact-id"],
+    updated: ["contact-id"],
+    failed: [/* ContactCreateSchema valid objects */]
+  }
+  "createdBy" : {
+    "_id" : "hNc2ArK9TcAWyEXqQ",
+    "name" : "Olly Gilbert",
+    "avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
+  },
+  "createdAt" : ISODate("2016-03-08T11:14:22.670Z"),
 }
 ```
 
