@@ -74,7 +74,6 @@ const LatestActivity = ({contact}) => {
     createdBy: contact.updatedBy
   }
   const {type, status, createdBy, createdAt} = post
-  const message = type === 'StatusUpdate' ? 'Status updated' : post.message
   return (
     <div className='flex'>
       <div className='flex-none pr2' style={{paddingTop: 3}}>
@@ -82,7 +81,7 @@ const LatestActivity = ({contact}) => {
       </div>
       <div className='flex-auto'>
         <div className='truncate f-sm gray10 semibold lh-copy'>
-          {message}
+          {formatMessage(post)}
           {type === 'StatusUpdate' ? <Status status={status} /> : null}
         </div>
         <div className='f-xs gray20 truncate'>
@@ -91,6 +90,26 @@ const LatestActivity = ({contact}) => {
       </div>
     </div>
   )
+}
+
+const urlRegex = /https?:\/\/[^\s/$.?#].[^\s]*/ig
+
+function urlToHostname (url) {
+  try {
+    const {hostname} = new window.URL(url)
+    return hostname
+  } catch (err) {
+    return url
+  }
+}
+
+// Replace things in the message to make the preview look nice.
+function formatMessage (post) {
+  if (post.type === 'StatusUpdate') return 'Status updated'
+  if (post.embeds && post.embeds.length) {
+    return post.message.replace(urlRegex, urlToHostname)
+  }
+  return post.message
 }
 
 class ContactsTable extends React.Component {
