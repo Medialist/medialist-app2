@@ -62,6 +62,8 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
     createdAt
   })
 
+  const post = Posts.findOne({_id: postId})
+
   const contactUpdates = {
     updatedBy: createdBy,
     updatedAt: createdAt
@@ -76,6 +78,7 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
         [`contacts.$.status`]: status,
         [`contacts.$.updatedAt`]: createdAt,
         [`contacts.$.updatedBy`]: createdBy,
+        [`contacts.$.latestPost`]: post,
         updatedBy: createdBy,
         updatedAt: createdAt
       }
