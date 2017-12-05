@@ -10,6 +10,7 @@ import { CircleAvatar } from '/imports/ui/images/avatar'
 import StatusLabel from '/imports/ui/feedback/status-label'
 import StatusSelectorContainer from '/imports/ui/feedback/status-selector-container'
 import PostIcon from '/imports/ui/posts/post-icon'
+import Status from '/imports/ui/feedback/status'
 
 const ContactLink = ({contact, onClick}) => {
   const {slug, name, avatar} = contact
@@ -65,8 +66,14 @@ const UpdatedAt = ({contact}) => {
   )
 }
 
-const LatestActivity = ({post}) => {
-  const {type, createdBy, createdAt} = post
+const LatestActivity = ({contact}) => {
+  const post = contact.latestPost ? contact.latestPost : {
+    type: 'AddContactsToCampaign',
+    message: 'Contact added to the campaign',
+    createdAt: contact.updatedAt,
+    createdBy: contact.updatedBy
+  }
+  const {type, status, createdBy, createdAt} = post
   const message = type === 'StatusUpdate' ? 'Status updated' : post.message
   return (
     <div className='flex'>
@@ -76,6 +83,7 @@ const LatestActivity = ({post}) => {
       <div className='flex-auto'>
         <div className='truncate f-sm gray10 semibold lh-copy'>
           {message}
+          {type === 'StatusUpdate' ? <Status status={status} /> : null}
         </div>
         <div className='f-xs gray20 truncate'>
           <TimeAgo date={createdAt} /> by <YouOrName user={createdBy} />
@@ -200,12 +208,22 @@ class ContactsTable extends React.Component {
                   Status
                 </SortableHeader>
               )}
-              <SortableHeader
-                className='left-align'
-                sortDirection={sort['updatedAt']}
-                onSortChange={(d) => onSortChange({ updatedAt: d })}>
-                {campaign ? 'Latest Activity' : 'Updated At'}
-              </SortableHeader>
+              {campaign ? (
+                <SortableHeader
+                  className='left-align'
+                  style={{width: '40%'}}
+                  sortDirection={sort['updatedAt']}
+                  onSortChange={(d) => onSortChange({ updatedAt: d })}>
+                   Latest Activity
+                </SortableHeader>
+              ) : (
+                <SortableHeader
+                  className='left-align'
+                  sortDirection={sort['updatedAt']}
+                  onSortChange={(d) => onSortChange({ updatedAt: d })}>
+                   Updated At
+                </SortableHeader>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -254,8 +272,8 @@ class ContactsTable extends React.Component {
                     </td>
                   )}
                   <td className='left-align'>
-                    {campaign && contact.latestPost ? (
-                      <LatestActivity post={contact.latestPost} />
+                    {campaign ? (
+                      <LatestActivity contact={contact} />
                     ) : (
                       <UpdatedAt contact={contact} />
                     )}
