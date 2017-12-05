@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
+import replaceUrl from '/imports/lib/replace-url'
 import SortableHeader from '/imports/ui/tables/sortable-header'
 import SelectableRow from '/imports/ui/tables/selectable-row'
 import Checkbox from '/imports/ui/tables/checkbox'
@@ -92,22 +93,11 @@ const LatestActivity = ({contact}) => {
   )
 }
 
-const urlRegex = /https?:\/\/[^\s/$.?#].[^\s]*/ig
-
-function urlToHostname (url) {
-  try {
-    const {hostname} = new window.URL(url)
-    return hostname
-  } catch (err) {
-    return url
-  }
-}
-
 // Replace things in the message to make the preview look nice.
 function formatMessage (post) {
   if (post.type === 'StatusUpdate') return 'Status updated'
   if (post.embeds && post.embeds.length) {
-    return post.message.replace(urlRegex, urlToHostname)
+    return replaceUrl(post.message)
   }
   return post.message
 }
