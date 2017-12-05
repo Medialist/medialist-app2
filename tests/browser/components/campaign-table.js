@@ -60,7 +60,7 @@ module.exports = {
         .click(buttonSelector)
         .waitForElementVisible(statusSelector)
         .click(statusSelector)
-        .waitForElementNotVisible(statusSelector)
+        .waitForElementNotPresent(statusSelector)
 
       return this
     },

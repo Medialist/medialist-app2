@@ -4,6 +4,7 @@ const faker = require('faker')
 const tmp = require('tmp')
 const fs = require('fs')
 const async = require('async')
+const mkdirp = require('mkdirp')
 const domain = require('../fixtures/domain')
 const assertions = require('../fixtures/assertions')
 
@@ -16,6 +17,8 @@ const test = {
   },
 
   'Should only import csv files': function (t) {
+    mkdirp.sync('/tmp/medialist_test')
+
     const file = tmp.fileSync({
       dir: '/tmp/medialist_test',
       mode: 0o644
@@ -266,6 +269,9 @@ ${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email
 
       const masterListsSelector = contactsPage.section.masterListsSelector
       const contactTable = contactsPage.section.contactTable
+
+      contactsPage
+        .waitForElementVisible(contactsPage.section.masterListsSelector.selector)
 
       // Assert each campaign present/absent in each master list
       masterLists.forEach((masterList, i) => {

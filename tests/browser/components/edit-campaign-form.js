@@ -84,7 +84,7 @@ module.exports = {
       this.waitForElementPresent('@cancelDeleteButton')
       this.click('@cancelDeleteButton')
 
-      this.waitForElementNotVisible('@cancelDeleteButton')
+      this.waitForElementNotPresent('@cancelDeleteButton')
 
       return this
     }

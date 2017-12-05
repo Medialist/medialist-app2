@@ -11,13 +11,13 @@ module.exports = {
     clickMasterListBySlug: function (slug) {
       const selector = `[data-slug=${slug}]`
 
+      this.api.elements('css selector', selector, (res) => {
+        if (!res.value.length) {
+          this.click('@more')
+        }
+      })
+
       this
-        .waitForElementPresent(selector)
-        .isVisible(selector, (res) => {
-          if (!res.value) {
-            this.click('@more')
-          }
-        })
         .waitForElementVisible(selector)
         .click(selector)
 
