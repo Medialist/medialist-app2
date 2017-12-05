@@ -14,7 +14,8 @@ module.exports = {
   elements: {
     newCampaignButton: '[data-id=create-campaign-button]',
     editCampaignButton: '[data-id=edit-campaign-button]',
-    myCampaignsButton: '[data-slug=my]'
+    myCampaignsButton: '[data-slug=my]',
+    showUpdatesButton: '[data-id=show-updates-button]'
   },
   sections: {
     masterListsSelector: masterListsSelector,

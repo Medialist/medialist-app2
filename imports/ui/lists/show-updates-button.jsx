@@ -16,6 +16,7 @@ export default ({ data, diff, zIndex = 50, onClick }) => {
 
   return (
     <button
+      data-id='show-updates-button'
       type='button'
       className='btn white bg-blue fixed bottom-0 mb5'
       style={{ left: '50%', transform: 'translate(-50%, 0)', zIndex }}
