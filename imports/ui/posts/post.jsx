@@ -11,14 +11,9 @@ import CampaignPreview from '/imports/ui/campaigns/campaign-preview'
 import CampaignLink from '/imports/ui/campaigns/campaign-link'
 import {
   ChevronRight,
-  ChevronOpenDown,
-  FeedCampaignIcon,
-  FeedContactIcon,
-  FeedCoverageIcon,
-  FeedFeedbackIcon,
-  FeedNeedToKnowIcon,
-  StatusUpdateIcon
+  ChevronOpenDown
 } from '/imports/ui/images/icons'
+import PostIcon from './post-icon'
 import { Dropdown, DropdownMenu, DropdownMenuItem } from '/imports/ui/navigation/dropdown'
 import findUrl from '/imports/lib/find-url'
 import DeletePostModal from './delete-post-modal'
@@ -178,7 +173,7 @@ class Post extends React.Component {
       <article className={`flex rounded px4 pt3 pb2 mb2 shadow-2 ${this.props.bgClass}`} data-id={dasherise(this.props.type)} {...data}>
         <div className='flex-none' style={{paddingTop: 1}}>
           <CircleAvatar size={38} avatar={this.props.createdBy.avatar} name={this.props.createdBy.name} style={{marginRight: 13}} />
-          {this.props.icon}
+          <PostIcon type={this.props.type} />
         </div>
         <div className='flex-auto' style={{paddingLeft: 13}}>
           <header className='pt2 pb3 f-md flex nowrap' data-id='post-header'>
@@ -235,7 +230,6 @@ class Post extends React.Component {
 
 Post.propTypes = {
   _id: PropTypes.string.isRequired,
-  icon: PropTypes.object,
   summary: PropTypes.any,
   details: PropTypes.any,
   createdBy: PropTypes.object,
@@ -354,7 +348,6 @@ export const FeedbackPost = ({item, currentUser, contact, campaign}) => (
     contact={contact}
     campaign={campaign}
     currentUser={currentUser}
-    icon={<FeedFeedbackIcon className='blue-dark' style={{verticalAlign: -2}} />}
     summary={<FeedbackPostSummary {...item} label='logged feedback' contact={contact} campaign={campaign} />}
     details={
       <div className='border-gray80 border-top gray10' data-id='post-message'>
@@ -377,7 +370,6 @@ export const CoveragePost = ({item, currentUser, contact, campaign}) => (
     contact={contact}
     campaign={campaign}
     currentUser={currentUser}
-    icon={<FeedCoverageIcon className='blue' />}
     summary={<FeedbackPostSummary {...item} label='logged coverage' contact={contact} campaign={campaign} />}
     details={
       <div className='border-gray80 border-top gray10' data-id='post-message'>
@@ -399,7 +391,6 @@ export const NeedToKnowPost = ({item, currentUser, contact}) => (
     {...item}
     bgClass='bg-yellow-lighter'
     currentUser={currentUser}
-    icon={<FeedNeedToKnowIcon className='tangerine' />}
     summary={<FeedbackPostSummary {...item} label='shared a need-to-know' contact={contact} />}
     details={
       <div className='border-gray80 border-top gray10' data-id='post-message'>
@@ -431,7 +422,6 @@ export const StatusUpdate = ({item, currentUser, contact, campaign}) => {
     <Post
       {...item}
       currentUser={currentUser}
-      icon={<StatusUpdateIcon className='gray60' />}
       summary={
         <PostSummary {...item}>
           <span data-id='post-summary'>updated</span> <ContactName contacts={item.contacts} contact={contact} onContactPage={Boolean(contact)} />
@@ -459,7 +449,6 @@ export const AddContactsToCampaign = ({item, currentUser, contact, campaign}) =>
     <Post
       {...item}
       currentUser={currentUser}
-      icon={<FeedContactIcon className='gray60' />}
       summary={
         <span data-id='post-summary'>
           added <ContactName contacts={item.contacts} contact={contact} onContactPage={Boolean(contact)} />
@@ -478,7 +467,6 @@ export const CreateCampaign = ({item, currentUser, campaign}) => {
     <Post
       {...item}
       currentUser={currentUser}
-      icon={<FeedCampaignIcon className='status-blue' />}
       summary='created this campaign'
       details={!campaign &&
         <div className='border-gray80 border-top pt2'>

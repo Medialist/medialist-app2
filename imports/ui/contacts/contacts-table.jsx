@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
+import replaceUrl from '/imports/lib/replace-url'
 import SortableHeader from '/imports/ui/tables/sortable-header'
 import SelectableRow from '/imports/ui/tables/selectable-row'
 import Checkbox from '/imports/ui/tables/checkbox'
@@ -9,14 +10,35 @@ import YouOrName from '/imports/ui/users/you-or-name'
 import { CircleAvatar } from '/imports/ui/images/avatar'
 import StatusLabel from '/imports/ui/feedback/status-label'
 import StatusSelectorContainer from '/imports/ui/feedback/status-selector-container'
+import PostIcon from '/imports/ui/posts/post-icon'
+import Status from '/imports/ui/feedback/status'
 
 const ContactLink = ({contact, onClick}) => {
   const {slug, name, avatar} = contact
   return (
     <Link onClick={onClick} to={`/contact/${slug}`} className='nowrap' data-id='contact-link' data-contact={slug}>
       <CircleAvatar avatar={avatar} name={name} />
-      <span className='ml3 semibold'>{name}</span>
+      <span className='ml3 semibold gray10'>{name}</span>
     </Link>
+  )
+}
+
+const DisplayOutlet = ({outlets}) => {
+  const firstOutlet = (outlets && outlets.length && outlets[0]) || {}
+  return (
+    <div>
+      {firstOutlet.label ? (
+        <div className='f-sm gray10 lh-copy truncate'>{firstOutlet.label}</div>
+      ) : (
+        <div className='f-sm gray60'>No outlet</div>
+      )}
+      {firstOutlet.value ? (
+        <div className='f-xs gray10 truncate'>{firstOutlet.value}</div>
+      ) : null }
+      {!firstOutlet.value && firstOutlet.label ? (
+        <div className='f-xs gray60'>No title</div>
+      ) : null }
+    </div>
   )
 }
 
@@ -24,16 +46,60 @@ const DisplayEmail = ({ emails }) => {
   if (!emails || !emails.length) {
     return <span className='gray60'>No email</span>
   }
-
-  return <a href={`mailto:${emails[0].value}`}>{emails[0].value}</a>
+  return <a className='gray10' href={`mailto:${emails[0].value}`}>{emails[0].value}</a>
 }
 
 const DisplayPhone = ({ phones }) => {
   if (!phones || !phones.length) {
     return <span className='gray60'>No phone</span>
   }
+  return <a className='gray10' href={`tel:${phones[0].value}`}>{phones[0].value}</a>
+}
 
-  return <a href={`tel:${phones[0].value}`}>{phones[0].value}</a>
+const UpdatedAt = ({contact}) => {
+  const {createdAt, createdBy, updatedAt, updatedBy} = contact
+  return (
+    <div>
+      <div className='gray20 truncate'>
+        <TimeAgo date={(updatedAt || createdAt)} /> by <YouOrName user={(updatedBy || createdBy)} />
+      </div>
+    </div>
+  )
+}
+
+const LatestActivity = ({contact}) => {
+  const post = contact.latestPost ? contact.latestPost : {
+    type: 'AddContactsToCampaign',
+    message: 'Contact added to the campaign',
+    createdAt: contact.updatedAt,
+    createdBy: contact.updatedBy
+  }
+  const {type, status, createdBy, createdAt} = post
+  return (
+    <div className='flex'>
+      <div className='flex-none pr2' style={{paddingTop: 3}}>
+        <PostIcon type={type} />
+      </div>
+      <div className='flex-auto'>
+        <div className='truncate f-sm gray10 semibold lh-copy'>
+          {formatMessage(post)}
+          {type === 'StatusUpdate' ? <Status status={status} /> : null}
+        </div>
+        <div className='f-xs gray20 truncate'>
+          <TimeAgo date={createdAt} /> by <YouOrName user={createdBy} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Replace things in the message to make the preview look nice.
+function formatMessage (post) {
+  if (post.type === 'StatusUpdate') return 'Status updated'
+  if (post.embeds && post.embeds.length) {
+    return replaceUrl(post.message)
+  }
+  return post.message
 }
 
 class ContactsTable extends React.Component {
@@ -137,18 +203,12 @@ class ContactsTable extends React.Component {
               </SortableHeader>
               <SortableHeader
                 className='left-align'
-                sortDirection={sort['outlets.0.value']}
-                onSortChange={(d) => onSortChange({ 'outlets.0.value': d })}>
-                Title
-              </SortableHeader>
-              <SortableHeader
-                className='left-align'
                 sortDirection={sort['outlets.0.label']}
                 onSortChange={(d) => onSortChange({ 'outlets.0.label': d })}>
-                Media Outlet
+                Outlet
               </SortableHeader>
-              <th className='left-align'>Email</th>
-              <th className='left-align'>Phone</th>
+              {!campaign && <th className='left-align'>Email</th> }
+              {!campaign && <th className='left-align'>Phone</th> }
               {campaign && (
                 <SortableHeader
                   className='left-align'
@@ -157,12 +217,22 @@ class ContactsTable extends React.Component {
                   Status
                 </SortableHeader>
               )}
-              <SortableHeader
-                className='left-align'
-                sortDirection={sort['updatedAt']}
-                onSortChange={(d) => onSortChange({ updatedAt: d })}>
-                Updated
-              </SortableHeader>
+              {campaign ? (
+                <SortableHeader
+                  className='left-align'
+                  style={{width: '40%'}}
+                  sortDirection={sort['updatedAt']}
+                  onSortChange={(d) => onSortChange({ updatedAt: d })}>
+                   Latest Activity
+                </SortableHeader>
+              ) : (
+                <SortableHeader
+                  className='left-align'
+                  sortDirection={sort['updatedAt']}
+                  onSortChange={(d) => onSortChange({ updatedAt: d })}>
+                   Updated At
+                </SortableHeader>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -172,16 +242,8 @@ class ContactsTable extends React.Component {
                 slug,
                 emails,
                 outlets,
-                phones,
-                updatedBy,
-                createdBy,
-                updatedAt,
-                createdAt
+                phones
               } = contact
-              const contactRef = campaign ? campaign.contacts[campaign.slug] : null
-              const contextualUpdatedAt = contactRef ? contactRef.updatedAt : (updatedAt || createdAt)
-              const contextualUpdatedBy = contactRef ? contactRef.updatedBy : (updatedBy || createdBy)
-              const firstOutlet = (outlets && outlets.length && outlets[0]) || {}
               return (
                 <SelectableRow
                   data={contact}
@@ -195,17 +257,18 @@ class ContactsTable extends React.Component {
                     <ContactLink contact={contact} onClick={onContactClick} />
                   </td>
                   <td className='left-align'>
-                    {firstOutlet.value || <span className='gray60'>No title</span>}
+                    <DisplayOutlet outlets={outlets} />
                   </td>
-                  <td className='left-align'>
-                    {firstOutlet.label || <span className='gray60'>No outlet</span>}
-                  </td>
-                  <td className='left-align'>
-                    <DisplayEmail emails={emails} />
-                  </td>
-                  <td className='left-align'>
-                    <DisplayPhone phones={phones} />
-                  </td>
+                  {!campaign && (
+                    <td className='left-align'>
+                      <DisplayEmail emails={emails} />
+                    </td>
+                  )}
+                  {!campaign && (
+                    <td className='left-align'>
+                      <DisplayPhone phones={phones} />
+                    </td>
+                  )}
                   {campaign && (
                     <td className='left-align' style={{overflow: 'visible'}}>
                       <StatusSelectorContainer
@@ -218,8 +281,11 @@ class ContactsTable extends React.Component {
                     </td>
                   )}
                   <td className='left-align'>
-                    <TimeAgo className='semibold f-sm' date={contextualUpdatedAt} />
-                    <span className='normal f-sm'> by <YouOrName user={contextualUpdatedBy} /></span>
+                    {campaign ? (
+                      <LatestActivity contact={contact} />
+                    ) : (
+                      <UpdatedAt contact={contact} />
+                    )}
                   </td>
                 </SelectableRow>
               )

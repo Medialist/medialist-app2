@@ -5,7 +5,8 @@ const style = {
   borderRadius: 10,
   verticalAlign: 2,
   fontWeight: 800,
-  padding: '3px 10px'
+  padding: '3px 10px',
+  lineHeight: 1.2
 }
 
 export default (props) => {

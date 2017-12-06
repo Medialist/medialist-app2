@@ -117,6 +117,7 @@ Meteor.publish('campaign-contacts', function (campaignSlug) {
       campaign: '$campaign',
       slug: '$contacts.slug',
       status: '$contacts.status',
+      latestPost: '$contacts.latestPost',
       updatedAt: '$contacts.updatedAt',
       updatedBy: '$contacts.updatedBy',
       name: '$remote_contact.name',
