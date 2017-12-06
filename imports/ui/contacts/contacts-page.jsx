@@ -7,6 +7,7 @@ import { createContainer } from 'meteor/react-meteor-data'
 import { Link, withRouter } from 'react-router'
 import Arrow from 'rebass/dist/Arrow'
 import fileDownload from 'react-file-download'
+import { DataDam } from 'react-data-dam'
 import { Dropdown, DropdownMenu } from '/imports/ui/navigation/dropdown'
 import ContactsTable from '/imports/ui/contacts/contacts-table'
 import SearchBox, { SearchBoxCount } from '/imports/ui/lists/search-box'
@@ -32,6 +33,8 @@ import createSearchQueryContainer from './search-query-container'
 import createSearchEnricher from './search-enricher'
 import { ContactSearchSchema } from '/imports/api/contacts/schema'
 import MergeContactsModal from '/imports/ui/contacts/merge/merge-contacts-modal'
+import ShowUpdatesButton from '/imports/ui/lists/show-updates-button'
+import { updatedByUserAutoRelease } from '/imports/ui/lists/data-dam'
 
 /*
  * ContactPage and ContactsPageContainer
@@ -301,119 +304,124 @@ class ContactsPage extends React.Component {
     const selectionsLength = selectionMode === 'all' ? contactsCount : selections.length
 
     return (
-      <div style={{paddingBottom: 100}}>
-        <div style={{height: 58}} className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
-          <div className='flex-auto border-right border-gray80'>
-            <MasterListsSelectorContainer
-              type='Contacts'
-              userId={this.props.userId}
-              allCount={allContactsCount}
-              selectedMasterListSlug={masterListSlug}
-              onChange={onMasterListChange} />
-          </div>
-          <div className='flex-none bg-white center px4' style={{width: 240}}>
-            <button className='btn bg-completed white mr1' onClick={() => this.showModal('addContactModal')} data-id='new-contact-button'>New Contact</button>
-            <Dropdown>
-              <button className='btn bg-completed white' onClick={this.onDropdownArrowClick} data-id='contact-actions-button'>
-                <Arrow direction='down' style={{ marginLeft: 0 }} />
-              </button>
-              <DropdownMenu width={210} left={-165} top={0} arrowAlign='right' arrowMarginRight='15px' open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
-                <nav className='block py1'>
-                  <Link to='/contacts/import' className='block px3 py2 f-md normal gray20 hover-bg-gray90' activeClassName='active' onClick={this.onLinkClick} data-id='import-contacts-button'>
-                    <FeedContactIcon />
-                    <span className='ml2'>Import Contacts</span>
-                  </Link>
-                </nav>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
-        </div>
-        <div className='bg-white shadow-2 m4 mt8' data-id='contacts-table'>
-          <div className='pt4 pl4 pr4 pb1 items-center'>
-            <SearchBox initialTerm={term} onTermChange={this.onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' style={{zIndex: 1}}>
-              <div style={{margin: '1px 4px -4px 6px'}} >
-                {campaigns && campaigns.map((c) => (
-                  <AvatarTag
-                    key={c.slug}
-                    name={c.name}
-                    avatar={c.avatar}
-                    onRemove={() => onCampaignRemove(c)}
-                  />
-                ))}
-                {selectedTags && selectedTags.map((t) => (
-                  <CountTag
-                    key={t.slug}
-                    name={t.name}
-                    count={t.contactsCount}
-                    onRemove={() => onTagRemove(t)}
-                  />
-                ))}
-                {importId && (
-                  <CountTag name='Imported Contacts' onRemove={onImportRemove} />
-                )}
+      <DataDam data={contacts} flowing={loading} autoRelease={updatedByUserAutoRelease}>
+        {(contacts, diff, release) => (
+          <div style={{paddingBottom: 100}}>
+            <div style={{height: 58}} className='flex items-center justify-end bg-white width-100 shadow-inset-2'>
+              <div className='flex-auto border-right border-gray80'>
+                <MasterListsSelectorContainer
+                  type='Contacts'
+                  userId={this.props.userId}
+                  allCount={allContactsCount}
+                  selectedMasterListSlug={masterListSlug}
+                  onChange={onMasterListChange} />
               </div>
-            </SearchBox>
-            <SearchBoxCount type='contact' loading={loading} total={contactsCount} />
+              <div className='flex-none bg-white center px4' style={{width: 240}}>
+                <button className='btn bg-completed white mr1' onClick={() => this.showModal('addContactModal')} data-id='new-contact-button'>New Contact</button>
+                <Dropdown>
+                  <button className='btn bg-completed white' onClick={this.onDropdownArrowClick} data-id='contact-actions-button'>
+                    <Arrow direction='down' style={{ marginLeft: 0 }} />
+                  </button>
+                  <DropdownMenu width={210} left={-165} top={0} arrowAlign='right' arrowMarginRight='15px' open={this.state.isDropdownOpen} onDismiss={this.onDropdownDismiss}>
+                    <nav className='block py1'>
+                      <Link to='/contacts/import' className='block px3 py2 f-md normal gray20 hover-bg-gray90' activeClassName='active' onClick={this.onLinkClick} data-id='import-contacts-button'>
+                        <FeedContactIcon />
+                        <span className='ml2'>Import Contacts</span>
+                      </Link>
+                    </nav>
+                  </DropdownMenu>
+                </Dropdown>
+              </div>
+            </div>
+            <div className='bg-white shadow-2 m4 mt8' data-id='contacts-table'>
+              <div className='pt4 pl4 pr4 pb1 items-center'>
+                <SearchBox initialTerm={term} onTermChange={this.onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' style={{zIndex: 1}}>
+                  <div style={{margin: '1px 4px -4px 6px'}} >
+                    {campaigns && campaigns.map((c) => (
+                      <AvatarTag
+                        key={c.slug}
+                        name={c.name}
+                        avatar={c.avatar}
+                        onRemove={() => onCampaignRemove(c)}
+                      />
+                    ))}
+                    {selectedTags && selectedTags.map((t) => (
+                      <CountTag
+                        key={t.slug}
+                        name={t.name}
+                        count={t.contactsCount}
+                        onRemove={() => onTagRemove(t)}
+                      />
+                    ))}
+                    {importId && (
+                      <CountTag name='Imported Contacts' onRemove={onImportRemove} />
+                    )}
+                  </div>
+                </SearchBox>
+                <SearchBoxCount type='contact' loading={loading} total={contactsCount} />
+              </div>
+              <ContactsTable
+                contacts={contacts}
+                loading={loading}
+                sort={sort}
+                limit={25}
+                term={term}
+                selections={selections}
+                selectionMode={selectionMode}
+                onSelectionModeChange={this.onSelectionModeChange}
+                onSortChange={this.onSortChange}
+                onSelectionsChange={onSelectionsChange}
+                searchTermActive={searchTermActive} />
+            </div>
+            { loading && <LoadingBar /> }
+            <ContactsActionsToast
+              contacts={selections}
+              contactsCount={selectionsLength}
+              onCampaignClick={() => this.showModal('addContactsToCampaignModal')}
+              onSectorClick={() => this.showModal('addToMasterListsModal')}
+              onFavouriteClick={() => this.onFavouriteAll()}
+              onTagClick={() => this.showModal('addTagsModal')}
+              onMergeClick={() => this.showModal('mergeContactsModal')}
+              onDeselectAllClick={() => this.clearSelection()}
+              onExportToCsvClick={this.onExportToCsv} />
+            <CreateContactModal
+              onContactCreated={this.onContactCreated}
+              onDismiss={this.hideModals}
+              open={this.state.addContactModal} />
+            <AddContactsToCampaign
+              title='Add these Contacts to a Campaign'
+              contacts={selections}
+              contactsCount={selectionsLength}
+              contactSearch={contactSearch}
+              selectionMode={selectionMode}
+              onDismiss={this.hideModals}
+              open={this.state.addContactsToCampaignModal} />
+            <AddTagsModal
+              title='Tag these Contacts'
+              type='Contacts'
+              open={this.state.addTagsModal}
+              onDismiss={this.hideModals}
+              onUpdateTags={this.onTagAll}>
+              <AbbreviatedAvatarList items={selections} maxTooltip={12} total={selectionsLength} />
+            </AddTagsModal>
+            <AddToMasterListModal
+              type='Contacts'
+              title='Add these contacts to a list'
+              items={this.state.selections}
+              open={this.state.addToMasterListsModal}
+              onDismiss={this.hideModals}
+              onSave={this.onAddAllToMasterLists}>
+              <AbbreviatedAvatarList items={selections} maxTooltip={12} total={selectionsLength} />
+            </AddToMasterListModal>
+            <MergeContactsModal
+              contacts={this.state.selections}
+              open={this.state.mergeContactsModal}
+              onDismiss={this.hideModals}
+              onMerged={this.clearSelectionAndHideModals} />
+            <ShowUpdatesButton data={contacts} diff={diff} onClick={release} />
           </div>
-          <ContactsTable
-            contacts={contacts}
-            loading={loading}
-            sort={sort}
-            limit={25}
-            term={term}
-            selections={selections}
-            selectionMode={selectionMode}
-            onSelectionModeChange={this.onSelectionModeChange}
-            onSortChange={this.onSortChange}
-            onSelectionsChange={onSelectionsChange}
-            searchTermActive={searchTermActive} />
-        </div>
-        { loading && <LoadingBar /> }
-        <ContactsActionsToast
-          contacts={selections}
-          contactsCount={selectionsLength}
-          onCampaignClick={() => this.showModal('addContactsToCampaignModal')}
-          onSectorClick={() => this.showModal('addToMasterListsModal')}
-          onFavouriteClick={() => this.onFavouriteAll()}
-          onTagClick={() => this.showModal('addTagsModal')}
-          onMergeClick={() => this.showModal('mergeContactsModal')}
-          onDeselectAllClick={() => this.clearSelection()}
-          onExportToCsvClick={this.onExportToCsv} />
-        <CreateContactModal
-          onContactCreated={this.onContactCreated}
-          onDismiss={this.hideModals}
-          open={this.state.addContactModal} />
-        <AddContactsToCampaign
-          title='Add these Contacts to a Campaign'
-          contacts={selections}
-          contactsCount={selectionsLength}
-          contactSearch={contactSearch}
-          selectionMode={selectionMode}
-          onDismiss={this.hideModals}
-          open={this.state.addContactsToCampaignModal} />
-        <AddTagsModal
-          title='Tag these Contacts'
-          type='Contacts'
-          open={this.state.addTagsModal}
-          onDismiss={this.hideModals}
-          onUpdateTags={this.onTagAll}>
-          <AbbreviatedAvatarList items={selections} maxTooltip={12} total={selectionsLength} />
-        </AddTagsModal>
-        <AddToMasterListModal
-          type='Contacts'
-          title='Add these contacts to a list'
-          items={this.state.selections}
-          open={this.state.addToMasterListsModal}
-          onDismiss={this.hideModals}
-          onSave={this.onAddAllToMasterLists}>
-          <AbbreviatedAvatarList items={selections} maxTooltip={12} total={selectionsLength} />
-        </AddToMasterListModal>
-        <MergeContactsModal
-          contacts={this.state.selections}
-          open={this.state.mergeContactsModal}
-          onDismiss={this.hideModals}
-          onMerged={this.clearSelectionAndHideModals} />
-      </div>
+        )}
+      </DataDam>
     )
   }
 }

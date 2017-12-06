@@ -281,6 +281,38 @@ const test = {
 
     t.page.main().logout()
     t.end()
+  },
+
+  'Should display show updates button': function (t) {
+    t.createDomain(['campaign'], (campaign, done) => {
+      t.page.main()
+        .logout()
+
+      // Login with a new user
+      this.user = t.page.authenticate()
+        .register()
+
+      const campaignsPage = t.page.main()
+        .navigateToCampaigns(t)
+
+      t.perform((done) => {
+        t.db.connection
+          .collection('campaigns')
+          .update(
+            {slug: campaign.slug},
+            {$set: {name: `TEST${Date.now()}`}},
+            done
+          )
+      })
+
+      campaignsPage
+        .waitForElementPresent('@showUpdatesButton')
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   }
 }
 

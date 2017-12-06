@@ -34,11 +34,6 @@ function extractQueryOpts (props) {
   return queryOpts
 }
 
-function isSearching (queryOpts) {
-  const query = createContactSearchQuery(queryOpts)
-  return Object.keys(query).length > 0
-}
-
 /**
 * Contact SearchContainer HOC
 * Find contacts by a search term and other criteria.
@@ -72,15 +67,19 @@ export default (Component) => createContainer((props) => {
     ...queryOpts
   }
 
-  const searching = isSearching(queryOpts)
+  const subs = [Meteor.subscribe('contact-search-results', searchOpts)]
+
+  const query = createContactSearchQuery(queryOpts)
+
+  const searching = Object.keys(query).length > 0
 
   const searchTermActive = queryOpts.hasOwnProperty('term')
 
-  const subs = [Meteor.subscribe('contact-search-results', searchOpts)]
-
   const sortSpec = getCustomSortSpec(sort)
 
-  const contacts = ContactSearchResults.find({}, {limit, sort: sortSpec}).fetch()
+  const contacts = ContactSearchResults
+    .find(query, {limit, sort: sortSpec})
+    .fetch()
 
   const loading = props.loading || subs.some((s) => !s.ready())
 
@@ -106,7 +105,9 @@ export default (Component) => createContainer((props) => {
 export const createSearchCountContainer = (Component) => createContainer((props) => {
   const queryOpts = extractQueryOpts(props)
 
-  const searching = isSearching(queryOpts)
+  const query = createContactSearchQuery(queryOpts)
+
+  const searching = Object.keys(query).length > 0
 
   const allContactsCount = Contacts.allContactsCount()
 
