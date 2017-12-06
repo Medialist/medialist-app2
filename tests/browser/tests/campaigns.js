@@ -225,6 +225,9 @@ const test = {
       const masterListsSelector = campaignsPage.section.masterListsSelector
       const campaignTable = campaignsPage.section.campaignTable
 
+      campaignsPage
+        .waitForElementVisible(campaignsPage.section.masterListsSelector.selector)
+
       // Assert each campaign present/absent in each master list
       masterLists.forEach((masterList, i) => {
         masterListsSelector.clickMasterListBySlug(masterList.slug)

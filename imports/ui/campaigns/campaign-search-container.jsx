@@ -7,6 +7,7 @@ import Campaigns from '/imports/api/campaigns/campaigns'
 import { CampaignSearchResults, CampaignSearchCount } from './collections'
 import { StatusIndex } from '/imports/api/contacts/status'
 import { collationSort } from '/imports/lib/collation'
+import createCampaignSearchQuery from '/imports/api/campaigns/queries'
 
 // dir is -1 or 1. Returns a sort functon.
 const campaignStatusSort = (contactSlug, dir) => (a, b) => {
@@ -80,7 +81,9 @@ export default (Component, opts = {}) => {
 
       const sortSpec = getCustomSortSpec(sort, contactSlug)
 
-      const campaigns = CampaignSearchResults.find({}, {limit, sort: sortSpec}).fetch()
+      const campaigns = CampaignSearchResults
+        .find(createCampaignSearchQuery(queryOpts), {limit, sort: sortSpec})
+        .fetch()
 
       const allCampaignsCount = Campaigns.allCampaignsCount()
 

@@ -62,6 +62,9 @@ const test = {
           .searchFor(contact1.name)
           .updateStatus(contact1, 'hot-lead')
 
+        // Wait for request to be sent to server and db updated
+        t.pause(1000)
+
         t.perform((done) => {
           t.db.findCampaign({
             slug: campaign.slug
