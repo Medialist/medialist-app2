@@ -516,6 +516,38 @@ ${faker.name.findName()}, ${faker.company.companyName()}, ${faker.internet.email
       t.page.main().logout()
       t.end()
     })
+  },
+
+  'Should display show updates button': function (t) {
+    t.createDomain(['contact'], (contact, done) => {
+      t.page.main()
+        .logout()
+
+      // Login with a new user
+      this.user = t.page.authenticate()
+        .register()
+
+      const contactsPage = t.page.main()
+        .navigateToContacts(t)
+
+      t.perform((done) => {
+        t.db.connection
+          .collection('contacts')
+          .update(
+            {slug: contact.slug},
+            {$set: {name: `TEST${Date.now()}`}},
+            done
+          )
+      })
+
+      contactsPage
+        .waitForElementPresent('@showUpdatesButton')
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   }
 }
 

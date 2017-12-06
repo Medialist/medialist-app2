@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
+import { DataDam } from 'react-data-dam'
 import { MouseHoveringDetection } from 'react-detect-mouse-over'
 import Modal from '/imports/ui/navigation/modal'
 import { AddIcon, SelectedIcon } from '/imports/ui/images/icons'
@@ -26,7 +27,8 @@ class AddContact extends React.Component {
     isSelected: PropTypes.func.isRequired,
     isSelectable: PropTypes.func.isRequired,
     selectedContacts: PropTypes.array.isRequired,
-    contacts: PropTypes.array.isRequired // Search results
+    contacts: PropTypes.array.isRequired, // Search results
+    loading: PropTypes.bool
   }
 
   onTermChange = (term) => {
@@ -62,44 +64,49 @@ class AddContact extends React.Component {
       onAdd,
       onRemove,
       onCreate,
-      contacts
+      contacts,
+      loading
     } = this.props
 
     const { onTermChange, onKeyPress } = this
 
     return (
-      <div data-id='add-contacts-to-campaign-modal'>
-        <h1 className='f-xl regular center mt6'>Add Contacts to this Campaign</h1>
-        <AvatarList items={selectedContacts} onRemove={onRemove} className='my4 px4' />
-        <SearchBox
-          initialTerm={term}
-          onTermChange={onTermChange}
-          onKeyPress={onKeyPress}
-          placeholder='Search or create a new contact'
-          data-id='search-contacts-input'
-        />
-        <Scroll height={'calc(95vh - 250px)'}>
-          <ContactListWithHoverDetect
-            isSelected={this.props.isSelected}
-            isSelectable={this.props.isSelectable}
-            onAdd={onAdd}
-            onRemove={onRemove}
-            contacts={contacts}
-            searching={Boolean(this.props.term)} />
-          <CreateContactButton term={term} onCreate={onCreate} />
-        </Scroll>
-        <form className='py4 border-top border-gray80 flex' onReset={onReset} onSubmit={onSubmit}>
-          <div className='flex-auto'>
-            <Link to='/contacts/import' className='btn bg-transparent blue ml1' data-id='import-contacts-button'>
-              Import Contacts via CSV
-            </Link>
+      <DataDam data={contacts} flowing={loading}>
+        {(contacts) => (
+          <div data-id='add-contacts-to-campaign-modal'>
+            <h1 className='f-xl regular center mt6'>Add Contacts to this Campaign</h1>
+            <AvatarList items={selectedContacts} onRemove={onRemove} className='my4 px4' />
+            <SearchBox
+              initialTerm={term}
+              onTermChange={onTermChange}
+              onKeyPress={onKeyPress}
+              placeholder='Search or create a new contact'
+              data-id='search-contacts-input'
+            />
+            <Scroll height={'calc(95vh - 250px)'}>
+              <ContactListWithHoverDetect
+                isSelected={this.props.isSelected}
+                isSelectable={this.props.isSelectable}
+                onAdd={onAdd}
+                onRemove={onRemove}
+                contacts={contacts}
+                searching={Boolean(this.props.term)} />
+              <CreateContactButton term={term} onCreate={onCreate} />
+            </Scroll>
+            <form className='py4 border-top border-gray80 flex' onReset={onReset} onSubmit={onSubmit}>
+              <div className='flex-auto'>
+                <Link to='/contacts/import' className='btn bg-transparent blue ml1' data-id='import-contacts-button'>
+                  Import Contacts via CSV
+                </Link>
+              </div>
+              <div className='flex-auto right-align'>
+                <button className='btn bg-transparent gray40 mr2' type='reset' data-id='cancel-button'>Cancel</button>
+                <button className='btn bg-blue white px3 mr4' type='submit' data-id='save-button'>{selectedContacts.length === 0 ? 'Add Contacts' : `Add ${selectedContacts.length} Contact${selectedContacts.length > 1 ? 's' : ''}`}</button>
+              </div>
+            </form>
           </div>
-          <div className='flex-auto right-align'>
-            <button className='btn bg-transparent gray40 mr2' type='reset' data-id='cancel-button'>Cancel</button>
-            <button className='btn bg-blue white px3 mr4' type='submit' data-id='save-button'>{selectedContacts.length === 0 ? 'Add Contacts' : `Add ${selectedContacts.length} Contact${selectedContacts.length > 1 ? 's' : ''}`}</button>
-          </div>
-        </form>
-      </div>
+        )}
+      </DataDam>
     )
   }
 }

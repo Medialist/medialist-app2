@@ -13,7 +13,8 @@ module.exports = {
   },
   elements: {
     newContactButton: '[data-id=new-contact-button]',
-    myContactsButton: '[data-slug=my]'
+    myContactsButton: '[data-slug=my]',
+    showUpdatesButton: '[data-id=show-updates-button]'
   },
   sections: {
     masterListsSelector: masterListsSelector,
