@@ -100,6 +100,7 @@ const Owner = ({campaign, contact}) => {
   const owner = owners[0]
   return (
     <UserSelector
+      alignRight
       initialItems={campaign.team}
       selectedUser={owner}
       button={u => u ? (
@@ -237,6 +238,7 @@ class ContactsTable extends React.Component {
               {campaign && (
                 <SortableHeader
                   className='left-align'
+                  style={{width: '180px'}}
                   sortDirection={sort['status']}
                   onSortChange={(d) => onSortChange({ status: d })}>
                   Status
@@ -261,6 +263,7 @@ class ContactsTable extends React.Component {
               {campaign ? (
                 <SortableHeader
                   className='left-align'
+                  style={{width: '120px'}}
                   sortDirection={sort['owners.0.name']}
                   onSortChange={(d) => onSortChange({ 'owners.0.name': d })}>
                    Owner

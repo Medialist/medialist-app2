@@ -26,13 +26,13 @@ export const Select = React.createClass({
   },
   render () {
     const { open } = this.state
-    const { disabled, buttonText, children, style, className, width = 223 } = this.props
+    const { disabled, buttonText, children, style, className, width = 223, alignRight } = this.props
     return (
       <Dropdown>
         <div className={className} style={style} onClick={this.openDropdown} disabled={disabled} data-id={this.props['data-id']}>
           {buttonText} <ChevronDown className={open ? 'blue' : 'gray40'} />
         </div>
-        <DropdownMenu width={width} open={open} onDismiss={this.closeDropdown}>
+        <DropdownMenu width={width} open={open} onDismiss={this.closeDropdown} alignRight={alignRight}>
           <nav>
             {children}
           </nav>
@@ -43,10 +43,10 @@ export const Select = React.createClass({
 })
 
 export const Option = ({selected, onClick, children, ...props}) => (
-  <div className='flex px3 py2 pointer hover-bg-gray90 hover-color-trigger hover-box-shadow-x-gray80' onClick={onClick} data-id={props['data-id']}>
+  <div className='flex items-center px3 py2 pointer hover-bg-gray90 hover-color-trigger hover-box-shadow-x-gray80' onClick={onClick} data-id={props['data-id']} {...props}>
     <div className='flex-auto'>
       {children}
     </div>
-    { selected && <Check className='flex-none blue-dark' style={{transform: 'scale(1.5)'}} svgStyle={{verticalAlign: '3px'}} /> }
+    { selected && <Check className='flex-none blue-dark' style={{transform: 'scale(1.5)'}} svgStyle={{verticalAlign: 'top'}} /> }
   </div>
 )

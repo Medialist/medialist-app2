@@ -16,19 +16,23 @@ export default class UserSelector extends React.Component {
   }
 
   static defaultProps = {
-    option: ({profile}) => {
+    option: ({profile}, selected) => {
       const {name, avatar} = profile
       return (
         <div>
-          <CircleAvatar name={name} avatar={avatar} />
-          <span className='ml2'>{name}</span>
+          <CircleAvatar className='mr2' name={name} avatar={avatar} />
+          {selected ? (
+            <span className='gray10 semibold'>{name}</span>
+          ) : (
+            <span className='gray40 normal'>{name}</span>
+          )}
         </div>
       )
     }
   }
 
   render () {
-    const {option, selectedUser, initialItems, onSelect} = this.props
+    const {option, selectedUser, initialItems, onSelect, alignRight} = this.props
     const button = this.props.button || option
     const query = {
       roles: 'team',
@@ -54,15 +58,25 @@ export default class UserSelector extends React.Component {
       'roles': 1
     }
     return (
-      <Select buttonText={button(selectedUser)}>
+      <Select
+        width={250}
+        alignRight={alignRight}
+        buttonText={button(selectedUser)} >
         <SearchableList query={query} fields={fields} collection='users' initialItems={initialItems} limit={5} sort={{'profile.name': 1}}>
           {(users) => (
             <div>
-              {users.map(u => (
-                <Option key={u._id} selected={selectedUser && u._id === selectedUser._id} onClick={() => onSelect(u)}>
-                  {option(u)}
-                </Option>
-              ))}
+              {users.map(u => {
+                const selected = selectedUser && u._id === selectedUser._id
+                return (
+                  <Option
+                    key={u._id}
+                    selected={selected}
+                    onClick={() => onSelect(u)}
+                    style={{paddingTop: 5, paddingBottom: 5}}>
+                    {option(u, selected)}
+                  </Option>
+                )
+              })}
             </div>
           )}
         </SearchableList>
@@ -82,7 +96,10 @@ class SearchList extends React.Component {
     const {items, children, loading} = this.props
     return (
       <div>
-        <SearchBox onTermChange={term => this.props.onTermChange({target: {name: 'term', value: term}})} />
+        <SearchBox
+          placeholder='Search teammates...'
+          style={{borderTop: '0 none', borderLeft: '0 none', borderRight: '0 none'}}
+          onTermChange={term => this.props.onTermChange({target: {name: 'term', value: term}})} />
         {loading && <LoadingBar />}
         {children(items)}
       </div>
