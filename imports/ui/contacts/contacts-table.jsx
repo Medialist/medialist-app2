@@ -13,6 +13,7 @@ import StatusSelectorContainer from '/imports/ui/feedback/status-selector-contai
 import PostIcon from '/imports/ui/posts/post-icon'
 import Status from '/imports/ui/feedback/status'
 import UserSelector from '/imports/ui/users/user-selector'
+import { assignContactOwner } from '/imports/api/campaigns/methods'
 
 const ContactLink = ({contact, onClick}) => {
   const {slug, name, avatar} = contact
@@ -107,7 +108,11 @@ const Owner = ({campaign, contact}) => {
         <span className='gray60'>No owner</span>
       )}
       onSelect={user => {
-        console.log({campaign, contact, user})
+        assignContactOwner.call({
+          campaignSlug: campaign.slug,
+          contactSlug: contact.slug,
+          ownerUserId: user._id
+        })
       }}
      />
   )
