@@ -12,6 +12,7 @@ import StatusLabel from '/imports/ui/feedback/status-label'
 import StatusSelectorContainer from '/imports/ui/feedback/status-selector-container'
 import PostIcon from '/imports/ui/posts/post-icon'
 import Status from '/imports/ui/feedback/status'
+import UserSelector from '/imports/ui/users/user-selector'
 
 const ContactLink = ({contact, onClick}) => {
   const {slug, name, avatar} = contact
@@ -90,6 +91,25 @@ const LatestActivity = ({contact}) => {
         </div>
       </div>
     </div>
+  )
+}
+
+const Owner = ({campaign, contact}) => {
+  const owners = contact.owners || []
+  const owner = owners[0]
+  return (
+    <UserSelector
+      initialItems={campaign.team}
+      selectedUser={owner}
+      button={u => u ? (
+        <CircleAvatar avatar={u.avatar} name={u.name} />
+      ) : (
+        <span className='gray60'>No owner</span>
+      )}
+      onSelect={user => {
+        console.log({campaign, contact, user})
+      }}
+     />
   )
 }
 
@@ -233,6 +253,14 @@ class ContactsTable extends React.Component {
                    Updated At
                 </SortableHeader>
               )}
+              {campaign ? (
+                <SortableHeader
+                  className='left-align'
+                  sortDirection={sort['owners.0.name']}
+                  onSortChange={(d) => onSortChange({ 'owners.0.name': d })}>
+                   Owner
+                </SortableHeader>
+              ) : null}
             </tr>
           </thead>
           <tbody>
@@ -287,6 +315,11 @@ class ContactsTable extends React.Component {
                       <UpdatedAt contact={contact} />
                     )}
                   </td>
+                  {campaign && (
+                    <td className='left-align' style={{overflow: 'visible'}}>
+                      <Owner campaign={campaign} contact={contact} />
+                    </td>
+                  )}
                 </SelectableRow>
               )
             })}

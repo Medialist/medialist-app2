@@ -636,3 +636,35 @@ export const exportCampaignToCsv = new ValidatedMethod({
     }
   }
 })
+
+export const assignContactOwner = new ValidatedMethod({
+  name: 'AssignContactOwner',
+
+  validate: new SimpleSchema({
+    campaignSlug: {
+      type: String
+    },
+    contactSlug: {
+      type: String
+    },
+    ownerUserId: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    }
+  }).validator(),
+
+  run ({campaignSlug, contactSlug, ownerUserId}) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+    const ownerUserRef = findOneUserRef(ownerUserId)
+    Campaigns.update({
+      slug: campaignSlug,
+      'contacts.slug': contactSlug
+    }, {
+      $set: {
+        'contacts.$.owners.0': ownerUserRef
+      }
+    })
+  }
+})

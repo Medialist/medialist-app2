@@ -26,14 +26,14 @@ export const Select = React.createClass({
   },
   render () {
     const { open } = this.state
-    const { disabled, buttonText, children, style, className } = this.props
+    const { disabled, buttonText, children, style, className, width = 223 } = this.props
     return (
       <Dropdown>
         <div className={className} style={style} onClick={this.openDropdown} disabled={disabled} data-id={this.props['data-id']}>
-          {buttonText}<ChevronDown className='gray40' />
+          {buttonText} <ChevronDown className={open ? 'blue' : 'gray40'} />
         </div>
-        <DropdownMenu width={223} open={open} onDismiss={this.closeDropdown}>
-          <nav className='py3' onClick={this.closeDropdown}>
+        <DropdownMenu width={width} open={open} onDismiss={this.closeDropdown}>
+          <nav>
             {children}
           </nav>
         </DropdownMenu>

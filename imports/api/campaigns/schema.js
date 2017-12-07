@@ -34,6 +34,13 @@ export const CampaignContactRefSchema = new SimpleSchema({
   status: {
     type: String,
     allowedValues: StatusValues
+  },
+  owners: {
+    type: Array,
+    optional: true
+  },
+  'owners.$': {
+    type: UserRefSchema
   }
 })
 CampaignContactRefSchema.extend(AuditSchema)

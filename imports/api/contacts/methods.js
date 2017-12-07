@@ -87,6 +87,7 @@ export const addContactsToCampaign = new ValidatedMethod({
     const newContacts = newContactSlugs.map((slug) => ({
       slug,
       status: Contacts.status.toContact,
+      owners: [updatedBy],
       updatedAt,
       updatedBy
     }))
