@@ -50,13 +50,13 @@ const PostSquare = ({ post }) => {
   }
 
   return (
-    <span onClick={() => window.open(url, '_blank')} className='mr1'>
+    <a href={url} target='_blank' className='mr1'>
       <Tooltip title={<span style={titleStyle}>{toPrettyUrl(url)}</span>}>
         {icon
           ? <SquareAvatar avatar={icon} size={20} />
           : <CoverageIcon style={{ width: '20px', height: '20px' }} />}
       </Tooltip>
-    </span>
+    </a>
   )
 }
 
@@ -64,14 +64,14 @@ const PostOption = ({ post }) => {
   const { url, icon } = post.embeds[0]
 
   return (
-    <span onClick={() => window.open(url, '_blank')}>
+    <a href={url} target='_blank'>
       <span className='mr2'>
         {icon
           ? <SquareAvatar avatar={icon} size={20} />
           : <CoverageIcon style={{ width: '20px', height: '20px' }} />}
       </span>
       <span style={{ verticalAlign: 'middle' }}>{toPrettyUrl(url)}</span>
-    </span>
+    </a>
   )
 }
 
