@@ -657,14 +657,31 @@ export const assignContactOwner = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
+    const campaign = Campaigns.findOne({slug: campaignSlug})
+
+    if (!campaign) {
+      throw new Meteor.Error('Campaign not found')
+    }
+
     const ownerUserRef = findOneUserRef(ownerUserId)
-    Campaigns.update({
-      slug: campaignSlug,
-      'contacts.slug': contactSlug
-    }, {
+
+    const update = {
       $set: {
         'contacts.$.owners.0': ownerUserRef
       }
-    })
+    }
+
+    const isInTeam = campaign.team.some(t => t.slug === contactSlug)
+
+    if (!isInTeam) {
+      update.$push = {
+        team: ownerUserRef
+      }
+    }
+
+    Campaigns.update({
+      slug: campaignSlug,
+      'contacts.slug': contactSlug
+    }, update)
   }
 })

@@ -698,7 +698,7 @@ describe('Export Campaign to CSV method', function () {
   })
 })
 
-describe.only('assignContactOwner', function () {
+describe('assignContactOwner', function () {
   beforeEach(function () {
     resetDatabase()
   })
@@ -737,5 +737,7 @@ describe.only('assignContactOwner', function () {
     })
     const campaignContact = campaign.contacts.find(c => c.slug === contacts[1].slug)
     assert.deepEqual(campaignContact.owners[0], toUserRef(users[1]), 'Contact 1 should now have user 1 has it\'s owner')
+    const teamMember = campaign.team.find(t => t._id === users[1]._id)
+    assert.deepEqual(teamMember, toUserRef(users[1]), 'User 1 has been added to the team')
   })
 })

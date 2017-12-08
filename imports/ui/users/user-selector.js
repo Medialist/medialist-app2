@@ -24,9 +24,9 @@ export const UserOption = ({user, selected, ...props}) => {
     <Option selected={selected} {...props}>
       <CircleAvatar className='mr2' name={name} avatar={avatar} />
       {selected ? (
-        <span className='gray10 semibold'>{name}</span>
+        <span className='gray10 semibold f-md'>{name}</span>
       ) : (
-        <span className='gray40 normal'>{name}</span>
+        <span className='gray20 normal f-md'>{name}</span>
       )}
     </Option>
   )
