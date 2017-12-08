@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { Select, Option } from '/imports/ui/navigation/select'
 import { SquareAvatar } from '/imports/ui/images/avatar'
 import Tooltip from '/imports/ui/navigation/tooltip'
+import { CoverageIcon } from '/imports/ui/images/icons'
 
 export default function Coverage ({ posts }) {
   if (!posts.length) return <span className='gray60'>No coverage yet</span>
@@ -17,7 +18,8 @@ export default function Coverage ({ posts }) {
         <Select
           width={250}
           alignRight
-          buttonText={<span className='gray60 mr1' style={{cursor: 'pointer'}}>+{morePosts.length}</span>}>
+          buttonText={<span className='gray60 mr1'>+{morePosts.length}</span>}
+          style={{cursor: 'pointer'}}>
           {morePosts.map(post => (
             <Option key={post._id}>
               <PostOption post={post} />
@@ -39,33 +41,32 @@ Coverage.propTypes = {
 }
 
 const PostSquare = ({ post }) => {
-  const { url } = post.embeds[0]
+  const { url, icon } = post.embeds[0]
   const titleStyle = {
     display: 'inline-block',
-    maxWidth: '150px',
+    maxWidth: '200px',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis'
   }
 
-  const iconSrc = 'http://via.placeholder.com/20x20/000000/000000'
-
   return (
-    <span onClick={() => window.open(url, '_blank')}>
+    <span onClick={() => window.open(url, '_blank')} className='mr1'>
       <Tooltip title={<span style={titleStyle}>{toPrettyUrl(url)}</span>}>
-        <SquareAvatar avatar={iconSrc} size={20} className='mr1' />
+        {icon
+          ? <SquareAvatar avatar={icon} size={20} />
+          : <CoverageIcon style={{ width: '20px', height: '20px' }} />}
       </Tooltip>
     </span>
   )
 }
 
 const PostOption = ({ post }) => {
-  const { url } = post.embeds[0]
-  const iconSrc = 'http://via.placeholder.com/20x20/000000/000000'
+  const { url, icon } = post.embeds[0]
 
   const urlStyle = {
     display: 'inline-block',
-    maxWidth: '150px',
+    width: '100%',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -74,7 +75,11 @@ const PostOption = ({ post }) => {
 
   return (
     <span onClick={() => window.open(url, '_blank')}>
-      <SquareAvatar avatar={iconSrc} size={20} className='mr2' />
+      <span className='mr2'>
+        {icon
+          ? <SquareAvatar avatar={icon} size={20} />
+          : <CoverageIcon style={{ width: '20px', height: '20px' }} />}
+      </span>
       <span style={urlStyle}>{toPrettyUrl(url)}</span>
     </span>
   )
