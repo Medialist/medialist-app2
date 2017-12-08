@@ -595,9 +595,9 @@ export const exportCampaignToCsv = new ValidatedMethod({
       $project: {
         name: '$remote_contact.name',
         outlets: '$remote_contact.outlets',
-        emails: '$remote_contact.emails',
-        phones: '$remote_contact.phones',
         status: '$contacts.status',
+        latestPost: '$contacts.latestPost',
+        owners: '$contacts.owners',
         updatedAt: '$contacts.updatedAt',
         updatedBy: '$contacts.updatedBy'
       }
@@ -615,16 +615,20 @@ export const exportCampaignToCsv = new ValidatedMethod({
     }
 
     const res = Campaigns.aggregate(pipeline).map(c => {
+      let message = (c.latestPost && c.latestPost.message) || ''
+      if (c.latestPost && c.latestPost.type === 'StatusUpdate') {
+        message = 'Status updated'
+      }
       // Ensure all fields appear, and the keys are human friendly for the csv header row.
       return {
         'Name': c.name,
-        'Title': c.outlets[0] && c.outlets[0].value || '',
-        'Media Outlet': c.outlets[0] && c.outlets[0].label || '',
-        'Email': c.emails[0] && c.emails[0].value || '',
-        'Phone': c.phones[0] && c.phones[0].value || '',
+        'Outlet': (c.outlets[0] && c.outlets[0].label) || '',
+        'Title': (c.outlets[0] && c.outlets[0].value) || '',
         'Status': c.status,
+        'Latest Activity': message,
         'Updated At': moment(c.updatedAt).toISOString(),
-        'Updated By': c.updatedBy.name
+        'Updated By': c.updatedBy.name,
+        'Owner': (c.owners && c.owners[0] && c.owners[0].name) || ''
       }
     })
 

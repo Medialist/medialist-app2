@@ -628,22 +628,25 @@ describe('Export Campaign to CSV method', function () {
     const csvObj = babyparse.parse(res.data, {header: false})
     assert.equal(csvObj.data.length, 4)
 
-    const expectedHeader = ['Name', 'Title', 'Media Outlet', 'Email', 'Phone', 'Status', 'Updated At', 'Updated By']
+    const expectedHeader = ['Name', 'Outlet', 'Title', 'Status', 'Latest Activity', 'Updated At', 'Updated By', 'Owner']
     assert.deepEqual(csvObj.data[0], expectedHeader)
 
     const contactRows = csvObj.data.slice(1)
     contactRows.forEach((row, i) => {
       assert.equal(row[0], contacts[i].name)
-      assert.equal(row[1], contacts[i].outlets[0].value)
-      assert.equal(row[2], contacts[i].outlets[0].label)
-      assert.equal(row[3], contacts[i].emails[0].value)
-      assert.equal(row[4], contacts[i].phones[0].value)
+      assert.equal(row[1], contacts[i].outlets[0].label)
+      assert.equal(row[2], contacts[i].outlets[0].value)
+
+      assert.equal(row[6], users[0].profile.name)
       assert.equal(row[7], users[0].profile.name)
     })
 
-    assert.equal(contactRows[0][5], StatusMap.completed)
-    assert.equal(contactRows[1][5], StatusMap.toContact)
-    assert.equal(contactRows[2][5], StatusMap.completed)
+    assert.equal(contactRows[0][3], StatusMap.completed)
+    assert.equal(contactRows[1][3], StatusMap.toContact)
+    assert.equal(contactRows[2][3], StatusMap.completed)
+    assert.equal(contactRows[0][4], 'Status updated')
+    assert.equal(contactRows[1][4], '')
+    assert.equal(contactRows[2][4], 'Status updated')
   })
 
 
@@ -679,22 +682,20 @@ describe('Export Campaign to CSV method', function () {
     const csvObj = babyparse.parse(res.data, {header: false})
     assert.equal(csvObj.data.length, 4)
 
-    const expectedHeader = ['Name', 'Title', 'Media Outlet', 'Email', 'Phone', 'Status', 'Updated At', 'Updated By']
+    const expectedHeader = ['Name', 'Outlet', 'Title', 'Status', 'Latest Activity', 'Updated At', 'Updated By', 'Owner']
     assert.deepEqual(csvObj.data[0], expectedHeader)
 
     const contactRows = csvObj.data.slice(1)
     contactRows.forEach((row, i) => {
       assert.equal(row[0], contacts[i].name)
-      assert.equal(row[1], contacts[i].outlets[0].value)
-      assert.equal(row[2], contacts[i].outlets[0].label)
-      assert.equal(row[3], contacts[i].emails[0].value)
-      assert.equal(row[4], contacts[i].phones[0].value)
-      assert.equal(row[7], users[0].profile.name)
+      assert.equal(row[1], contacts[i].outlets[0].label)
+      assert.equal(row[2], contacts[i].outlets[0].value)
+      assert.equal(row[6], users[0].profile.name)
     })
 
-    assert.equal(contactRows[0][5], StatusMap.completed)
-    assert.equal(contactRows[1][5], StatusMap.toContact)
-    assert.equal(contactRows[2][5], StatusMap.completed)
+    assert.equal(contactRows[0][3], StatusMap.completed)
+    assert.equal(contactRows[1][3], StatusMap.toContact)
+    assert.equal(contactRows[2][3], StatusMap.completed)
   })
 })
 

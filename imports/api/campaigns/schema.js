@@ -35,6 +35,12 @@ export const CampaignContactRefSchema = new SimpleSchema({
     type: String,
     allowedValues: StatusValues
   },
+  // TODO: this shouls be a post, but that'd be a circlular ref.
+  latestPost: {
+    type: Object,
+    blackbox: true,
+    optional: true
+  },
   owners: {
     type: Array,
     optional: true
