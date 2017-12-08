@@ -126,6 +126,18 @@ Example documents from our collections
     {
       "slug": "eleanor-harding",
       "status": "To Contact",
+      "latestPost": {
+        "_id" : "2EnrcJ7r5i94JTmwZ",
+        "type" : "campaigns changed",
+        "//": "and the rest..."
+      },
+      "owners": [
+        {
+          "_id" : "hNc2ArK9TcAWyEXqQ",
+          "name" : "Olly Gilbert",
+          "avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
+        }
+      ]
       "updatedAt": ISODate("2016-02-24T22:26:39.782Z"),
       "updatedBy": {
         "_id" : "hNc2ArK9TcAWyEXqQ",

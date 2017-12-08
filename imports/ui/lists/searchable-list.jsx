@@ -88,8 +88,8 @@ export default (Component, opts = {}) => {
       let query = {}
       query = JSON.parse(JSON.stringify(this.props.query))
       query = replaceTerm(query, escapeRegExp(this.state.term))
-
-      const items = collection.find(query, this.props.fields).fetch()
+      const {sort, limit, fields} = this.props
+      const items = collection.find(query, {sort, limit, fields}).fetch()
 
       return {
         items, loading, searching

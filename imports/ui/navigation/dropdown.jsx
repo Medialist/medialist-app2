@@ -134,7 +134,12 @@ const Menu = ({children}) => (
   </div>
 )
 
-export const DropdownMenu = ({open, width, left, top = 0, arrowHeight = 12, arrowPosition = 'top', arrowAlign, arrowMarginLeft, arrowMarginRight, onDismiss, children}) => {
+export const DropdownMenu = ({open, width, left, top = 0, arrowHeight = 12, arrowPosition = 'top', arrowAlign, arrowMarginLeft, arrowMarginRight, onDismiss, alignRight, children}) => {
+  if (alignRight) {
+    left = `calc(100% - ${width}px)`
+    arrowAlign = 'right'
+    arrowMarginRight = '13px'
+  }
   return (
     <Container open={open} top={top + arrowHeight}>
       <Overlay onClick={onDismiss} />
