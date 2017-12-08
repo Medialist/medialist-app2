@@ -4,36 +4,51 @@ import { CircleAvatar } from '/imports/ui/images/avatar'
 import createSearchContainer from '/imports/ui/lists/searchable-list'
 import { Select, Option } from '/imports/ui/navigation/select'
 import SearchBox from '/imports/ui/lists/search-box'
+import Tooltip from '/imports/ui/navigation/tooltip'
 import { LoadingBar } from '/imports/ui/lists/loading'
+
+export const UserButton = ({user}) => {
+  if (!user) return <span className='gray60'>No owner</span>
+  const {avatar, name} = user
+  return (
+    <Tooltip title={name}>
+      <CircleAvatar avatar={avatar} name={name} />
+    </Tooltip>
+  )
+}
+
+export const UserOption = ({user, selected, ...props}) => {
+  const {name, avatar} = user.profile
+  return (
+    <Option selected={selected} {...props}>
+      <CircleAvatar className='mr2' name={name} avatar={avatar} />
+      {selected ? (
+        <span className='gray10 semibold'>{name}</span>
+      ) : (
+        <span className='gray40 normal'>{name}</span>
+      )}
+    </Option>
+  )
+}
 
 export default class UserSelector extends React.Component {
   static propTypes = {
     selectedUser: PropTypes.object.isRequired,
     onSelect: PropTypes.func.isRequired,
     option: PropTypes.func.isRequired,
-    button: PropTypes.func,
+    button: PropTypes.func.isRequired,
     initialItems: PropTypes.array
   }
 
   static defaultProps = {
-    option: ({profile}, selected) => {
-      const {name, avatar} = profile
-      return (
-        <div>
-          <CircleAvatar className='mr2' name={name} avatar={avatar} />
-          {selected ? (
-            <span className='gray10 semibold'>{name}</span>
-          ) : (
-            <span className='gray40 normal'>{name}</span>
-          )}
-        </div>
-      )
-    }
+    button: UserButton,
+    option: UserOption
   }
 
   render () {
-    const {option, selectedUser, initialItems, onSelect, alignRight} = this.props
-    const button = this.props.button || option
+    const {selectedUser, initialItems, onSelect, alignRight} = this.props
+    const CustomButton = this.props.button
+    const CustomOption = this.props.option
     const query = {
       roles: 'team',
       'profile.name': {
@@ -61,25 +76,29 @@ export default class UserSelector extends React.Component {
       <Select
         width={250}
         alignRight={alignRight}
-        buttonText={button(selectedUser)} >
-        <SearchableList query={query} fields={fields} collection='users' initialItems={initialItems} limit={5} sort={{'profile.name': 1}}>
-          {(users) => (
-            <div>
-              {users.map(u => {
-                const selected = selectedUser && u._id === selectedUser._id
-                return (
-                  <Option
-                    key={u._id}
-                    selected={selected}
-                    onClick={() => onSelect(u)}
-                    style={{paddingTop: 5, paddingBottom: 5}}>
-                    {option(u, selected)}
-                  </Option>
-                )
-              })}
-            </div>
-          )}
-        </SearchableList>
+        buttonText={<CustomButton user={selectedUser} />} >
+        {closeDropdown => (
+          <SearchableList query={query} fields={fields} collection='users' initialItems={initialItems} limit={5} sort={{'profile.name': 1}}>
+            {(users) => (
+              <div>
+                {users.map(u => {
+                  const selected = selectedUser && u._id === selectedUser._id
+                  return (
+                    <CustomOption
+                      key={u._id}
+                      user={u}
+                      selected={selected}
+                      style={{paddingTop: 5, paddingBottom: 5}}
+                      onClick={() => {
+                        onSelect(u)
+                        closeDropdown()
+                      }} />
+                  )
+                })}
+              </div>
+            )}
+          </SearchableList>
+        )}
       </Select>
     )
   }

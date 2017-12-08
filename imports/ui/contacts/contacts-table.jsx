@@ -103,11 +103,6 @@ const Owner = ({campaign, contact}) => {
       alignRight
       initialItems={campaign.team}
       selectedUser={owner}
-      button={u => u ? (
-        <CircleAvatar avatar={u.avatar} name={u.name} />
-      ) : (
-        <span className='gray60'>No owner</span>
-      )}
       onSelect={user => {
         assignContactOwner.call({
           campaignSlug: campaign.slug,
