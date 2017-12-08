@@ -6,6 +6,7 @@ import { Select, Option } from '/imports/ui/navigation/select'
 import SearchBox from '/imports/ui/lists/search-box'
 import Tooltip from '/imports/ui/navigation/tooltip'
 import { LoadingBar } from '/imports/ui/lists/loading'
+import { SearchIcon } from '/imports/ui/images/icons'
 
 export const UserButton = ({user}) => {
   if (!user) return <span className='gray60'>No owner</span>
@@ -78,9 +79,9 @@ export default class UserSelector extends React.Component {
         alignRight={alignRight}
         buttonText={<CustomButton user={selectedUser} />} >
         {closeDropdown => (
-          <SearchableList query={query} fields={fields} collection='users' limit={20} sort={{'profile.name': 1}}>
+          <SearchableList query={query} fields={fields} collection='users' sort={{'profile.name': 1}}>
             {(users) => (
-              <div style={{maxHeight: 200, overflowY: 'auto'}}>
+              <div style={{height: 200, overflowY: 'auto'}}>
                 {users.map(u => {
                   const selected = selectedUser && u._id === selectedUser._id
                   return (
@@ -95,6 +96,16 @@ export default class UserSelector extends React.Component {
                       }} />
                   )
                 })}
+                {!users || !users.length ? (
+                  <div className='center'>
+                    <div className='inline-block bg-gray80 mt5' style={{borderRadius: 15, width: 30, height: 30, lineHeight: '26px'}}>
+                      <SearchIcon className='gray20' />
+                    </div>
+                    <div className='gray20 mt3 f-md'>
+                      No teammates found
+                    </div>
+                  </div>
+                ) : null }
               </div>
             )}
           </SearchableList>
