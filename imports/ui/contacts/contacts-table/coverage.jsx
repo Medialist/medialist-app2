@@ -17,10 +17,9 @@ export default function Coverage ({ posts }) {
       {morePosts.length ? (
         <Select
           width={250}
-          alignRight
-          buttonText={<span className='gray60 mr1'>+{morePosts.length}</span>}
+          buttonText={<span className='gray60'>+{morePosts.length}</span>}
           style={{cursor: 'pointer'}}>
-          {morePosts.map(post => (
+          {() => morePosts.map(post => (
             <Option key={post._id}>
               <PostOption post={post} />
             </Option>
@@ -64,15 +63,6 @@ const PostSquare = ({ post }) => {
 const PostOption = ({ post }) => {
   const { url, icon } = post.embeds[0]
 
-  const urlStyle = {
-    display: 'inline-block',
-    width: '100%',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    verticalAlign: 'middle'
-  }
-
   return (
     <span onClick={() => window.open(url, '_blank')}>
       <span className='mr2'>
@@ -80,7 +70,7 @@ const PostOption = ({ post }) => {
           ? <SquareAvatar avatar={icon} size={20} />
           : <CoverageIcon style={{ width: '20px', height: '20px' }} />}
       </span>
-      <span style={urlStyle}>{toPrettyUrl(url)}</span>
+      <span style={{ verticalAlign: 'middle' }}>{toPrettyUrl(url)}</span>
     </span>
   )
 }
