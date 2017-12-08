@@ -11,16 +11,16 @@ export default function Coverage ({ posts }) {
 
   return (
     <span>
-      <Post post={firstPost} />
-      {secondPost ? <Post post={secondPost} /> : null}
+      <PostSquare post={firstPost} />
+      {secondPost ? <PostSquare post={secondPost} /> : null}
       {morePosts.length ? (
         <Select
           width={250}
           alignRight
-          buttonText={<span className='gray60'>+{morePosts.length}</span>}>
+          buttonText={<span className='gray60 mr1' style={{cursor: 'pointer'}}>+{morePosts.length}</span>}>
           {morePosts.map(post => (
             <Option key={post._id}>
-              <Post post={post} />
+              <PostOption post={post} />
             </Option>
           ))}
         </Select>
@@ -38,12 +38,11 @@ Coverage.propTypes = {
   })).isRequired
 }
 
-const Post = ({ post }) => {
+const PostSquare = ({ post }) => {
   const { url } = post.embeds[0]
-  let prettyUrl = url.replace(/^https?:\/\/(www\.)?/, '')
-
   const titleStyle = {
-    maxWidth: '100px',
+    display: 'inline-block',
+    maxWidth: '150px',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis'
@@ -52,8 +51,35 @@ const Post = ({ post }) => {
   const iconSrc = 'http://via.placeholder.com/20x20/000000/000000'
 
   return (
-    <Tooltip title={<span style={titleStyle}>{prettyUrl}</span>}>
-      <SquareAvatar avatar={iconSrc} size={20} onClick={() => window.open(url, '_blank')} />
-    </Tooltip>
+    <span onClick={() => window.open(url, '_blank')}>
+      <Tooltip title={<span style={titleStyle}>{toPrettyUrl(url)}</span>}>
+        <SquareAvatar avatar={iconSrc} size={20} className='mr1' />
+      </Tooltip>
+    </span>
   )
+}
+
+const PostOption = ({ post }) => {
+  const { url } = post.embeds[0]
+  const iconSrc = 'http://via.placeholder.com/20x20/000000/000000'
+
+  const urlStyle = {
+    display: 'inline-block',
+    maxWidth: '150px',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    verticalAlign: 'middle'
+  }
+
+  return (
+    <span onClick={() => window.open(url, '_blank')}>
+      <SquareAvatar avatar={iconSrc} size={20} className='mr2' />
+      <span style={urlStyle}>{toPrettyUrl(url)}</span>
+    </span>
+  )
+}
+
+function toPrettyUrl (url) {
+  return url.replace(/^https?:\/\/(www\.)?/, '')
 }
