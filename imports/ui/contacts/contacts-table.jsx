@@ -101,7 +101,6 @@ const Owner = ({campaign, contact}) => {
   return (
     <UserSelector
       alignRight
-      initialItems={campaign.team}
       selectedUser={owner}
       onSelect={user => {
         assignContactOwner.call({

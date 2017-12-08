@@ -46,7 +46,7 @@ export default class UserSelector extends React.Component {
   }
 
   render () {
-    const {selectedUser, initialItems, onSelect, alignRight} = this.props
+    const {selectedUser, onSelect, alignRight} = this.props
     const CustomButton = this.props.button
     const CustomOption = this.props.option
     const query = {
@@ -78,9 +78,9 @@ export default class UserSelector extends React.Component {
         alignRight={alignRight}
         buttonText={<CustomButton user={selectedUser} />} >
         {closeDropdown => (
-          <SearchableList query={query} fields={fields} collection='users' initialItems={initialItems} limit={5} sort={{'profile.name': 1}}>
+          <SearchableList query={query} fields={fields} collection='users' limit={20} sort={{'profile.name': 1}}>
             {(users) => (
-              <div>
+              <div style={{maxHeight: 200, overflowY: 'auto'}}>
                 {users.map(u => {
                   const selected = selectedUser && u._id === selectedUser._id
                   return (
@@ -118,7 +118,8 @@ class SearchList extends React.Component {
         <SearchBox
           placeholder='Search teammates...'
           style={{borderTop: '0 none', borderLeft: '0 none', borderRight: '0 none'}}
-          onTermChange={term => this.props.onTermChange({target: {name: 'term', value: term}})} />
+          onTermChange={term => this.props.onTermChange({target: {name: 'term', value: term}})}
+         />
         {loading && <LoadingBar />}
         {children(items)}
       </div>
