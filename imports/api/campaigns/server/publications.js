@@ -121,6 +121,8 @@ Meteor.publish('campaign-contacts', function (campaignSlug) {
       owners: '$contacts.owners',
       updatedAt: '$contacts.updatedAt',
       updatedBy: '$contacts.updatedBy',
+      coverage: '$contacts.coverage',
+      coverageCount: { $size: { $ifNull: [ '$contacts.coverage', [] ] } },
       name: '$remote_contact.name',
       avatar: '$remote_contact.avatar',
       outlets: '$remote_contact.outlets',

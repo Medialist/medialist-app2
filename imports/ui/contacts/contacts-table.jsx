@@ -14,6 +14,7 @@ import PostIcon from '/imports/ui/posts/post-icon'
 import Status from '/imports/ui/feedback/status'
 import UserSelector from '/imports/ui/users/user-selector'
 import { assignContactOwner } from '/imports/api/campaigns/methods'
+import Coverage from '/imports/ui/contacts/contacts-table/coverage'
 
 const ContactLink = ({contact, onClick}) => {
   const {slug, name, avatar} = contact
@@ -257,6 +258,14 @@ class ContactsTable extends React.Component {
               {campaign ? (
                 <SortableHeader
                   className='left-align'
+                  sortDirection={sort['coverageCount']}
+                  onSortChange={(d) => onSortChange({ coverageCount: d })}>
+                   Coverage
+                </SortableHeader>
+              ) : null}
+              {campaign ? (
+                <SortableHeader
+                  className='left-align'
                   style={{width: '120px'}}
                   sortDirection={sort['owners.0.name']}
                   onSortChange={(d) => onSortChange({ 'owners.0.name': d })}>
@@ -317,6 +326,11 @@ class ContactsTable extends React.Component {
                       <UpdatedAt contact={contact} />
                     )}
                   </td>
+                  {campaign ? (
+                    <td className='left-align' style={{overflow: 'visible'}}>
+                      <Coverage posts={contact.coverage || []} />
+                    </td>
+                  ) : null}
                   {campaign && (
                     <td className='left-align' style={{overflow: 'visible'}}>
                       <Owner campaign={campaign} contact={contact} />

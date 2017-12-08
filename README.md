@@ -137,7 +137,21 @@ Example documents from our collections
           "name" : "Olly Gilbert",
           "avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
         }
-      ]
+      ],
+      // Coverage items are PostRef's
+      "coverage": [{
+        "_id" : "hNc2ArK9TcAWyEXqQ",
+        "message": "How meta BBC news app on BBC news http://www.bbc.co.uk/mediacentre/worldnews/270712-bbc-news-app",
+        "embeds": [{
+          "_id" : "hNc2ArK9TcAWyEXqQ",
+          "url": "http://www.bbc.co.uk/mediacentre/worldnews/270712-bbc-news-app",
+          "outlet": "BBC",
+          "headline": "BBC News app launches on Amazon’s Kindle Fire in the US",
+          "image": "http://ichef.bbci.co.uk/corporate2/images/width/live/p0/0w/md/p00wmddm.jpg/624",
+          "datePublished": ISODate("2016-02-24T22:26:39.782Z")
+        }],
+        "createdAt": ISODate("2016-02-24T22:26:39.782Z")
+      }],
       "updatedAt": ISODate("2016-02-24T22:26:39.782Z"),
       "updatedBy": {
         "_id" : "hNc2ArK9TcAWyEXqQ",
