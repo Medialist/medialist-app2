@@ -40,7 +40,7 @@ Coverage.propTypes = {
 
 const Post = ({ post }) => {
   const { url } = post.embeds[0]
-  let prettyUrl = url.replace(/^https?:\/\//, '')
+  let prettyUrl = url.replace(/^https?:\/\/(www\.)?/, '')
 
   const titleStyle = {
     maxWidth: '100px',
