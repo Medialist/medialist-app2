@@ -87,6 +87,7 @@ export const addContactsToCampaign = new ValidatedMethod({
     const newContacts = newContactSlugs.map((slug) => ({
       slug,
       status: Contacts.status.toContact,
+      latestPost: null,
       owners: [updatedBy],
       updatedAt,
       updatedBy
@@ -569,27 +570,6 @@ export const batchUpdateStatus = new ValidatedMethod({
     const updatedBy = findOneUserRef(this.userId)
     const updatedAt = new Date()
 
-    contactSlugs.forEach((contactSlug) => {
-      campaign.contacts.forEach(contact => {
-        if (contact.slug === contactSlug) {
-          contact.status = status
-          contact.updatedBy = updatedBy
-          contact.updatedAt = updatedAt
-        }
-      })
-    })
-
-    // update campaign contact status and updatedAt/updatedBy
-    Campaigns.update({
-      slug: campaignSlug
-    }, {
-      $set: {
-        contacts: campaign.contacts,
-        updatedBy,
-        updatedAt
-      }
-    })
-
     // update contact updatedAt/updatedBy
     Contacts.update({
       slug: {
@@ -604,12 +584,34 @@ export const batchUpdateStatus = new ValidatedMethod({
       multi: true
     })
 
-    Posts.create({
+    const postId = Posts.create({
       type: 'StatusUpdate',
       contactSlugs: contactSlugs,
       campaignSlugs: [campaign.slug],
       status: status,
       createdBy: updatedBy
+    })
+
+    const post = Posts.findOne({_id: postId})
+
+    const $set = {
+      updatedBy,
+      updatedAt
+    }
+
+    contactSlugs.forEach(slug => {
+      const i = campaign.contacts.findIndex(c => c.slug === slug)
+      $set[`contacts.${i}.status`] = status
+      $set[`contacts.${i}.latestPost`] = post
+      $set[`contacts.${i}.updatedBy`] = updatedBy
+      $set[`contacts.${i}.updatedAt`] = updatedAt
+    })
+
+    // update campaign contact status and updatedAt/updatedBy
+    Campaigns.update({
+      slug: campaignSlug
+    }, {
+      $set
     })
   }
 })

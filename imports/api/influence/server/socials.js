@@ -23,7 +23,7 @@ export function findTwitterSocials (contacts) {
 */
 export const sendForSocials = (contacts) => {
   if (Meteor.settings && !Meteor.settings.updateContactsFromTwitter) {
-    return console.log('NOT sending contacts for twitter lookup. `updateContactsFromTwitter = false`')
+    return
   }
   const url = Meteor.settings.influence.apiUrl + '/webhook/socials/lookup'
   const callbackUrl = Meteor.absoluteUrl('webhook/socials/update')
