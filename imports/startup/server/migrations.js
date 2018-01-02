@@ -355,4 +355,59 @@ Migrations.add({
   }
 })
 
+Migrations.add({
+  version: 11,
+  name: 'Remove duplicate campaign team members',
+  up: () => {
+    const findDuplicateTeammatesPipeline = [
+      {
+        $unwind: '$team'
+      },
+      {
+        $group: {
+          _id: {
+            campaignId: '$_id',
+            teamUserId: '$team._id'
+          },
+          count: {
+            $sum: 1
+          }
+        }
+      },
+      {
+        $match: {
+          count: {
+            $gt: 1
+          }
+        }
+      }
+    ]
+
+    // todos: [{_id: { campaignId: '$_id', teamUserId: '$team._id' }, count: 2 }, ...]
+    const todos = Campaigns.aggregate(findDuplicateTeammatesPipeline)
+
+    todos.forEach((todo) => {
+      const {campaignId, teamUserId} = todo._id
+      const campaign = Campaigns.findOne({_id: campaignId})
+      // grab a copy of the duplicated userRef
+      const teamUser = campaign.team.find(userRef => userRef._id === teamUserId)
+      // grab index of the first duplicated userRef
+      const teamUserIndex = campaign.team.findIndex(userRef => userRef._id === teamUserId)
+      // Remove all instances of duplicated contact
+      const team = campaign.team.filter(userRef => userRef._id !== teamUserId)
+      // splice back in one ref at old index
+      team.splice(teamUserIndex, 0, teamUser)
+
+      Campaigns.update(
+        {_id: campaignId},
+        {
+          $set: {
+            team: team
+          }
+        }
+      )
+    })
+  }
+})
+
 Meteor.startup(() => Migrations.migrateTo('latest'))

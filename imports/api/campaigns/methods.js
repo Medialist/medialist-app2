@@ -675,7 +675,7 @@ export const assignContactOwner = new ValidatedMethod({
       }
     }
 
-    const isInTeam = campaign.team.some(t => t.slug === contactSlug)
+    const isInTeam = campaign.team.some(userRef => userRef._id === ownerUserId)
 
     if (!isInTeam) {
       update.$push = {

@@ -724,7 +724,8 @@ describe('assignContactOwner', function () {
       campaignSlug: campaigns[0].slug,
       contactSlugs: contacts.map(c => c.slug)
     })
-    // user 0 was the owner, now set it to user 1
+
+    // user 0 was the owner of contact 1. now set it to user 1
     assignContactOwner.run.call({
       userId: users[0]._id
     }, {
@@ -733,12 +734,27 @@ describe('assignContactOwner', function () {
       ownerUserId: users[1]._id
     })
 
+    // user 0 was the owner of contact 2. now set it to user 1
+    assignContactOwner.run.call({
+      userId: users[0]._id
+    }, {
+      campaignSlug: campaigns[0].slug,
+      contactSlug: contacts[2].slug,
+      ownerUserId: users[1]._id
+    })
+
     const campaign = Campaigns.findOne({
       _id: campaigns[0]._id
     })
-    const campaignContact = campaign.contacts.find(c => c.slug === contacts[1].slug)
-    assert.deepEqual(campaignContact.owners[0], toUserRef(users[1]), 'Contact 1 should now have user 1 has it\'s owner')
-    const teamMember = campaign.team.find(t => t._id === users[1]._id)
-    assert.deepEqual(teamMember, toUserRef(users[1]), 'User 1 has been added to the team')
+
+    const campaignContact1 = campaign.contacts.find(c => c.slug === contacts[1].slug)
+    assert.deepEqual(campaignContact1.owners[0], toUserRef(users[1]), 'Contact 1 should now have user 1 has it\'s owner')
+
+    const campaignContact2 = campaign.contacts.find(c => c.slug === contacts[2].slug)
+    assert.deepEqual(campaignContact2.owners[0], toUserRef(users[1]), 'Contact 2 should now have user 1 has it\'s owner')
+
+    const userTeamMembers = campaign.team.filter(t => t._id === users[1]._id)
+    assert.equal(userTeamMembers.length, 1, 'User 1 has been added to the team')
+    assert.deepEqual(userTeamMembers[0], toUserRef(users[1]), 'User 1 ref is correct')
   })
 })
