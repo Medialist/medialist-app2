@@ -27,6 +27,7 @@ import { LoadingBar } from '/imports/ui/lists/loading'
 import querystring from 'querystring'
 import { StatusIndex } from '/imports/api/contacts/status'
 import escapeRegExp from 'lodash.escaperegexp'
+import { collationSort } from '/imports/lib/collation'
 import { CampaignContacts, CampaignContactStatuses } from '/imports/ui/campaigns/collections'
 
 const minSearchLength = 3
@@ -438,6 +439,23 @@ const parseQuery = ({ query }) => {
   }
 }
 
+// returns a sort compator fn or mongo sort specifier
+const getCustomSortSpec = (sort) => {
+  if (sort && sort.status) {
+    const dir = sort.status
+    return (a, b) => {
+      return (StatusIndex[a.status] - StatusIndex[b.status]) * dir
+    }
+  }
+  // Use collation Sort if is a text field
+  const nonTextFields = ['updatedAt']
+  const sortKey = Object.keys(sort)[0]
+  if (nonTextFields.indexOf(sortKey) === -1) {
+    return collationSort(sort)
+  }
+  return sort
+}
+
 export default createContainer(({location, params: { campaignSlug }}) => {
   const subs = [
     Meteor.subscribe('campaign', campaignSlug),
@@ -473,16 +491,9 @@ export default createContainer(({location, params: { campaignSlug }}) => {
     }]
   }
 
-  const cursor = CampaignContacts.find(query, {
-    sort
-  })
+  const sortSpec = getCustomSortSpec(sort)
+  const cursor = CampaignContacts.find(query, {sort: sortSpec})
   const contacts = cursor.fetch()
-  if (sort && sort.status) {
-    const dir = sort.status
-    contacts.sort((a, b) => {
-      return (StatusIndex[a.status] - StatusIndex[b.status]) * dir
-    })
-  }
   const contactsCount = cursor.count()
   const statusCounts = CampaignContactStatuses.find().fetch().pop()
   const campaign = Campaigns.findOne({
