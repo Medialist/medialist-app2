@@ -598,6 +598,7 @@ export const exportCampaignToCsv = new ValidatedMethod({
         status: '$contacts.status',
         latestPost: '$contacts.latestPost',
         owners: '$contacts.owners',
+        coverage: '$contacts.coverage',
         updatedAt: '$contacts.updatedAt',
         updatedBy: '$contacts.updatedBy'
       }
@@ -614,6 +615,11 @@ export const exportCampaignToCsv = new ValidatedMethod({
       })
     }
 
+    const formatCoverage = (arr) => {
+      if (!arr || !arr.length) return 'No coverage yet'
+      return arr.map(coverage => coverage.message).join('\n\n')
+    }
+
     const res = Campaigns.aggregate(pipeline).map(c => {
       let message = (c.latestPost && c.latestPost.message) || ''
       if (c.latestPost && c.latestPost.type === 'StatusUpdate') {
@@ -628,6 +634,7 @@ export const exportCampaignToCsv = new ValidatedMethod({
         'Latest Activity': message,
         'Updated At': moment(c.updatedAt).toISOString(),
         'Updated By': c.updatedBy.name,
+        'Coverage': formatCoverage(c.coverage),
         'Owner': (c.owners && c.owners[0] && c.owners[0].name) || ''
       }
     })
