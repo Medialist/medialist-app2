@@ -70,19 +70,25 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
   }
 
   if (campaignSlug) {
-    Campaigns.update({
-      slug: campaignSlug,
-      'contacts.slug': contactSlug
-    }, {
+    const campaignUpdates = {
       $set: {
-        [`contacts.$.status`]: status,
-        [`contacts.$.updatedAt`]: createdAt,
-        [`contacts.$.updatedBy`]: createdBy,
-        [`contacts.$.latestPost`]: post,
+        'contacts.$.status': status,
+        'contacts.$.updatedAt': createdAt,
+        'contacts.$.updatedBy': createdBy,
+        'contacts.$.latestPost': post,
         updatedBy: createdBy,
         updatedAt: createdAt
       }
-    })
+    }
+
+    if (post.type === 'CoveragePost' && embed) {
+      campaignUpdates.$push = { 'contacts.$.coverage': post }
+    }
+
+    Campaigns.update({
+      slug: campaignSlug,
+      'contacts.slug': contactSlug
+    }, campaignUpdates)
   }
 
   Contacts.update({

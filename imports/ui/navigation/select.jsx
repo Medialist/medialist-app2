@@ -25,7 +25,7 @@ export class Select extends React.Component {
     return (
       <Dropdown>
         <div className={className} style={style} onClick={this.openDropdown} disabled={disabled} data-id={this.props['data-id']}>
-          {buttonText} <ChevronDown className={`ml1 ${open ? 'blue' : 'gray40'}`} />
+          {buttonText}<ChevronDown className={`ml1 ${open ? 'blue' : 'gray40'}`} />
         </div>
         <DropdownMenu width={width} open={open} onDismiss={this.closeDropdown} alignRight={alignRight}>
           {children(this.closeDropdown)}
