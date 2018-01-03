@@ -617,7 +617,11 @@ export const exportCampaignToCsv = new ValidatedMethod({
 
     const formatCoverage = (arr) => {
       if (!arr || !arr.length) return 'No coverage yet'
-      return arr.map(coverage => coverage.message).join('\n\n')
+      return arr
+        .map(c => c.embeds)
+        .reduce((a, b) => a.concat(b))
+        .map(embed => embed.url)
+        .join('\n\n')
     }
 
     const res = Campaigns.aggregate(pipeline).map(c => {
