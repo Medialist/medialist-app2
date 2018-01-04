@@ -6,6 +6,7 @@ import dasherise from 'dasherize'
 import { Dropdown, DropdownMenu, DropdownMenuItem } from '/imports/ui/navigation/dropdown'
 import { StatusValues } from '/imports/api/contacts/status'
 import StatusLabel from '/imports/ui/feedback/status-label'
+import UserSelector from '/imports/ui/users/user-selector'
 import FancyMergeIcon from './merge/fancy-merge-icon'
 import {
   FeedCampaignIcon,
@@ -31,7 +32,8 @@ class ContactsActionsToast extends React.Component {
     onDeleteClick: PropTypes.func,
     onDeselectAllClick: PropTypes.func.isRequired,
     onExportToCsvClick: PropTypes.func.isRequired,
-    onMergeClick: PropTypes.func.isRequired
+    onMergeClick: PropTypes.func.isRequired,
+    onAssignOwnerClick: PropTypes.func
   }
 
   state = {
@@ -63,7 +65,8 @@ class ContactsActionsToast extends React.Component {
       onDeleteClick,
       onDeselectAllClick,
       onExportToCsvClick,
-      onMergeClick
+      onMergeClick,
+      onAssignOwnerClick
     } = this.props
 
     return (
@@ -128,13 +131,22 @@ class ContactsActionsToast extends React.Component {
                   data-id='contact-actions-add-tags'
                   style={{width: '21px', height: '21px'}} />
               </Tooltip>
-              <Tooltip title='Assign owner'>
-                <TeamIcon
-                  className='mx3 pointer gray60 hover-blue'
-                  onClick={() => {}}
-                  data-id='contact-actions-add-tags'
-                  style={{width: '21px', height: '21px'}} />
-              </Tooltip>
+              { !onAssignOwnerClick ? null : (
+                <Tooltip title='Assign owner'>
+                  <UserSelector
+                    hideChevron
+                    arrowPosition='bottom'
+                    top={-302}
+                    onSelect={user => onAssignOwnerClick(user)}
+                    button={() => <TeamIcon
+                      className='mx3 pointer gray60 hover-blue'
+                      onClick={() => {}}
+                      data-id='contact-actions-add-tags'
+                      style={{width: '21px', height: '21px'}}
+                    />}
+                  />
+                </Tooltip>
+              ) }
               <Tooltip title='Download as CSV'>
                 <DownloadIcon
                   className='mx3 pointer gray60 hover-blue'

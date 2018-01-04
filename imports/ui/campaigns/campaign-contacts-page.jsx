@@ -20,7 +20,7 @@ import AbbreviatedAvatarList from '/imports/ui/lists/abbreviated-avatar-list'
 import { batchAddToMasterLists } from '/imports/api/master-lists/methods'
 import { batchAddTags } from '/imports/api/tags/methods'
 import { batchFavouriteContacts, batchUpdateStatus } from '/imports/api/contacts/methods'
-import { exportCampaignToCsv } from '/imports/api/campaigns/methods'
+import { exportCampaignToCsv, assignContactOwner } from '/imports/api/campaigns/methods'
 import NearBottomContainer from '/imports/ui/navigation/near-bottom-container'
 import SubscriptionLimitContainer from '/imports/ui/navigation/subscription-limit-container'
 import { LoadingBar } from '/imports/ui/lists/loading'
@@ -162,6 +162,24 @@ class CampaignContactsPage extends React.Component {
     })
   }
 
+  onAssignOwnerClick = (ownerUserRef) => {
+    const {campaign} = this.props
+    const {selections, selectionMode} = this.state
+    const opts = {
+      ownerUserId: ownerUserRef._id,
+      campaignSlug: campaign.slug
+    }
+    if (selectionMode === 'include') {
+      opts.contactSlugs = selections.map(c => c.slug)
+    }
+    assignContactOwner.call(opts, (err) => {
+      if (err) {
+        console.log(err)
+        this.context.snackbar.error('assign-contact-owner-failure')
+      }
+    })
+  }
+
   onSelectionModeChange = (selectionMode) => {
     this.setState({selectionMode})
   }
@@ -292,7 +310,8 @@ class CampaignContactsPage extends React.Component {
           onDeleteClick={() => this.showModal('removeContactsModal')}
           onDeselectAllClick={this.clearSelection}
           onExportToCsvClick={this.onExportToCsv}
-          onMergeClick={() => this.showModal('mergeContactsModal')} />
+          onMergeClick={() => this.showModal('mergeContactsModal')}
+          onAssignOwnerClick={this.onAssignOwnerClick} />
         <AddOrCreateContactModal
           open={addContactModal}
           onDismiss={this.hideModals}
