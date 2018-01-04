@@ -417,7 +417,7 @@ CampaignContactsPageContainer.contextTypes = {
 
 const parseQuery = ({ query }) => {
   let sort = {
-    'outlets.0.label': 1
+    updatedAt: -1
   }
 
   if (query.sort) {
