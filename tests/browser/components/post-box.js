@@ -101,6 +101,7 @@ module.exports = {
           .waitForElementVisible('@selectContactButton')
           .click('@selectContactButton')
           .waitForElementVisible('@searchForContactInput')
+          .clear('@searchForContactInput')
           .setValue('@searchForContactInput', contact.name)
           .waitForElementVisible(`[data-id=campaign-contact-${contact.slug}]`)
           .click(`[data-id=campaign-contact-${contact.slug}]`)
