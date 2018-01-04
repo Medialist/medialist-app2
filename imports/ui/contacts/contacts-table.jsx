@@ -106,7 +106,7 @@ const Owner = ({campaign, contact}) => {
       onSelect={user => {
         assignContactOwner.call({
           campaignSlug: campaign.slug,
-          contactSlug: contact.slug,
+          contactSlugs: [contact.slug],
           ownerUserId: user._id
         })
       }}

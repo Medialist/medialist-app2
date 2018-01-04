@@ -684,13 +684,11 @@ export const assignContactOwner = new ValidatedMethod({
     const ownerUserRef = findOneUserRef(ownerUserId)
 
     // 1. add owner userRef as owner to each contact.
-    const bulk = Campaigns.rawCollection().initializeUnorderedBulkOp()
-
     contactSlugs.forEach(contactSlug => {
-      bulk.find({
+      Campaigns.update({
         slug: campaignSlug,
         'contacts.slug': contactSlug
-      }).updateOne({
+      }, {
         $set: {
           'contacts.$.owners.0': ownerUserRef
         }
@@ -701,16 +699,13 @@ export const assignContactOwner = new ValidatedMethod({
     const isInTeam = campaign.team.some(userRef => userRef._id === ownerUserId)
 
     if (!isInTeam) {
-      bulk.find({
+      Campaigns.update({
         slug: campaignSlug
-      }).updateOne({
+      }, {
         $push: {
           team: ownerUserRef
         }
       })
     }
-
-    // do it!
-    Meteor.wrapAsync(bulk.execute, bulk)()
   }
 })
