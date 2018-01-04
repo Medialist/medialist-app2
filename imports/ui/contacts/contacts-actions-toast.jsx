@@ -14,7 +14,8 @@ import {
   TagIcon,
   StatusUpdateIcon,
   DeleteIcon,
-  DownloadIcon
+  DownloadIcon,
+  TeamIcon
 } from '/imports/ui/images/icons'
 
 class ContactsActionsToast extends React.Component {
@@ -124,6 +125,13 @@ class ContactsActionsToast extends React.Component {
                 <TagIcon
                   className='mx3 pointer gray60 hover-blue'
                   onClick={() => onTagClick(contacts)}
+                  data-id='contact-actions-add-tags'
+                  style={{width: '21px', height: '21px'}} />
+              </Tooltip>
+              <Tooltip title='Assign owner'>
+                <TeamIcon
+                  className='mx3 pointer gray60 hover-blue'
+                  onClick={() => {}}
                   data-id='contact-actions-add-tags'
                   style={{width: '21px', height: '21px'}} />
               </Tooltip>
