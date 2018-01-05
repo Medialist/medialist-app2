@@ -42,73 +42,29 @@ export default class UserSelector extends React.Component {
   }
 
   static defaultProps = {
-    button: UserButton,
-    option: UserOption
+    button: UserButton
   }
 
   render () {
-    const {selectedUser, onSelect, alignRight} = this.props
+    const {selectedUser, onSelect, alignRight, arrowPosition, top, option, hideChevron} = this.props
     const CustomButton = this.props.button
-    const CustomOption = this.props.option
-    const query = {
-      roles: 'team',
-      'profile.name': {
-        '$exists': true
-      },
-      '$or': [{
-        'profile.name': {
-          $regex: '$term',
-          $options: 'i'
-        }
-      }, {
-        'emails.address': {
-          $regex: '$term',
-          $options: 'i'
-        }
-      }]
-    }
-    const fields = {
-      '_id': 1,
-      'profile.name': 1,
-      'profile.avatar': 1,
-      'roles': 1
-    }
     return (
       <Select
         width={250}
+        top={top}
         alignRight={alignRight}
+        arrowPosition={arrowPosition}
+        hideChevron={hideChevron}
         buttonText={<CustomButton user={selectedUser} />} >
         {closeDropdown => (
-          <SearchableList query={query} fields={fields} collection='users' sort={{'profile.name': 1}}>
-            {(users) => (
-              <div style={{height: 200, overflowY: 'auto'}}>
-                {users.map(u => {
-                  const selected = selectedUser && u._id === selectedUser._id
-                  return (
-                    <CustomOption
-                      key={u._id}
-                      user={u}
-                      selected={selected}
-                      style={{paddingTop: 5, paddingBottom: 5}}
-                      onClick={() => {
-                        onSelect(u)
-                        closeDropdown()
-                      }} />
-                  )
-                })}
-                {!users || !users.length ? (
-                  <div className='center'>
-                    <div className='inline-block bg-gray80 mt5' style={{borderRadius: 15, width: 30, height: 30, lineHeight: '26px'}}>
-                      <SearchIcon className='gray20' />
-                    </div>
-                    <div className='gray20 mt3 f-md'>
-                      No teammates found
-                    </div>
-                  </div>
-                ) : null }
-              </div>
-            )}
-          </SearchableList>
+          <SearchableUserList
+            option={option}
+            selectedUser={selectedUser}
+            onSelect={(userRef) => {
+              onSelect(userRef)
+              closeDropdown()
+            }}
+          />
         )}
       </Select>
     )
@@ -141,3 +97,63 @@ class SearchList extends React.Component {
 const SearchableList = createSearchContainer(SearchList, {
   minSearchLength: 1
 })
+
+export const SearchableUserList = ({selectedUser, onSelect, option}) => {
+  const CustomOption = option
+  const query = {
+    roles: 'team',
+    'profile.name': {
+      '$exists': true
+    },
+    '$or': [{
+      'profile.name': {
+        $regex: '$term',
+        $options: 'i'
+      }
+    }, {
+      'emails.address': {
+        $regex: '$term',
+        $options: 'i'
+      }
+    }]
+  }
+  const fields = {
+    '_id': 1,
+    'profile.name': 1,
+    'profile.avatar': 1,
+    'roles': 1
+  }
+  return (
+    <SearchableList query={query} fields={fields} collection='users' sort={{'profile.name': 1}}>
+      {(users) => (
+        <div style={{height: 200, overflowY: 'auto'}}>
+          {users.map(u => {
+            const selected = selectedUser && u._id === selectedUser._id
+            return (
+              <CustomOption
+                key={u._id}
+                user={u}
+                selected={selected}
+                style={{paddingTop: 5, paddingBottom: 5}}
+                onClick={() => onSelect(u)} />
+            )
+          })}
+          {!users || !users.length ? (
+            <div className='center'>
+              <div className='inline-block bg-gray80 mt5' style={{borderRadius: 15, width: 30, height: 30, lineHeight: '26px'}}>
+                <SearchIcon className='gray20' />
+              </div>
+              <div className='gray20 mt3 f-md'>
+                No teammates found
+              </div>
+            </div>
+          ) : null }
+        </div>
+      )}
+    </SearchableList>
+  )
+}
+
+SearchableUserList.defaultProps = {
+  option: UserOption
+}

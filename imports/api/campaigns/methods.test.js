@@ -712,7 +712,7 @@ describe('assignContactOwner', function () {
   it('should validate the parameters', function () {
     assert.throws(() => assignContactOwner.validate({}), / Campaign slug is required/)
     assert.throws(() => assignContactOwner.validate({ campaignSlug: 9 }), /must be of type String/)
-    assert.doesNotThrow(() => assignContactOwner.validate({ campaignSlug: 'ohmy', contactSlug: 'goodone', ownerUserId: 'vMpRFNGoEHigTCPLH' }))
+    assert.doesNotThrow(() => assignContactOwner.validate({ campaignSlug: 'ohmy', contactSlugs: ['goodone'], ownerUserId: 'vMpRFNGoEHigTCPLH' }))
   })
 
   it('should assign an owner to a campaign contact', function () {
@@ -727,20 +727,12 @@ describe('assignContactOwner', function () {
     })
 
     // user 0 was the owner of contact 1. now set it to user 1
-    assignContactOwner.run.call({
-      userId: users[0]._id
-    }, {
-      campaignSlug: campaigns[0].slug,
-      contactSlug: contacts[1].slug,
-      ownerUserId: users[1]._id
-    })
-
     // user 0 was the owner of contact 2. now set it to user 1
     assignContactOwner.run.call({
       userId: users[0]._id
     }, {
       campaignSlug: campaigns[0].slug,
-      contactSlug: contacts[2].slug,
+      contactSlugs: [contacts[1].slug, contacts[2].slug],
       ownerUserId: users[1]._id
     })
 

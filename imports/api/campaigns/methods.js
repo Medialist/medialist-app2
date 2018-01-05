@@ -659,7 +659,10 @@ export const assignContactOwner = new ValidatedMethod({
     campaignSlug: {
       type: String
     },
-    contactSlug: {
+    contactSlugs: {
+      type: Array
+    },
+    'contactSlugs.$': {
       type: String
     },
     ownerUserId: {
@@ -668,7 +671,7 @@ export const assignContactOwner = new ValidatedMethod({
     }
   }).validator(),
 
-  run ({campaignSlug, contactSlug, ownerUserId}) {
+  run ({campaignSlug, contactSlugs, ownerUserId}) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -680,23 +683,29 @@ export const assignContactOwner = new ValidatedMethod({
 
     const ownerUserRef = findOneUserRef(ownerUserId)
 
-    const update = {
-      $set: {
-        'contacts.$.owners.0': ownerUserRef
-      }
-    }
+    // 1. add owner userRef as owner to each contact.
+    contactSlugs.forEach(contactSlug => {
+      Campaigns.update({
+        slug: campaignSlug,
+        'contacts.slug': contactSlug
+      }, {
+        $set: {
+          'contacts.$.owners.0': ownerUserRef
+        }
+      })
+    })
 
+    // 2. add owner userRef to team if missing.
     const isInTeam = campaign.team.some(userRef => userRef._id === ownerUserId)
 
     if (!isInTeam) {
-      update.$push = {
-        team: ownerUserRef
-      }
+      Campaigns.update({
+        slug: campaignSlug
+      }, {
+        $push: {
+          team: ownerUserRef
+        }
+      })
     }
-
-    Campaigns.update({
-      slug: campaignSlug,
-      'contacts.slug': contactSlug
-    }, update)
   }
 })

@@ -6,6 +6,7 @@ import dasherise from 'dasherize'
 import { Dropdown, DropdownMenu, DropdownMenuItem } from '/imports/ui/navigation/dropdown'
 import { StatusValues } from '/imports/api/contacts/status'
 import StatusLabel from '/imports/ui/feedback/status-label'
+import {SearchableUserList} from '/imports/ui/users/user-selector'
 import FancyMergeIcon from './merge/fancy-merge-icon'
 import {
   FeedCampaignIcon,
@@ -14,7 +15,8 @@ import {
   TagIcon,
   StatusUpdateIcon,
   DeleteIcon,
-  DownloadIcon
+  DownloadIcon,
+  TeamIcon
 } from '/imports/ui/images/icons'
 
 class ContactsActionsToast extends React.Component {
@@ -30,7 +32,8 @@ class ContactsActionsToast extends React.Component {
     onDeleteClick: PropTypes.func,
     onDeselectAllClick: PropTypes.func.isRequired,
     onExportToCsvClick: PropTypes.func.isRequired,
-    onMergeClick: PropTypes.func.isRequired
+    onMergeClick: PropTypes.func.isRequired,
+    onAssignOwnerClick: PropTypes.func
   }
 
   state = {
@@ -62,7 +65,8 @@ class ContactsActionsToast extends React.Component {
       onDeleteClick,
       onDeselectAllClick,
       onExportToCsvClick,
-      onMergeClick
+      onMergeClick,
+      onAssignOwnerClick
     } = this.props
 
     return (
@@ -98,7 +102,7 @@ class ContactsActionsToast extends React.Component {
               {this.props.onStatusClick ? <Dropdown>
                 <Tooltip title='Update status'>
                   <StatusUpdateIcon
-                    className='mx3 pointer gray60 hover-blue'
+                    className={`mx3 pointer gray60 hover-blue ${this.state.openStatusMenu === true ? 'blue' : ''}`}
                     onClick={this.openStatusMenu}
                     data-id='contact-actions-update-status'
                     style={{width: '21px', height: '21px'}} />
@@ -127,6 +131,28 @@ class ContactsActionsToast extends React.Component {
                   data-id='contact-actions-add-tags'
                   style={{width: '21px', height: '21px'}} />
               </Tooltip>
+              { !onAssignOwnerClick ? null : (
+                <Dropdown>
+                  <Tooltip title='Assign owner'>
+                    <TeamIcon
+                      className={`mx3 pointer gray60 hover-blue ${this.state.openOwnerMenu === true ? 'blue' : ''}`}
+                      onClick={() => this.setState({openOwnerMenu: true})}
+                      data-id='contact-actions-add-tags'
+                      style={{width: '21px', height: '21px'}} />
+                  </Tooltip>
+                  <DropdownMenu
+                    arrowPosition='bottom'
+                    width={250}
+                    top={-302}
+                    open={this.state.openOwnerMenu}
+                    onDismiss={() => this.setState({openOwnerMenu: false})} >
+                    <SearchableUserList onSelect={(userRef) => {
+                      onAssignOwnerClick(userRef)
+                      this.setState({openOwnerMenu: false})
+                    }} />
+                  </DropdownMenu>
+                </Dropdown>
+              ) }
               <Tooltip title='Download as CSV'>
                 <DownloadIcon
                   className='mx3 pointer gray60 hover-blue'

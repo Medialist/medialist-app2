@@ -8,7 +8,9 @@ export class Select extends React.Component {
     buttonText: PropTypes.node.isRequired,
     children: PropTypes.func.isRequired,
     disabled: PropTypes.bool,
-    'data-id': PropTypes.string
+    'data-id': PropTypes.string,
+    alignRight: PropTypes.bool,
+    arrowPosition: PropTypes.string
   }
   state = {
     open: false
@@ -21,13 +23,13 @@ export class Select extends React.Component {
   }
   render () {
     const { open } = this.state
-    const { disabled, buttonText, children, style, className, width = 223, alignRight } = this.props
+    const { disabled, buttonText, children, style, className, width = 223, top, alignRight, arrowPosition, hideChevron } = this.props
     return (
       <Dropdown>
         <div className={className} style={style} onClick={this.openDropdown} disabled={disabled} data-id={this.props['data-id']}>
-          {buttonText}<ChevronDown className={`ml1 ${open ? 'blue' : 'gray40'}`} />
+          {buttonText}{hideChevron ? null : <ChevronDown className={`ml1 ${open ? 'blue' : 'gray40'}`} />}
         </div>
-        <DropdownMenu width={width} open={open} onDismiss={this.closeDropdown} alignRight={alignRight}>
+        <DropdownMenu width={width} open={open} onDismiss={this.closeDropdown} alignRight={alignRight} arrowPosition={arrowPosition} top={top}>
           {children(this.closeDropdown)}
         </DropdownMenu>
       </Dropdown>
