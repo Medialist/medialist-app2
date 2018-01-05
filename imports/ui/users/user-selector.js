@@ -5,7 +5,6 @@ import createSearchContainer from '/imports/ui/lists/searchable-list'
 import { Select, Option } from '/imports/ui/navigation/select'
 import SearchBox from '/imports/ui/lists/search-box'
 import Tooltip from '/imports/ui/navigation/tooltip'
-import { LoadingBar } from '/imports/ui/lists/loading'
 import { SearchIcon } from '/imports/ui/images/icons'
 
 export const UserButton = ({user}) => {
@@ -87,8 +86,7 @@ class SearchList extends React.Component {
           style={{borderTop: '0 none', borderLeft: '0 none', borderRight: '0 none'}}
           onTermChange={term => this.props.onTermChange({target: {name: 'term', value: term}})}
          />
-        {loading && <LoadingBar />}
-        {children(items)}
+        {children(items, loading)}
       </div>
     )
   }
@@ -125,7 +123,7 @@ export const SearchableUserList = ({selectedUser, onSelect, option}) => {
   }
   return (
     <SearchableList query={query} fields={fields} collection='users' sort={{'profile.name': 1}}>
-      {(users) => (
+      {(users, loading) => (
         <div style={{height: 200, overflowY: 'auto'}}>
           {users.map(u => {
             const selected = selectedUser && u._id === selectedUser._id
@@ -138,7 +136,7 @@ export const SearchableUserList = ({selectedUser, onSelect, option}) => {
                 onClick={() => onSelect(u)} />
             )
           })}
-          {!users || !users.length ? (
+          {!loading && (!users || !users.length) ? (
             <div className='center'>
               <div className='inline-block bg-gray80 mt5' style={{borderRadius: 15, width: 30, height: 30, lineHeight: '26px'}}>
                 <SearchIcon className='gray20' />
