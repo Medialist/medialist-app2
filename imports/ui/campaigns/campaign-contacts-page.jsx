@@ -441,7 +441,7 @@ const parseQuery = ({ query }) => {
 
 // returns a sort compator fn or mongo sort specifier
 const getCustomSortSpec = (sort) => {
-  if (sort && sort.status) {
+  if (sort.status) {
     const dir = sort.status
     return (a, b) => {
       return (StatusIndex[a.status] - StatusIndex[b.status]) * dir
