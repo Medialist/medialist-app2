@@ -700,7 +700,7 @@ describe('Export Campaign to CSV method', function () {
   })
 })
 
-describe.only('assignContactOwner', function () {
+describe('assignContactOwner', function () {
   beforeEach(function () {
     resetDatabase()
   })
