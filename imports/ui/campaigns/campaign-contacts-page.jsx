@@ -174,6 +174,8 @@ class CampaignContactsPage extends React.Component {
       if (err) {
         console.log(err)
         this.context.snackbar.error('assign-contact-owner-failure')
+      } else {
+        this.clearSelection()
       }
     })
   }
