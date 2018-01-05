@@ -132,6 +132,32 @@ module.exports = {
 
       return this
     },
+    assertContactHasCoverage: function (contact, urls) {
+      urls = Array.isArray(urls) ? urls : [urls]
+
+      const contactSelector = `[data-item=${contact.slug}]`
+      const moreCoverageSelector = `${contactSelector} [data-id=more-coverage-select]`
+
+      // Click on the "more coverage" drop down if present
+      this.ifElementPresent(moreCoverageSelector, () => this.click(moreCoverageSelector))
+
+      // Assert that each of the coverage URLs are present
+      urls.forEach((url) => {
+        const postSelector = `${contactSelector} [data-id=coverage-post][href='${url}']`
+        this.assert.elementPresent(postSelector)
+      })
+
+      // Close the dropdown if opened
+      const dropdownOverlaySelector = `${moreCoverageSelector} + [data-id=dropdown-menu] [data-id=dropdown-overlay]`
+      this.ifElementPresent(moreCoverageSelector, () => this.click(dropdownOverlaySelector))
+
+      return this
+    },
+    assertContactHasNoCoverage: function (contact) {
+      const selector = `[data-item=${contact.slug}] [data-id=coverage-post]`
+      this.assert.elementNotPresent(selector)
+      return this
+    },
     sortBy: function (propName, dir, cb) {
       const self = this
       const selector = `[data-id=sort-by-${propName}]`

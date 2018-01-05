@@ -1,7 +1,7 @@
 
 exports.command = function ifElementNotPresent (selector, func, callback) {
   this.element('css selector', selector, (result) => {
-    if (result.state !== 'success') {
+    if (result.status !== 0) {
       func()
     }
   })

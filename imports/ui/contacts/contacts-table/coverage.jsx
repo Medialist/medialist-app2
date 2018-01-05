@@ -18,7 +18,8 @@ export default function Coverage ({ posts }) {
         <Select
           width={250}
           buttonText={<span className='gray60'>+{morePosts.length}</span>}
-          style={{cursor: 'pointer'}}>
+          style={{cursor: 'pointer'}}
+          data-id='more-coverage-select'>
           {() => morePosts.map(post => (
             <Option key={post._id}>
               <PostOption post={post} />
@@ -50,7 +51,7 @@ const PostSquare = ({ post }) => {
   }
 
   return (
-    <a href={url} target='_blank' className='mr1'>
+    <a href={url} target='_blank' className='mr1' data-id='coverage-post'>
       <Tooltip title={<span style={titleStyle}>{toPrettyUrl(url)}</span>}>
         {icon
           ? <SquareAvatar avatar={icon} size={20} />
@@ -64,7 +65,7 @@ const PostOption = ({ post }) => {
   const { url, icon } = post.embeds[0]
 
   return (
-    <a href={url} target='_blank'>
+    <a href={url} target='_blank' data-id='coverage-post'>
       <span className='mr2'>
         {icon
           ? <SquareAvatar avatar={icon} size={20} />

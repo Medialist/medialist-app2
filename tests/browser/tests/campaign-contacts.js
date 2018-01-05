@@ -466,6 +466,82 @@ const test = {
 
     t.page.main().logout()
     t.end()
+  },
+
+  'Should display coverage link': function (t) {
+    t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact], campaign, () => done())
+      })
+
+      let campaignContactsPage = t.page.campaignContacts()
+        .navigate(campaign)
+
+      campaignContactsPage.section.contactTable
+        .searchFor(contact.name)
+        .assertContactHasNoCoverage(contact)
+
+      const campaignPage = t.page.campaign()
+        .navigate(campaign)
+
+      const url = 'http://medialist.io/'
+
+      campaignPage
+        .addCoveragePost(contact, 'completed', url)
+
+      campaignContactsPage = t.page.campaignContacts()
+        .navigate(campaign)
+
+      campaignContactsPage.section.contactTable
+        .searchFor(contact.name)
+        .assertContactHasCoverage(contact, url)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
+  },
+
+  'Should display multiple coverage links': function (t) {
+    t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact], campaign, () => done())
+      })
+
+      let campaignContactsPage = t.page.campaignContacts()
+        .navigate(campaign)
+
+      campaignContactsPage.section.contactTable
+        .searchFor(contact.name)
+        .assertContactHasNoCoverage(contact)
+
+      const campaignPage = t.page.campaign()
+        .navigate(campaign)
+
+      const urls = [
+        'http://medialist.io/',
+        'https://www.google.co.uk/',
+        'https://www.amazon.co.uk/'
+      ]
+
+      urls.forEach((url) => {
+        campaignPage
+          .addCoveragePost(contact, 'completed', `${faker.lorem.sentence()} ${url}`)
+      })
+
+      campaignContactsPage = t.page.campaignContacts()
+        .navigate(campaign)
+
+      campaignContactsPage.section.contactTable
+        .searchFor(contact.name)
+        .assertContactHasCoverage(contact, urls)
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   }
 }
 
