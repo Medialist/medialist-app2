@@ -32,7 +32,12 @@ export const createEmbed = new ValidatedMethod({
     }
 
     try {
-      const doc = scraper(url)
+      const doc = Meteor.wrapAsync(scraper)(url, {
+        timeout: Meteor.settings.embeds ? Meteor.settings.embeds.timeout : 10000,
+        headers: {
+          'User-Agent': Meteor.settings.embeds ? Meteor.settings.embeds.userAgent : undefined
+        }
+      })
 
       if (doc.canonicalUrl) {
         // use the canonical url to see if we've actually seen this link before

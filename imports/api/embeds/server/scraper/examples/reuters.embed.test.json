@@ -1,0 +1,16 @@
+{
+  "canonicalUrl":
+    "https://uk.reuters.com/article/uk-cyber-intel/design-flaw-found-in-intel-chips-fix-causes-them-to-slow-report-idUKKBN1ES1BW",
+  "icons": {
+    "href":
+      "https://s3.reutersmedia.net/resources_v2/images/apple-touch-icon.png",
+    "sizes": "180x180"
+  },
+  "image": {
+    "url":
+      "https://s2.reutersmedia.net/resources/r/?m=02&d=20180104&t=2&i=1219290789&w=1200&r=LYNXMPEE030LC"
+  },
+  "outlet": "U.K.",
+  "headline": "Security flaws put virtually all phones, computers at risk",
+  "agent": { "name": "html-metata", "version": "1.7.0" }
+}

@@ -1,28 +1,34 @@
 
-const withJsonLd = (metadata, type, mapper) => {
+const withJsonLd = (metadata, types, mapper) => {
   if (!metadata || !metadata.jsonLd) {
     return undefined
   }
 
   const jsonLd = Array.isArray(metadata.jsonLd) ? metadata.jsonLd : [metadata.jsonLd]
 
+  if (!Array.isArray(types)) {
+    types = [types]
+  }
+
   return jsonLd
-    .filter(entry => entry['@type'] === type)
+    .filter(entry => types.includes(type => entry['@type'] === type))
     .map(mapper)
     .filter(value => !!value)
     .pop()
 }
 
+const articleTypes = ['Article', 'NewsArticle', 'ReportageNewsArticle']
+
 export const jsonLdUrlFinder = (metadata) => {
-  return withJsonLd(metadata, 'NewsArticle', entry => entry.url)
+  return withJsonLd(metadata, articleTypes, entry => entry.url)
 }
 
 export const jsonLdTitleFinder = (metadata) => {
-  return withJsonLd(metadata, 'NewsArticle', entry => entry.headline)
+  return withJsonLd(metadata, articleTypes, entry => entry.headline)
 }
 
 export const jsonLdImageFinder = (metadata) => {
-  return withJsonLd(metadata, 'NewsArticle', entry => {
+  const pickImage = (entry) => {
     if (entry.image && entry.image.url) {
       if (!entry.image.url.startsWith('http')) {
         return undefined
@@ -34,23 +40,19 @@ export const jsonLdImageFinder = (metadata) => {
         height: entry.image.height ? Number(entry.image.height) : undefined
       }
     }
-  })
+  }
+  return withJsonLd(metadata, articleTypes, pickImage)
 }
 
 export const jsonLdPublishedDateFinder = (metadata) => {
-  const newsArticleDate = withJsonLd(metadata, 'NewsArticle', entry => entry.datePublished || entry.dateCreated)
-  const articleDate = withJsonLd(metadata, 'Article', entry => entry.datePublished || entry.dateCreated)
-
-  return newsArticleDate || articleDate
+  const pickDate = (entry) => (entry && (entry.datePublished || entry.dateCreated))
+  return withJsonLd(metadata, articleTypes, pickDate)
 }
 
 export const jsonLdOutletFinder = (metadata) => {
-  const organisationName = withJsonLd(metadata, 'Organization', entry => entry.name)
-  const publisherName = withJsonLd(metadata, 'Article', entry => {
-    if (entry.publisher) {
-      return entry.publisher.name
-    }
-  })
-
-  return organisationName || publisherName
+  const pickPublisher = (entry) => (entry && entry.publisher) || {}
+  return [
+    withJsonLd(metadata, 'Organization', entry => entry.name),
+    withJsonLd(metadata, articleTypes, entry => pickPublisher(entry).name)
+  ].find(res => !!res)
 }

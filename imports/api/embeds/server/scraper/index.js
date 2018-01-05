@@ -1,6 +1,5 @@
-import { Meteor } from 'meteor/meteor'
 import scrape from 'html-metadata'
-import { defaultUrlFinder, defaultTitleFinder, defaultImageFinder, defaultPublishedDateFinder, defaultOutletFinder } from '/imports/api/embeds/server/scraper/default'
+import { defaultUrlFinder, defaultIconsFinder, defaultAppleTouchIconsFinder, defaultTitleFinder, defaultImageFinder, defaultPublishedDateFinder, defaultOutletFinder } from '/imports/api/embeds/server/scraper/default'
 import { jsonLdUrlFinder, jsonLdTitleFinder, jsonLdImageFinder, jsonLdPublishedDateFinder, jsonLdOutletFinder } from '/imports/api/embeds/server/scraper/json-ld'
 import { openGraphUrlFinder, openGraphTitleFinder, openGraphImageFinder, openGraphPublishedDateFinder, openGraphOutletFinder } from '/imports/api/embeds/server/scraper/open-graph'
 
@@ -22,41 +21,50 @@ const findOneDate = (metadata, finders) => {
   }
 }
 
-const scrapeAndExtract = (url, callback) => {
-  scrape({
+export const scrapeUrl = (url, opts, cb) => {
+  // finalUrl is updated as scraper follows redirects
+  let finalUrl = url
+
+  const options = Object.assign({}, {
     url: url,
     jar: true,
-    timeout: Meteor.settings.embeds ? Meteor.settings.embeds.timeout : 10000,
-    headers: {
-      'User-Agent': Meteor.settings.embeds ? Meteor.settings.embeds.userAgent : undefined
-    },
+    timeout: 10000,
     followRedirect: (response) => {
       if (response && response.headers && response.headers.location) {
-        url = response.headers.location
+        finalUrl = response.headers.location
       }
-
       return true
     }
-  }, (error, metadata) => {
-    if (error) {
-      return callback(error)
-    }
+  }, opts)
 
-    const output = {
-      url: url,
-      canonicalUrl: findOne(metadata, [defaultUrlFinder, jsonLdUrlFinder, openGraphUrlFinder]),
-      image: findOne(metadata, [defaultImageFinder, jsonLdImageFinder, openGraphImageFinder]),
-      outlet: findOne(metadata, [defaultOutletFinder, jsonLdOutletFinder, openGraphOutletFinder]),
-      headline: findOne(metadata, [defaultTitleFinder, jsonLdTitleFinder, openGraphTitleFinder]),
-      datePublished: findOneDate(metadata, [defaultPublishedDateFinder, jsonLdPublishedDateFinder, openGraphPublishedDateFinder]),
-      agent: {
-        name: 'html-metata',
-        version: scrape.version
-      }
-    }
-
-    callback(undefined, output)
+  scrape(options, (err, metadata) => {
+    if (err) return cb(err)
+    cb(undefined, metadata, finalUrl)
   })
 }
 
-export default Meteor.wrapAsync(scrapeAndExtract)
+export const extractEmbedData = (metadata, url) => {
+  return {
+    url: url,
+    canonicalUrl: findOne(metadata, [defaultUrlFinder, jsonLdUrlFinder, openGraphUrlFinder]),
+    icons: findOne(metadata, [defaultIconsFinder, defaultAppleTouchIconsFinder]),
+    image: findOne(metadata, [defaultImageFinder, jsonLdImageFinder, openGraphImageFinder]),
+    outlet: findOne(metadata, [defaultOutletFinder, jsonLdOutletFinder, openGraphOutletFinder]),
+    headline: findOne(metadata, [defaultTitleFinder, jsonLdTitleFinder, openGraphTitleFinder]),
+    datePublished: findOneDate(metadata, [defaultPublishedDateFinder, jsonLdPublishedDateFinder, openGraphPublishedDateFinder]),
+    agent: {
+      name: 'html-metata',
+      version: scrape.version
+    }
+  }
+}
+
+export const scrapeAndExtract = (url, opts, cb) => {
+  scrapeUrl(url, opts, (err, metadata, finalUrl) => {
+    if (err) return cb(err)
+    const embed = extractEmbedData(metadata, finalUrl)
+    cb(undefined, embed)
+  })
+}
+
+export default scrapeAndExtract

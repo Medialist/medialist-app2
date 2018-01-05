@@ -11,6 +11,14 @@ export const defaultUrlFinder = (metadata) => {
   return withGeneral(metadata).canonical
 }
 
+export const defaultIconsFinder = (metadata) => {
+  return withGeneral(metadata).icons
+}
+
+export const defaultAppleTouchIconsFinder = (metadata) => {
+  return withGeneral(metadata).appleTouchIcons
+}
+
 export const defaultTitleFinder = (metadata) => {
   return withGeneral(metadata).title
 }
