@@ -30,6 +30,7 @@ import { ContactCampaigns, ContactCampaignStatuses } from '/imports/ui/contacts/
 import SearchBox from '/imports/ui/lists/search-box'
 import CampaignsTable from '/imports/ui/campaigns/campaigns-table'
 import CountTag from '/imports/ui/tags/tag'
+import { collationSort } from '/imports/lib/collation'
 
 const minSearchLength = 3
 
@@ -408,6 +409,17 @@ const parseQuery = ({ query }) => {
   }
 }
 
+// returns a sort compator fn or mongo sort specifier
+const getCustomSortSpec = (sort) => {
+  // Use collation Sort if is a text field
+  const nonTextFields = ['updatedAt']
+  const sortKey = Object.keys(sort)[0]
+  if (nonTextFields.indexOf(sortKey) === -1) {
+    return collationSort(sort)
+  }
+  return sort
+}
+
 export default createContainer(({location, params: { contactSlug }}) => {
   const subs = [
     Meteor.subscribe('contact-page', contactSlug),
@@ -445,9 +457,8 @@ export default createContainer(({location, params: { contactSlug }}) => {
     }]
   }
 
-  const cursor = ContactCampaigns.find(query, {
-    sort
-  })
+  const sortSpec = getCustomSortSpec(sort)
+  const cursor = ContactCampaigns.find(query, {sort: sortSpec})
   const campaigns = cursor.fetch()
   const campaignsCount = cursor.count()
   const statusCounts = ContactCampaignStatuses.findOne({
