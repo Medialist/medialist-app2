@@ -42,8 +42,7 @@ export default class UserSelector extends React.Component {
   }
 
   static defaultProps = {
-    button: UserButton,
-    option: UserOption
+    button: UserButton
   }
 
   render () {
@@ -99,7 +98,7 @@ const SearchableList = createSearchContainer(SearchList, {
   minSearchLength: 1
 })
 
-const SearchableUserList = ({selectedUser, onSelect, option}) => {
+export const SearchableUserList = ({selectedUser, onSelect, option}) => {
   const CustomOption = option
   const query = {
     roles: 'team',
@@ -153,4 +152,8 @@ const SearchableUserList = ({selectedUser, onSelect, option}) => {
       )}
     </SearchableList>
   )
+}
+
+SearchableUserList.defaultProps = {
+  option: UserOption
 }

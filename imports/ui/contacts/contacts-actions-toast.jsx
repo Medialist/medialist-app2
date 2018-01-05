@@ -6,7 +6,7 @@ import dasherise from 'dasherize'
 import { Dropdown, DropdownMenu, DropdownMenuItem } from '/imports/ui/navigation/dropdown'
 import { StatusValues } from '/imports/api/contacts/status'
 import StatusLabel from '/imports/ui/feedback/status-label'
-import UserSelector from '/imports/ui/users/user-selector'
+import {SearchableUserList} from '/imports/ui/users/user-selector'
 import FancyMergeIcon from './merge/fancy-merge-icon'
 import {
   FeedCampaignIcon,
@@ -102,7 +102,7 @@ class ContactsActionsToast extends React.Component {
               {this.props.onStatusClick ? <Dropdown>
                 <Tooltip title='Update status'>
                   <StatusUpdateIcon
-                    className='mx3 pointer gray60 hover-blue'
+                    className={`mx3 pointer gray60 hover-blue ${this.state.openStatusMenu === true ? 'blue' : ''}`}
                     onClick={this.openStatusMenu}
                     data-id='contact-actions-update-status'
                     style={{width: '21px', height: '21px'}} />
@@ -132,20 +132,26 @@ class ContactsActionsToast extends React.Component {
                   style={{width: '21px', height: '21px'}} />
               </Tooltip>
               { !onAssignOwnerClick ? null : (
-                <Tooltip title='Assign owner'>
-                  <UserSelector
-                    hideChevron
-                    arrowPosition='bottom'
-                    top={-302}
-                    onSelect={user => onAssignOwnerClick(user)}
-                    button={() => <TeamIcon
-                      className='mx3 pointer gray60 hover-blue'
-                      onClick={() => {}}
+                <Dropdown>
+                  <Tooltip title='Assign owner'>
+                    <TeamIcon
+                      className={`mx3 pointer gray60 hover-blue ${this.state.openOwnerMenu === true ? 'blue' : ''}`}
+                      onClick={() => this.setState({openOwnerMenu: true})}
                       data-id='contact-actions-add-tags'
-                      style={{width: '21px', height: '21px'}}
-                    />}
-                  />
-                </Tooltip>
+                      style={{width: '21px', height: '21px'}} />
+                  </Tooltip>
+                  <DropdownMenu
+                    arrowPosition='bottom'
+                    width={250}
+                    top={-302}
+                    open={this.state.openOwnerMenu}
+                    onDismiss={() => this.setState({openOwnerMenu: false})} >
+                    <SearchableUserList onSelect={(userRef) => {
+                      onAssignOwnerClick(userRef)
+                      this.setState({openOwnerMenu: false})
+                    }} />
+                  </DropdownMenu>
+                </Dropdown>
               ) }
               <Tooltip title='Download as CSV'>
                 <DownloadIcon

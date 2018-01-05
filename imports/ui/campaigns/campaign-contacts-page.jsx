@@ -164,13 +164,11 @@ class CampaignContactsPage extends React.Component {
 
   onAssignOwnerClick = (ownerUserRef) => {
     const {campaign} = this.props
-    const {selections, selectionMode} = this.state
+    const {selections} = this.state
     const opts = {
-      ownerUserId: ownerUserRef._id,
-      campaignSlug: campaign.slug
-    }
-    if (selectionMode === 'include') {
-      opts.contactSlugs = selections.map(c => c.slug)
+      campaignSlug: campaign.slug,
+      contactSlugs: selections.map(c => c.slug),
+      ownerUserId: ownerUserRef._id
     }
     assignContactOwner.call(opts, (err) => {
       if (err) {
