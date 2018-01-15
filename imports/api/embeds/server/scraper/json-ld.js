@@ -1,23 +1,21 @@
 
-const withJsonLd = (metadata, types, mapper) => {
+export const withJsonLd = (metadata, types, mapper) => {
   if (!metadata || !metadata.jsonLd) {
     return undefined
   }
 
   const jsonLd = Array.isArray(metadata.jsonLd) ? metadata.jsonLd : [metadata.jsonLd]
 
-  if (!Array.isArray(types)) {
-    types = [types]
-  }
+  types = Array.isArray(types) ? types : [types]
 
   return jsonLd
-    .filter(entry => types.includes(type => entry['@type'] === type))
+    .filter(entry => types.includes(entry['@type']))
     .map(mapper)
     .filter(value => !!value)
     .pop()
 }
 
-const articleTypes = ['Article', 'NewsArticle', 'ReportageNewsArticle']
+export const articleTypes = ['Article', 'NewsArticle', 'ReportageNewsArticle']
 
 export const jsonLdUrlFinder = (metadata) => {
   return withJsonLd(metadata, articleTypes, entry => entry.url)

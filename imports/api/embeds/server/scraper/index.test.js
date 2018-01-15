@@ -3,7 +3,7 @@ import { scrapeUrl, extractEmbedData } from '/imports/api/embeds/server/scraper'
 import testMetadatas from './examples/metadatas'
 import testEmbeds from './examples/embeds'
 
-describe.only('embeds scrapeUrl', function () {
+describe('embeds scrapeUrl', function () {
   it('should scrape some metadata from popular sites', function (done) {
     const urls = [
       'http://www.bbc.co.uk/news/technology-42564461',
@@ -36,7 +36,7 @@ describe.only('embeds scrapeUrl', function () {
   })
 })
 
-describe.only('embeds extractEmbedData', function () {
+describe('embeds extractEmbedData', function () {
   it('should extract embed data from metadata', function () {
     Object.keys(testEmbeds).forEach((outlet) => {
       const metadata = testMetadatas[outlet]
