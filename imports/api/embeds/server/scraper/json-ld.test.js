@@ -10,7 +10,7 @@ import {
  } from '/imports/api/embeds/server/scraper/json-ld'
 import {bbc, bloomberg, reuters} from './examples/metadatas'
 
-describe.only('embeds jsonLd', function () {
+describe('embeds jsonLd', function () {
   it('should extract JSON-LD from metadata', function () {
     assert.equal(withJsonLd(bbc, articleTypes, jsonLd => jsonLd['@type']), 'ReportageNewsArticle')
     assert.equal(withJsonLd(bloomberg, articleTypes, jsonLd => jsonLd['@type']), 'NewsArticle')

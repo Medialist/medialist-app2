@@ -81,6 +81,7 @@ export const createEmbed = new ValidatedMethod({
         outlet: doc.outlet,
         headline: doc.headline,
         url: url,
+        icon: doc.icon,
         image: doc.image,
         datePublished: doc.datePublished,
         urls: urls,

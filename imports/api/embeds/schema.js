@@ -46,6 +46,10 @@ export const EmbedSchema = new SimpleSchema({
     type: String,
     optional: true
   },
+  icon: {
+    type: ImageSchema,
+    optional: true
+  },
   image: {
     type: ImageSchema,
     optional: true
@@ -73,6 +77,10 @@ export const EmbedRefSchema = new SimpleSchema({
   },
   outlet: {
     type: String,
+    optional: true
+  },
+  icon: {
+    type: ImageSchema,
     optional: true
   },
   image: {

@@ -1,9 +1,21 @@
+import { resolve } from 'url'
+
+export const imageFormatter = (img, metadata) => {
+  if (!img) return undefined
+  const imgUrl = img.url || img.href
+  if (!imgUrl) return undefined
+  const absoluteUrl = resolve(metadata.url, imgUrl)
+  return {
+    url: absoluteUrl,
+    width: img.width ? Number(img.width) : undefined,
+    height: img.height ? Number(img.height) : undefined
+  }
+}
 
 const withGeneral = (metadata) => {
   if (metadata && metadata.general) {
     return metadata.general
   }
-
   return {}
 }
 
@@ -12,11 +24,17 @@ export const defaultUrlFinder = (metadata) => {
 }
 
 export const defaultIconsFinder = (metadata) => {
-  return withGeneral(metadata).icons
+  const icons = withGeneral(metadata).icons || []
+  return icons
+    .map(icon => imageFormatter(icon, metadata))
+    .filter(icon => !!icon)
 }
 
 export const defaultAppleTouchIconsFinder = (metadata) => {
-  return withGeneral(metadata).appleTouchIcons
+  const icons = withGeneral(metadata).appleTouchIcons || []
+  return icons
+    .map(icon => imageFormatter(icon, metadata))
+    .filter(icon => !!icon)
 }
 
 export const defaultTitleFinder = (metadata) => {

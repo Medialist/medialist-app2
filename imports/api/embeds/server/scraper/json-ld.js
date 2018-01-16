@@ -1,3 +1,4 @@
+import { imageFormatter } from './default'
 
 export const withJsonLd = (metadata, types, mapper) => {
   if (!metadata || !metadata.jsonLd) {
@@ -26,20 +27,7 @@ export const jsonLdTitleFinder = (metadata) => {
 }
 
 export const jsonLdImageFinder = (metadata) => {
-  const pickImage = (entry) => {
-    if (entry.image && entry.image.url) {
-      if (!entry.image.url.startsWith('http')) {
-        return undefined
-      }
-
-      return {
-        url: entry.image.url,
-        width: entry.image.width ? Number(entry.image.width) : undefined,
-        height: entry.image.height ? Number(entry.image.height) : undefined
-      }
-    }
-  }
-  return withJsonLd(metadata, articleTypes, pickImage)
+  return withJsonLd(metadata, articleTypes, entry => imageFormatter(entry.image, metadata))
 }
 
 export const jsonLdPublishedDateFinder = (metadata) => {

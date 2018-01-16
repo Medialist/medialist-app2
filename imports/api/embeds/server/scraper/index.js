@@ -3,18 +3,22 @@ import { defaultUrlFinder, defaultIconsFinder, defaultAppleTouchIconsFinder, def
 import { jsonLdUrlFinder, jsonLdTitleFinder, jsonLdImageFinder, jsonLdPublishedDateFinder, jsonLdOutletFinder } from '/imports/api/embeds/server/scraper/json-ld'
 import { openGraphUrlFinder, openGraphTitleFinder, openGraphImageFinder, openGraphPublishedDateFinder, openGraphOutletFinder } from '/imports/api/embeds/server/scraper/open-graph'
 
-const findOne = (metadata, finders) => {
+const findAll = (metadata, finders) => {
   const flatten = arr => arr.reduce((acc, val) => acc.concat(Array.isArray(val) ? flatten(val) : val), [])
 
   return flatten(
     finders
       .map(finder => finder(metadata))
       .filter(value => !!value)
-  ).pop()
+  )
 }
 
-const findOneDate = (metadata, finders) => {
-  const value = findOne(metadata, finders)
+const findLast = (metadata, finders) => findAll(metadata, finders).pop()
+
+const findFirst = (metadata, finders) => findAll(metadata, finders).shift()
+
+const findLastDate = (metadata, finders) => {
+  const value = findLast(metadata, finders)
 
   if (value) {
     return new Date(value)
@@ -44,14 +48,16 @@ export const scrapeUrl = (url, opts, cb) => {
 }
 
 export const extractEmbedData = (metadata, url) => {
+  // Add the request url so we can resolve relative image links and the like.
+  metadata.url = url
   return {
     url: url,
-    canonicalUrl: findOne(metadata, [defaultUrlFinder, jsonLdUrlFinder, openGraphUrlFinder]),
-    icons: findOne(metadata, [defaultIconsFinder, defaultAppleTouchIconsFinder]),
-    image: findOne(metadata, [defaultImageFinder, jsonLdImageFinder, openGraphImageFinder]),
-    outlet: findOne(metadata, [defaultOutletFinder, jsonLdOutletFinder, openGraphOutletFinder]),
-    headline: findOne(metadata, [defaultTitleFinder, jsonLdTitleFinder, openGraphTitleFinder]),
-    datePublished: findOneDate(metadata, [defaultPublishedDateFinder, jsonLdPublishedDateFinder, openGraphPublishedDateFinder]),
+    canonicalUrl: findLast(metadata, [defaultUrlFinder, jsonLdUrlFinder, openGraphUrlFinder]),
+    icon: findFirst(metadata, [defaultAppleTouchIconsFinder, defaultIconsFinder]),
+    image: findLast(metadata, [defaultImageFinder, jsonLdImageFinder, openGraphImageFinder]),
+    outlet: findLast(metadata, [defaultOutletFinder, jsonLdOutletFinder, openGraphOutletFinder]),
+    headline: findLast(metadata, [defaultTitleFinder, jsonLdTitleFinder, openGraphTitleFinder]),
+    datePublished: findLastDate(metadata, [defaultPublishedDateFinder, jsonLdPublishedDateFinder, openGraphPublishedDateFinder]),
     agent: {
       name: 'html-metata',
       version: scrape.version

@@ -54,7 +54,7 @@ const PostSquare = ({ post }) => {
     <a href={url} target='_blank' className='mr1' data-id='coverage-post'>
       <Tooltip title={<span style={titleStyle}>{toPrettyUrl(url)}</span>}>
         {icon
-          ? <SquareAvatar avatar={icon} size={20} />
+          ? <SquareAvatar avatar={icon.url} size={20} />
           : <CoverageIcon style={{ width: '20px', height: '20px' }} />}
       </Tooltip>
     </a>
@@ -68,7 +68,7 @@ const PostOption = ({ post }) => {
     <a href={url} target='_blank' data-id='coverage-post'>
       <span className='mr2'>
         {icon
-          ? <SquareAvatar avatar={icon} size={20} />
+          ? <SquareAvatar avatar={icon.url} size={20} />
           : <CoverageIcon style={{ width: '20px', height: '20px' }} />}
       </span>
       <span style={{ verticalAlign: 'middle' }}>{toPrettyUrl(url)}</span>
