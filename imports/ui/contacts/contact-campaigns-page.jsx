@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
+import { DataDam } from 'react-data-dam'
 import ContactTopbar from '/imports/ui/contacts/contact-topbar'
 import StatusStats from '/imports/ui/contacts/status-stats'
 import { CircleAvatar } from '/imports/ui/images/avatar'
@@ -31,6 +32,8 @@ import SearchBox from '/imports/ui/lists/search-box'
 import CampaignsTable from '/imports/ui/campaigns/campaigns-table'
 import CountTag from '/imports/ui/tags/tag'
 import { collationSort } from '/imports/lib/collation'
+import ShowUpdatesButton from '/imports/ui/lists/show-updates-button'
+import { updatedByUserAutoRelease } from '/imports/ui/lists/data-dam'
 
 const minSearchLength = 3
 
@@ -232,91 +235,96 @@ class ContactCampaignsPage extends React.Component {
     }
 
     return (
-      <div>
-        <ContactTopbar contact={contact} onAddToCampaignClick={() => this.showModal('addToCampaignModal')} />
-        <div className='flex items-center pt4 pb2 pr2 pl6'>
-          <div className='flex-auto'>
-            <div className='flex items-center'>
-              <EditableAvatar avatar={this.props.contact.avatar} onChange={this.onAvatarChange} onError={this.onAvatarError} menuLeft={0} menuTop={-20}>
-                <CircleAvatar className='flex-none' size={40} avatar={this.props.contact.avatar} name={this.props.contact.name} />
-              </EditableAvatar>
-              <div className='flex-auto ml3' style={{lineHeight: 1.4}}>
-                <div className='f-xl semibold gray10 truncate'>{this.props.contact.name}</div>
-                <div className='f-sm normal gray10 truncate'>
-                  {this.props.contact.outlets[0] && this.props.contact.outlets[0].value} — {this.props.contact.outlets.map((o) => o.label).join(', ')}
+      <DataDam data={campaigns} autoRelease={updatedByUserAutoRelease}>
+        {(campaigns, diff, release) => (
+          <div>
+            <ContactTopbar contact={contact} onAddToCampaignClick={() => this.showModal('addToCampaignModal')} />
+            <div className='flex items-center pt4 pb2 pr2 pl6'>
+              <div className='flex-auto'>
+                <div className='flex items-center'>
+                  <EditableAvatar avatar={this.props.contact.avatar} onChange={this.onAvatarChange} onError={this.onAvatarError} menuLeft={0} menuTop={-20}>
+                    <CircleAvatar className='flex-none' size={40} avatar={this.props.contact.avatar} name={this.props.contact.name} />
+                  </EditableAvatar>
+                  <div className='flex-auto ml3' style={{lineHeight: 1.4}}>
+                    <div className='f-xl semibold gray10 truncate'>{this.props.contact.name}</div>
+                    <div className='f-sm normal gray10 truncate'>
+                      {this.props.contact.outlets[0] && this.props.contact.outlets[0].value} — {this.props.contact.outlets.map((o) => o.label).join(', ')}
+                    </div>
+                  </div>
                 </div>
               </div>
+              <StatusStats className='flex-none' statuses={statusCounts} active={status} onStatusClick={onStatusFilterChange} />
             </div>
+            <div className='bg-white shadow-2 m4' data-id='campaigns-table'>
+              <div className='pt4 pl4 pr4 pb1 items-center'>
+                <SearchBox initialTerm={term} onTermChange={onTermChange} placeholder='Search campaigns...' data-id='search-campaigns-input' style={{zIndex: 1}}>
+                  {selectedTags && selectedTags.map((t) => (
+                    <CountTag
+                      style={{marginBottom: 0}}
+                      key={t.slug}
+                      name={t.name}
+                      count={t.contactsCount}
+                      onRemove={() => onTagRemove(t)}
+                    />
+                  ))}
+                </SearchBox>
+                <div className='f-xs gray60' style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>{campaignsTotal} campaign{campaignsTotal === 1 ? '' : 's'}</div>
+              </div>
+              <CampaignsTable
+                term={term}
+                sort={sort}
+                campaigns={campaigns}
+                selections={selections}
+                contact={contact}
+                onSortChange={onSortChange}
+                onSelectionsChange={onSelectionsChange}
+                searching={Boolean(term)} />
+            </div>
+            { loading && <LoadingBar /> }
+            <ContactCampaignsActionsToast
+              campaigns={this.state.selections}
+              onViewClick={this.onViewSelection}
+              onSectorClick={() => this.showModal('addToCampaignListsModal')}
+              onFavouriteClick={this.onFavouriteAll}
+              onTagClick={() => this.showModal('addTagsToCampaignsModal')}
+              onDeleteClick={() => this.showModal('removeContactFromCampaignsModal')}
+              onDeselectAllClick={this.clearSelection} />
+            <AddContactToCampaign
+              title={`Add ${contact.name.split(' ')[0]} to a Campaign`}
+              onDismiss={this.hideModals}
+              open={this.state.addToCampaignModal}
+              contact={contact}
+            />
+            <AddTagsModal
+              title='Tag these Campaigns'
+              type='Campaigns'
+              open={this.state.addTagsToCampaignsModal}
+              onDismiss={this.hideModals}
+              onUpdateTags={this.onTagAll}>
+              <AbbreviatedAvatarList items={this.state.selections} shape='square' />
+            </AddTagsModal>
+            <AddToMasterListModal
+              type='Campaigns'
+              items={this.state.selections}
+              open={this.state.addToCampaignListsModal}
+              onDismiss={this.hideModals}
+              onSave={this.onAddAllToMasterLists}>
+              <AbbreviatedAvatarList
+                items={this.state.selections}
+                maxTooltip={12} shape='square' />
+            </AddToMasterListModal>
+            <RemoveContactModal
+              open={this.state.removeContactFromCampaignsModal}
+              contacts={[this.props.contact]}
+              campaigns={this.state.selections}
+              avatars={this.state.selections}
+              onDelete={this.clearSelectionAndHideModals}
+              onDismiss={this.hideModals}
+            />
+            <ShowUpdatesButton data={campaigns} diff={diff} onClick={release} />
           </div>
-          <StatusStats className='flex-none' statuses={statusCounts} active={status} onStatusClick={onStatusFilterChange} />
-        </div>
-        <div className='bg-white shadow-2 m4' data-id='campaigns-table'>
-          <div className='pt4 pl4 pr4 pb1 items-center'>
-            <SearchBox initialTerm={term} onTermChange={onTermChange} placeholder='Search campaigns...' data-id='search-campaigns-input' style={{zIndex: 1}}>
-              {selectedTags && selectedTags.map((t) => (
-                <CountTag
-                  style={{marginBottom: 0}}
-                  key={t.slug}
-                  name={t.name}
-                  count={t.contactsCount}
-                  onRemove={() => onTagRemove(t)}
-                />
-              ))}
-            </SearchBox>
-            <div className='f-xs gray60' style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>{campaignsTotal} campaign{campaignsTotal === 1 ? '' : 's'}</div>
-          </div>
-          <CampaignsTable
-            term={term}
-            sort={sort}
-            campaigns={campaigns}
-            selections={selections}
-            contact={contact}
-            onSortChange={onSortChange}
-            onSelectionsChange={onSelectionsChange}
-            searching={Boolean(term)} />
-        </div>
-        { loading && <LoadingBar /> }
-        <ContactCampaignsActionsToast
-          campaigns={this.state.selections}
-          onViewClick={this.onViewSelection}
-          onSectorClick={() => this.showModal('addToCampaignListsModal')}
-          onFavouriteClick={this.onFavouriteAll}
-          onTagClick={() => this.showModal('addTagsToCampaignsModal')}
-          onDeleteClick={() => this.showModal('removeContactFromCampaignsModal')}
-          onDeselectAllClick={this.clearSelection} />
-        <AddContactToCampaign
-          title={`Add ${contact.name.split(' ')[0]} to a Campaign`}
-          onDismiss={this.hideModals}
-          open={this.state.addToCampaignModal}
-          contact={contact}
-        />
-        <AddTagsModal
-          title='Tag these Campaigns'
-          type='Campaigns'
-          open={this.state.addTagsToCampaignsModal}
-          onDismiss={this.hideModals}
-          onUpdateTags={this.onTagAll}>
-          <AbbreviatedAvatarList items={this.state.selections} shape='square' />
-        </AddTagsModal>
-        <AddToMasterListModal
-          type='Campaigns'
-          items={this.state.selections}
-          open={this.state.addToCampaignListsModal}
-          onDismiss={this.hideModals}
-          onSave={this.onAddAllToMasterLists}>
-          <AbbreviatedAvatarList
-            items={this.state.selections}
-            maxTooltip={12} shape='square' />
-        </AddToMasterListModal>
-        <RemoveContactModal
-          open={this.state.removeContactFromCampaignsModal}
-          contacts={[this.props.contact]}
-          campaigns={this.state.selections}
-          avatars={this.state.selections}
-          onDelete={this.clearSelectionAndHideModals}
-          onDismiss={this.hideModals}
-        />
-      </div>
+        )}
+      </DataDam>
     )
   }
 }
@@ -468,6 +476,8 @@ export default createContainer(({location, params: { contactSlug }}) => {
     slug: contactSlug
   })
   const selectedTags = []
+
+  console.log(campaigns[0])
 
   return {
     loading,
