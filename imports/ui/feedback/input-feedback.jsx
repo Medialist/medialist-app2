@@ -93,8 +93,6 @@ export default class FeedbackInput extends Component {
       status = contactRef && contactRef.status
     }
 
-    console.log({ contact, campaign, status })
-
     return status || StatusMap.toContact
   }
 
