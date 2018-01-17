@@ -235,6 +235,27 @@ class CampaignContactsPage extends React.Component {
     })
   }
 
+  autoRelease (data, diff, nextData) {
+    // Owner info is updated out of band i.e. does not effect updatedBy field
+    // so just let these changes through.
+    if (diff.total.updated) {
+      const didUpdateOwners = diff.updated.some(updatedItem => {
+        const item = data.find(item => item._id === updatedItem._id)
+        const owners = item.owners || []
+        const updatedOwners = updatedItem.owners || []
+
+        return updatedItem.owners.length === owners.length
+          ? owners.some((owner, i) => owner._id !== updatedOwners[i]._id)
+          : true
+      })
+
+      if (didUpdateOwners) return true
+    }
+
+    // Otherwise, if the current user did this update, then let it through
+    return updatedByUserAutoRelease(data, diff, nextData)
+  }
+
   render () {
     const {
       campaign,
@@ -278,7 +299,7 @@ class CampaignContactsPage extends React.Component {
     const highlightSlug = location.state && location.state.highlightContactSlug
 
     return (
-      <DataDam data={contacts} autoRelease={updatedByUserAutoRelease}>
+      <DataDam data={contacts} autoRelease={this.autoRelease}>
         {(contacts, diff, release) => (
           <div>
             <CampaignTopbar campaign={campaign} onAddContactClick={this.onAddContactClick} />

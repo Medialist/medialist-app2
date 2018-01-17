@@ -477,8 +477,6 @@ export default createContainer(({location, params: { contactSlug }}) => {
   })
   const selectedTags = []
 
-  console.log(campaigns[0])
-
   return {
     loading,
     contact,
