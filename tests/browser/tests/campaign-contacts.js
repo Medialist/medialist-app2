@@ -542,11 +542,14 @@ const test = {
 
     t.page.main().logout()
     t.end()
-  }
-/*
-  ,
+  },
 
-  'Should display show updates button': function (t) {
+  // FIXME: There's no reason why this test shouldn't work.
+  // The `observeChanges` setup by ReactiveAggregate does not fire a changed
+  // callback when data changes.
+  // Remove `'' + ` to enable.
+  // https://github.com/nightwatchjs/nightwatch-docs/blob/7032f2e89c89f9283eeeff5a7df91048cf6d55e9/guide/running-tests/disabling-tests.md#disabling-individual-testcases
+  'Should display show updates button': '' + function (t) {
     t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
       t.perform((done) => {
         t.addContactsToCampaign([contact], campaign, () => done())
@@ -596,7 +599,6 @@ const test = {
     t.page.main().logout()
     t.end()
   }
-*/
 }
 
 module.exports = test
