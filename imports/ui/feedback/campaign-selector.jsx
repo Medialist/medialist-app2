@@ -91,7 +91,6 @@ class CampaignSelector extends React.Component {
     const { campaigns, contact, onChange, selectedStatus, isEdit } = this.props
     const { campaign, open } = this.state
     const status = selectedStatus || campaign.contacts.find(c => c.slug === contact.slug).status
-
     return (
       <div className='inline-block'>
         <div className='inline-block'>
