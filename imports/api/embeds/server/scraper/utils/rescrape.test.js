@@ -5,7 +5,7 @@ import { rescrapeAll } from '/imports/api/embeds/server/scraper/utils/rescrape'
 import Embeds from '/imports/api/embeds/embeds'
 import { createTestEmbeds } from '/tests/fixtures/server-domain'
 
-describe.only('embeds rescrape', function () {
+describe('embeds rescrape', function () {
   beforeEach(function () {
     resetDatabase()
     Meteor.settings = {
@@ -16,7 +16,7 @@ describe.only('embeds rescrape', function () {
   })
 
   it('should update embeds by rescraping the url', function (done) {
-    this.timeout(60000)
+    this.timeout(10000)
 
     const fakeEmbed = createTestEmbeds(1).pop()
     const url = 'http://www.bbc.co.uk/news/technology-42564461'
@@ -31,11 +31,10 @@ describe.only('embeds rescrape', function () {
     rescrapeAll()
 
     const embed = Embeds.findOne({urls: url})
-    console.log(embed.urls)
     assert.notEqual(embed.headline, 'BORING', 'Embed headline had been updated')
     assert.ok(embed.icon, 'Embed includes an icon' )
     assert.ok(embed.urls.includes('https://coolguy.website'), 'Embed urls include previous urls')
     assert.ok(embed.urls.includes(url), 'Embed urls include requested url')
-    assert.ok(embed.urls.includes(embed.canonicalUrl), 'Embed urls include canonical url')
+    done()
   })
 })
