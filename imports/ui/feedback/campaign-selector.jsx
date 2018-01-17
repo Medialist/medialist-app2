@@ -20,7 +20,7 @@ const CampaignButton = (props) => {
 class CampaignSelector extends React.Component {
   static propTypes = {
     isEdit: PropTypes.bool,
-    selectedStatus: PropTypes.string,
+    selectedStatus: PropTypes.string.isRequired,
     contact: PropTypes.object.isRequired,
     campaigns: PropTypes.array.isRequired,
     campaign: PropTypes.object,
@@ -90,7 +90,7 @@ class CampaignSelector extends React.Component {
     const { openDropdown, closeDropdown, onLinkClick, onClearFilter } = this
     const { campaigns, contact, onChange, selectedStatus, isEdit } = this.props
     const { campaign, open } = this.state
-    const status = selectedStatus || campaign.contacts.find(c => c.slug === contact.slug).status
+
     return (
       <div className='inline-block'>
         <div className='inline-block'>
@@ -115,10 +115,10 @@ class CampaignSelector extends React.Component {
         <div className='ml1 inline-block'>
           <StatusSelector
             buttonStyle={{padding: '6px 15px 7px'}}
-            status={status || this.props.selectedStatus}
+            status={selectedStatus}
             onChange={onChange}
             disabled={isEdit || !contact}>
-            <StatusLabel name={status} />
+            <StatusLabel name={selectedStatus} />
           </StatusSelector>
         </div>
       </div>
