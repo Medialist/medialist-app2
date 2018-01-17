@@ -69,6 +69,7 @@ export const scrapeAndExtract = (url, opts, cb) => {
   scrapeUrl(url, opts, (err, metadata, finalUrl) => {
     if (err) return cb(err)
     const embed = extractEmbedData(metadata, finalUrl)
+    embed.userRequestedUrl = url
     cb(undefined, embed)
   })
 }
