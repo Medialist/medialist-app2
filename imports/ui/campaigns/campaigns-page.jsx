@@ -81,7 +81,8 @@ class CampaignsPage extends React.Component {
 
   clearSelection = () => {
     this.setState({
-      selections: []
+      selections: [],
+      selectionMode: 'include'
     })
   }
 

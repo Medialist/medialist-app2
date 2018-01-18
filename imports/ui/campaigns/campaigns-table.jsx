@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
 import SortableHeader from '/imports/ui/tables/sortable-header'
@@ -10,8 +10,8 @@ import { SquareAvatar } from '/imports/ui/images/avatar'
 import StatusLabel from '/imports/ui/feedback/status-label'
 import StatusSelectorContainer from '/imports/ui/feedback/status-selector-container'
 
-const CampaignsTable = React.createClass({
-  propTypes: {
+class CampaignsTable extends Component {
+  static propTypes = {
     // e.g. { updatedAt: -1 }
     sort: PropTypes.object,
     // Callback when sort changes, passed e.g. { updatedAt: 1 }
@@ -32,9 +32,9 @@ const CampaignsTable = React.createClass({
     searching: PropTypes.bool,
     // If this is a contact campaigns table
     contact: PropTypes.object
-  },
+  }
 
-  onSelectAllChange () {
+  onSelectAllChange = () => {
     const { selectionMode } = this.props
     if (selectionMode === 'include') {
       this.props.onSelectionModeChange('all')
@@ -43,25 +43,33 @@ const CampaignsTable = React.createClass({
       this.props.onSelectionModeChange('include')
       this.props.onSelectionsChange([])
     }
-  },
+  }
 
-  onSelectChange (campaign) {
-    let { selections, selectionMode } = this.props
-    const index = selections.findIndex((c) => c._id === campaign._id)
-
-    if (index === -1) {
-      selections = selections.concat([campaign])
-    } else {
-      selections.splice(index, 1)
-      selections = Array.from(selections)
-    }
-
-    this.props.onSelectionsChange(selections)
+  onSelectChange = (campaign) => {
+    const {
+      selectionMode,
+      campaigns,
+      onSelectionsChange,
+      onSelectionModeChange
+    } = this.props
 
     if (selectionMode === 'all') {
-      this.props.onSelectionModeChange('include')
+      onSelectionsChange(campaigns.filter(c => c._id !== campaign._id))
+      onSelectionModeChange('include') // TODO: switch to exclude
+    } else {
+      let { selections } = this.props
+      const index = selections.findIndex((c) => c._id === campaign._id)
+
+      if (index === -1) {
+        selections = selections.concat([campaign])
+      } else {
+        selections = Array.from(selections)
+        selections.splice(index, 1)
+      }
+
+      onSelectionsChange(selections)
     }
-  },
+  }
 
   render () {
     const { sort, onSortChange, campaigns, selections, selectionMode, loading, contact } = this.props
@@ -74,6 +82,11 @@ const CampaignsTable = React.createClass({
       memo[selection._id] = selection
       return memo
     }, {})
+
+    const isSelected = (_id) => {
+      if (selectionMode === 'all') return true
+      return !!selectionsById[_id]
+    }
 
     return (
       <table className='table' data-id={`campaigns-table${this.props.searching ? '-search-results' : '-unfiltered'}`}>
@@ -119,7 +132,7 @@ const CampaignsTable = React.createClass({
             const { _id, slug, name, avatar, client, purpose, updatedAt, updatedBy, createdAt, createdBy } = campaign
             const clientName = client && client.name
             return (
-              <SelectableRow data={campaign} selected={!!selectionsById[_id]} onSelectChange={this.onSelectChange} key={_id} data-id={`campaigns-table-row-${index}`} data-item={slug}>
+              <SelectableRow data={campaign} selected={isSelected(_id)} onSelectChange={this.onSelectChange} key={_id} data-id={`campaigns-table-row-${index}`} data-item={slug}>
                 <td className='left-align'>
                   <Link to={`/campaign/${slug}`} className='nowrap' data-id='campaign-link'>
                     <SquareAvatar avatar={avatar} name={name} />
@@ -154,6 +167,6 @@ const CampaignsTable = React.createClass({
       </table>
     )
   }
-})
+}
 
 export default CampaignsTable
