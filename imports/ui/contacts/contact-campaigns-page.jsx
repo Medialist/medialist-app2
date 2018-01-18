@@ -239,8 +239,6 @@ class ContactCampaignsPage extends React.Component {
       )
     }
 
-    const selectionsLength = selectionMode === 'all' ? campaignsTotal : selections.length
-
     return (
       <div>
         <ContactTopbar contact={contact} onAddToCampaignClick={() => this.showModal('addToCampaignModal')} />
@@ -290,7 +288,6 @@ class ContactCampaignsPage extends React.Component {
         { loading && <LoadingBar /> }
         <ContactCampaignsActionsToast
           campaigns={selections}
-          campaignsCount={selectionsLength}
           onViewClick={this.onViewSelection}
           onSectorClick={() => this.showModal('addToCampaignListsModal')}
           onFavouriteClick={this.onFavouriteAll}
@@ -309,7 +306,7 @@ class ContactCampaignsPage extends React.Component {
           open={this.state.addTagsToCampaignsModal}
           onDismiss={this.hideModals}
           onUpdateTags={this.onTagAll}>
-          <AbbreviatedAvatarList items={selections} shape='square' total={selectionsLength} />
+          <AbbreviatedAvatarList items={selections} shape='square' />
         </AddTagsModal>
         <AddToMasterListModal
           type='Campaigns'
@@ -319,7 +316,7 @@ class ContactCampaignsPage extends React.Component {
           onSave={this.onAddAllToMasterLists}>
           <AbbreviatedAvatarList
             items={selections}
-            maxTooltip={12} shape='square' total={selectionsLength} />
+            maxTooltip={12} shape='square' />
         </AddToMasterListModal>
         <RemoveContactModal
           open={this.state.removeContactFromCampaignsModal}
