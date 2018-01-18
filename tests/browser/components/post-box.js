@@ -19,6 +19,27 @@ module.exports = {
     contactStatusSelectorButton: '[data-id=contact-status-selector-button]'
   },
   commands: [{
+    openFeedbackTab: function () {
+      this
+        .waitForElementVisible('@feedbackTab')
+        .click('@feedbackTab')
+        .waitForElementVisible('@feedbackInput')
+        .click('@feedbackInput')
+
+      return this
+    },
+    selectContact: function (contact) {
+      this
+        .waitForElementVisible('@selectContactButton')
+        .click('@selectContactButton')
+        .waitForElementVisible('@searchForContactInput')
+        .clear('@searchForContactInput')
+        .setValue('@searchForContactInput', contact.name)
+        .waitForElementVisible(`[data-id=campaign-contact-${contact.slug}]`)
+        .click(`[data-id=campaign-contact-${contact.slug}]`)
+
+      return this
+    },
     postFeedback: function (campaign, contact, contactStatus, text) {
       if (arguments.length === 3) {
         text = contactStatus
@@ -27,11 +48,7 @@ module.exports = {
         campaign = null
       }
 
-      this
-        .waitForElementVisible('@feedbackTab')
-        .click('@feedbackTab')
-        .waitForElementVisible('@feedbackInput')
-        .click('@feedbackInput')
+      this.openFeedbackTab()
 
       if (campaign) {
         this
@@ -42,13 +59,7 @@ module.exports = {
           .waitForElementVisible(`[data-type=campaign-search-result][data-id=campaign-${campaign.slug}]`)
           .click(`[data-id=campaign-${campaign.slug}]`)
       } else {
-        this
-          .waitForElementVisible('@selectContactButton')
-          .click('@selectContactButton')
-          .waitForElementVisible('@searchForContactInput')
-          .setValue('@searchForContactInput', contact.name)
-          .waitForElementVisible(`[data-type=campaign-contact-search-result][data-id=campaign-contact-${contact.slug}]`)
-          .click(`[data-id=campaign-contact-${contact.slug}]`)
+        this.selectContact(contact)
       }
 
       this
@@ -74,6 +85,15 @@ module.exports = {
 
       return this
     },
+    openCoverageTab: function () {
+      this
+        .waitForElementVisible('@coverageTab')
+        .click('@coverageTab')
+        .waitForElementVisible('@coverageInput')
+        .click('@coverageInput')
+
+      return this
+    },
     postCoverage: function (campaign, contact, contactStatus, text) {
       if (arguments.length === 3) {
         text = contactStatus
@@ -82,11 +102,7 @@ module.exports = {
         campaign = null
       }
 
-      this
-        .waitForElementVisible('@coverageTab')
-        .click('@coverageTab')
-        .waitForElementVisible('@coverageInput')
-        .click('@coverageInput')
+      this.openCoverageTab()
 
       if (campaign) {
         this
@@ -97,14 +113,7 @@ module.exports = {
           .waitForElementVisible(`[data-id=campaign-${campaign.slug}]`)
           .click(`[data-id=campaign-${campaign.slug}]`)
       } else {
-        this
-          .waitForElementVisible('@selectContactButton')
-          .click('@selectContactButton')
-          .waitForElementVisible('@searchForContactInput')
-          .clear('@searchForContactInput')
-          .setValue('@searchForContactInput', contact.name)
-          .waitForElementVisible(`[data-id=campaign-contact-${contact.slug}]`)
-          .click(`[data-id=campaign-contact-${contact.slug}]`)
+        this.selectContact(contact)
       }
 
       this
