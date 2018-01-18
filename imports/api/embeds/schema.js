@@ -61,6 +61,10 @@ export const EmbedSchema = new SimpleSchema({
   scrapedBy: {
     type: ScrapedBySchema,
     optional: true
+  },
+  updatedAt: {
+    type: Date,
+    optional: true
   }
 })
 EmbedSchema.extend(IdSchema)

@@ -1,13 +1,15 @@
 {
+  "url":
+    "http://www.itv.com/news/2018-01-04/intel-computer-processors-security-flaw/",
+  "urls": [
+    "http://www.itv.com/news/2018-01-04/intel-computer-processors-security-flaw/"
+  ],
   "canonicalUrl":
     "http://www.itv.com/news/2018-01-04/intel-computer-processors-security-flaw/",
-  "icons": {
-    "href":
-      "http://www.itv.com/news/assets/mobile/medium/apple-touch-icon.png?v=2"
-  },
-  "image": { "url": "http://news.images.itv.com/image/file/1455842/img.jpg" },
   "outlet": "ITV News",
   "headline":
     "'Serious security flaws' in computer chips built by Intel and rivals investigated",
-  "agent": { "name": "html-metata", "version": "1.7.0" }
+  "icon": { "url": "http://www.itv.com/favicon.ico" },
+  "image": { "url": "http://news.images.itv.com/image/file/1455842/img.jpg" },
+  "scrapedBy": { "name": "html-metata", "version": "1.7.0" }
 }

@@ -18,18 +18,17 @@ const fetchMetadata = ({_id, url}) => {
   return meta
 }
 
-export const rescrape = (embed) => {
-  const meta = fetchMetadata(embed)
-  if (!meta) return
-  const urls = [meta.canonicalUrl, meta.url, embed.url].filter(x => !!x)
-  meta.url = urls[0]
-  meta.urls = Array.from(new Set(urls.concat(embed.urls)))
-  return meta
+export const rescrape = (oldEmbed) => {
+  const embed = fetchMetadata(oldEmbed)
+  if (!embed) return
+  embed.updatedAt = new Date()
+  return embed
 }
 
 export const rescrapeAll = (embeds) => {
   Embeds.find({}).forEach(embed => {
     const meta = rescrape(embed)
+    if (!meta) return
     Embeds.update({
       _id: embed._id
     }, {

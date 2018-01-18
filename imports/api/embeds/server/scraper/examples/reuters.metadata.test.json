@@ -130,5 +130,9 @@
       "Security researchers on Wednesday disclosed a set of security flaws that they said could let hackers steal sensitive information from nearly every modern computing device containing chips from Intel Corp (INTC.O), Advanced Micro Devices Inc (AMD.O) and ARM Holdings.",
     "image":
       "https://s2.reutersmedia.net/resources/r/?m=02&d=20180104&t=2&i=1219290789&w=&fh=545px&fw=&ll=&pl=&sq=&r=LYNXMPEE030LC"
-  }
+  },
+  "userRequestedUrl":
+    "https://uk.reuters.com/article/uk-cyber-intel/security-flaws-put-virtually-all-phones-computers-at-risk-idUKKBN1ES1BW",
+  "url":
+    "https://uk.reuters.com/article/uk-cyber-intel/security-flaws-put-virtually-all-phones-computers-at-risk-idUKKBN1ES1BW"
 }

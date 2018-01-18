@@ -1,16 +1,21 @@
 {
+  "url":
+    "https://www.bloomberg.com/news/articles/2018-01-03/intel-says-research-showed-design-element-created-vulnerability",
+  "urls": [
+    "https://www.bloomberg.com/news/articles/2018-01-03/intel-says-research-showed-design-element-created-vulnerability"
+  ],
   "canonicalUrl":
     "https://www.bloomberg.com/news/articles/2018-01-03/intel-says-research-showed-design-element-created-vulnerability",
-  "icons": {
-    "href":
-      "https://assets.bwbx.io/s3/javelin/public/javelin/images/favicon-technology-c079867d2c.png",
-    "type": "image/png"
+  "outlet": "Bloomberg.com",
+  "headline": "Intel Says Range of Chips Vulnerable to Hack, Denies ‘Bug’",
+  "icon": {
+    "url":
+      "https://assets.bwbx.io/s3/javelin/public/javelin/images/favicon-technology-c079867d2c.png"
   },
   "image": {
     "url":
       "https://assets.bwbx.io/images/users/iqjWHBFdfxIU/i_GN6dRlF_5M/v0/1200x800.jpg"
   },
-  "outlet": "Bloomberg.com",
-  "headline": "Intel Says Range of Chips Vulnerable to Hack, Denies ‘Bug’",
-  "agent": { "name": "html-metata", "version": "1.7.0" }
+  "datePublished": "2018-01-03T20:31:53.243Z",
+  "scrapedBy": { "name": "html-metata", "version": "1.7.0" }
 }

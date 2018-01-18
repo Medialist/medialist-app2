@@ -34,5 +34,8 @@
     "site": "@FinancialTimes",
     "image":
       "https://www.ft.com/__assets/creatives/brand-ft/icons/v3/open-graph.png"
-  }
+  },
+  "userRequestedUrl":
+    "https://www.ft.com/content/456875fc-f0e2-11e7-b220-857e26d1aca4",
+  "url": "https://www.ft.com/content/456875fc-f0e2-11e7-b220-857e26d1aca4"
 }

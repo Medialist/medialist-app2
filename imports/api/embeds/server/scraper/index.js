@@ -1,3 +1,4 @@
+import uniq from 'lodash.uniq'
 import scrape from 'html-metadata'
 import { defaultUrlFinder, defaultIconsFinder, defaultAppleTouchIconsFinder, defaultTitleFinder, defaultImageFinder, defaultPublishedDateFinder, defaultOutletFinder } from '/imports/api/embeds/server/scraper/default'
 import { jsonLdUrlFinder, jsonLdTitleFinder, jsonLdImageFinder, jsonLdPublishedDateFinder, jsonLdOutletFinder } from '/imports/api/embeds/server/scraper/json-ld'
@@ -25,17 +26,17 @@ const findLastDate = (metadata, finders) => {
   }
 }
 
-export const scrapeUrl = (url, opts, cb) => {
-  // finalUrl is updated as scraper follows redirects
-  let finalUrl = url
+export const scrapeUrl = (userRequestedUrl, opts, cb) => {
+  // url is updated as scraper follows redirects
+  let url = userRequestedUrl
 
   const options = Object.assign({}, {
-    url: url,
+    url: userRequestedUrl,
     jar: true,
     timeout: 10000,
     followRedirect: (response) => {
       if (response && response.headers && response.headers.location) {
-        finalUrl = response.headers.location
+        url = response.headers.location
       }
       return true
     }
@@ -43,33 +44,47 @@ export const scrapeUrl = (url, opts, cb) => {
 
   scrape(options, (err, metadata) => {
     if (err) return cb(err)
-    cb(undefined, metadata, finalUrl)
+    // add the url we were given, and the final url after redirects
+    metadata.userRequestedUrl = userRequestedUrl
+    metadata.url = url
+    cb(undefined, metadata)
   })
 }
 
-export const extractEmbedData = (metadata, url) => {
-  // Add the request url so we can resolve relative image links and the like.
-  metadata.url = url
-  return {
-    url: url,
-    canonicalUrl: findLast(metadata, [defaultUrlFinder, jsonLdUrlFinder, openGraphUrlFinder]),
-    icon: findFirst(metadata, [defaultAppleTouchIconsFinder, defaultIconsFinder]),
-    image: findLast(metadata, [defaultImageFinder, jsonLdImageFinder, openGraphImageFinder]),
-    outlet: findLast(metadata, [defaultOutletFinder, jsonLdOutletFinder, openGraphOutletFinder]),
-    headline: findLast(metadata, [defaultTitleFinder, jsonLdTitleFinder, openGraphTitleFinder]),
-    datePublished: findLastDate(metadata, [defaultPublishedDateFinder, jsonLdPublishedDateFinder, openGraphPublishedDateFinder]),
-    agent: {
+export const extractEmbedData = (metadata) => {
+  const canonicalUrl = findLast(metadata, [defaultUrlFinder, jsonLdUrlFinder, openGraphUrlFinder])
+  const icon = findFirst(metadata, [defaultAppleTouchIconsFinder, defaultIconsFinder])
+  const image = findLast(metadata, [defaultImageFinder, jsonLdImageFinder, openGraphImageFinder])
+  const outlet = findLast(metadata, [defaultOutletFinder, jsonLdOutletFinder, openGraphOutletFinder])
+  const headline = findLast(metadata, [defaultTitleFinder, jsonLdTitleFinder, openGraphTitleFinder])
+  const datePublished = findLastDate(metadata, [defaultPublishedDateFinder, jsonLdPublishedDateFinder, openGraphPublishedDateFinder])
+
+  const {url, userRequestedUrl} = metadata
+
+  // embed.urls contains each unique form of this url
+  const urls = uniq([url, canonicalUrl, userRequestedUrl].filter(u => !!u))
+
+  const embed = {
+    url,              // the url of the page, after redirects, that we scraped.
+    urls,             // all the urls to simplify searching `Embeds.find({urls: 'foobar'})`
+    canonicalUrl,     // the page metadata defined canonicalUrl
+    outlet,
+    headline,
+    icon,
+    image,
+    datePublished,
+    scrapedBy: {
       name: 'html-metata',
       version: scrape.version
     }
   }
+  return embed
 }
 
 export const scrapeAndExtract = (url, opts, cb) => {
-  scrapeUrl(url, opts, (err, metadata, finalUrl) => {
+  scrapeUrl(url, opts, (err, metadata) => {
     if (err) return cb(err)
-    const embed = extractEmbedData(metadata, finalUrl)
-    embed.userRequestedUrl = url
+    const embed = extractEmbedData(metadata)
     cb(undefined, embed)
   })
 }
