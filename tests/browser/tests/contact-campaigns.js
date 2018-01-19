@@ -288,6 +288,57 @@ const test = {
 
     t.page.main().logout()
     t.end()
+  },
+
+  'Should display show updates button': function (t) {
+    t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact], campaign, () => done())
+      })
+
+      t.page.main()
+        .logout()
+
+      // Login with a new user
+      this.user = t.page.authenticate()
+        .register()
+
+      const contactCampaignsPage = t.page.contactCampaigns()
+        .navigateToCampaignList(contact)
+
+      // ReactiveAggregate is reactive for the collection you're aggregating
+      // over, but is not reactive over documents you obtain via $lookup.
+      // The contact-campaigns publication almost exclusively uses fields from
+      // Campaigns, so we alter a campaign field and then alter the updatedAt
+      // field on the contact so the subscription picks up the change.
+      t.perform((done) => {
+        t.db.connection
+          .collection('campaigns')
+          .update(
+            {slug: campaign.slug},
+            {$set: {name: `TEST${Date.now()}`}},
+            done
+          )
+      })
+
+      t.perform((done) => {
+        t.db.connection
+          .collection('contacts')
+          .update(
+            {slug: contact.slug},
+            {$set: {updatedAt: new Date()}},
+            done
+          )
+      })
+
+      contactCampaignsPage
+        .waitForElementPresent('@showUpdatesButton')
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   }
 }
 

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { Meteor } from 'meteor/meteor'
 import { createContainer } from 'meteor/react-meteor-data'
 import fileDownload from 'react-file-download'
+import { DataDam } from 'react-data-dam'
 import ContactsTable from '/imports/ui/contacts/contacts-table'
 import SearchBox from '/imports/ui/lists/search-box'
 import ContactsActionsToast from '/imports/ui/contacts/contacts-actions-toast'
@@ -29,6 +30,8 @@ import { StatusIndex } from '/imports/api/contacts/status'
 import escapeRegExp from 'lodash.escaperegexp'
 import { collationSort } from '/imports/lib/collation'
 import { CampaignContacts, CampaignContactStatuses } from '/imports/ui/campaigns/collections'
+import ShowUpdatesButton from '/imports/ui/lists/show-updates-button'
+import { updatedByUserAutoRelease } from '/imports/ui/lists/data-dam'
 
 const minSearchLength = 3
 
@@ -232,6 +235,27 @@ class CampaignContactsPage extends React.Component {
     })
   }
 
+  autoRelease (data, diff, nextData) {
+    // Owner info is updated out of band i.e. does not effect updatedBy field
+    // so just let these changes through.
+    if (diff.total.updated) {
+      const didUpdateOwners = diff.updated.some(updatedItem => {
+        const item = data.find(item => item._id === updatedItem._id)
+        const owners = item.owners || []
+        const updatedOwners = updatedItem.owners || []
+
+        return updatedItem.owners.length === owners.length
+          ? owners.some((owner, i) => owner._id !== updatedOwners[i]._id)
+          : true
+      })
+
+      if (didUpdateOwners) return true
+    }
+
+    // Otherwise, if the current user did this update, then let it through
+    return updatedByUserAutoRelease(data, diff, nextData)
+  }
+
   render () {
     const {
       campaign,
@@ -275,87 +299,92 @@ class CampaignContactsPage extends React.Component {
     const highlightSlug = location.state && location.state.highlightContactSlug
 
     return (
-      <div>
-        <CampaignTopbar campaign={campaign} onAddContactClick={this.onAddContactClick} />
-        <CampaignSummary campaign={campaign} contacts={contacts} statusFilter={status} onStatusClick={this.onStatusFilterChange} statusCounts={statusCounts} />
-        <div className='bg-white shadow-2 m4' data-id='contacts-table'>
-          <div className='pt4 pl4 pr4 pb1 items-center'>
-            <SearchBox initialTerm={term} onTermChange={this.onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' style={{zIndex: 1}} />
-            <div className='f-xs gray60' style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>{contactsTotal} contact{contactsTotal === 1 ? '' : 's'}</div>
+      <DataDam data={contacts} autoRelease={this.autoRelease}>
+        {(contacts, diff, release) => (
+          <div>
+            <CampaignTopbar campaign={campaign} onAddContactClick={this.onAddContactClick} />
+            <CampaignSummary campaign={campaign} contacts={contacts} statusFilter={status} onStatusClick={this.onStatusFilterChange} statusCounts={statusCounts} />
+            <div className='bg-white shadow-2 m4' data-id='contacts-table'>
+              <div className='pt4 pl4 pr4 pb1 items-center'>
+                <SearchBox initialTerm={term} onTermChange={this.onTermChange} placeholder='Search contacts...' data-id='search-contacts-input' style={{zIndex: 1}} />
+                <div className='f-xs gray60' style={{position: 'relative', top: -35, right: 20, textAlign: 'right', zIndex: 0}}>{contactsTotal} contact{contactsTotal === 1 ? '' : 's'}</div>
+              </div>
+              <ContactsTable
+                sort={sort}
+                term={term}
+                campaign={campaign}
+                contacts={contacts}
+                selections={selections}
+                selectionMode={selectionMode}
+                statusFilter={status}
+                onSortChange={this.onSortChange}
+                onSelectionsChange={this.onSelectionsChange}
+                onSelectionModeChange={this.onSelectionModeChange}
+                searchTermActive={Boolean(term)}
+                onContactClick={this.onContactClick}
+                highlightSlug={highlightSlug}
+              />
+            </div>
+            <ContactsActionsToast
+              campaign={campaign}
+              contacts={selections}
+              contactsCount={selections.length}
+              onCampaignClick={() => this.showModal('addContactsToCampaignModal')}
+              onSectorClick={() => this.showModal('addToMasterListsModal')}
+              onFavouriteClick={this.onFavouriteAll}
+              onTagClick={() => this.showModal('addTagsModal')}
+              onStatusClick={this.onBatchUpdateStatus}
+              onDeleteClick={() => this.showModal('removeContactsModal')}
+              onDeselectAllClick={this.clearSelection}
+              onExportToCsvClick={this.onExportToCsv}
+              onMergeClick={() => this.showModal('mergeContactsModal')}
+              onAssignOwnerClick={this.onAssignOwnerClick} />
+            <AddOrCreateContactModal
+              open={addContactModal}
+              onDismiss={this.hideModals}
+              campaign={campaign}
+              campaignContacts={contacts}
+              allContactsCount={contactsAllCount} />
+            <AddContactsToCampaign
+              title='Add these Contacts to a Campaign'
+              contacts={selections}
+              contactsCount={selections.length}
+              contactSearch={contactSearch}
+              selectionMode={selectionMode}
+              onDismiss={this.hideModals}
+              open={this.state.addContactsToCampaignModal} />
+            <AddTagsModal
+              title='Tag these Contacts'
+              type='Contacts'
+              open={this.state.addTagsModal}
+              onDismiss={this.hideModals}
+              onUpdateTags={this.onTagAll}>
+              <AbbreviatedAvatarList items={selections} maxTooltip={12} />
+            </AddTagsModal>
+            <AddToMasterListModal
+              type='Contacts'
+              items={this.state.selections}
+              open={this.state.addToMasterListsModal}
+              onDismiss={this.hideModals}
+              onSave={(masterLists) => this.onAddAllToMasterLists(masterLists)}>
+              <AbbreviatedAvatarList items={selections} maxTooltip={12} />
+            </AddToMasterListModal>
+            <RemoveContactModal
+              open={this.state.removeContactsModal}
+              onDismiss={this.hideModals}
+              onDelete={this.clearSelectionAndHideModals}
+              campaigns={[campaign]}
+              contacts={this.state.selections}
+              avatars={this.state.selections} />
+            <MergeContactsModal
+              contacts={this.state.selections}
+              open={this.state.mergeContactsModal}
+              onDismiss={this.hideModals}
+              onMerged={this.clearSelectionAndHideModals} />
+            <ShowUpdatesButton data={contacts} diff={diff} onClick={release} />
           </div>
-          <ContactsTable
-            sort={sort}
-            term={term}
-            campaign={campaign}
-            contacts={contacts}
-            selections={selections}
-            selectionMode={selectionMode}
-            statusFilter={status}
-            onSortChange={this.onSortChange}
-            onSelectionsChange={this.onSelectionsChange}
-            onSelectionModeChange={this.onSelectionModeChange}
-            searchTermActive={Boolean(term)}
-            onContactClick={this.onContactClick}
-            highlightSlug={highlightSlug}
-          />
-        </div>
-        <ContactsActionsToast
-          campaign={campaign}
-          contacts={selections}
-          contactsCount={selections.length}
-          onCampaignClick={() => this.showModal('addContactsToCampaignModal')}
-          onSectorClick={() => this.showModal('addToMasterListsModal')}
-          onFavouriteClick={this.onFavouriteAll}
-          onTagClick={() => this.showModal('addTagsModal')}
-          onStatusClick={this.onBatchUpdateStatus}
-          onDeleteClick={() => this.showModal('removeContactsModal')}
-          onDeselectAllClick={this.clearSelection}
-          onExportToCsvClick={this.onExportToCsv}
-          onMergeClick={() => this.showModal('mergeContactsModal')}
-          onAssignOwnerClick={this.onAssignOwnerClick} />
-        <AddOrCreateContactModal
-          open={addContactModal}
-          onDismiss={this.hideModals}
-          campaign={campaign}
-          campaignContacts={contacts}
-          allContactsCount={contactsAllCount} />
-        <AddContactsToCampaign
-          title='Add these Contacts to a Campaign'
-          contacts={selections}
-          contactsCount={selections.length}
-          contactSearch={contactSearch}
-          selectionMode={selectionMode}
-          onDismiss={this.hideModals}
-          open={this.state.addContactsToCampaignModal} />
-        <AddTagsModal
-          title='Tag these Contacts'
-          type='Contacts'
-          open={this.state.addTagsModal}
-          onDismiss={this.hideModals}
-          onUpdateTags={this.onTagAll}>
-          <AbbreviatedAvatarList items={selections} maxTooltip={12} />
-        </AddTagsModal>
-        <AddToMasterListModal
-          type='Contacts'
-          items={this.state.selections}
-          open={this.state.addToMasterListsModal}
-          onDismiss={this.hideModals}
-          onSave={(masterLists) => this.onAddAllToMasterLists(masterLists)}>
-          <AbbreviatedAvatarList items={selections} maxTooltip={12} />
-        </AddToMasterListModal>
-        <RemoveContactModal
-          open={this.state.removeContactsModal}
-          onDismiss={this.hideModals}
-          onDelete={this.clearSelectionAndHideModals}
-          campaigns={[campaign]}
-          contacts={this.state.selections}
-          avatars={this.state.selections} />
-        <MergeContactsModal
-          contacts={this.state.selections}
-          open={this.state.mergeContactsModal}
-          onDismiss={this.hideModals}
-          onMerged={this.clearSelectionAndHideModals} />
-      </div>
+        )}
+      </DataDam>
     )
   }
 }
