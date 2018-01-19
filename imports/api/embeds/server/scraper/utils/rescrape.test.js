@@ -26,7 +26,7 @@ describe('embeds rescrape', function () {
       }
     })
 
-    rescrapeAll()
+    rescrapeAll(Embeds.find({}).fetch())
 
     const embed = Embeds.findOne({urls: url})
     assert.notEqual(embed.headline, 'BORING', 'Embed headline had been updated')

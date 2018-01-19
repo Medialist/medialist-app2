@@ -43,7 +43,9 @@ export const rescrapeAll = (embeds) => {
     Posts.update({
       'embeds._id': oldEmbed._id
     }, {
-      'embeds.$': Embeds.toRef(embed)
+      $set: {
+        'embeds.$': Embeds.toRef(embed)
+      }
     }, {
       multi: true
     })

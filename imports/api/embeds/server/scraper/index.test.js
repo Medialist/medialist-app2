@@ -50,7 +50,7 @@ describe('embeds scrapeUrl', function () {
     Promise.all(reqs)
       .catch(err => assert.ifError(err))
       .then(arr => arr.forEach(metadata => {
-        console.log(JSON.stringify(metadata))
+        // console.log(JSON.stringify(metadata))
         assert.ok(metadata.general.title)
       }))
       .then(() => done())
