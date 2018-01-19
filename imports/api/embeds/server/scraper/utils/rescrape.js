@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import dot from 'dot-object'
 import scraper from '/imports/api/embeds/server/scraper'
 import Embeds from '/imports/api/embeds/embeds'
+import Posts from '/imports/api/posts/posts'
 
 const fetchMetadata = ({_id, url}) => {
   let meta = null
@@ -26,13 +27,25 @@ export const rescrape = (oldEmbed) => {
 }
 
 export const rescrapeAll = (embeds) => {
-  Embeds.find({}).forEach(embed => {
-    const meta = rescrape(embed)
+  embeds.forEach(oldEmbed => {
+    const meta = rescrape(oldEmbed)
     if (!meta) return
+
     Embeds.update({
-      _id: embed._id
+      _id: oldEmbed._id
     }, {
       $set: dot.dot(meta)
+    })
+
+    // Update embed refs on Posts!
+    const embed = Embeds.findOne({_id: oldEmbed._id})
+
+    Posts.update({
+      'embeds._id': oldEmbed._id
+    }, {
+      'embeds.$': Embeds.toRef(embed)
+    }, {
+      multi: true
     })
   })
 }

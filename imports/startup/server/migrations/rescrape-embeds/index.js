@@ -1,3 +1,4 @@
+import moment from 'moment'
 import { rescrapeAll } from '/imports/api/embeds/server/scraper/utils/rescrape'
 import Embeds from '/imports/api/embeds/embeds'
 
@@ -15,6 +16,22 @@ export default {
       multi: true
     })
 
-    rescrapeAll()
+    const forTheScrape = Embeds.find({
+      or: [
+        {
+          updatedAt: {
+            $exists: false
+          }
+        }, {
+          updatedAt: {
+            $lt: moment().subtract(1, 'days')
+          }
+        }
+      ]
+    }).fetch()
+
+    console.log(`${forTheScrape} embeds to rescrape`)
+
+    rescrapeAll(forTheScrape)
   }
 }

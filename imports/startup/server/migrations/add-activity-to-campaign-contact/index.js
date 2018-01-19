@@ -4,11 +4,11 @@ import Posts from '/imports/api/posts/posts'
 export default {
   name: 'Add latestPost and coverage to campaign contact',
   up: () => {
-    Campaigns.forEach((campaign) => {
+    Campaigns.find({}).forEach((campaign) => {
       campaign.contacts.forEach(contact => {
         // contacts.$.latestPost
         const latestPost = Posts.findOne({
-          campaigns: campaign.slug,
+          'campaigns.slug': campaign.slug,
           'contacts.slug': contact.slug,
           type: {
             $in: [
@@ -24,7 +24,7 @@ export default {
         })
         // contacts.$.coverage
         const coverage = Posts.find({
-          campaigns: campaign.slug,
+          'campaigns.slug': campaign.slug,
           'contacts.slug': contact.slug,
           type: 'CoveragePost'
         }, {
