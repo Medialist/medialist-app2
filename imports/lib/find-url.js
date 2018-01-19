@@ -1,4 +1,5 @@
-import trim from 'underscore.string/trim'
+// TODO: this module has to use commonJS as it's called from nightwatch too.
+const trim = require('underscore.string/trim')
 
 const urlRe = /(https?:\/\/[^\s]+)/
 const oneUrlRe = new RegExp(urlRe, 'i')
@@ -16,7 +17,7 @@ const findUrl = (text) => {
   return trimUrl(res[0])
 }
 
-export const findAllUrls = (text) => {
+const findAllUrls = (text) => {
   const res = text.match(allUrlRe)
   if (!res) {
     return []
@@ -24,4 +25,5 @@ export const findAllUrls = (text) => {
   return res.map(trimUrl)
 }
 
-export default findUrl
+module.exports = findUrl
+module.exports.findAllUrls = findAllUrls
