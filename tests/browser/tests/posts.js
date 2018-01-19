@@ -176,6 +176,30 @@ const test = {
     })
     t.page.main().logout()
     t.end()
+  },
+
+  'Should default contact status to last status when posting feedback': function (t) {
+    t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact], campaign, () => done())
+      })
+
+      t.page.campaign()
+        .navigate(campaign)
+        .addFeedbackPost(contact, 'hot-lead', 'He\'s so hot')
+
+      // Clear out the previous selections
+      t.refresh()
+
+      t.page.campaign()
+        .section.postBox
+          .openFeedbackTab()
+          .selectContact(contact)
+          .assert.containsText('@contactStatusSelectorButton', 'HOT LEAD')
+
+      done()
+    })
+    t.end()
   }
 }
 

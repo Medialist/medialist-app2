@@ -2,11 +2,11 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import CampaignSelector from '/imports/ui/feedback/campaign-selector'
 import ContactSelector from '/imports/ui/feedback/contact-selector'
-import StatusMap from '/imports/api/contacts/status'
 import PostBoxtTextArea from '/imports/ui/feedback/post-box-textarea'
 import immutable from 'object-path-immutable'
 import PostBoxButtons from './post-box-buttons'
 import firstName from '/imports/lib/first-name'
+import StatusMap from '/imports/api/contacts/status'
 
 export default class FeedbackInput extends Component {
   static propTypes = {
@@ -15,6 +15,7 @@ export default class FeedbackInput extends Component {
     focused: PropTypes.bool.isRequired,
     onSubmit: PropTypes.func.isRequired,
     message: PropTypes.string,
+    status: PropTypes.string,
     isEdit: PropTypes.bool,
     selectableContacts: PropTypes.array,
     selectableCampaigns: PropTypes.array
@@ -27,7 +28,7 @@ export default class FeedbackInput extends Component {
       contact,
       campaign,
       message,
-      status = StatusMap.toContact
+      status
     } = props
 
     this.state = {
@@ -51,7 +52,10 @@ export default class FeedbackInput extends Component {
     this.setState({
       posting: true
     })
-    this.props.onSubmit(this.state, (err) => {
+
+    const data = { ...this.state, status: this.getContactStatus() }
+
+    this.props.onSubmit(data, (err) => {
       this.setState({
         message: '',
         posting: false
@@ -75,12 +79,30 @@ export default class FeedbackInput extends Component {
     })
   }
 
+  // Get contact status from state, if the user has chosen something
+  // otherwise, from campaign specific status
+  // otherwise, defaulting to "To Contact"
+  getContactStatus () {
+    if (this.state.status) return this.state.status
+
+    const { contact, campaign } = this.state
+    let status
+
+    if (campaign && contact) {
+      const contactRef = (campaign.contacts || []).find(c => c.slug === contact.slug)
+      status = contactRef && contactRef.status
+    }
+
+    return status || StatusMap.toContact
+  }
+
   render () {
-    const { message, posting, shouldFocusTextArea, status, campaign, contact } = this.state
+    const { message, posting, shouldFocusTextArea, campaign, contact } = this.state
     const { focused, isEdit, selectableContacts, selectableCampaigns } = this.props
     const { onFieldChange, onSubmit, onOpenDropDown, onCloseDropDown } = this
 
     const isCampaignPage = window.location.pathname.split('/')[1] === 'campaign'
+    const status = this.getContactStatus()
 
     return (
       <div>
