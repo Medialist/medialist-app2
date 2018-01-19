@@ -542,6 +542,62 @@ const test = {
 
     t.page.main().logout()
     t.end()
+  },
+
+  // FIXME: There's no reason why this test shouldn't work.
+  // The `observeChanges` setup by ReactiveAggregate does not fire a changed
+  // callback when data changes.
+  // Remove `'' + ` to enable.
+  // https://github.com/nightwatchjs/nightwatch-docs/blob/7032f2e89c89f9283eeeff5a7df91048cf6d55e9/guide/running-tests/disabling-tests.md#disabling-individual-testcases
+  'Should display show updates button': '' + function (t) {
+    t.createDomain(['campaign', 'contact'], (campaign, contact, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact], campaign, () => done())
+      })
+
+      t.page.main()
+        .logout()
+
+      // Login with a new user
+      this.user = t.page.authenticate()
+        .register()
+
+      const campaignContactsPage = t.page.campaignContacts()
+          .navigate(campaign)
+
+      // ReactiveAggregate is reactive for the collection you're aggregating
+      // over, but is not reactive over documents you obtain via $lookup.
+      // The campaign-contacts publication almost exclusively uses fields from
+      // Contacts, so we alter a contact field and then alter the updatedAt
+      // field on the campaign so the subscription picks up the change.
+      t.perform((done) => {
+        t.db.connection
+          .collection('contacts')
+          .update(
+            {slug: contact.slug},
+            {$set: {name: `TEST${Date.now()}`}},
+            done
+          )
+      })
+
+      t.perform((done) => {
+        t.db.connection
+          .collection('campaigns')
+          .update(
+            {slug: campaign.slug},
+            {$set: {updatedAt: new Date()}},
+            done
+          )
+      })
+
+      campaignContactsPage
+        .waitForElementPresent('@showUpdatesButton')
+
+      done()
+    })
+
+    t.page.main().logout()
+    t.end()
   }
 }
 

@@ -12,7 +12,7 @@ module.exports = {
     return this.api.launchUrl + '/campaigns'
   },
   elements: {
-
+    showUpdatesButton: '[data-id=show-updates-button]'
   },
   sections: {
     removeContactsConfirmation: {
