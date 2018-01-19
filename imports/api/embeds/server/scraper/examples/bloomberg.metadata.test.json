@@ -1,0 +1,128 @@
+{
+  "general": {
+    "icons": [
+      {
+        "href":
+          "https://assets.bwbx.io/s3/javelin/public/javelin/images/favicon-technology-c079867d2c.png",
+        "type": "image/png"
+      }
+    ],
+    "canonical":
+      "https://www.bloomberg.com/news/articles/2018-01-03/intel-says-research-showed-design-element-created-vulnerability",
+    "description":
+      "Intel Corp. confirmed a report saying that its chips contain a feature that makes them vulnerable to hacking, though it said other companies’ semiconductors are also susceptible.",
+    "title":
+      "Intel Says Range of Chips Vulnerable to Hack, Denies ‘Bug’ - Bloomberg",
+    "lang": "en"
+  },
+  "jsonLd": {
+    "@context": "http://schema.org",
+    "@type": "NewsArticle",
+    "author": [{ "@type": "Person", "name": "Ian King" }],
+    "dateCreated": "2018-01-03T20:31:53.243Z",
+    "dateModified": "2018-01-03T23:15:42.363Z",
+    "datePublished": "2018-01-03T20:31:53.243Z",
+    "description":
+      "Intel Corp. confirmed a report saying that its chips contain a feature that makes them vulnerable to hacking, though it said other companies’ semiconductors are also susceptible.",
+    "headline": "Intel Says Range of Chips Vulnerable to Hack, Denies ‘Bug’",
+    "image": {
+      "@type": "ImageObject",
+      "url":
+        "https://assets.bwbx.io/s3/javelin/public/javelin/images/social-default-a4f15fa7ee.jpg",
+      "width": 1200,
+      "height": 630
+    },
+    "mainEntityOfPage":
+      "https://www.bloomberg.com/news/articles/2018-01-03/intel-says-research-showed-design-element-created-vulnerability",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Bloomberg",
+      "logo": {
+        "@type": "ImageObject",
+        "url":
+          "https://assets.bwbx.io/s3/javelin/public/javelin/images/bloomberg-logo-amp-e995e81f26.png",
+        "width": 262,
+        "height": 60
+      }
+    }
+  },
+  "openGraph": {
+    "description":
+      "Intel Corp. confirmed a report saying that its chips contain a feature that makes them vulnerable to hacking, though it said other companies’ semiconductors are also susceptible.",
+    "image": {
+      "url":
+        "https://assets.bwbx.io/images/users/iqjWHBFdfxIU/i_GN6dRlF_5M/v0/1200x800.jpg"
+    },
+    "site_name": "Bloomberg.com",
+    "title": "Intel Says Range of Chips Vulnerable to Hack, Denies ‘Bug’",
+    "type": "article",
+    "url":
+      "https://www.bloomberg.com/news/articles/2018-01-03/intel-says-research-showed-design-element-created-vulnerability"
+  },
+  "schemaOrg": {
+    "items": [
+      {
+        "properties": {
+          "dateModified": ["2018-01-03T23:15:42.363Z"],
+          "StoryLink": [
+            {
+              "properties": {
+                "http://schema.org/function": ["FA PROD"],
+                "http://schema.org/security": ["MSFT US Equity"],
+                "http://schema.org/type": ["FunctionLink"],
+                "http://schema.org/active": ["true"]
+              }
+            },
+            {
+              "properties": {
+                "http://schema.org/function": ["HCPI"],
+                "http://schema.org/security": ["INTC US Equity"],
+                "http://schema.org/type": ["FunctionLink"],
+                "http://schema.org/active": ["true"]
+              }
+            },
+            { "properties": { "http://schema.org/type": ["WebLink"] } },
+            { "properties": { "http://schema.org/type": ["WebLink"] } },
+            {
+              "properties": {
+                "http://schema.org/suid": ["P1ZX0OBE07IC"],
+                "http://schema.org/type": ["StoryLink"],
+                "http://schema.org/active": ["true"]
+              }
+            },
+            {
+              "properties": {
+                "http://schema.org/function": ["FA"],
+                "http://schema.org/security": ["AMD US Equity"],
+                "http://schema.org/type": ["FunctionLink"],
+                "http://schema.org/active": ["true"]
+              }
+            },
+            {
+              "properties": {
+                "http://schema.org/suid": ["P1ZSLXSYF02E"],
+                "http://schema.org/type": ["StoryLink"],
+                "http://schema.org/active": ["true"]
+              }
+            }
+          ],
+          "datePublished": ["2018-01-03T20:31:53.243Z"]
+        },
+        "type": ["http://schema.org/Article"]
+      }
+    ]
+  },
+  "twitter": {
+    "card": "summary",
+    "description":
+      "Intel Corp. confirmed a report saying that its chips contain a feature that makes them vulnerable to hacking, though it said other companies’ semiconductors are also susceptible.",
+    "image":
+      "https://assets.bwbx.io/images/users/iqjWHBFdfxIU/i_GN6dRlF_5M/v0/1200x800.jpg",
+    "site": "@technology",
+    "title": "Intel Says Range of Chips Vulnerable to Hack, Denies ‘Bug’"
+  },
+  "userRequestedUrl":
+    "https://www.bloomberg.com/news/articles/2018-01-03/intel-says-research-showed-design-element-created-vulnerability",
+  "url":
+    "https://www.bloomberg.com/news/articles/2018-01-03/intel-says-research-showed-design-element-created-vulnerability"
+}

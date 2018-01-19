@@ -1,0 +1,15 @@
+{
+  "url": "http://www.bbc.co.uk/news/technology-42564461",
+  "urls": ["http://www.bbc.co.uk/news/technology-42564461"],
+  "canonicalUrl": "http://www.bbc.co.uk/news/technology-42564461",
+  "outlet": "BBC News",
+  "headline": "Meltdown and Spectre: How chip hacks work",
+  "icon": {
+    "url": "http://static.bbci.co.uk/news/1.225.02287/apple-touch-icon.png"
+  },
+  "image": {
+    "url": "https://ichef.bbci.co.uk/images/ic/1024x576/p05sth8x.jpg"
+  },
+  "datePublished": "2018-01-04T15:26:30.000Z",
+  "scrapedBy": { "name": "html-metata", "version": "1.7.0" }
+}

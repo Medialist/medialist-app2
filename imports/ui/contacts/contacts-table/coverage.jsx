@@ -8,21 +8,30 @@ import { CoverageIcon } from '/imports/ui/images/icons'
 export default function Coverage ({ posts }) {
   if (!posts.length) return <span className='gray60'>No coverage yet</span>
 
-  const [ firstPost, secondPost, ...morePosts ] = posts
+  const uniqEmbeds = posts
+    .map(post => post.embeds)
+    .reduce((a, b) => a.concat(b))
+
+  const postsWithoutUrl = posts.filter(post => post.embeds.length === 0)
+
+  // Either an embed with `url` property, or a post with `message` property
+  const allItems = uniqEmbeds.concat(postsWithoutUrl)
+
+  const [ first, second, ...more ] = allItems
 
   return (
     <span>
-      <PostSquare post={firstPost} />
-      {secondPost ? <PostSquare post={secondPost} /> : null}
-      {morePosts.length ? (
+      <CoverageSquare item={first} />
+      {second ? <CoverageSquare item={second} /> : null}
+      {more.length ? (
         <Select
           width={250}
-          buttonText={<span className='gray60'>+{morePosts.length}</span>}
+          buttonText={<span className='gray60'>+{more.length}</span>}
           style={{cursor: 'pointer'}}
           data-id='more-coverage-select'>
-          {() => morePosts.map(post => (
-            <Option key={post._id}>
-              <PostOption post={post} />
+          {() => more.map(item => (
+            <Option key={item.url || item.message}>
+              <CoverageOption item={item} />
             </Option>
           ))}
         </Select>
@@ -40,8 +49,29 @@ Coverage.propTypes = {
   })).isRequired
 }
 
-const PostSquare = ({ post }) => {
-  const { url, icon } = post.embeds[0]
+const PrettyUrl = ({url, ...props}) => (
+  <span {...props}>{url.replace(/^https?:\/\/(www\.)?/, '')}</span>
+)
+
+const MaybeLink = ({href, target, children, ...props}) => {
+  if (href) {
+    return <a href={href} target={target} {...props}>{children}</a>
+  } else {
+    return <span {...props}>{children}</span>
+  }
+}
+
+const UrlOrMessage = ({item, ...props}) => {
+  const {url, message} = item
+  if (url) {
+    return <PrettyUrl url={url} {...props} />
+  } else {
+    return <span {...props}>{message}</span>
+  }
+}
+
+const CoverageSquare = ({ item }) => {
+  const {url, icon} = item
   const titleStyle = {
     display: 'inline-block',
     maxWidth: '200px',
@@ -51,31 +81,26 @@ const PostSquare = ({ post }) => {
   }
 
   return (
-    <a href={url} target='_blank' className='mr1' data-id='coverage-post'>
-      <Tooltip title={<span style={titleStyle}>{toPrettyUrl(url)}</span>}>
+    <MaybeLink href={url} target='_blank' className='mr1' data-id='coverage-post'>
+      <Tooltip title={<UrlOrMessage item={item} style={titleStyle} />}>
         {icon
-          ? <SquareAvatar avatar={icon} size={20} />
+          ? <SquareAvatar avatar={icon.url} size={20} />
           : <CoverageIcon style={{ width: '20px', height: '20px' }} />}
       </Tooltip>
-    </a>
+    </MaybeLink>
   )
 }
 
-const PostOption = ({ post }) => {
-  const { url, icon } = post.embeds[0]
-
+const CoverageOption = ({ item }) => {
+  const { url, icon } = item
   return (
-    <a href={url} target='_blank' data-id='coverage-post'>
+    <MaybeLink href={url} target='_blank' data-id='coverage-post'>
       <span className='mr2'>
         {icon
-          ? <SquareAvatar avatar={icon} size={20} />
+          ? <SquareAvatar avatar={icon.url} size={20} />
           : <CoverageIcon style={{ width: '20px', height: '20px' }} />}
       </span>
-      <span style={{ verticalAlign: 'middle' }}>{toPrettyUrl(url)}</span>
-    </a>
+      <UrlOrMessage item={item} style={{ verticalAlign: 'middle' }} />
+    </MaybeLink>
   )
-}
-
-function toPrettyUrl (url) {
-  return url.replace(/^https?:\/\/(www\.)?/, '')
 }

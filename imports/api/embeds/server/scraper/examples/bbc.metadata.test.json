@@ -1,0 +1,89 @@
+{
+  "general": {
+    "appleTouchIcons": [
+      {
+        "href": "http://static.bbci.co.uk/news/1.225.02287/apple-touch-icon.png"
+      }
+    ],
+    "canonical": "http://www.bbc.co.uk/news/technology-42564461",
+    "description":
+      "Here's why computer processors are vulnerable to hackers thanks to two recently discovered bugs.",
+    "robots": "NOODP,NOYDIR",
+    "title": "Meltdown and Spectre: How chip hacks work - BBC News",
+    "lang": "en-GB"
+  },
+  "jsonLd": {
+    "@context": "http://schema.org",
+    "@type": "ReportageNewsArticle",
+    "url": "http://www.bbc.co.uk/news/technology-42564461",
+    "publisher": {
+      "@type": "NewsMediaOrganization",
+      "name": "BBC News",
+      "publishingPrinciples": "http://www.bbc.co.uk/news/help-41670342",
+      "logo": {
+        "@type": "ImageObject",
+        "url":
+          "http://www.bbc.co.uk/news/special/2015/newsspec_10857/bbc_news_logo.png?cb=1"
+      }
+    },
+    "datePublished": "2018-01-04T15:26:30+00:00",
+    "dateModified": "2018-01-04T15:26:30+00:00",
+    "headline": "Meltdown and Spectre: How chip hacks work",
+    "image": {
+      "@type": "ImageObject",
+      "width": 720,
+      "height": 405,
+      "url": "https://ichef.bbci.co.uk/images/ic/720x405/p05sth8x.jpg"
+    },
+    "thumbnailUrl": "https://ichef.bbci.co.uk/images/ic/208x117/p05sth8x.jpg",
+    "author": {
+      "@list": [
+        { "@type": "Person", "name": "Chris Baraniuk" },
+        { "@type": "Person", "name": "Mark Ward" }
+      ]
+    },
+    "mainEntityOfPage": "http://www.bbc.co.uk/news/technology-42564461",
+    "video": {
+      "@type": "VideoObject",
+      "name": "Chip hacks: How much is your device at risk?",
+      "description":
+        "Security flaws leave millions of computers at risk, but how much should you worry? Technology reporter Jane Wakefield has dissected the story for us.",
+      "duration": "PT1M13S",
+      "thumbnailUrl": "https://ichef.bbci.co.uk/images/ic/208x117/p05sth8x.jpg",
+      "uploadDate": "2018-01-04T18:12:07+00:00"
+    }
+  },
+  "openGraph": {
+    "title": "Meltdown and Spectre: How chip hacks work",
+    "type": "article",
+    "description":
+      "Here's why computer processors are vulnerable to hackers thanks to two recently discovered bugs.",
+    "site_name": "BBC News",
+    "locale": "en_GB",
+    "author": "https://www.facebook.com/bbcnews",
+    "section": "Technology",
+    "url": "http://www.bbc.co.uk/news/technology-42564461",
+    "image": {
+      "url": "https://ichef.bbci.co.uk/images/ic/1024x576/p05sth8x.jpg"
+    },
+    "pages":
+      "1143803202301544,317278538359186,1392506827668140,742734325867560,185246968166196,156060587793370,137920769558355,193435954068976,21263239760,156400551056385,929399697073756,154344434967,228735667216,80758950658,260212261199,294662213128,1086451581439054,283348121682053,295830058648,239931389545417,304314573046,310719525611571,647687225371774,1159932557403143,286567251709437,1731770190373618,125309456546,163571453661989,285361880228,512423982152360,238003846549831,176663550714,260967092113,118450564909230,100978706649892,15286229625,122103087870579,120655094632228,102814153147070,124715648647,153132638110668,150467675018739",
+    "app_id": "1609039196070050",
+    "admins": "100004154058350"
+  },
+  "twitter": {
+    "card": "summary_large_image",
+    "site": "@BBCNews",
+    "title": "Meltdown and Spectre: How chip hacks work",
+    "description":
+      "Here's why computer processors are vulnerable to hackers thanks to two recently discovered bugs.",
+    "creator": "@BBCNews",
+    "image": {
+      "src": "https://ichef.bbci.co.uk/images/ic/1024x576/p05sth8x.jpg",
+      "alt": "Spectre and Meltdown logos"
+    },
+    "domain": "www.bbc.co.uk"
+  },
+  "userRequestedUrl": "http://www.bbc.co.uk/news/technology-42564461",
+  "url": "http://www.bbc.co.uk/news/technology-42564461"
+}

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor'
+import normalizeUrl from 'normalize-url'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import SimpleSchema from 'simpl-schema'
 import { findOneUserRef } from '/imports/api/users/users'
@@ -25,64 +26,24 @@ export const createEmbed = new ValidatedMethod({
       return
     }
 
-    const existingDoc = Embeds.findOneEmbedForUrl(url)
+    const normalUrl = normalizeUrl(url)
+
+    const existingDoc = Embeds.findOneEmbedForUrl(normalUrl)
 
     if (existingDoc) {
       return Embeds.toRef(existingDoc)
     }
 
     try {
-      const doc = scraper(url)
-
-      if (doc.canonicalUrl) {
-        // use the canonical url to see if we've actually seen this link before
-        const otherExistingDoc = Embeds.findOneEmbedForUrl(doc.canonicalUrl)
-
-        if (otherExistingDoc) {
-          otherExistingDoc.urls = Array.isArray(otherExistingDoc.urls) ? otherExistingDoc.urls : []
-          otherExistingDoc.urls.push(url)
-
-          Embeds.update({
-            _id: otherExistingDoc._id
-          }, {
-            $set: {
-              urls: otherExistingDoc.urls
-            }
-          })
-
-          return Embeds.toRef(otherExistingDoc)
+      const embed = Meteor.wrapAsync(scraper)(normalUrl, {
+        timeout: Meteor.settings.embeds ? Meteor.settings.embeds.timeout : 10000,
+        headers: {
+          'User-Agent': Meteor.settings.embeds ? Meteor.settings.embeds.userAgent : undefined
         }
-      }
+      })
 
-      // deduped array with no nulls or empty strings
-      let urls = Array.from(new Set([
-        url, doc.url, doc.canonicalUrl
-      ])).filter(url => !!url)
-
-      // we were redirect to a different page
-      if (doc.url && doc.url !== url) {
-        url = doc.url
-      }
-
-      // we have a canonical url, use that as our main url
-      if (doc.canonicalUrl) {
-        url = doc.canonicalUrl
-      }
-
-      // filter the main url from the alternative urls list
-      urls = urls.filter(u => u !== url)
-
-      const embed = {
-        outlet: doc.outlet,
-        headline: doc.headline,
-        url: url,
-        image: doc.image,
-        datePublished: doc.datePublished,
-        urls: urls,
-        scrapedBy: doc.agent,
-        createdBy: findOneUserRef(this.userId),
-        createdAt: new Date()
-      }
+      embed.createdBy = findOneUserRef(this.userId)
+      embed.createdAt = new Date()
 
       embed._id = Embeds.insert(embed)
 

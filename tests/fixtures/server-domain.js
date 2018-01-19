@@ -74,6 +74,11 @@ const createTestEmbeds = (count, creatorId) => {
       createdAt: faker.date.past(),
       datePublished: faker.date.past(),
       headline: faker.lorem.sentence(),
+      icon: {
+        url: faker.image.imageUrl(),
+        height: 50,
+        width: 50
+      },
       image: {
         url: faker.image.imageUrl(),
         height: 50,

@@ -46,6 +46,10 @@ export const EmbedSchema = new SimpleSchema({
     type: String,
     optional: true
   },
+  icon: {
+    type: ImageSchema,
+    optional: true
+  },
   image: {
     type: ImageSchema,
     optional: true
@@ -56,6 +60,10 @@ export const EmbedSchema = new SimpleSchema({
   },
   scrapedBy: {
     type: ScrapedBySchema,
+    optional: true
+  },
+  updatedAt: {
+    type: Date,
     optional: true
   }
 })
@@ -73,6 +81,10 @@ export const EmbedRefSchema = new SimpleSchema({
   },
   outlet: {
     type: String,
+    optional: true
+  },
+  icon: {
+    type: ImageSchema,
     optional: true
   },
   image: {

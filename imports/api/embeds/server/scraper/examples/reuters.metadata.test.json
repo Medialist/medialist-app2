@@ -1,0 +1,138 @@
+{
+  "general": {
+    "appleTouchIcons": [
+      {
+        "href":
+          "https://s3.reutersmedia.net/resources_v2/images/apple-touch-icon.png",
+        "sizes": "180x180"
+      }
+    ],
+    "icons": [
+      {
+        "href":
+          "https://s3.reutersmedia.net/resources_v2/images/favicon/favicon.ico",
+        "type": "image/x-icon"
+      },
+      {
+        "href":
+          "https://s3.reutersmedia.net/resources_v2/images/favicon/favicon.ico",
+        "type": "image/x-icon"
+      },
+      {
+        "href":
+          "https://s1.reutersmedia.net/resources_v2/images/favicon-32x32.png",
+        "sizes": "32x32",
+        "type": "image/png"
+      },
+      {
+        "href":
+          "https://s3.reutersmedia.net/resources_v2/images/favicon-16x16.png",
+        "sizes": "16x16",
+        "type": "image/png"
+      }
+    ],
+    "author": "Reuters Editorial",
+    "canonical":
+      "https://uk.reuters.com/article/uk-cyber-intel/design-flaw-found-in-intel-chips-fix-causes-them-to-slow-report-idUKKBN1ES1BW",
+    "description":
+      "Security researchers on Wednesday disclosed a set of security flaws that they said could let hackers steal sensitive information from nearly every modern computing device containing chips from Intel Corp (INTC.O), Advanced Micro Devices Inc (AMD.O) and ARM Holdings.",
+    "robots": "index, follow",
+    "title":
+      "\n                Security flaws put virtually all phones, computers at risk | Reuters",
+    "lang": "en"
+  },
+  "jsonLd": {
+    "@context": "http://schema.org",
+    "@type": "NewsArticle",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id":
+        "https://uk.reuters.com/article/uk-cyber-intel/design-flaw-found-in-intel-chips-fix-causes-them-to-slow-report-idUKKBN1ES1BW"
+    },
+    "headline": "Security flaws put virtually all phones, computers at risk",
+    "url":
+      "https://uk.reuters.com/article/uk-cyber-intel/design-flaw-found-in-intel-chips-fix-causes-them-to-slow-report-idUKKBN1ES1BW",
+    "image": {
+      "@type": "ImageObject",
+      "url":
+        "https://s2.reutersmedia.net/resources/r/?m=02&d=20180104&t=2&i=1219290789&w=&fh=545px&fw=&ll=&pl=&sq=&r=LYNXMPEE030LC",
+      "width": "800",
+      "height": "800"
+    },
+    "thumbnailUrl":
+      "https://s2.reutersmedia.net/resources/r/?m=02&d=20180104&t=2&i=1219290789&w=&fh=545px&fw=&ll=&pl=&sq=&r=LYNXMPEE030LC",
+    "dateCreated": "2018-01-04T15:15:35+0000",
+    "dateModified": "2018-01-04T15:15:35+0000",
+    "datePublished": "2018-01-04T15:15:35+0000",
+    "author": { "@type": "Person", "name": "Reuters Editorial" },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Reuters",
+      "logo": {
+        "@type": "ImageObject",
+        "url":
+          "https://s3.reutersmedia.net/resources_v2/images/reuters_social_logo.png",
+        "width": "200",
+        "height": "200"
+      }
+    },
+    "description":
+      "Security researchers on Wednesday disclosed a set of security flaws that they said could let hackers steal sensitive information from nearly every modern computing device containing chips from Intel Corp (INTC.O), Advanced Micro Devices Inc (AMD.O) and ARM Holdings.",
+    "articleSection": "Business",
+    "creator": ["Reuters Editorial"],
+    "keywords": [
+      "UK",
+      "CYBER",
+      "INTEL",
+      "Computer Crime / Hacking / Cybercrime",
+      "Computer and Electronics Retailers (TRBC)",
+      "Picture available",
+      "Software (TRBC)",
+      "Semiconductors (TRBC)",
+      "Major News",
+      "Equities Markets",
+      "Pictures",
+      "United States",
+      "Computer Hardware (TRBC)",
+      "Company News",
+      "Financials (Legacy)",
+      "Volatile Shares / Hot Stocks",
+      "Corporate Events",
+      "Internet / World Wide Web",
+      "Europe",
+      "Science",
+      "Technology / Media / Telecoms",
+      "Article",
+      "Business"
+    ],
+    "about": "Article"
+  },
+  "openGraph": {
+    "locale": "en_GB",
+    "site_name": "U.K.",
+    "title": "Security flaws put virtually all phones, computers at risk",
+    "url":
+      "https://uk.reuters.com/article/uk-cyber-intel/design-flaw-found-in-intel-chips-fix-causes-them-to-slow-report-idUKKBN1ES1BW",
+    "type": "article",
+    "description":
+      "Security researchers on Wednesday disclosed a set of security flaws that they said could let hackers steal sensitive information from nearly every modern computing device containing chips from Intel Corp , Advanced Micro Devices Inc and ARM Holdings.",
+    "image": {
+      "url":
+        "https://s2.reutersmedia.net/resources/r/?m=02&d=20180104&t=2&i=1219290789&w=1200&r=LYNXMPEE030LC"
+    }
+  },
+  "twitter": {
+    "site": "@ReutersUK",
+    "creator": "@ReutersUK",
+    "card": "summary_large_image",
+    "title": "Security flaws put virtually all phones, computers at risk",
+    "description":
+      "Security researchers on Wednesday disclosed a set of security flaws that they said could let hackers steal sensitive information from nearly every modern computing device containing chips from Intel Corp (INTC.O), Advanced Micro Devices Inc (AMD.O) and ARM Holdings.",
+    "image":
+      "https://s2.reutersmedia.net/resources/r/?m=02&d=20180104&t=2&i=1219290789&w=&fh=545px&fw=&ll=&pl=&sq=&r=LYNXMPEE030LC"
+  },
+  "userRequestedUrl":
+    "https://uk.reuters.com/article/uk-cyber-intel/security-flaws-put-virtually-all-phones-computers-at-risk-idUKKBN1ES1BW",
+  "url":
+    "https://uk.reuters.com/article/uk-cyber-intel/security-flaws-put-virtually-all-phones-computers-at-risk-idUKKBN1ES1BW"
+}

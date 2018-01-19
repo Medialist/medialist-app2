@@ -3,7 +3,7 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method'
 import SimpleSchema from 'simpl-schema'
 import { StatusValues } from '/imports/api/contacts/status'
 import { checkAllSlugsExist } from '/imports/lib/slug'
-import findUrl from '/imports/lib/find-url'
+import { findAllUrls } from '/imports/lib/find-url'
 import { addToMyFavourites, findOneUserRef } from '/imports/api/users/users'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
@@ -44,10 +44,14 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
 
   const createdBy = findOneUserRef(userId)
   const createdAt = new Date()
-  const embed = createEmbed.run.call({
-    userId
-  }, {
-    url: findUrl(message)
+  const urls = findAllUrls(message)
+  const embeds = urls.map(url => {
+    const embed = createEmbed.run.call({
+      userId
+    }, {
+      url
+    })
+    return embed
   })
 
   const postId = Posts.create({
@@ -55,7 +59,7 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
     type: message ? type : 'StatusUpdate',
     contactSlugs: [contactSlug],
     campaignSlugs: campaignSlug ? [campaignSlug] : [],
-    embeds: embed ? [embed] : [],
+    embeds,
     status,
     message,
     createdBy,
@@ -81,7 +85,7 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
       }
     }
 
-    if (post.type === 'CoveragePost' && embed) {
+    if (post.type === 'CoveragePost') {
       campaignUpdates.$push = { 'contacts.$.coverage': post }
     }
 
@@ -171,13 +175,17 @@ export const updatePost = new ValidatedMethod({
     if (message !== oldPost.message) {
       $set.message = message
 
-      const embed = createEmbed.run.call({
-        userId: this.userId
-      }, {
-        url: findUrl(message)
+      const urls = findAllUrls(message)
+      const embeds = urls.map(url => {
+        const embed = createEmbed.run.call({
+          userId: this.userId
+        }, {
+          url
+        })
+        return embed
       })
 
-      $set.embeds = embed ? [embed] : []
+      $set.embeds = embeds
     }
 
     // Don't update the post if theres no changes.

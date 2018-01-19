@@ -1,0 +1,44 @@
+{
+  "general": {
+    "icons": [
+      { "href": "/favicon.ico", "type": "image/x-icon" },
+      {
+        "href":
+          "http://www.itv.com/news/assets/mobile/medium/apple-touch-icon.png?v=2"
+      }
+    ],
+    "description":
+      "Read 'Serious security flaws' in computer chips built by Intel and rivals investigated latest on ITV News. All the Technology news",
+    "title":
+      "'Serious security flaws' in computer chips built by Intel and rivals investigated - ITV News",
+    "lang": "en"
+  },
+  "openGraph": {
+    "app_id": "296752597030880",
+    "admins": "678795166",
+    "type": "article",
+    "site_name": "ITV News",
+    "url":
+      "http://www.itv.com/news/2018-01-04/intel-computer-processors-security-flaw/",
+    "title":
+      "'Serious security flaws' in computer chips built by Intel and rivals investigated",
+    "description":
+      "Serious security flaws which could allow hackers to access sensitive information on computer systems are being investigated.\n\nResearchers at Google said they found flaws affecting computer processors built by Intel and other chipmakers.\n\nThe bug could allow access to passwords and other sensitive data from a system&#39;s memory, Google&#39;s Project Zero team said.\n\nGoogle and Intel had not planned to revealed the issue until fixes were available, but were forced to do so after the fault was reported by technology news site The Register.\n\nTech companies typically withhold details about security problems until fixes are available in order to make it harder for hackers to exploit the flaws.\n\nIntel is working to patch the vulnerability and said the average computer user will not experience significant slowdowns as it is fixed.\n",
+    "image": { "url": "http://news.images.itv.com/image/file/1455842/img.jpg" }
+  },
+  "schemaOrg": {
+    "items": [{ "properties": {}, "type": ["https://schema.org/NewsArticle"] }]
+  },
+  "twitter": {
+    "site": "@itvnews",
+    "card": "summary",
+    "title":
+      "'Serious security flaws' in computer chips built by Intel and rivals investigated",
+    "description":
+      "Serious security flaws which could allow hackers to access sensitive information on computer systems are being investigated.\n\nResearchers at Google said they found flaws affecting computer processors built by Intel and other chipmakers.\n\nThe bug could allow access to passwords and other sensitive data from a system&#39;s memory, Google&#39;s Project Zero team said.\n\nGoogle and Intel had not planned to revealed the issue until fixes were available, but were forced to do so after the fault was reported by technology news site The Register.\n\nTech companies typically withhold details about security problems until fixes are available in order to make it harder for hackers to exploit the flaws.\n\nIntel is working to patch the vulnerability and said the average computer user will not experience significant slowdowns as it is fixed.\n"
+  },
+  "userRequestedUrl":
+    "http://www.itv.com/news/2018-01-04/intel-computer-processors-security-flaw/",
+  "url":
+    "http://www.itv.com/news/2018-01-04/intel-computer-processors-security-flaw/"
+}

@@ -16,13 +16,14 @@ Embeds.toRef = (embed) => {
     return embed
   }
 
-  const {_id, url, headline, image, datePublished, outlet} = embed
+  const {_id, url, headline, icon, image, datePublished, outlet} = embed
 
   const ref = {
     _id,
     url,
     outlet,
     headline,
+    icon,
     image,
     datePublished
   }
