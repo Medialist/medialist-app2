@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import uniq from 'lodash.uniq'
 import { Select, Option } from '/imports/ui/navigation/select'
 import { SquareAvatar } from '/imports/ui/images/avatar'
 import Tooltip from '/imports/ui/navigation/tooltip'
@@ -9,11 +8,9 @@ import { CoverageIcon } from '/imports/ui/images/icons'
 export default function Coverage ({ posts }) {
   if (!posts.length) return <span className='gray60'>No coverage yet</span>
 
-  const uniqEmbeds = uniq(
-    posts
-      .map(post => post.embeds)
-      .reduce((a, b) => a.concat(b))
-  )
+  const uniqEmbeds = posts
+    .map(post => post.embeds)
+    .reduce((a, b) => a.concat(b))
 
   const postsWithoutUrl = posts.filter(post => post.embeds.length === 0)
 

@@ -17,20 +17,20 @@ export default {
     })
 
     const forTheScrape = Embeds.find({
-      or: [
+      $or: [
         {
           updatedAt: {
             $exists: false
           }
         }, {
           updatedAt: {
-            $lt: moment().subtract(1, 'days')
+            $lt: moment().subtract(1, 'days').toDate()
           }
         }
       ]
     }).fetch()
 
-    console.log(`${forTheScrape} embeds to rescrape`)
+    console.log(`${forTheScrape.length} embeds to rescrape`)
 
     rescrapeAll(forTheScrape)
   }
