@@ -63,6 +63,7 @@ class ContactCampaignsPage extends React.Component {
 
   state = {
     selections: [],
+    selectionMode: 'include',
     addToCampaignModal: false,
     addTagsToCampaignsModal: false,
     addToCampaignListsModal: false,
@@ -100,7 +101,8 @@ class ContactCampaignsPage extends React.Component {
 
   clearSelection = () => {
     this.setState({
-      selections: []
+      selections: [],
+      selectionMode: 'include'
     })
   }
 
@@ -186,6 +188,10 @@ class ContactCampaignsPage extends React.Component {
     })
   }
 
+  onSelectionModeChange = (selectionMode) => {
+    this.setState({selectionMode})
+  }
+
   onSortChange = (sort) => {
     this.props.setQuery({ sort })
   }
@@ -212,13 +218,15 @@ class ContactCampaignsPage extends React.Component {
     } = this.props
     const {
       onSelectionsChange,
+      onSelectionModeChange,
       onTagRemove,
       onSortChange,
       onTermChange,
       onStatusFilterChange
     } = this
     const {
-      selections
+      selections,
+      selectionMode
     } = this.state
 
     if (!contact) {
@@ -275,14 +283,16 @@ class ContactCampaignsPage extends React.Component {
                 sort={sort}
                 campaigns={campaigns}
                 selections={selections}
+                selectionMode={selectionMode}
                 contact={contact}
                 onSortChange={onSortChange}
                 onSelectionsChange={onSelectionsChange}
+                onSelectionModeChange={onSelectionModeChange}
                 searching={Boolean(term)} />
             </div>
             { loading && <LoadingBar /> }
             <ContactCampaignsActionsToast
-              campaigns={this.state.selections}
+              campaigns={selections}
               onViewClick={this.onViewSelection}
               onSectorClick={() => this.showModal('addToCampaignListsModal')}
               onFavouriteClick={this.onFavouriteAll}
@@ -301,23 +311,23 @@ class ContactCampaignsPage extends React.Component {
               open={this.state.addTagsToCampaignsModal}
               onDismiss={this.hideModals}
               onUpdateTags={this.onTagAll}>
-              <AbbreviatedAvatarList items={this.state.selections} shape='square' />
+              <AbbreviatedAvatarList items={selections} shape='square' />
             </AddTagsModal>
             <AddToMasterListModal
               type='Campaigns'
-              items={this.state.selections}
+              items={selections}
               open={this.state.addToCampaignListsModal}
               onDismiss={this.hideModals}
               onSave={this.onAddAllToMasterLists}>
               <AbbreviatedAvatarList
-                items={this.state.selections}
+                items={selections}
                 maxTooltip={12} shape='square' />
             </AddToMasterListModal>
             <RemoveContactModal
               open={this.state.removeContactFromCampaignsModal}
               contacts={[this.props.contact]}
-              campaigns={this.state.selections}
-              avatars={this.state.selections}
+              campaigns={selections}
+              avatars={selections}
               onDelete={this.clearSelectionAndHideModals}
               onDismiss={this.hideModals}
             />

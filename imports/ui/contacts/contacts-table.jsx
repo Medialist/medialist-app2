@@ -163,20 +163,28 @@ class ContactsTable extends React.Component {
   }
 
   onSelectChange = (contact) => {
-    let { selections, selectionMode } = this.props
-    const index = selections.findIndex((c) => c._id === contact._id)
-
-    if (index === -1) {
-      selections = selections.concat([contact])
-    } else {
-      selections.splice(index, 1)
-      selections = Array.from(selections)
-    }
-
-    this.props.onSelectionsChange(selections)
+    const {
+      selectionMode,
+      contacts,
+      onSelectionsChange,
+      onSelectionModeChange
+    } = this.props
 
     if (selectionMode === 'all') {
-      this.props.onSelectionModeChange('include')
+      onSelectionsChange(contacts.filter(c => c._id !== contact._id))
+      onSelectionModeChange('include') // TODO: switch to exclude
+    } else {
+      let { selections } = this.props
+      const index = selections.findIndex((c) => c._id === contact._id)
+
+      if (index === -1) {
+        selections = selections.concat([contact])
+      } else {
+        selections = Array.from(selections)
+        selections.splice(index, 1)
+      }
+
+      onSelectionsChange(selections)
     }
   }
 
@@ -202,6 +210,11 @@ class ContactsTable extends React.Component {
       memo[selection._id] = selection
       return memo
     }, {})
+
+    const isSelected = (_id) => {
+      if (selectionMode === 'all') return true
+      return !!selectionsById[_id]
+    }
 
     return (
       <div>
@@ -287,7 +300,7 @@ class ContactsTable extends React.Component {
                 <SelectableRow
                   data={contact}
                   highlight={slug === highlightSlug}
-                  selected={!!selectionsById[_id]}
+                  selected={isSelected(_id)}
                   onSelectChange={this.onSelectChange}
                   key={slug}
                   data-id={`contacts-table-row-${index}`}
