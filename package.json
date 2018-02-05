@@ -20,6 +20,7 @@
     "watch": "run-p watch:*",
     "watch:css": "nodemon --quiet --watch ./imports/ui --ext css --exec npm run build:css",
     "watch:svg": "nodemon --quiet --watch ./private/svgs/icons --ext svg --exec npm run build:svg",
+    "watch:version": "run-s build:version",
     "watch:server": "meteor run --settings settings.json",
     "watch:server:prod": "meteor run --settings settings.json --production",
     "watch:server:test": "meteor run --settings settings.test.json --production"
