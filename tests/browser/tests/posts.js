@@ -70,6 +70,29 @@ const test = {
     t.end()
   },
 
+  'Should be able to add a coverage post even if the URL can not be scraped': function (t) {
+    t.createDomain(['user', 'campaign', 'contact'], (user1, campaign, contact, done) => {
+      t.perform((done) => {
+        t.addContactsToCampaign([contact], campaign, () => done())
+      })
+
+      const url = `https://test${Date.now()}.medialist.io`
+
+      t.perform((done) => {
+        t.page.campaign()
+          .navigate(campaign)
+          .addCoveragePost(contact, 'completed', url)
+          .section.activityFeed.assertHasCoveragePostWith(contact, campaign, {message: url})
+
+        done()
+      })
+
+      done()
+    })
+    t.page.main().logout()
+    t.end()
+  },
+
   'Should be able to update a need-to-know post': function (t) {
     t.createDomain(['user', 'campaign', 'contact'], (user1, campaign, contact, done) => {
       t.perform((done) => {

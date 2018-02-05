@@ -45,14 +45,15 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
   const createdBy = findOneUserRef(userId)
   const createdAt = new Date()
   const urls = findAllUrls(message)
-  const embeds = urls.map(url => {
-    const embed = createEmbed.run.call({
-      userId
-    }, {
-      url
+  const embeds = urls
+    .map(url => {
+      try {
+        return createEmbed.run.call({ userId }, { url })
+      } catch (err) {
+        console.warn(`Failed to create embed for ${url}`, err)
+      }
     })
-    return embed
-  })
+    .filter(Boolean) // remove the undefined embeds on the client
 
   const postId = Posts.create({
     // Feedback without a message is rendered as a different post type.
