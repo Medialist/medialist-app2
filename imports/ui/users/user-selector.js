@@ -33,14 +33,15 @@ export const UserOption = ({user, selected, ...props}) => {
 
 export default class UserSelector extends React.Component {
   static propTypes = {
-    selectedUser: PropTypes.object.isRequired,
+    selectedUser: PropTypes.object,
     onSelect: PropTypes.func.isRequired,
-    option: PropTypes.func.isRequired,
-    button: PropTypes.func.isRequired,
+    option: PropTypes.func,
+    button: PropTypes.func,
     initialItems: PropTypes.array
   }
 
   static defaultProps = {
+    option: UserOption,
     button: UserButton
   }
 

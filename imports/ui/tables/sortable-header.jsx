@@ -8,7 +8,8 @@ const SortableHeader = React.createClass({
     sortDirection: PropTypes.number,
     onSortChange: PropTypes.func.isRequired,
     className: PropTypes.string,
-    style: PropTypes.object
+    style: PropTypes.object,
+    sortable: PropTypes.bool
   },
 
   getDefaultProps () {
@@ -30,7 +31,8 @@ const SortableHeader = React.createClass({
   },
 
   render () {
-    const { children, sortDirection, style, className, ...otherProps } = this.props
+    // eslint-disable-next-line no-unused-vars
+    const { children, sortDirection, style, className, onSortChange, sortable, ...otherProps } = this.props
     const styles = Object.assign({}, style, {whiteSpace: 'nowrap', overflowX: 'hidden'})
     return (
       <th

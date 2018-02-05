@@ -133,7 +133,7 @@ const ContactInfo = withSnackbar(React.createClass({
               <div className='f-sm gray10'>{(outlets && outlets.length) ? outlets[0].value : null}</div>
               <div className='f-sm gray10' style={{paddingTop: 2}}>{outlets.map((o) => o.label).join(', ')}</div>
             </div>
-            <div className='pt4'>{socials.map((social, index) => <SocialIcon {...social} className='inline-block mr2 mb2' key={index} />)}</div>
+            <div className='pt4'>{socials.map(({ label, value }, index) => <SocialIcon label={label} value={value} className='inline-block mr2 mb2' key={index} />)}</div>
           </div>
         </div>
         <div className='clearfix p2 pt4 mt4 border-gray80 border-bottom'>

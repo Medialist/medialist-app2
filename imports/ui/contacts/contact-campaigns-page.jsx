@@ -50,7 +50,7 @@ class ContactCampaignsPage extends React.Component {
 
   static propTypes = {
     loading: PropTypes.bool.isRequired,
-    contact: PropTypes.object.isRequired,
+    contact: PropTypes.object,
     campaigns: PropTypes.array.isRequired,
     campaignsTotal: PropTypes.number.isRequired,
     sort: PropTypes.object.isRequired,
@@ -236,7 +236,7 @@ class ContactCampaignsPage extends React.Component {
     if (loading) {
       return (
         <div>
-          <ContactTopbar contact={contact} onAddToCampaignClick={this.toggleAddToCampaign} />
+          <ContactTopbar contact={contact} onAddToCampaignClick={() => this.showModal('addToCampaignModal')} />
           <LoadingBar />
         </div>
       )
