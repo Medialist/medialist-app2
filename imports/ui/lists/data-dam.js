@@ -58,3 +58,14 @@ export const userRefAutoRelease = (field) => (data, diff, nextData) => {
 
 export const updatedByUserAutoRelease = userRefAutoRelease('updatedBy')
 export const createdByUserAutoRelease = userRefAutoRelease('createdBy')
+
+// Release if the data was sorted (items changed order but no changes were made)
+export const sortedAutoRelease = (data, diff, nextData, incrementalDifference) => {
+  const incDiff = incrementalDifference()
+  return incDiff.total.moved && !incDiff.total.changes
+}
+
+// Compose multiple autoRelease functions into one
+export const compose = (...autoReleasers) => {
+  return (...args) => autoReleasers.some(autoRelease => autoRelease(...args))
+}

@@ -31,7 +31,7 @@ import escapeRegExp from 'lodash.escaperegexp'
 import { collationSort } from '/imports/lib/collation'
 import { CampaignContacts, CampaignContactStatuses } from '/imports/ui/campaigns/collections'
 import ShowUpdatesButton from '/imports/ui/lists/show-updates-button'
-import { updatedByUserAutoRelease } from '/imports/ui/lists/data-dam'
+import { sortedAutoRelease, updatedByUserAutoRelease, compose } from '/imports/ui/lists/data-dam'
 
 const minSearchLength = 3
 
@@ -235,26 +235,27 @@ class CampaignContactsPage extends React.Component {
     })
   }
 
-  autoRelease (data, diff, nextData) {
-    // Owner info is updated out of band i.e. does not effect updatedBy field
-    // so just let these changes through.
-    if (diff.total.updated) {
-      const didUpdateOwners = diff.updated.some(updatedItem => {
-        const item = data.find(item => item._id === updatedItem._id)
-        const owners = item.owners || []
-        const updatedOwners = updatedItem.owners || []
+  autoRelease = compose(
+    (data, diff, nextData) => {
+      // Owner info is updated out of band i.e. does not effect updatedBy field
+      // so just let these changes through.
+      if (diff.total.updated) {
+        const didUpdateOwners = diff.updated.some(updatedItem => {
+          const item = data.find(item => item._id === updatedItem._id)
+          const owners = item.owners || []
+          const updatedOwners = updatedItem.owners || []
 
-        return updatedItem.owners.length === owners.length
-          ? owners.some((owner, i) => owner._id !== updatedOwners[i]._id)
-          : true
-      })
+          return updatedItem.owners.length === owners.length
+            ? owners.some((owner, i) => owner._id !== updatedOwners[i]._id)
+            : true
+        })
 
-      if (didUpdateOwners) return true
-    }
-
-    // Otherwise, if the current user did this update, then let it through
-    return updatedByUserAutoRelease(data, diff, nextData)
-  }
+        if (didUpdateOwners) return true
+      }
+    },
+    sortedAutoRelease,
+    updatedByUserAutoRelease
+  )
 
   render () {
     const {

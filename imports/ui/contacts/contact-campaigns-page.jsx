@@ -33,7 +33,7 @@ import CampaignsTable from '/imports/ui/campaigns/campaigns-table'
 import CountTag from '/imports/ui/tags/tag'
 import { collationSort } from '/imports/lib/collation'
 import ShowUpdatesButton from '/imports/ui/lists/show-updates-button'
-import { updatedByUserAutoRelease } from '/imports/ui/lists/data-dam'
+import { sortedAutoRelease, updatedByUserAutoRelease, compose } from '/imports/ui/lists/data-dam'
 
 const minSearchLength = 3
 
@@ -204,6 +204,11 @@ class ContactCampaignsPage extends React.Component {
     this.props.setQuery({ status })
   }
 
+  autoRelease = compose(
+    sortedAutoRelease,
+    updatedByUserAutoRelease
+  )
+
   render () {
     const {
       loading,
@@ -222,7 +227,8 @@ class ContactCampaignsPage extends React.Component {
       onTagRemove,
       onSortChange,
       onTermChange,
-      onStatusFilterChange
+      onStatusFilterChange,
+      autoRelease
     } = this
     const {
       selections,
@@ -243,7 +249,7 @@ class ContactCampaignsPage extends React.Component {
     }
 
     return (
-      <DataDam data={campaigns} autoRelease={updatedByUserAutoRelease}>
+      <DataDam data={campaigns} autoRelease={autoRelease}>
         {(campaigns, diff, release) => (
           <div>
             <ContactTopbar contact={contact} onAddToCampaignClick={() => this.showModal('addToCampaignModal')} />
