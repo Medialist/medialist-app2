@@ -16,15 +16,15 @@ class StatusSelector extends React.Component {
     }
   }
 
-  onLinkClick = (status) => {
+  onLinkClick = (event) => {
     this.props.onChange({
       target: {
         name: 'status',
-        value: status
+        value: event.currentTarget.getAttribute('data-status')
       }
     })
 
-    this.closeDropdown()
+    this.closeDropdown(event)
   }
 
   openDropdown (event) {
@@ -40,11 +40,9 @@ class StatusSelector extends React.Component {
     }
   }
 
-  closeDropdown (event) {
-    if (event) {
-      event.preventDefault()
-      event.stopPropagation()
-    }
+  closeDropdown = (event) => {
+    event.preventDefault()
+    event.stopPropagation()
 
     this.setState({
       open: false
@@ -94,13 +92,14 @@ class StatusSelector extends React.Component {
           arrowMarginLeft={dropdown.arrowMarginLeft}
           arrowMarginRight={dropdown.arrowMarginRight}
           open={this.state.open}
-          onDismiss={(event) => this.closeDropdown(event)}>
+          onDismiss={this.closeDropdown}>
           {StatusValues.map((item) => (
             <DropdownMenuItem
               key={item}
               selected={item === this.props.status}
-              onClick={this.onLinkClick.bind(null, item)}
-              data-id={`contact-status-${dasherise(item).replace(/\s/g, '')}`}>
+              onClick={this.onLinkClick}
+              data-id={`contact-status-${dasherise(item).replace(/\s/g, '')}`}
+              data-status={item}>
               <StatusLabel name={item} className={`${item === this.props.status ? 'gray10 semibold' : 'gray20'}`} />
             </DropdownMenuItem>
           ))}

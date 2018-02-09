@@ -165,7 +165,7 @@ DropdownMenu.propTypes = {
 }
 
 export const DropdownMenuItem = ({selected, onClick, children, ...props}) => (
-  <div className='flex px3 py2 pointer hover-bg-gray90 hover-color-trigger hover-box-shadow-x-gray80' onClick={onClick} data-id={props['data-id']}>
+  <div className='flex px3 py2 pointer hover-bg-gray90 hover-color-trigger hover-box-shadow-x-gray80' onClick={onClick} {...props}>
     <div className='flex-auto'>
       {children}
     </div>
