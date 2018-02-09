@@ -18,6 +18,9 @@ const findUrl = (text) => {
 }
 
 const findAllUrls = (text) => {
+  if (Object.prototype.toString.call(text) !== '[object String]') {
+    return []
+  }
   const res = text.match(allUrlRe)
   if (!res) {
     return []

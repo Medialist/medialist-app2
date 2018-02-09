@@ -29,4 +29,9 @@ describe('findAllUrls', function () {
 
     assert.deepEqual(findAllUrls(text), [])
   })
+
+  it('should return empty array when text is invalid', function () {
+    const inputs = [null, false, undefined, 0, NaN, {}]
+    inputs.forEach(t => assert.deepEqual(findAllUrls(t), []))
+  })
 })
