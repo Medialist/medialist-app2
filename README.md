@@ -3,7 +3,7 @@
 [![DroneCI](https://drone.medialist.io/api/badges/Medialist/medialist-app2/status.svg)](https://drone.medialist.io/Medialist/medialist-app2)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
-Make your PR team smarter and faster with media lists that capture intelligence, cut admin hours and keep campaigns in sync.
+> Make your PR team smarter and faster with media lists that capture intelligence, cut admin hours and keep campaigns in sync.
 
 ## Usage
 
