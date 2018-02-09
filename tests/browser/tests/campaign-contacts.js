@@ -484,7 +484,7 @@ const test = {
       const campaignPage = t.page.campaign()
         .navigate(campaign)
 
-      const url = 'http://medialist.io/'
+      const url = 'http://medialist.io'
 
       campaignPage
         .addCoveragePost(contact, 'completed', url)
@@ -520,9 +520,9 @@ const test = {
         .navigate(campaign)
 
       const urls = [
-        'http://medialist.io/',
-        'https://www.google.co.uk/',
-        'https://www.amazon.co.uk/'
+        'http://medialist.io',
+        'https://www.google.co.uk',
+        'https://www.amazon.co.uk'
       ]
 
       urls.forEach((url) => {

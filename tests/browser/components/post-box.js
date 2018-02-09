@@ -40,6 +40,15 @@ module.exports = {
 
       return this
     },
+    selectContactStatus: function (contactStatus) {
+      this
+        .waitForElementVisible('@contactStatusSelectorButton')
+        .click('@contactStatusSelectorButton')
+        .waitForElementVisible(`[data-id=contact-status-${contactStatus}]`)
+        .click(`[data-id=contact-status-${contactStatus}]`)
+
+      return this
+    },
     postFeedback: function (campaign, contact, contactStatus, text) {
       if (arguments.length === 3) {
         text = contactStatus
@@ -62,11 +71,9 @@ module.exports = {
         this.selectContact(contact)
       }
 
+      this.selectContactStatus(contactStatus)
+
       this
-        .waitForElementVisible('@contactStatusSelectorButton')
-        .click('@contactStatusSelectorButton')
-        .waitForElementVisible(`[data-id=contact-status-${contactStatus}]`)
-        .click(`[data-id=contact-status-${contactStatus}]`)
         .waitForElementVisible('@feedbackInput')
         .setValue('@feedbackInput', text)
 
@@ -116,11 +123,7 @@ module.exports = {
         this.selectContact(contact)
       }
 
-      this
-        .waitForElementVisible('@contactStatusSelectorButton')
-        .click('@contactStatusSelectorButton')
-        .waitForElementVisible(`[data-id=contact-status-${contactStatus}]`)
-        .click(`[data-id=contact-status-${contactStatus}]`)
+      this.selectContactStatus(contactStatus)
 
       this
         .waitForElementVisible('@coverageInput')
