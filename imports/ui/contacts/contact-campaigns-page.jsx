@@ -245,7 +245,7 @@ class ContactCampaignsPage extends React.Component {
     return (
       <DataDam data={campaigns} autoRelease={updatedByUserAutoRelease}>
         {(campaigns, diff, release) => (
-          <div>
+          <div style={{paddingBottom: 100}}>
             <ContactTopbar contact={contact} onAddToCampaignClick={() => this.showModal('addToCampaignModal')} />
             <div className='flex items-center pt4 pb2 pr2 pl6'>
               <div className='flex-auto'>

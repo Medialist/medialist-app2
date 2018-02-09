@@ -301,7 +301,7 @@ class CampaignContactsPage extends React.Component {
     return (
       <DataDam data={contacts} autoRelease={this.autoRelease}>
         {(contacts, diff, release) => (
-          <div>
+          <div style={{paddingBottom: 100}}>
             <CampaignTopbar campaign={campaign} onAddContactClick={this.onAddContactClick} />
             <CampaignSummary campaign={campaign} contacts={contacts} statusFilter={status} onStatusClick={this.onStatusFilterChange} statusCounts={statusCounts} />
             <div className='bg-white shadow-2 m4' data-id='contacts-table'>
