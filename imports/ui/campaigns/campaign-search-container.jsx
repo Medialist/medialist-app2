@@ -63,11 +63,12 @@ export default (Component, opts = {}) => {
         contactSlug
       }
 
-      const searching = !!(term && term.length >= minSearchLength)
-
-      if (searching) {
+      if (term && term.length >= minSearchLength) {
         queryOpts.term = term
       }
+
+      const query = createCampaignSearchQuery(queryOpts)
+      const searching = Object.keys(query).length > 0
 
       const searchOpts = {
         sort,
@@ -82,7 +83,7 @@ export default (Component, opts = {}) => {
       const sortSpec = getCustomSortSpec(sort, contactSlug)
 
       const campaigns = CampaignSearchResults
-        .find(createCampaignSearchQuery(queryOpts), {limit, sort: sortSpec})
+        .find(query, {limit, sort: sortSpec})
         .fetch()
 
       const allCampaignsCount = Campaigns.allCampaignsCount()
