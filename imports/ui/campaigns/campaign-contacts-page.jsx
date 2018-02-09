@@ -245,7 +245,7 @@ class CampaignContactsPage extends React.Component {
           const owners = item.owners || []
           const updatedOwners = updatedItem.owners || []
 
-          return updatedItem.owners.length === owners.length
+          return updatedOwners.length === owners.length
             ? owners.some((owner, i) => owner._id !== updatedOwners[i]._id)
             : true
         })
