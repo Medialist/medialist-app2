@@ -1,6 +1,7 @@
-![Medialist](https://user-images.githubusercontent.com/8569767/36031619-3d1f4b86-0da3-11e8-8ac8-271a5e09c83b.png)
+<img src="https://user-images.githubusercontent.com/8569767/36031619-3d1f4b86-0da3-11e8-8ac8-271a5e09c83b.png" alt="Medialist" width="444">
 
 [![DroneCI](https://drone.medialist.io/api/badges/Medialist/medialist-app2/status.svg)](https://drone.medialist.io/Medialist/medialist-app2)
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 Make your PR team smarter and faster with media lists that capture intelligence, cut admin hours and keep campaigns in sync.
 
