@@ -26,7 +26,11 @@ export const createEmbed = new ValidatedMethod({
       return
     }
 
-    const normalUrl = normalizeUrl(url)
+    const normalUrl = normalizeUrl(url, {
+      // Some servers simply don't support non www prefix and do not redirect e.g.
+      // https://www.manchestereveningnews.co.uk/news/greater-manchester-news/solita-pugs-photo-ban-boycott-14247764
+      stripWWW: false
+    })
 
     const existingDoc = Embeds.findOneEmbedForUrl(normalUrl)
 
