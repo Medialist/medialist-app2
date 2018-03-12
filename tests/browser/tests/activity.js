@@ -565,7 +565,7 @@ const test = {
         t.addContactsToCampaign([contact], campaign, () => done())
       })
 
-      const url = 'http://www.theguardian.com/technology/2017/apr/19/horizon-zero-dawn-why-best-modern-video-games-are-not-about-saving-the-world'
+      const url = 'https://www.theguardian.com/technology/2017/apr/19/horizon-zero-dawn-why-best-modern-video-games-are-not-about-saving-the-world'
       const status = `${faker.hacker.phrase()} ${url} ${faker.hacker.phrase()}`
       const contactStatus = faker.helpers.randomize(['completed', 'hot-lead', 'contacted', 'to-contact', 'not-interested'])
 

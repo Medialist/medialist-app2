@@ -2,15 +2,15 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import BackButton from '/imports/ui/navigation/back-button'
 
-const Topbar = React.createClass({
-  propTypes: {
+class Topbar extends React.Component {
+  static propTypes = {
     backLinkText: PropTypes.string,
     children: PropTypes.node
-  },
+  }
 
-  getDefaultProps () {
-    return { backLinkText: 'Back' }
-  },
+  static defaultProps = {
+    backLinkText: 'Back'
+  }
 
   render () {
     const { backLinkText, children, center } = this.props
@@ -28,6 +28,6 @@ const Topbar = React.createClass({
       </nav>
     )
   }
-})
+}
 
 export default Topbar

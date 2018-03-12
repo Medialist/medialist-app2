@@ -57,8 +57,8 @@ const test = {
       t.perform((done) => {
         t.page.campaign()
           .navigate(campaign)
-          .addCoveragePost(contact, 'completed', 'https://www.test.com')
-          .editCoveragePost('update! http://medialist.io')
+          .addCoveragePost(contact, 'completed', 'Coverage posted in the Daily Telegraph')
+          .editCoveragePost('update! Coverage posted in the Daily Telegraph')
           .section.activityFeed.assertHasCoveragePostWith(contact, campaign, {message: 'update!'})
 
         done()
@@ -79,10 +79,23 @@ const test = {
       const url = `https://test${Date.now()}.medialist.io`
 
       t.perform((done) => {
-        t.page.campaign()
+        const campaignPage = t.page.campaign()
           .navigate(campaign)
-          .addCoveragePost(contact, 'completed', url)
-          .section.activityFeed.assertHasCoveragePostWith(contact, campaign, {message: url})
+
+        campaignPage.section.postBox
+          .openCoverageTab()
+          .selectContact(contact)
+          .selectContactStatus('completed')
+          .waitForElementVisible('@coverageInput')
+          .setValue('@coverageInput', url)
+          .waitForElementVisible('@createPostButton')
+          .click('@createPostButton')
+          // The post box should now "close"
+          .waitForElementNotVisible('@selectContactButton')
+          .waitForElementNotVisible('@createPostButton')
+
+        campaignPage.section.activityFeed
+          .assertHasCoveragePostWith(contact, campaign, {message: url})
 
         done()
       })
