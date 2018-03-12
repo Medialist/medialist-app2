@@ -57,8 +57,8 @@ const test = {
       t.perform((done) => {
         t.page.campaign()
           .navigate(campaign)
-          .addCoveragePost(contact, 'completed', 'https://www.test.com')
-          .editCoveragePost('update! http://medialist.io')
+          .addCoveragePost(contact, 'completed', 'Coverage posted in the Daily Telegraph')
+          .editCoveragePost('update! Coverage posted in the Daily Telegraph')
           .section.activityFeed.assertHasCoveragePostWith(contact, campaign, {message: 'update!'})
 
         done()
