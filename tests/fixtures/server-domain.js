@@ -9,9 +9,11 @@ const MasterLists = require('/imports/api/master-lists/master-lists').default
 const Contacts = require('/imports/api/contacts/contacts').default
 const Campaigns = require('/imports/api/campaigns/campaigns').default
 const Embeds = require('/imports/api/embeds/embeds').default
+const Posts = require('/imports/api/posts/posts').default
 const createContact = require('/imports/api/contacts/methods').createContact
 const createCampaign = require('/imports/api/campaigns/methods').createCampaign
 const createMasterList = require('/imports/api/master-lists/methods').createMasterList
+const createNeedToKnowPost = require('/imports/api/posts/methods').createNeedToKnowPost
 const findOneUserRef = require('/imports/api/users/users').findOneUserRef
 
 const createTestUsers = (count) => {
@@ -93,11 +95,26 @@ const createTestEmbeds = (count, creatorId) => {
     .map(_id => Embeds.findOne({_id}))
 }
 
+const createTestNeedToKnowPosts = (count, creatorId) => {
+  const contactSlug = createTestContacts(count, creatorId)[0].slug
+
+  return Array(count)
+    .fill(0)
+    .map(() => createNeedToKnowPost.run.call({
+      userId: (creatorId || createTestUsers(1)[0]._id)
+    }, {
+      contactSlug,
+      message: faker.lorem.sentence()
+    }))
+    .map(_id => Posts.findOne({_id}))
+}
+
 module.exports = {
   createTestUsers,
   createTestCampaigns,
   createTestContacts,
   createTestCampaignLists,
   createTestContactLists,
-  createTestEmbeds
+  createTestEmbeds,
+  createTestNeedToKnowPosts
 }

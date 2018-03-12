@@ -14,7 +14,7 @@ Posts.feedLimit = {
   increment: 5
 }
 
-Posts.create = ({type, contactSlugs = [], campaignSlugs = [], message, status, embeds = [], createdBy, createdAt = new Date()}) => {
+Posts.create = ({type, contactSlugs = [], campaignSlugs = [], message, status, embeds = [], createdBy, createdAt = new Date(), pinnedBy, pinnedAt}) => {
   const contacts = Contacts.findRefs({contactSlugs})
   contacts.forEach(contact => {
     contact.updatedAt = createdAt
@@ -33,7 +33,9 @@ Posts.create = ({type, contactSlugs = [], campaignSlugs = [], message, status, e
     status,
     embeds,
     createdBy,
-    createdAt
+    createdAt,
+    pinnedBy,
+    pinnedAt
   }
 
   return Posts.insert(post)

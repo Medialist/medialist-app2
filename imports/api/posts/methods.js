@@ -18,7 +18,7 @@ if (Meteor.isServer) {
   createEmbed = require('/imports/api/embeds/server/methods').createEmbed
 }
 
-function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, message, status}) {
+function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, message, status, pinned}) {
   checkAllSlugsExist([contactSlug], Contacts)
 
   let campaign
@@ -42,8 +42,12 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
     }
   }
 
+  pinned = pinned == null ? true : pinned
+
   const createdBy = findOneUserRef(userId)
   const createdAt = new Date()
+  const pinnedBy = pinned ? createdBy : null
+  const pinnedAt = pinned ? createdAt : null
   const urls = findAllUrls(message)
   const embeds = urls
     .map(url => {
@@ -64,7 +68,9 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
     status,
     message,
     createdBy,
-    createdAt
+    createdAt,
+    pinnedBy,
+    pinnedAt
   })
 
   const post = Posts.findOne({_id: postId})
@@ -230,9 +236,13 @@ export const createNeedToKnowPost = new ValidatedMethod({
     },
     message: {
       type: String
+    },
+    pinned: {
+      type: Boolean,
+      optional: true
     }
   }).validator(),
-  run ({ contactSlug, message }) {
+  run ({ contactSlug, message, pinned }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -241,7 +251,8 @@ export const createNeedToKnowPost = new ValidatedMethod({
       type: 'NeedToKnowPost',
       userId: this.userId,
       contactSlug,
-      message
+      message,
+      pinned
     })
   }
 })
