@@ -53,6 +53,10 @@ class MasterListsSelector extends React.Component {
       return
     }
 
+    if (!this.containerEl) {
+      return
+    }
+
     const {items} = this.props
     const itemWidthBuffer = 180
     const maxWidth = this.containerEl.clientWidth - itemWidthBuffer
