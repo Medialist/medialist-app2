@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { CircleAvatar } from '/imports/ui/images/avatar'
-import { TimeAgo } from '/imports/ui/time/time'
+import Time from '/imports/ui/time/time'
 
 const ContactNeedToKnowList = React.createClass({
   propTypes: {
@@ -26,7 +26,7 @@ const ContactNeedToKnowList = React.createClass({
       <aside className='bg-orange-light mb4 shadow-2' style={{minHeight: 120}}>
         <header className='border-gray80 border-bottom'>
           <h1 className='m0 p4 f-md semibold gray20'>
-            <span className='bg-tangerine white mr1 pill f-xxs'>{items.length}</span> Need-to-Knows
+            <span className='bg-tangerine white mr1 pill f-xxs'>{items.length}</span> Pinned need-to-knows
           </h1>
         </header>
         <ul className='list-reset px4 pb4 m0'>
@@ -44,7 +44,7 @@ const ContactNeedToKnowList = React.createClass({
 export default ContactNeedToKnowList
 
 const NeedToKnowItem = ({ item }) => {
-  const { message, createdAt, updatedAt, createdBy } = item
+  const { message, createdAt, createdBy } = item
   return (
     <li className='pt4'>
       <div className='flex'>
@@ -53,7 +53,7 @@ const NeedToKnowItem = ({ item }) => {
         </div>
         <div className='flex-auto'>
           <div className='gray10' style={{overflowX: 'hidden'}}>{message}</div>
-          <TimeAgo className='gray10 f-sm' style={{opacity: 0.25}} date={updatedAt || createdAt} />
+          <Time className='gray60 f-sm' date={createdAt} />
         </div>
       </div>
     </li>

@@ -160,10 +160,14 @@ export const updatePost = new ValidatedMethod({
     message: {
       type: String,
       optional: true
+    },
+    pinned: {
+      type: Boolean,
+      optional: true
     }
   }).extend(IdSchema).validator(),
 
-  run ({ _id, message }) {
+  run ({ _id, message, pinned }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -193,6 +197,18 @@ export const updatePost = new ValidatedMethod({
       })
 
       $set.embeds = embeds
+    }
+
+    const oldPostPinned = !!oldPost.pinnedAt
+
+    if (pinned != null && pinned !== oldPostPinned) {
+      if (pinned) {
+        $set.pinnedAt = new Date()
+        $set.pinnedBy = findOneUserRef(this.userId)
+      } else {
+        $set.pinnedAt = null
+        $set.pinnedBy = null
+      }
     }
 
     // Don't update the post if theres no changes.
@@ -295,12 +311,17 @@ export const pinPost = new ValidatedMethod({
       throw new Meteor.Error('You must be logged in')
     }
 
+    const userRef = findOneUserRef(this.userId)
+    const now = new Date()
+
     return Posts.update({
       _id
     }, {
       $set: {
-        pinnedBy: findOneUserRef(this.userId),
-        pinnedAt: new Date()
+        pinnedBy: userRef,
+        pinnedAt: now,
+        updatedBy: userRef,
+        updatedAt: now
       }
     })
   }
@@ -319,9 +340,16 @@ export const unpinPost = new ValidatedMethod({
       throw new Meteor.Error('You must be logged in')
     }
 
+    const userRef = findOneUserRef(this.userId)
+    const now = new Date()
+
     return Posts.update({
       _id
     }, {
+      $set: {
+        updatedBy: userRef,
+        updatedAt: now
+      },
       $unset: {
         pinnedBy: '',
         pinnedAt: ''

@@ -59,9 +59,9 @@ const ContactPage = withSnackbar(React.createClass({
     createCoveragePost.call({contactSlug, campaignSlug, message, status}, cb)
   },
 
-  onNeedToKnow ({message}, cb) {
+  onNeedToKnow ({message, pinned}, cb) {
     const contactSlug = this.props.contact.slug
-    createNeedToKnowPost.call({contactSlug, message}, cb)
+    createNeedToKnowPost.call({contactSlug, message, pinned}, cb)
   },
 
   render () {
