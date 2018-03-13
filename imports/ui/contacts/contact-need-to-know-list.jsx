@@ -2,20 +2,33 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { CircleAvatar } from '/imports/ui/images/avatar'
 import Time from '/imports/ui/time/time'
+import { PinIcon } from '/imports/ui/images/icons'
+import { unpinPost } from '/imports/api/posts/methods'
+import withSnackbar from '/imports/ui/snackbar/with-snackbar'
+import Tooltip from '/imports/ui/navigation/tooltip'
 
-const ContactNeedToKnowList = React.createClass({
-  propTypes: {
-    items: PropTypes.array
-  },
+class ContactNeedToKnowList extends React.Component {
+  static propTypes = {
+    items: PropTypes.array,
+    snackbar: PropTypes.object.isRequired
+  }
 
-  getInitialState () {
-    return { showAll: false }
-  },
+  state = { showAll: false }
 
-  onShowAllClick (e) {
+  onShowAllClick = (e) => {
     e.preventDefault()
     this.setState({ showAll: true })
-  },
+  }
+
+  onUnpin = (item) => {
+    unpinPost.call({ _id: item._id }, (err) => {
+      if (err) {
+        this.snackbar.error('unpin-post-failure')
+        return console.error(err)
+      }
+      this.snackbar.show('Unpinned need-to-know')
+    })
+  }
 
   render () {
     let { items } = this.props
@@ -30,7 +43,9 @@ const ContactNeedToKnowList = React.createClass({
           </h1>
         </header>
         <ul className='list-reset px4 pb4 m0'>
-          {displayItems.map((i) => <NeedToKnowItem key={i._id} item={i} />)}
+          {displayItems.map(item => (
+            <NeedToKnowItem key={item._id} item={item} onUnpin={this.onUnpin} />
+          ))}
         </ul>
         {showAll === false && items.length > displayItems.length &&
           <footer className='center border-gray80 border-top pt2 pb3'>
@@ -39,12 +54,18 @@ const ContactNeedToKnowList = React.createClass({
       </aside>
     )
   }
-})
+}
 
-export default ContactNeedToKnowList
+export default withSnackbar(ContactNeedToKnowList)
 
-const NeedToKnowItem = ({ item }) => {
+const NeedToKnowItem = ({ item, onUnpin }) => {
   const { message, createdAt, createdBy } = item
+
+  const onUnpinClick = (e) => {
+    e.preventDefault()
+    onUnpin(item)
+  }
+
   return (
     <li className='pt4'>
       <div className='flex'>
@@ -53,7 +74,12 @@ const NeedToKnowItem = ({ item }) => {
         </div>
         <div className='flex-auto'>
           <div className='gray10' style={{overflowX: 'hidden'}}>{message}</div>
-          <Time className='gray60 f-sm' date={createdAt} />
+          <Time className='gray60 f-sm mr1' date={createdAt} />
+          <button className='Tooltip pointer border-none bg-transparent p0 gray60 hover-orange' onClick={onUnpinClick}>
+            <Tooltip title='Unpin need-to-know'>
+              <PinIcon style={{width: '16px', height: '16px'}} />
+            </Tooltip>
+          </button>
         </div>
       </div>
     </li>
