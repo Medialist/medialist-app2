@@ -42,12 +42,8 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
     }
   }
 
-  pinned = pinned == null ? true : pinned
-
   const createdBy = findOneUserRef(userId)
   const createdAt = new Date()
-  const pinnedBy = pinned ? createdBy : null
-  const pinnedAt = pinned ? createdAt : null
   const urls = findAllUrls(message)
   const embeds = urls
     .map(url => {
@@ -59,7 +55,7 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
     })
     .filter(Boolean) // remove the undefined embeds on the client
 
-  const postId = Posts.create({
+  const postData = {
     // Feedback without a message is rendered as a different post type.
     type: message ? type : 'StatusUpdate',
     contactSlugs: [contactSlug],
@@ -68,11 +64,15 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
     status,
     message,
     createdBy,
-    createdAt,
-    pinnedBy,
-    pinnedAt
-  })
+    createdAt
+  }
 
+  if (pinned) {
+    postData.pinnedBy = createdBy
+    postData.pinnedAt = createdAt
+  }
+
+  const postId = Posts.create(postData)
   const post = Posts.findOne({_id: postId})
 
   const contactUpdates = {
@@ -252,7 +252,8 @@ export const createNeedToKnowPost = new ValidatedMethod({
       userId: this.userId,
       contactSlug,
       message,
-      pinned
+      // Need-to-know posts are pinned by default
+      pinned: pinned == null ? true : pinned
     })
   }
 })
@@ -276,6 +277,54 @@ export const removePost = new ValidatedMethod({
     Posts.remove({
       _id: {
         $in: _ids
+      }
+    })
+  }
+})
+
+export const pinPost = new ValidatedMethod({
+  name: 'pinPost',
+  validate: new SimpleSchema({
+    _id: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    }
+  }).validator(),
+  run ({ _id }) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    return Posts.update({
+      _id
+    }, {
+      $set: {
+        pinnedBy: findOneUserRef(this.userId),
+        pinnedAt: new Date()
+      }
+    })
+  }
+})
+
+export const unpinPost = new ValidatedMethod({
+  name: 'unpinPost',
+  validate: new SimpleSchema({
+    _id: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    }
+  }).validator(),
+  run ({ _id }) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    return Posts.update({
+      _id
+    }, {
+      $unset: {
+        pinnedBy: '',
+        pinnedAt: ''
       }
     })
   }

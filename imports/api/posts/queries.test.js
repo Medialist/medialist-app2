@@ -7,7 +7,7 @@ import Posts from '/imports/api/posts/posts'
 import { findPinnedNeedToKnows } from '/imports/api/posts/queries'
 import { createTestNeedToKnowPosts } from '/tests/fixtures/server-domain'
 
-describe.only('findPinnedNeedToKnows', function () {
+describe('findPinnedNeedToKnows', function () {
   beforeEach(function () {
     resetDatabase()
   })
