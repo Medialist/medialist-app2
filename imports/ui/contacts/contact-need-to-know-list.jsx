@@ -42,11 +42,15 @@ class ContactNeedToKnowList extends React.Component {
             <span className='bg-tangerine white mr1 pill f-xxs'>{items.length}</span> Pinned need-to-knows
           </h1>
         </header>
-        <ul className='list-reset px4 pb4 m0'>
-          {displayItems.map(item => (
-            <NeedToKnowItem key={item._id} item={item} onUnpin={this.onUnpin} />
-          ))}
-        </ul>
+        {items.length ? (
+          <ul className='list-reset px4 pb4 m0'>
+            {displayItems.map(item => (
+              <NeedToKnowItem key={item._id} item={item} onUnpin={this.onUnpin} />
+            ))}
+          </ul>
+        ) : (
+          <p className='italic px10 pb4'>To pin a need-to-know here, click the drop down menu&mdash;top right of the need-to-know post.</p>
+        )}
         {showAll === false && items.length > displayItems.length &&
           <footer className='center border-gray80 border-top pt2 pb3'>
             <a href='#' className='block tangerine semibold f-sm' onClick={this.onShowAllClick}>Show all</a>
