@@ -29,7 +29,7 @@ export const CoverageTab = ({selected, onClick}) => (
 export const NeedToKnowTab = ({selected, onClick}) => (
   <Tab selected={selected} onClick={onClick} data-id='need-to-know-tab'>
     <FeedNeedToKnowIcon className={selected ? 'tangerine' : 'gray60'} />
-    <span style={style}>Need to Know</span>
+    <span style={style}>Need-to-know</span>
   </Tab>
 )
 

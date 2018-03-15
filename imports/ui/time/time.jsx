@@ -92,12 +92,12 @@ class Time extends Component {
   }
 
   render () {
-    const { date, format, ...props } = this.props // eslint-disable-line no-unused-vars
+    const { date, format, isRecent, ...props } = this.props // eslint-disable-line no-unused-vars
     const { formattedTime } = this.state
     const then = moment(date)
     const isoStyle = then.format()
     const longStyle = then.format('ddd, MMM Do YYYY, h:mm a')
-    return <time dateTime={isoStyle} title={longStyle}>{formattedTime}</time>
+    return <time {...props} dateTime={isoStyle} title={longStyle}>{formattedTime}</time>
   }
 }
 

@@ -101,6 +101,7 @@ export const updateUser = new ValidatedMethod({
     updateCollection(Contacts, userRef, 'updatedBy._id', 'updatedBy')
     updateCollection(Posts, userRef, 'createdBy._id', 'createdBy')
     updateCollection(Posts, userRef, 'updatedBy._id', 'updatedBy')
+    updateCollection(Posts, userRef, 'pinnedBy._id', 'pinnedBy')
     updateCollection(MasterLists, userRef, 'createdBy._id', 'createdBy')
     updateCollection(MasterLists, userRef, 'updatedBy._id', 'updatedBy')
   }

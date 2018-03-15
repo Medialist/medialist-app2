@@ -6,7 +6,7 @@ import faker from 'faker'
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import Posts from '/imports/api/posts/posts'
-import {createFeedbackPost, createCoveragePost, createNeedToKnowPost, updatePost} from '/imports/api/posts/methods'
+import {createFeedbackPost, createCoveragePost, createNeedToKnowPost, updatePost, pinPost, unpinPost} from '/imports/api/posts/methods'
 import {createTestUsers, createTestContacts, createTestCampaigns, createTestEmbeds} from '/tests/fixtures/server-domain'
 import {batchUpdateStatus, addContactsToCampaign} from '/imports/api/contacts/methods'
 import toUserRef from '/imports/lib/to-user-ref'
@@ -206,7 +206,7 @@ describe('createNeedToKnowPost', function() {
   beforeEach(function() {
     resetDatabase()
 
-    users = createTestUsers(1)
+    users = createTestUsers(2)
     contacts = createTestContacts(3)
     campaigns = createTestCampaigns(3)
   })
@@ -219,7 +219,9 @@ describe('createNeedToKnowPost', function() {
     assert.throws(() => createNeedToKnowPost.validate({}), /Contact slug is required/)
     assert.throws(() => createNeedToKnowPost.validate({contactSlug: ['a']}), /must be of type String/)
     assert.throws(() => createNeedToKnowPost.validate({campaignSlug: 'nope', contactSlug: 'a', message: 'message'}), /campaignSlug is not allowed/)
+    assert.throws(() => createNeedToKnowPost.validate({contactSlug: 'a', message: 'message', pinned: 138}), /must be of type Boolean/)
     assert.doesNotThrow(() => createNeedToKnowPost.validate({contactSlug: 'con', message: 'Do Not Call This Contact!'}))
+    assert.doesNotThrow(() => createNeedToKnowPost.validate({contactSlug: 'con', message: 'Do Not Call This Contact!', pinned: true}))
   })
 
   it('should create a Need To Know post and update the contact', function() {
@@ -236,7 +238,8 @@ describe('createNeedToKnowPost', function() {
     }, {
       fields: {
         _id: 0,
-        createdAt: 0
+        createdAt: 0,
+        pinnedAt: 0
       }
     })
     assert.deepEqual(post, {
@@ -245,11 +248,124 @@ describe('createNeedToKnowPost', function() {
       campaigns: [],
       embeds: [],
       contacts: [Contacts.findOneRef(contacts[0]._id)],
-      createdBy: userRef
+      createdBy: userRef,
+      pinnedBy: userRef
     })
 
     const contact = Contacts.findOne({slug: contactSlug})
     assert.deepEqual(contact.updatedBy, userRef)
+  })
+
+  it('should create a Need To Know post and not pin it', function() {
+    const contactSlug = contacts[0].slug
+    const message = 'Do Not Call This Contact!'
+
+    const postId = createNeedToKnowPost.run.call({
+      userId: users[0]._id
+    }, {contactSlug, message, pinned: false})
+
+    const post = Posts.findOne({
+      _id: postId
+    })
+
+    assert(post.pinnedAt == null)
+    assert(post.pinnedBy == null)
+  })
+
+  it('should pin a post', function() {
+    const contactSlug = contacts[0].slug
+    const message = 'Do Not Call This Contact!'
+
+    const postId = createNeedToKnowPost.run.call({
+      userId: users[0]._id
+    }, {contactSlug, message, pinned: false})
+
+    let post = Posts.findOne({
+      _id: postId
+    })
+
+    assert(post.pinnedAt == null)
+    assert(post.pinnedBy == null)
+
+    const now = Date.now()
+
+    pinPost.run.call({
+      userId: users[0]._id
+    }, {
+      _id: post._id
+    })
+
+    post = Posts.findOne({
+      _id: postId
+    })
+
+    assert(post.pinnedAt)
+    assert(post.pinnedAt.getTime() >= now)
+    assert.deepEqual(post.pinnedBy, toUserRef(users[0]))
+  })
+
+  it('should unpin a post', function() {
+    const contactSlug = contacts[0].slug
+    const message = 'Do Not Call This Contact!'
+
+    const postId = createNeedToKnowPost.run.call({
+      userId: users[0]._id
+    }, {contactSlug, message, pinned: true})
+
+    let post = Posts.findOne({
+      _id: postId
+    })
+
+    assert(post.pinnedAt)
+    assert(post.pinnedBy)
+
+    unpinPost.run.call({
+      userId: users[1]._id
+    }, {
+      _id: post._id
+    })
+
+    post = Posts.findOne({
+      _id: postId
+    })
+
+    assert(post.pinnedAt == null)
+    assert(post.pinnedBy == null)
+  })
+
+  it('should repin a post', function() {
+    const contactSlug = contacts[0].slug
+    const message = 'Do Not Call This Contact!'
+
+    let now = Date.now()
+
+    const postId = createNeedToKnowPost.run.call({
+      userId: users[0]._id
+    }, {contactSlug, message, pinned: true})
+
+    let post = Posts.findOne({
+      _id: postId
+    })
+
+    assert(post.pinnedAt)
+    assert(post.pinnedAt.getTime() >= now)
+    assert.deepEqual(post.pinnedBy, toUserRef(users[0]))
+
+    now = Date.now()
+
+    pinPost.run.call({
+      userId: users[1]._id
+    }, {
+      _id: post._id
+    })
+
+    post = Posts.findOne({
+      _id: postId
+    })
+
+    assert(post.pinnedAt)
+    assert(post.pinnedAt.getTime() >= now)
+    assert.deepEqual(post.pinnedBy, toUserRef(users[1]))
   })
 })
 

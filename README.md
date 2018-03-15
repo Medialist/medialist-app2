@@ -209,6 +209,14 @@ Example documents from our collections
     "avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
   },
   "createdAt" : ISODate("2016-03-08T11:14:22.670Z"),
+  // Date post was pinned. Not boolean and different to createdAt because pinned
+  // posts need to be ordered by most recently pinned and user can unpin/re-pin.
+  "pinnedAt" : ISODate("2018-03-12T13:17:00.000Z"),
+  "pinnedBy" : {
+    "_id" : "hNc2ArK9TcAWyEXqQ",
+    "name" : "Olly Gilbert",
+    "avatar" : "https://pbs.twimg.com/profile_images/2592146782/85lbyv6dgv9o3s9b83fw_normal.jpeg"
+  }
 }
 ```
 

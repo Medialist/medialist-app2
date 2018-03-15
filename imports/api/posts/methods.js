@@ -18,7 +18,7 @@ if (Meteor.isServer) {
   createEmbed = require('/imports/api/embeds/server/methods').createEmbed
 }
 
-function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, message, status}) {
+function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, message, status, pinned}) {
   checkAllSlugsExist([contactSlug], Contacts)
 
   let campaign
@@ -55,7 +55,7 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
     })
     .filter(Boolean) // remove the undefined embeds on the client
 
-  const postId = Posts.create({
+  const postData = {
     // Feedback without a message is rendered as a different post type.
     type: message ? type : 'StatusUpdate',
     contactSlugs: [contactSlug],
@@ -65,8 +65,14 @@ function postFeedbackOrCoverage ({type, userId, contactSlug, campaignSlug, messa
     message,
     createdBy,
     createdAt
-  })
+  }
 
+  if (pinned) {
+    postData.pinnedBy = createdBy
+    postData.pinnedAt = createdAt
+  }
+
+  const postId = Posts.create(postData)
   const post = Posts.findOne({_id: postId})
 
   const contactUpdates = {
@@ -154,10 +160,14 @@ export const updatePost = new ValidatedMethod({
     message: {
       type: String,
       optional: true
+    },
+    pinned: {
+      type: Boolean,
+      optional: true
     }
   }).extend(IdSchema).validator(),
 
-  run ({ _id, message }) {
+  run ({ _id, message, pinned }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -187,6 +197,18 @@ export const updatePost = new ValidatedMethod({
       })
 
       $set.embeds = embeds
+    }
+
+    const oldPostPinned = !!oldPost.pinnedAt
+
+    if (pinned != null && pinned !== oldPostPinned) {
+      if (pinned) {
+        $set.pinnedAt = new Date()
+        $set.pinnedBy = findOneUserRef(this.userId)
+      } else {
+        $set.pinnedAt = null
+        $set.pinnedBy = null
+      }
     }
 
     // Don't update the post if theres no changes.
@@ -230,9 +252,13 @@ export const createNeedToKnowPost = new ValidatedMethod({
     },
     message: {
       type: String
+    },
+    pinned: {
+      type: Boolean,
+      optional: true
     }
   }).validator(),
-  run ({ contactSlug, message }) {
+  run ({ contactSlug, message, pinned }) {
     if (!this.userId) {
       throw new Meteor.Error('You must be logged in')
     }
@@ -241,7 +267,9 @@ export const createNeedToKnowPost = new ValidatedMethod({
       type: 'NeedToKnowPost',
       userId: this.userId,
       contactSlug,
-      message
+      message,
+      // Need-to-know posts are pinned by default
+      pinned: pinned == null ? true : pinned
     })
   }
 })
@@ -265,6 +293,66 @@ export const removePost = new ValidatedMethod({
     Posts.remove({
       _id: {
         $in: _ids
+      }
+    })
+  }
+})
+
+export const pinPost = new ValidatedMethod({
+  name: 'pinPost',
+  validate: new SimpleSchema({
+    _id: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    }
+  }).validator(),
+  run ({ _id }) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    const userRef = findOneUserRef(this.userId)
+    const now = new Date()
+
+    return Posts.update({
+      _id
+    }, {
+      $set: {
+        pinnedBy: userRef,
+        pinnedAt: now,
+        updatedBy: userRef,
+        updatedAt: now
+      }
+    })
+  }
+})
+
+export const unpinPost = new ValidatedMethod({
+  name: 'unpinPost',
+  validate: new SimpleSchema({
+    _id: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    }
+  }).validator(),
+  run ({ _id }) {
+    if (!this.userId) {
+      throw new Meteor.Error('You must be logged in')
+    }
+
+    const userRef = findOneUserRef(this.userId)
+    const now = new Date()
+
+    return Posts.update({
+      _id
+    }, {
+      $set: {
+        updatedBy: userRef,
+        updatedAt: now
+      },
+      $unset: {
+        pinnedBy: '',
+        pinnedAt: ''
       }
     })
   }

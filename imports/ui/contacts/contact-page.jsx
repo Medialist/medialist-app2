@@ -7,7 +7,7 @@ import { createFeedbackPost, createCoveragePost, createNeedToKnowPost } from '/i
 import Contacts from '/imports/api/contacts/contacts'
 import Campaigns from '/imports/api/campaigns/campaigns'
 import MasterLists from '/imports/api/master-lists/master-lists'
-import Posts from '/imports/api/posts/posts'
+import { findPinnedNeedToKnows } from '/imports/api/posts/queries'
 import { createContainer } from 'meteor/react-meteor-data'
 import ContactTopbar from '/imports/ui/contacts/contact-topbar'
 import ContactInfo from '/imports/ui/contacts/contact-info'
@@ -59,9 +59,9 @@ const ContactPage = withSnackbar(React.createClass({
     createCoveragePost.call({contactSlug, campaignSlug, message, status}, cb)
   },
 
-  onNeedToKnow ({message}, cb) {
+  onNeedToKnow ({message, pinned}, cb) {
     const contactSlug = this.props.contact.slug
-    createNeedToKnowPost.call({contactSlug, message}, cb)
+    createNeedToKnowPost.call({contactSlug, message, pinned}, cb)
   },
 
   render () {
@@ -130,9 +130,7 @@ export default createContainer((props) => {
   const campaignSlug = Session.get('lastCampaignVisitedSlug')
   const subs = [
     Meteor.subscribe('contact-page', contactSlug),
-    Meteor.subscribe('need-to-knows', {
-      contact: contactSlug
-    })
+    Meteor.subscribe('pinned-need-to-knows', contactSlug)
   ]
   const user = Meteor.user()
   const contact = Contacts.findOne({
@@ -151,14 +149,7 @@ export default createContainer((props) => {
     }
   }).fetch() : []
   const masterlists = MasterLists.find({type: 'Contacts'}).fetch()
-  const needToKnows = Posts.find({
-    type: 'NeedToKnowPost',
-    'contacts.slug': contactSlug
-  }, {
-    sort: {
-      createdAt: -1
-    }
-  }).fetch()
+  const needToKnows = findPinnedNeedToKnows(contactSlug).fetch()
   const loading = subs.some((s) => !s.ready())
   return { ...props, contact, campaigns, campaign, user, masterlists, needToKnows, loading }
 }, withRouter(ContactPage))

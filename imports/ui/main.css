@@ -618,6 +618,9 @@ button {
 .hover-color-trigger:hover .hover-red {
   color: red !important;
 }
+.hover-orange:hover {
+  color: var(--orange) !important;
+}
 
 .hover-bg-white:hover,
 .hover-bg-trigger:hover .hover-bg-white {

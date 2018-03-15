@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor'
 import { check, Match } from 'meteor/check'
 import Posts from '/imports/api/posts/posts'
+import { findPinnedNeedToKnows } from '/imports/api/posts/queries'
 
 Meteor.publish('posts', function (opts) {
   if (!this.userId) {
@@ -48,24 +49,7 @@ Meteor.publish('posts', function (opts) {
   return Posts.find(query, options)
 })
 
-Meteor.publish('need-to-knows', function (opts) {
+Meteor.publish('pinned-need-to-knows', function (contactSlug, opts) {
   if (!this.userId) return this.ready()
-  check(opts, {
-    contact: String,
-    limit: Match.Optional(Number)
-  })
-
-  var query = {
-    'contacts.slug': opts.contact,
-    'type': 'NeedToKnowPost'
-  }
-
-  var options = {
-    sort: { createdAt: -1 }
-  }
-  if (opts.limit) {
-    options.limit = opts.limit
-  }
-
-  return Posts.find(query, options)
+  return findPinnedNeedToKnows(contactSlug, opts)
 })

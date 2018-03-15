@@ -1,6 +1,6 @@
 import SimpleSchema from 'simpl-schema'
 import values from 'lodash.values'
-import { IdSchema, AuditSchema, CreatedAtSchema } from '/imports/lib/schema'
+import { IdSchema, AuditSchema, CreatedAtSchema, UserRefSchema } from '/imports/lib/schema'
 import Contacts from '/imports/api/contacts/contacts'
 import { CampaignRefSchema } from '/imports/api/campaigns/schema'
 import { ContactRefSchema } from '/imports/api/contacts/schema'
@@ -49,6 +49,14 @@ export const PostSchema = new SimpleSchema({
   type: {
     type: String,
     allowedValues: values(PostTypes)
+  },
+  pinnedAt: {
+    type: Date,
+    optional: true
+  },
+  pinnedBy: {
+    type: UserRefSchema,
+    optional: true
   }
 })
 PostSchema.extend(IdSchema)

@@ -25,16 +25,12 @@ class EditPost extends React.Component {
     this.setState({ value })
   }
 
-  onUpdatePost = ({ message }) => {
+  onUpdatePost = (details) => {
     const { post } = this.props
-
-    if (post.message === message) {
-      return this.props.onDismiss()
-    }
 
     const update = {
       _id: post._id,
-      message
+      ...details
     }
 
     updatePost.call(update, (err) => {

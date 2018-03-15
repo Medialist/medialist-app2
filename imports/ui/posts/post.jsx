@@ -20,6 +20,8 @@ import DeletePostModal from './delete-post-modal'
 import EditPostModal from './edit-post-modal'
 import { GREY60 } from '/imports/ui/colours'
 import { ContactAvatarList } from '/imports/ui/lists/avatar-list'
+import { pinPost, unpinPost } from '/imports/api/posts/methods'
+import withSnackbar from '/imports/ui/snackbar/with-snackbar'
 
 const hideTextIfOnlyUrl = (item) => {
   const url = findUrl(item.message)
@@ -117,7 +119,28 @@ const turnLinksIntoClickableAnchors = (line, index) => {
   return elements
 }
 
-class Post extends React.Component {
+const Post = withSnackbar(class Post extends React.Component {
+  static propTypes = {
+    _id: PropTypes.string.isRequired,
+    summary: PropTypes.any,
+    details: PropTypes.any,
+    createdBy: PropTypes.object,
+    createdAt: PropTypes.object,
+    currentUser: PropTypes.object,
+    type: PropTypes.string,
+    bgClass: PropTypes.string,
+    contacts: PropTypes.array,
+    campaign: PropTypes.object,
+    editable: PropTypes.bool,
+    pinnable: PropTypes.bool,
+    pinned: PropTypes.bool,
+    snackbar: PropTypes.object
+  }
+
+  static defaultProps = {
+    bgClass: 'bg-white'
+  }
+
   state = {
     menuOpen: false,
     deleteOpen: false,
@@ -153,6 +176,30 @@ class Post extends React.Component {
     })
   }
 
+  onPinClick = () => {
+    this.setState({menuOpen: false})
+
+    pinPost.call({ _id: this.props._id }, (err) => {
+      if (err) {
+        this.props.snackbar.error('pin-post-failure')
+        return console.error(err)
+      }
+      this.props.snackbar.show('Need-to-know pinned')
+    })
+  }
+
+  onUnpinClick = () => {
+    this.setState({menuOpen: false})
+
+    unpinPost.call({ _id: this.props._id }, (err) => {
+      if (err) {
+        this.props.snackbar.error('unpin-post-failure')
+        return console.error(err)
+      }
+      this.props.snackbar.show('Need-to-know unpinned')
+    })
+  }
+
   render () {
     const data = {
       'data-contact': this.props.contacts.map(contact => contact.slug).join(' '),
@@ -160,12 +207,12 @@ class Post extends React.Component {
     }
 
     const postTypeLabels = {
-      'FeedbackPost': 'Feedback',
-      'CoveragePost': 'Coverage',
-      'NeedToKnowPost': 'Need-to-Knows'
+      'FeedbackPost': 'feedback',
+      'CoveragePost': 'coverage',
+      'NeedToKnowPost': 'need-to-know'
     }
 
-    const {deletable} = this.props
+    const {deletable, pinnable, pinned} = this.props
 
     const editable = this.props.editable && (this.props.createdBy._id === this.props.currentUser._id)
 
@@ -187,6 +234,15 @@ class Post extends React.Component {
                 <ChevronOpenDown onClick={this.openMenu} data-id='open-post-menu-button' className='ml1' style={{fill: GREY60}} />
                 <DropdownMenu width={180} left={-150} top={-2} arrowPosition='top' arrowAlign='right' arrowMarginRight='11px' open={this.state.menuOpen} onDismiss={this.closeMenu}>
                   <nav className='pt1'>
+                    {pinnable && (
+                      <DropdownMenuItem
+                        onClick={pinned ? this.onUnpinClick : this.onPinClick}
+                        data-id={pinned ? 'unpin-post-button' : 'pin-post-button'}>
+                        <span className='ml2 gray20 regular'>
+                          {pinned ? 'Unpin' : 'Pin'} {postTypeLabels[this.props.type]}
+                        </span>
+                      </DropdownMenuItem>
+                    )}
                     {editable && (
                       <DropdownMenuItem
                         onClick={this.editPost}
@@ -226,25 +282,7 @@ class Post extends React.Component {
       </article>
     )
   }
-}
-
-Post.propTypes = {
-  _id: PropTypes.string.isRequired,
-  summary: PropTypes.any,
-  details: PropTypes.any,
-  createdBy: PropTypes.object,
-  createdAt: PropTypes.object,
-  currentUser: PropTypes.object,
-  type: PropTypes.string,
-  bgClass: PropTypes.string,
-  contacts: PropTypes.array,
-  campaign: PropTypes.object,
-  editable: PropTypes.bool
-}
-
-Post.defaultProps = {
-  bgClass: 'bg-white'
-}
+})
 
 const ContactLink = ({contact, showOutlet = true, ...props}) => {
   if (!contact) {
@@ -402,8 +440,10 @@ export const NeedToKnowPost = ({item, currentUser, contact}) => (
         ) : null}
       </div>
     }
+    pinned={!!item.pinnedAt}
     editable
     deletable
+    pinnable
   />
 )
 
