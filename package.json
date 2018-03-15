@@ -1,6 +1,6 @@
 {
   "name": "medialist-app2",
-  "version": "11.0.0",
+  "version": "12.0.0",
   "private": true,
   "scripts": {
     "start": "run-s build watch:server:prod",
